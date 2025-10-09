@@ -3,6 +3,8 @@ import '../Home/Home.css'
 import card1 from '../../assets/card1.png'
 import card2 from '../../assets/card2.png'
 import card3 from '../../assets/card3.svg'
+import info from '../../assets/info.svg'
+import zapoff from '../../assets/off.svg'
 
 
 function Home() {
@@ -55,20 +57,32 @@ function Home() {
             </div>
             <div className="cards-notification">
               <div className="card-notification">
-                <h3>É hora de agendar a vistoria do Canteiro 01.</h3>
-                <span>Lembre-se de voltar lá para garantir o bom desenvolvimento.</span>
+                <img src={info} alt="" />
+                <div className="info-text">
+                  <h4>É hora de agendar a vistoria do Canteiro 01.</h4>
+                  <span>Lembre-se de voltar lá para garantir o bom desenvolvimento.</span>
+                </div>
               </div>
               <div className="card-notification">
-                <h3>O nivel de estoque está baixo</h3>
-                <span>Lembre-se de voltar lá para garantir o bom desenvolvimento.</span>
+                <img src={zapoff} alt="" />
+                <div className="info-text">
+                  <h4>O nivel de estoque está baixo</h4>
+                  <span>Lembre-se de voltar lá para garantir o bom desenvolvimento.</span>
+                </div>
               </div>
               <div className="card-notification">
-                <h3>xxxxxxxxxxxxx</h3>
-                <span>Lembre-se de voltar lá para garantir o bom desenvolvimento.</span>
+                <img src={info} alt="" />
+                <div className="info-text">
+                  <h4>xxxxxxxxxxxxx</h4>
+                  <span>Lembre-se de voltar lá para garantir o bom desenvolvimento.</span>
+                </div>
               </div>
               <div className="card-notification">
-                <h3>xxxxxxxxxxxxx</h3>
-                <span>Lembre-se de voltar lá para garantir o bom desenvolvimento.</span>
+                <img src={info} alt="" />
+                <div className="info-text">
+                  <h4>xxxxxxxxxxxxx</h4>
+                  <span>Lembre-se de voltar lá para garantir o bom desenvolvimento.</span>
+                </div>
               </div>
             </div>
           </div>
