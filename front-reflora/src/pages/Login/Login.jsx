@@ -9,7 +9,7 @@ import logoGoogle from '../../assets/logoGoogle.svg';
 const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Lógica de login aqui
+ 
   };
 
   return (
