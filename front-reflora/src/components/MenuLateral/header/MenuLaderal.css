@@ -1,0 +1,47 @@
+
+.Container{
+  height: 10vh;
+  width: 22vw;
+  display: flex;
+  background-color: #257024; 
+  box-shadow: 0 0 20px 0;
+  border-radius: 5px;
+  flex-direction: row;
+
+  @media (max-width: 768px) {
+    width: 50%;
+    border-radius: 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+}
+
+.MenuToggle{
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: white;
+  margin: 32px; /* margem ao redor do conjunto */
+
+  svg {
+    color: white;
+    width: 30px;
+    height: 30px;
+    margin-right: 35px; /* espaço entre o ícone e o texto */
+  }
+
+  span {
+    font-weight: bold;
+    font-size: 35px;
+  }
+
+  @media (max-width: 768px) {
+    span {
+      font-size: 22px;
+    }
+  }
+
+}
+
