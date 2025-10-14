@@ -1,19 +1,25 @@
 
 .Container{
-  height: 10vh;
-  width: 22vw;
+  height: 7vh;
+  width: 17vw;
   display: flex;
   background-color: #257024; 
   box-shadow: 0 0 20px 0;
   border-radius: 5px;
   flex-direction: row;
 
-  @media (max-width: 768px) {
-    width: 50%;
+  @media (max-width: 1024px) {
+    width: 22vw;
     border-radius: 0;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+  }
+  @media (max-width: 480px) {
+    width: 50vw;
+    height: 100vh;
+    height: 7vh;
+    
   }
 
 }
@@ -37,7 +43,7 @@
     font-size: 35px;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     span {
       font-size: 22px;
     }

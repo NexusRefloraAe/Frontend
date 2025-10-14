@@ -4,16 +4,19 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   
-  font-size: 20px;
+  font-size: 17px;
   color: white;
   padding: 10px;
   cursor: pointer;
   border-radius: 10px;
-  margin: 0 15px 20px;
+  margin: 0 0px 20px;
 
   @media (max-width: 480px) {
   font-size: 15px;
   
+  }
+  @media (max-width: 1024px) {
+    font-size: 15px;
   }
 
   > svg {

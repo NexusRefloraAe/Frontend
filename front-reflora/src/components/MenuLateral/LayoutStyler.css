@@ -2,6 +2,6 @@
   display: flex;
   flex-direction: row; /* opcional, pois é o padrão */
   height: 100vh;
-  width: 100%;
+  width: 100vw;
   background-color: #E9E9E9;
 }
