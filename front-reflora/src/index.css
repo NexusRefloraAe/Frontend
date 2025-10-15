@@ -14,7 +14,7 @@
    --cor-verde-overlay: rgba(35, 208, 43, 0.3); /* Overlay verde suave */
 
   /* CORES DE TEXTO */
-  --cor-texto-primario: #333333;
+  --cor-texto-primario: #0e0d0d;
   --cor-texto-secundario: #666666;
   --cor-texto-claro: #999999;
   --cor-texto-branco: #ffffff;
@@ -43,7 +43,7 @@
   --cor-sombra-verde: rgba(46, 125, 50, 0.1);
 
   /* ESPAÇAMENTO EM REM (1rem = 16px base) */
-  --espacamento-xxs: 0.25rem;
+  --espacamento-xxs: 0.1rem;
   --espacamento-xs: 0.5rem;
   --espacamento-sm: 0.75rem;
   --espacamento-md: 1rem;
@@ -69,9 +69,9 @@
   --raio-borda-xl: 1.5rem;
 
   /* ALTURAS E LARGURAS EM VH/VW/REM */
-  --altura-botao-mobile: 3rem;
-  --altura-botao-desktop: 3.5rem;
-  --largura-maxima-conteudo: 90vw;
+  --altura-botao-mobile: 2rem;
+  --altura-botao-desktop: 3rem;
+  --largura-maxima-conteudo: 100vw;
   --altura-minima-tela: 100vh;
 }
 
@@ -107,41 +107,4 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-/*  MEDIA QUERIES PARA RESPONSIVIDADE  */
-
-/* MOBILE SMALL (Até 360px) */
-@media (max-width: 22.5rem) {
-  html {
-    font-size: 14px;
-  }
-}
-
-/* MOBILE MEDIUM (361px - 480px) */
-@media (min-width: 22.5625rem) and (max-width: 30rem) {
-  html {
-    font-size: 15px;
-  }
-}
-
-/* MOBILE LARGE / TABLET SMALL (481px - 768px) */
-@media (min-width: 30.0625rem) and (max-width: 48rem) {
-  html {
-    font-size: 16px;
-  }
-}
-
-/* TABLET / DESKTOP SMALL (769px - 1024px) */
-@media (min-width: 48.0625rem) and (max-width: 64rem) {
-  html {
-    font-size: 17px;
-  }
-}
-
-/* DESKTOP LARGE (1025px+) */
-@media (min-width: 64.0625rem) {
-  html {
-    font-size: 18px;
-  }
 }

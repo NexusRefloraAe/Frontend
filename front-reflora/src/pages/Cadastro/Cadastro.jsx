@@ -1,123 +1,141 @@
-import React from 'react';
-import './Cadastro.css';
-
-import Button from '../../components/Button/Button';
-import Input from '../../components/Input/Input';
-import Banner from '../../components/Banner/Banner';
+import React, { useState } from 'react';
+import AuthLayout from '../../components/Layout/AuthLayout';
+import AuthForm from '../../components/AuthForm/AuthForm';
+import olhoaberto from '../../assets/olhoaberto.svg';
+import olhofechado from '../../assets/olhofechado.svg';
 
 const Cadastro = () => {
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const [formData, setFormData] = useState({
+    nomeCompleto: '', email: '', celular: '', dataNascimento: '',
+    genero: '', empresa: '', senha: '', confirmarSenha: ''
+  });
+  const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
+  const [error, setError] = useState('');
 
+  const handleChange = (field) => (e) => {
+    setFormData(prev => ({ ...prev, [field]: e.target.value }));
+  };
+
+  const handleSubmit = () => {
+    if (formData.senha !== formData.confirmarSenha) {
+      setError("As senhas não coincidem!");
+      return;
+    }
+    setError('');
+    console.log("Dados do cadastro:", formData);
+  };
+
+  const cadastroConfig = {
+    title: "Cadastre-se", 
+    subtitle: "É rápido e fácil.",
+    fields: [
+      {
+        label: "Nome Completo",
+        name: "nomeCompleto",
+        placeholder: "Digite seu nome completo",
+        value: formData.nomeCompleto,
+        onChange: handleChange('nomeCompleto'),
+        required: true,
+        span: 2 
+      },
+      {
+        label: "Email",
+        name: "email",
+        placeholder: "Digite seu email",
+        value: formData.email,
+        onChange: handleChange('email'),
+        required: true
+      },
+      {
+        label: "Número de celular",
+        name: "celular",
+        placeholder: "(xx) 9 xxxx-xxxx",
+        value: formData.celular,
+        onChange: handleChange('celular'),
+        required: true
+      },
+      {
+        label: "Data de Nascimento",
+        name: "dataNascimento",
+        type: "date",
+        value: formData.dataNascimento,
+        onChange: handleChange('dataNascimento'),
+        required: true
+      },
+      {
+        label: "Gênero",
+        name: "genero",
+        type: "select",
+        placeholder: "Selecione seu gênero",
+        value: formData.genero,
+        onChange: handleChange('genero'),
+        required: true,
+        options: [
+          { value: "masculino", label: "Masculino" },
+          { value: "feminino", label: "Feminino" },
+          { value: "outro", label: "Outro" },
+          { value: "nao-informar", label: "Prefiro não informar" }
+        ]
+      },
+      {
+        label: "Empresa (Opcional)",
+        name: "empresa",
+        placeholder: "Digite o nome da empresa",
+        value: formData.empresa,
+        onChange: handleChange('empresa'),
+        span: 2 
+      },
+      {
+        label: "Defina uma senha",
+        name: "senha",
+        type: mostrarSenha ? 'text' : 'password',
+        placeholder: "Mínimo 8 caracteres",
+        value: formData.senha,
+        onChange: handleChange('senha'),
+        required: true,
+        icon: mostrarSenha ? olhoaberto : olhofechado,
+        onIconClick: () => setMostrarSenha(!mostrarSenha)
+      },
+      {
+        label: "Confirme sua senha",
+        name: "confirmarSenha",
+        type: mostrarConfirmarSenha ? 'text' : 'password',
+        placeholder: "Repita a senha",
+        value: formData.confirmarSenha,
+        onChange: handleChange('confirmarSenha'),
+        required: true,
+        icon: mostrarConfirmarSenha ? olhofechado : olhoaberto,
+        onIconClick: () => setMostrarConfirmarSenha(!mostrarConfirmarSenha)
+      }
+    ],
+    actions: [
+      {
+        type: "submit",
+        variant: "primary",
+        children: "Cadastrar"
+      }
+    ],
+    footer: {
+      text: "Já tem uma Conta?",
+      linkTo: "/login",
+      linkText: "Faça o login"
+    },
+    error: error,
+    onSubmit: handleSubmit
   };
 
   return (
-    <div className="cadastro-container">
-      <aside className="cadastro-banner">
-        <Banner />
-      </aside>
-
-      <main className="cadastro-form-wrapper">
-        <form className="cadastro-form" onSubmit={handleSubmit}>
-          <header className="cadastro-form__header">
-            <h1>Cadastro</h1>
-          </header>
-
-          <div className="cadastro-form__fields">
-            {/* 1. Nome Completo */}
-            <Input
-              label="Nome Completo"
-              type="text"
-              name="nomeCompleto"
-              placeholder="Digite seu nome completo"
-              required
-            />
-            {/* 2. Email */}
-            <Input
-              label="Email"
-              type="email"
-              name="email"
-              placeholder="Digite seu email"
-              required
-            />
-            {/* 3. Número de celular */}
-            <Input
-              label="Número de celular"
-              type="tel"
-              name="celular"
-              placeholder="(xx) 9 xxxx-xxxx"
-              required
-            />
-
-            {/* 4. Data de Nascimento e Gênero */}
-            <div className="cadastro-form__row">
-              {/* Data de Nascimento  */}
-              <Input
-                label="Data de Nascimento"
-                type="date"
-                name="dataNascimento"
-                placeholder="dd/mm/aaaa"
-                required
-              />
-
-              {/* Gênero */}
-              <div className="input-container">
-                <label htmlFor="genero">Gênero</label>
-                <select
-                  id="genero"
-                  name="genero"
-                  className="input-field"
-                  required
-                >
-                  <option value="" disabled selected>Gênero</option>
-                  <option value="masculino">Masculino</option>
-                  <option value="feminino">Feminino</option>
-                  <option value="Prefiro não responder">Prefiro não responder</option>
-                </select>
-              </div>
-            </div>
-
-            {/* 5. Empresa */}
-            <Input
-              label="Empresa"
-              type="text"
-              name="empresa"
-              placeholder="Digite o nome da empresa"
-            />
-
-            {/* 6. Senha */}
-            <Input
-              label="Defina uma senha"
-              type="password"
-              name="senha"
-              placeholder="*************"
-              required
-            />
-            {/* 7. Confirme sua senha */}
-            <Input
-              label="Confirme sua senha"
-              type="password"
-              name="confirmarSenha"
-              placeholder="*************"
-              required
-            />
-          </div>
-
-          <div className="cadastro-form__actions">
-            <Button type="submit" variant="primary">
-              Cadastrar
-            </Button>
-          </div>
-
-          <footer className="cadastro-form__footer">
-            <p>
-              Já tem uma Conta? <a href="#"><strong>Faça o login</strong></a>
-            </p>
-          </footer>
-        </form>
-      </main>
-
-    </div>
+    <AuthLayout 
+      title={cadastroConfig.title} 
+      subtitle={cadastroConfig.subtitle}
+    >
+      <AuthForm 
+        {...cadastroConfig} 
+        layout="dense" 
+        useGrid={true}
+      />
+    </AuthLayout>
   );
 };
 

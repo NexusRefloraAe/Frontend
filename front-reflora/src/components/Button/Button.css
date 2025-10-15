@@ -3,15 +3,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--espacamento-xs); 
+  gap: var(--espacamento-xs);
   padding: var(--espacamento-sm) var(--espacamento-md);
   font-size: var(--tamanho-fonte-sm);
-  font-weight: 600; /* Medium para bold */
+  font-weight: 600;
   border-radius: var(--raio-borda-sm);
   border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  height: var(--altura-botao-mobile); 
+
 }
 
 .button__icon {
@@ -39,12 +39,11 @@
 
 .button--secondary:hover {
   background-color: var(--cor-fundo-overlay);
-  border-color: #cacdd1; 
+  border-color: #cacdd1;
 }
 
 @media (min-width: 48rem) {
   .button {
-    height: var(--altura-botao-desktop);
     font-size: var(--tamanho-fonte-md);
   }
 }

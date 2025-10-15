@@ -1,79 +1,83 @@
-import React from 'react';
-import './Login.css';
-
-import Button from '../../components/Button/Button';
-import Input from '../../components/Input/Input';
-import Banner from '../../components/Banner/Banner'; 
+import React, { useState } from 'react';
+import AuthLayout from '../../components/Layout/AuthLayout';
+import AuthForm from '../../components/AuthForm/AuthForm';
 import logoGoogle from '../../assets/logoGoogle.svg';
+import olhoaberto from '../../assets/olhoaberto.svg';
+import olhofechado from '../../assets/olhofechado.svg';
 
 const Login = () => {
-  const handleSubmit = (e) => {
-    e.preventDefault();
- 
+  const [formData, setFormData] = useState({
+    username: '',
+    password: ''
+  });
+  const [mostrarSenha, setMostrarSenha] = useState(false);
+
+  const handleChange = (field) => (e) => {
+    setFormData(prev => ({ ...prev, [field]: e.target.value }));
+  };
+
+  const handleSubmit = () => {
+    console.log("Tentativa de login com:", formData);
+  };
+
+  const handleGoogleLogin = () => {
+    console.log("Login com Google");
+  };
+
+  // Configuração específica do Login
+  const loginConfig = {
+    title: "Faça Login",
+    subtitle: "Acesse sua conta para continuar",
+    fields: [
+      {
+        label: "Nome, Email ou telefone do usuário",
+        type: "text",
+        name: "username",
+        placeholder: "Digite seu nome, email ou telefone de usuário",
+        value: formData.username,
+        onChange: handleChange('username'),
+        required: true
+      },
+      {
+        label: "Senha",
+        type: mostrarSenha ? 'text' : 'password',
+        name: "password",
+        placeholder: "Digite sua senha",
+        value: formData.password,
+        onChange: handleChange('password'),
+        required: true,
+        icon: mostrarSenha ? olhoaberto : olhofechado,
+        onIconClick: () => setMostrarSenha(!mostrarSenha)
+      }
+    ],
+    actions: [
+      {
+        type: "submit",
+        variant: "primary",
+        children: "Entrar"
+      },
+      {
+        type: "button",
+        variant: "secondary",
+        icon: logoGoogle,
+        onClick: handleGoogleLogin,
+        children: "Continuar com a Google"
+      }
+    ],
+    footer: {
+      text: "Não tem uma Conta?",
+      linkTo: "/cadastro",
+      linkText: "Cadastre-se"
+    },
+    showSeparator: true,
+    showForgotPassword: true,
+    onSubmit: handleSubmit
   };
 
   return (
-    <div className="login-container">
-     
-      <aside className="login-banner">
-        <Banner />
-      </aside>
-
-      {/* Banner para mobile */}
-      <div className="login-banner-mobile">
-        <Banner />
-      </div>
-
-      <main className="login-form-wrapper">
-        <form className="login-form" onSubmit={handleSubmit}>
-          <header className="login-form__header">
-            <h1>Faça Login</h1>
-            <p>Acesse sua conta para continuar</p>
-          </header>
-
-          <div className="login-form__fields">
-            <Input
-              label="Nome, Email ou telefone do usuário"
-              type="text"
-              name="username"
-              placeholder="Digite seu nome, email ou telefone de usuário"
-              required
-            />
-            <Input
-              label="Senha"
-              type="password"
-              name="password"
-              placeholder="Digite sua senha"
-              required
-            />
-          </div>
-          <footer className="login-form__forgot-password">
-            <p>
-              Esqueceu a sua senha? <a href="#"><strong>Clique aqui</strong></a>
-            </p>
-          </footer>
-
-          <div className="login-form__actions">
-            <Button type="submit" variant="primary">
-              Entrar
-            </Button>
-            
-            <div className="separator">Ou</div>
-
-            <Button type="button" variant="secondary" icon={logoGoogle}>
-              Continuar com a Google
-            </Button>
-          </div>
-
-          <footer className="login-form__footer">
-            <p>
-              Não tem uma Conta? <a href="#"><strong>Cadastre-se</strong></a>
-            </p>
-          </footer>
-        </form>
-      </main>
-
-    </div>
+    <AuthLayout title={loginConfig.title} subtitle={loginConfig.subtitle}>
+      <AuthForm {...loginConfig} />
+    </AuthLayout>
   );
 };
 

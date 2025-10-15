@@ -1,33 +1,73 @@
-.input-group {
+.input-component-wrapper {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--espacamento-xs);
 }
 
-.input-label {
+.input-component-wrapper label {
+  display: block;
+  color: var(--cor-texto-secundario);
+  margin-bottom: var(--espacamento-xs);
   font-size: var(--tamanho-fonte-xs);
   font-weight: 500;
-  color: var(--cor-texto-secundario);
 }
 
+.input-field-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Estilo base para input e select */
 .input-field {
   width: 100%;
   padding: var(--espacamento-sm);
+  border: 1px solid var(--cor-borda-cinza);
+  border-radius: var(--raio-borda-xs);
   font-size: var(--tamanho-fonte-sm);
-  color: var(--cor-texto-primario);
-  background-color: var(--cor-fundo-branco);
-  border: 1px solid var(--cor-borda-google);
-  border-radius: var(--raio-borda-sm);
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.input-field::placeholder {
-  color: var(--cor-texto-claro);
+  box-sizing: border-box;
+  min-height: 2.5rem;
+  font-family: inherit;
 }
 
 .input-field:focus {
   outline: none;
   border-color: var(--cor-borda-foco);
-  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+}
+
+/* Estilos específicos para select */
+.input-field-container select.input-field {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--espacamento-sm) center;
+  background-size: 1rem;
+  padding-right: calc(var(--espacamento-sm) * 3);
+  cursor: pointer;
+}
+
+/* Remove estilos padrão do IE */
+.input-field-container select.input-field::-ms-expand {
+  display: none;
+}
+
+/* Estilo para as opções do select */
+.input-field-container select.input-field option {
+  padding: var(--espacamento-sm);
+  font-size: var(--tamanho-fonte-sm);
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  right: var(--espacamento-sm);
+  transform: translateY(-50%);
+  cursor: pointer;
+  width: 1.25rem; 
+  height: auto;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.input-icon:hover {
+  opacity: 1;
 }
