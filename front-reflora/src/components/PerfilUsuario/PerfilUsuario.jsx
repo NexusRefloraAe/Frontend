@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import AuthForm from '../AuthForm/AuthForm';
-import Button from '../Button/Button'; // Necessário para o botão Trocar Foto
+import Button from '../Button/Button'; 
 import perfilusuarioIcon from '../../assets/perfilusuario.svg';
-import './UserProfileForm.css';
+import './PerfilUsuario.css';
 
-// Importando ícones
 import botaoEditarIcon from '../../assets/botaoeditar.svg';
 import botaoSalvarIcon from '../../assets/botaosalvar.svg';
 import botaoExcluirIcon from '../../assets/botaoexcluir.svg';
-import importarfotoIcon from '../../assets/importarfoto.svg'; // Ícone para Trocar Foto
+import importarfotoIcon from '../../assets/importarfoto.svg';
 
-const UserProfileForm = () => {
+const PerfilUsuario = () => {
     const [userData, setUserData] = useState({
         nomeCompleto: 'Maria Silva',
         email: 'maria.silva@exemplo.com',
@@ -42,7 +41,6 @@ const UserProfileForm = () => {
         alert("Iniciando a importação de nova foto...");
     }
 
-    // Configuração dos campos do formulário: readOnly é controlado por isEditing
     const fieldsConfig = [
         { label: "Nome Completo", name: "nomeCompleto", type: "text", value: userData.nomeCompleto, onChange: handleChange('nomeCompleto'), required: true, readOnly: !isEditing, span: 2 },
         { label: "E-mail", name: "email", type: "email", value: userData.email, onChange: handleChange('email'), required: true, readOnly: !isEditing },
@@ -53,42 +51,15 @@ const UserProfileForm = () => {
         { label: "Endereço", name: "endereco", type: "text", value: userData.endereco, onChange: handleChange('endereco'), required: true, readOnly: !isEditing, span: 2 }
     ];
 
-    // Configuração dos botões de ação
     const actionsConfig = isEditing ? (
-        // MODO EDIÇÃO: Salvar (Verde) e Cancelar (Cinza Escuro)
         [
-            {
-                type: "button",
-                variant: "action-secondary", // Cinza Escuro para Cancelar Edição
-                children: "Cancelar Edição",
-                onClick: () => setIsEditing(false),
-                icon: null
-            },
-            {
-                type: "button",
-                variant: "primary", // Verde para Salvar Edição
-                children: "Salvar Edição",
-                onClick: handleSave,
-                icon: botaoSalvarIcon
-            },
+            { type: "button", variant: "action-secondary", children: "Cancelar Edição", onClick: () => setIsEditing(false), icon: null },
+            { type: "button", variant: "primary", children: "Salvar Edição", onClick: handleSave, icon: botaoSalvarIcon },
         ]
     ) : (
-        // MODO VISUALIZAÇÃO: Editar (Azul) e Excluir (Vermelho)
         [
-            {
-                type: "button",
-                variant: "action-primary", // Azul para Editar Informações
-                children: "Editar Informações",
-                onClick: () => setIsEditing(true),
-                icon: botaoEditarIcon
-            },
-            {
-                type: "button",
-                variant: "danger", // Vermelho para Excluir Conta
-                children: "Excluir Conta",
-                onClick: handleDeleteAccount,
-                icon: botaoExcluirIcon
-            }
+            { type: "button", variant: "action-primary", children: "Editar Informações", onClick: () => setIsEditing(true), icon: botaoEditarIcon },
+            { type: "button", variant: "danger", children: "Excluir Conta", onClick: handleDeleteAccount, icon: botaoExcluirIcon }
         ]
     );
 
@@ -96,21 +67,21 @@ const UserProfileForm = () => {
     const titleClass = isEditing ? "configuracoes-profile-section__title--editing" : "configuracoes-profile-section__title";
 
     return (
-        <div className="user-profile-form__container">
-            {/* Título da Seção (Mover para dentro do card, mas fora do AuthForm) */}
+        <div className="secao-perfil-usuario">
+            {/* Título da Seção Dinâmico */}
             <h2 className={titleClass}>{sectionTitle}</h2>
             
-            <div className="user-profile-form__avatar-section">
-                <div className="user-profile-form__avatar">
+            <div className="secao-perfil-usuario__avatar-area">
+                <div className="secao-perfil-usuario__avatar-img">
                     <img src={perfilusuarioIcon} alt="Avatar do Usuário" />
                 </div>
-                {/* Botão de Trocar Foto SÓ VISÍVEL em MODO EDIÇÃO */}
+                {/* Botão de Trocar Foto (Aparece apenas em edição) */}
                 {isEditing && (
                     <Button
                         variant="primary" 
                         icon={importarfotoIcon}
                         onClick={handleTrocarFoto}
-                        className="button-trocar-foto" 
+                        className="botao-trocar-foto" 
                     >
                         Trocar Foto
                     </Button>
@@ -128,4 +99,4 @@ const UserProfileForm = () => {
     );
 };
 
-export default UserProfileForm;
+export default PerfilUsuario;

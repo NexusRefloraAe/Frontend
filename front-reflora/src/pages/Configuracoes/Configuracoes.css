@@ -1,26 +1,22 @@
-/* Wrapper que centraliza o conteúdo na página */
 .configuracoes-wrapper {
     width: 100%;
     padding: var(--espacamento-md);
     max-width: 100vw;
 }
 
-/* Card principal mais compacto */
+/* Card principal */
 .configuracoes-card {
     max-width: 50rem;
     margin: var(--espacamento-md) auto 0 auto;
-    /* ADICIONA MARGEM TOPO PARA SEPARAR DAS ABAS */
     width: 100%;
 }
 
-/* Tabs mais compactas (Container do BotaoSubmenus) */
 .configuracoes-tabs {
     display: flex;
     gap: var(--espacamento-sm);
     width: 100%;
     justify-content: center;
     margin-bottom: var(--espacamento-md);
-    /* ADICIONA ESPAÇO ENTRE ABAS E CARD */
 }
 
 .configuracoes-tabs .button {
@@ -31,7 +27,6 @@
     transition: all 0.3s ease;
 }
 
-/* Botão ATIVO (tab-active) */
 .configuracoes-tabs .button--tab-active {
     background-color: var(--cor-verde-primario);
     color: var(--cor-texto-branco);
@@ -43,9 +38,9 @@
     border-color: var(--cor-verde-escuro);
 }
 
-/* Botão INATIVO  */
 .configuracoes-tabs .button--tab-inactive {
     background-color: var(--cor-verde-claro);
+    /* Cor de fundo verde clara */
     color: var(--cor-verde-primario);
     border: 1px solid var(--cor-verde-primario);
     box-shadow: none;
@@ -63,6 +58,17 @@
     margin-bottom: var(--espacamento-md);
     font-weight: 500;
     border-bottom: 1px solid var(--cor-verde-primario);
+    padding-bottom: var(--espacamento-xs);
+    display: block;
+    width: 100%;
+}
+
+.configuracoes-profile-section__title--editing {
+    font-size: var(--tamanho-fonte-lg);
+    color: var(--cor-texto-primario);
+    margin-bottom: var(--espacamento-md);
+    font-weight: 600;
+    border-bottom: 1px solid var(--cor-texto-primario);
     padding-bottom: var(--espacamento-xs);
     display: block;
     width: 100%;

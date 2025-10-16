@@ -1,8 +1,6 @@
-// src/pages/Configuracoes/Configuracoes.jsx (Corrigido)
-
-import React, { useState } from 'react';
-import UserProfileForm from '../../components/UserProfileForm/UserProfileForm';
+import React, { useState } from 'react';import PerfilUsuario from '../../components/PerfilUsuario/PerfilUsuario';
 import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus';
+import ConfigSistema from '../../components/ConfigSistema/ConfigSistema'; 
 import './Configuracoes.css';
 
 import perfilUsuarioIcon from '../../assets/perfilusuario.svg';
@@ -38,13 +36,12 @@ const Configuracoes = () => {
         <div className="configuracoes-content">
           {activeTab === 'profile' && (
             <div className="configuracoes-profile-section">
-              {/* TÍTULO REMOVIDO DAQUI - Será renderizado pelo UserProfileForm */}
-              <UserProfileForm />
+              <PerfilUsuario /> 
             </div>
           )}
           {activeTab === 'system' && (
             <div className="configuracoes-system-section">
-              <p>Configurações do sistema em desenvolvimento...</p>
+              <ConfigSistema /> 
             </div>
           )}
         </div>
