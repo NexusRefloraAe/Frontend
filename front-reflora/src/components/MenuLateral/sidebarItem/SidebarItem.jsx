@@ -1,13 +1,16 @@
 import React from 'react'
-import { Container } from './SidebarItemStyler'
+import "./SidebarItemStyler.css";
 
 const SidebarItem = ({ Icon, Text, isLogout, onClick }) => {
   return (
-    <Container isLogout={isLogout} onClick={onClick} >
-      <Icon />
-      {Text}
-    </Container>
-  )
-}
+    <button
+      className={`sidebar-item ${isLogout ? "logout" : ""}`}
+      onClick={onClick}
+    >
+      <Icon aria-hidden="true" />
+      <span>{Text}</span>
+    </button>
+  );
+};
 
-export default SidebarItem
+export default SidebarItem;

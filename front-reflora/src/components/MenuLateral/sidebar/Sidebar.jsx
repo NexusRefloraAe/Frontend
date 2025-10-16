@@ -1,10 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Content, MenuToggle } from "./SidebarStyler";
 import { FaTimes, FaSeedling, FaTools, FaClipboardList, FaChartBar, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { GiPlantSeed, GiFarmTractor } from "react-icons/gi";
 import SidebarItem from "../sidebarItem/SidebarItem";
-
+import "./SidebarStyler.css";
 const Sidebar = ({ active, fixed }) => {
   const navigate = useNavigate();
 
@@ -15,15 +14,14 @@ const Sidebar = ({ active, fixed }) => {
   const home = () => navigate("/");
 
   return (
-    <Container sidebar={fixed || active}>
-      {/* X só aparece se não for fixo (modo mobile) */}
-      {!fixed && <FaTimes onClick={closeSidebar} />}
+    <div className={`sidebar-container ${fixed ? "fixed" : ""} ${active ? "active" : ""}`}>
+      {!fixed && <FaTimes className="close-icon" onClick={closeSidebar} />}
 
-      <MenuToggle onClick={home}>
+      <div className="menu-toggle" onClick={home}>
         <span>Reflora_aê</span>
-      </MenuToggle>
+      </div>
 
-      <Content>
+      <div className="sidebar-content">
         <SidebarItem Icon={GiPlantSeed} Text="Banco de Sementes" onClick={() => navigate("/banco-sementes")} />
         <SidebarItem Icon={FaSeedling} Text="Gerenciar Sementes" />
         <SidebarItem Icon={GiFarmTractor} Text="Gerenciar Canteiro" />
@@ -32,8 +30,8 @@ const Sidebar = ({ active, fixed }) => {
         <SidebarItem Icon={FaChartBar} Text="Relatórios" />
         <SidebarItem Icon={FaCog} Text="Configuração" />
         <SidebarItem Icon={FaSignOutAlt} Text="Sair" isLogout onClick={() => navigate("/login")} />
-      </Content>
-    </Container>
+      </div>
+    </div>
   );
 };
 
