@@ -71,3 +71,19 @@
 .input-icon:hover {
   opacity: 1;
 }
+
+/* Estilo para inputs e selects somente leitura */
+.input-field[readonly],
+.input-field[disabled] {
+  background-color: var(--cor-fundo-cinza); /* Fundo cinza claro */
+  cursor: not-allowed; /* Cursor de "proibido" */
+  border-color: var(--cor-borda-cinza);
+  color: var(--cor-texto-secundario); /* Cor do texto mais suave */
+}
+
+/* Remove outline em foco para campos readonly */
+.input-field[readonly]:focus,
+.input-field[disabled]:focus {
+  outline: none;
+  border-color: var(--cor-borda-cinza);
+}

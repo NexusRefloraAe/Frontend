@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. IMPORTAR O useNavigate
 import AuthLayout from '../../components/Layout/AuthLayout';
 import AuthForm from '../../components/AuthForm/AuthForm';
 import logoGoogle from '../../assets/logoGoogle.svg';
@@ -6,6 +7,8 @@ import olhoaberto from '../../assets/olhoaberto.svg';
 import olhofechado from '../../assets/olhofechado.svg';
 
 const Login = () => {
+  const navigate = useNavigate(); // 2. INICIALIZAR O HOOK
+
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -20,8 +23,10 @@ const Login = () => {
     console.log("Tentativa de login com:", formData);
   };
 
+  // 3. ALTERAR A FUNÇÃO PARA NAVEGAR
   const handleGoogleLogin = () => {
-    console.log("Login com Google");
+    console.log("Navegando para /configuracoes...");
+    navigate('/configuracoes'); // <-- AQUI ACONTECE A MÁGICA
   };
 
   // Configuração específica do Login
@@ -60,7 +65,7 @@ const Login = () => {
         type: "button",
         variant: "secondary",
         icon: logoGoogle,
-        onClick: handleGoogleLogin,
+        onClick: handleGoogleLogin, // A função agora redireciona a página
         children: "Continuar com a Google"
       }
     ],

@@ -1,8 +1,4 @@
-/* ==========================================================================
-   LAYOUT DE AUTENTICAÇÃO - PADRONIZADO
-   ========================================================================== */
-
-/* --- ESTRUTURA BASE --- */
+/* ESTRUTURA BASE */
 .auth-container {
   display: flex;
   width: 100vw;
@@ -90,7 +86,6 @@
   text-decoration: underline;
 }
 
-/* Mensagem de erro padronizada */
 .auth-form__error {
   color: var(--cor-erro);
   background-color: #f8d7da;
@@ -102,7 +97,6 @@
   margin-top: calc(-1 * var(--espacamento-sm));
 }
 
-/* Separador padronizado */
 .auth-form__separator {
   display: flex;
   align-items: center;
@@ -120,9 +114,7 @@
   background: var(--cor-borda-cinza);
 }
 
-/* ==========================================================================
-   RESPONSIVIDADE
-   ========================================================================== */
+/* RESPONSIVIDADE
 
 /* DESKTOP (≥1024px) */
 @media (min-width: 64rem) {
@@ -157,7 +149,7 @@
     width: 100%;
     height: 10rem;
     background: var(--cor-fundo-verde-suave);
-    flex-shrink: 0;
+    
   }
 
   .auth-form-wrapper {
@@ -177,6 +169,20 @@
   .auth-form__header h1 {
     font-size: var(--tamanho-fonte-xl);
   }
+}
+
+/* TABLET E DESKTOP (≥768px) */
+@media (min-width: 48rem) {
+
+    .configuracoes-wrapper .user-profile-form__container .auth-form__actions {
+        flex-direction: row;    
+        justify-content: flex-end;  
+    }
+
+    .configuracoes-wrapper .user-profile-form__container .auth-form__actions .button {
+        width: auto;           
+        max-width: none;           
+    }
 }
 
 /* MOBILE PEQUENO (<360px) */

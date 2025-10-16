@@ -11,7 +11,8 @@ const Input = ({
   required, 
   icon, 
   onIconClick,
-  options // nova prop para select
+  options, 
+  readOnly = false
 }) => {
   const isSelect = type === 'select';
   

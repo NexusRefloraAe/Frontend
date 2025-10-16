@@ -42,6 +42,49 @@
   border-color: #cacdd1;
 }
 
+.button--danger {
+  background-color: var(--cor-erro);
+  color: var(--cor-texto-branco);
+  border-color: var(--cor-erro);
+}
+
+.button--danger:hover {
+  background-color: #c62828;
+  border-color: #c62828;
+  box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+}
+
+
+.button--action-primary {
+  background-color: var(--cor-primaria);
+  /* Azul */
+  color: var(--cor-texto-branco);
+  border-color: var(--cor-primaria);
+  /* CORRIGIDO: Adicionado border-color */
+}
+
+.button--action-primary:hover {
+  background-color: var(--cor-primaria-escura);
+  /* Azul mais escuro no hover */
+  border-color: var(--cor-primaria-escura);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+}
+
+/* Nova variante ACTION-SECONDARY (Cinza Escuro - para Cancelar Edição) */
+.button--action-secondary {
+  background-color: var(--cor-texto-primario);
+  /* Cinza Escuro */
+  color: var(--cor-texto-branco);
+  border-color: var(--cor-texto-primario);
+}
+
+.button--action-secondary:hover {
+  background-color: var(--cor-texto-secundario);
+  /* Cinza mais claro no hover */
+  border-color: var(--cor-texto-secundario);
+  box-shadow: 0 4px 12px var(--cor-sombra);
+}
+
 @media (min-width: 48rem) {
   .button {
     font-size: var(--tamanho-fonte-md);

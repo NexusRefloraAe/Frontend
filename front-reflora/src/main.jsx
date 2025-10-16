@@ -6,6 +6,7 @@ import Login from './pages/Login/Login';
 import Cadastro from './pages/Cadastro/Cadastro';
 import RedefinirSenha from './pages/RedefinirSenha/RedefinirSenha';
 import { BrowserRouter, Routes, Route } from "react-router-dom"; 
+import Configuracoes from './pages/Configuracoes/Configuracoes';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -15,7 +16,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+        <Route path="/configuracoes" element={<Configuracoes />} />
       </Routes>
-    </BrowserRouter>
+    </BrowserRouter>  
   </StrictMode>
 );
