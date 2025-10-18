@@ -3,10 +3,7 @@ import "./BancoSementes.css"
 const BancoSementes = () => {
 
   return (
-      <div>
-        
-      </div>
-  
+    <div><h1>sakdmsak</h1></div>
   )
 }
 

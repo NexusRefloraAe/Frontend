@@ -13,6 +13,9 @@ const ContainerWithTitle = () => {
     case "/banco-sementes":
       title = "Banco de Sementes";
       break;
+      case "/gerenciar-sementes":
+      title = "Gerenciar Sementes";
+      break;
     default:
       title = "";
   }

@@ -23,7 +23,7 @@ const Sidebar = ({ active, fixed }) => {
 
       <div className="sidebar-content">
         <SidebarItem Icon={GiPlantSeed} Text="Banco de Sementes" onClick={() => navigate("/banco-sementes")} />
-        <SidebarItem Icon={FaSeedling} Text="Gerenciar Sementes" />
+        <SidebarItem Icon={FaSeedling} Text="Gerenciar Sementes"  onClick={() => navigate("/gerenciar-sementes")}/>
         <SidebarItem Icon={GiFarmTractor} Text="Gerenciar Canteiro" />
         <SidebarItem Icon={FaClipboardList} Text="Vistorias" />
         <SidebarItem Icon={FaTools} Text="Gestão de Insumos" />

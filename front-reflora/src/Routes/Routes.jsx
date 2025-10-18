@@ -4,6 +4,7 @@ import Home from "../screens/Home/home";
 import BancoSementes from "../screens/BancoSementes/BancoSementes";
 import Login from "../screens/Login/Login";
 import Layout from "../components/MenuLateral/Layout";
+import GerenciarSementes from "../screens/GerenciarSementes/GerenciarSementes";
 
 const AppRoutes = () => {
   return (
@@ -16,6 +17,7 @@ const AppRoutes = () => {
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/banco-sementes" element={<BancoSementes />} />
+          <Route path="/gerenciar-sementes" element={<GerenciarSementes />} />
         </Route>
       </Routes>
     </Router>
