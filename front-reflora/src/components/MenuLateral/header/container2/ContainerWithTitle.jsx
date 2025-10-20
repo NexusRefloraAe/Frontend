@@ -3,25 +3,21 @@ import { useLocation } from "react-router-dom";
 
 const ContainerWithTitle = () => {
   const location = useLocation();
+  const path = location.pathname;
 
-  // Define o título baseado na rota atual
   let title = "";
-  switch (location.pathname) {
-    case "/":
-      title = "Home";
-      break;
-    case "/banco-sementes":
-      title = "Banco de Sementes";
-      break;
-      case "/gerenciar-sementes":
-      title = "Gerenciar Sementes";
-      break;
-    default:
-      title = "";
+
+  if (path === "/") {
+    title = "Home";
+  } else if (path.startsWith("/banco-sementes")) {
+    title = "Banco de Sementes";
+  } else if (path.startsWith("/gerenciar-sementes")) {
+    title = "Gerenciar Sementes";
+  } else {
+    title = "";
   }
 
-  // Aqui é onde usamos o Container2 de verdade
   return <Container2 Text={title} />;
 };
 
-export default ContainerWithTitle
+export default ContainerWithTitle;

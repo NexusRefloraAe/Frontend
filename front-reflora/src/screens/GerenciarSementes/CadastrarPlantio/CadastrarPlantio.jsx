@@ -1,20 +1,11 @@
 import React from "react";
-import "./GerenciarSementesStyler.css";
+import "./CadastrarPlantioStyler.css";
 
-const GerenciaSementes = () => {
+const CadastrarPlantio = () => {
   return (
     <div className="seed-page">
-      {/* Barra de navegação superior */}
-      <nav className="seed-nav">
-        <button className="nav-btn">Cadastrar Plantio</button>
-        <button className="nav-btn">Histórico Plantio</button>
-        <button className="nav-btn">Cadastrar Teste</button>
-        <button className="nav-btn">Histórico Testes</button>
-        <button className="nav-btn">Gerar Relatório</button>
-      </nav>
-
       {/* Título (você já tem o seu, então este é só ilustrativo) */}
-      <h2 className="seed-title">Cadastro Teste de Germinação</h2>
+      <h2 className="seed-title">Cadastro/Editar Plantio</h2>
 
       {/* Formulário */}
       <form className="seed-form">
@@ -73,4 +64,4 @@ const GerenciaSementes = () => {
   );
 };
 
-export default GerenciaSementes;
+export default CadastrarPlantio;
