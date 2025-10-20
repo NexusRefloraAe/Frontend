@@ -1,68 +1,110 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  /* PALETA DE CORES PRINCIPAIS */
+  --cor-primaria: #1976d2;
+  --cor-primaria-escura: #1565c0;
+  --cor-primaria-clara: #42a5f5;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* PALETA DE VERDES (Baseada na tela Reflora) */
+  --cor-verde-primario: #2e7d32;      /* Verde principal */
+  --cor-verde-escuro: #1C8A1A;        /* Verde escuro */
+  --cor-verde-medio: #257024;         /* Verde médio */
+  --cor-verde-claro: #81c784;         /* Verde claro */
+  --cor-verde-muito-claro: #c8e6c9;   /* Verde muito claro */
+  --cor-verde-background: #f1f8e9;    /* Verde de fundo suave */
+   --cor-verde-overlay: rgba(35, 208, 43, 0.3); /* Overlay verde suave */
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* CORES DE TEXTO */
+  --cor-texto-primario: #0e0d0d;
+  --cor-texto-secundario: #666666;
+  --cor-texto-claro: #999999;
+  --cor-texto-branco: #ffffff;
+  --cor-texto-verde: #2e7d32;
+
+  /* CORES DE FUNDO */
+  --cor-fundo-branco: #ffffff;
+  --cor-fundo-cinza: #f8f9fa;
+  --cor-fundo-overlay: #f5f5f5;
+  --cor-fundo-verde-suave: #f8fbf8;
+
+  /* CORES DE BORDA E LINHA */
+  --cor-borda-cinza: #e0e0e0;
+  --cor-borda-foco: #1976d2;
+  --cor-borda-verde: #4caf50;
+  --cor-borda-google: #dadce0;
+
+  /* CORES DE ESTADO */
+  --cor-erro: #d32f2f;
+  --cor-sucesso: #388e3c;
+  --cor-aviso: #f57c00;
+
+  /* CORES DE SOMBRA */
+  --cor-sombra: rgba(0, 0, 0, 0.1);
+  --cor-sombra-forte: rgba(0, 0, 0, 0.15);
+  --cor-sombra-verde: rgba(46, 125, 50, 0.1);
+
+  /* ESPAÇAMENTO EM REM (1rem = 16px base) */
+  --espacamento-xxs: 0.1rem;
+  --espacamento-xs: 0.5rem;
+  --espacamento-sm: 0.75rem;
+  --espacamento-md: 1rem;
+  --espacamento-lg: 1.5rem;
+  --espacamento-xl: 2rem;
+  --espacamento-xxl: 3rem;
+
+  /* TIPOGRAFIA EM REM */
+  --tamanho-fonte-xxs: 0.75rem;
+  --tamanho-fonte-xs: 0.875rem;
+  --tamanho-fonte-sm: 1rem;
+  --tamanho-fonte-md: 1.125rem;
+  --tamanho-fonte-lg: 1.25rem;
+  --tamanho-fonte-xl: 1.5rem;
+  --tamanho-fonte-xxl: 1.75rem;
+  --tamanho-fonte-xxxl: 2rem;
+
+  /* BORDER RADIUS EM REM */
+  --raio-borda-xs: 0.25rem;
+  --raio-borda-sm: 0.5rem;
+  --raio-borda-md: 0.75rem;
+  --raio-borda-lg: 1rem;
+  --raio-borda-xl: 1.5rem;
+
+  /* ALTURAS E LARGURAS EM VH/VW/REM */
+  --altura-botao-mobile: 2rem;
+  --altura-botao-desktop: 3rem;
+  --largura-maxima-conteudo: 100vw;
+  --altura-minima-tela: 100vh;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+/*  SISTEMA DE FONTES  */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/*  CONFIGURAÇÕES BASE RESPONSIVAS  */
+html {
+  font-size: 16px;
 }
 
+/* MOBILE - Telas menores que 768px */
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--cor-fundo-verde-suave);
+  color: var(--cor-texto-primario);
+  line-height: 1.6;
+  font-size: var(--tamanho-fonte-sm);
   min-height: 100vh;
+  min-height: 100dvh;
+  width: 100vw;
+  overflow-x: hidden;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* FALLBACK SYSTEM FONT STACK */
+@supports not (font-family: 'Segoe UI') {
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }

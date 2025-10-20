@@ -1,0 +1,26 @@
+/* Garante que o grid funcione corretamente */
+.auth-form__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espacamento-md);
+  width: 100%;
+}
+
+@media (min-width: 48rem) {
+  .auth-form__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--espacamento-md) var(--espacamento-lg);
+  }
+  
+  .auth-form__grid-item--span-2 {
+    grid-column: span 2;
+  }
+}
+
+/* Inputs com tamanho adequado */
+.auth-form input,
+.auth-form select {
+  width: 100%;
+  min-height: 44px;
+  font-size: var(--tamanho-fonte-sm);
+}

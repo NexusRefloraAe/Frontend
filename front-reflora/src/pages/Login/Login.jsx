@@ -1,163 +1,89 @@
-import { useState } from 'react'
-import { Eye, EyeOff } from 'lucide-react'
-import './Login.css'
-import Logo_reflora_Ae from '../../assets/Logo_reflora_Ae.png'
-import Nome_reflora_ae from '../../assets/Nome_reflora_ae.png'
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. IMPORTAR O useNavigate
+import AuthLayout from '../../components/Layout/AuthLayout';
+import AuthForm from '../../components/AuthForm/AuthForm';
+import logoGoogle from '../../assets/logoGoogle.svg';
+import olhoaberto from '../../assets/olhoaberto.svg';
+import olhofechado from '../../assets/olhofechado.svg';
 
-function Login() {
-    const [formData, setFormData] = useState({
-        identifier: '',
-        password: ''
-    })
-    const [showPassword, setShowPassword] = useState(false)
-    const [errors, setErrors] = useState({})
+const Login = () => {
+  const navigate = useNavigate(); // 2. INICIALIZAR O HOOK
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target
-        setFormData(prev => ({ ...prev, [name]: value }))
-        if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }))
-    }
+  const [formData, setFormData] = useState({
+    username: '',
+    password: ''
+  });
+  const [mostrarSenha, setMostrarSenha] = useState(false);
 
-    const validateForm = () => {
-        const newErrors = {}
-        if (!formData.identifier.trim()) newErrors.identifier = 'Campo obrigatório'
-        if (!formData.password.trim()) newErrors.password = 'Campo obrigatório'
-        setErrors(newErrors)
-        return Object.keys(newErrors).length === 0
-    }
+  const handleChange = (field) => (e) => {
+    setFormData(prev => ({ ...prev, [field]: e.target.value }));
+  };
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        if (validateForm()) console.log('Tentativa de login:', formData)
-    }
+  const handleSubmit = () => {
+    console.log("Tentativa de login com:", formData);
+  };
 
-    const handleGoogleLogin = () => console.log('Login com Google')
-    const handleForgotPassword = () => console.log('Esqueci a senha')
-    const handleRegister = () => console.log('Cadastre-se')
+  // 3. ALTERAR A FUNÇÃO PARA NAVEGAR
+  const handleGoogleLogin = () => {
+    console.log("Navegando para /configuracoes...");
+    navigate('/configuracoes'); // <-- AQUI ACONTECE A MÁGICA
+  };
 
-    return (
-        <div className="login-wrapper">
-            <div className="login-banner" aria-hidden="true">
-                <img src={Logo_reflora_Ae} alt="Reflora" className="login-banner__img" />
-            </div>
+  // Configuração específica do Login
+  const loginConfig = {
+    title: "Faça Login",
+    subtitle: "Acesse sua conta para continuar",
+    fields: [
+      {
+        label: "Nome, Email ou telefone do usuário",
+        type: "text",
+        name: "username",
+        placeholder: "Digite seu nome, email ou telefone de usuário",
+        value: formData.username,
+        onChange: handleChange('username'),
+        required: true
+      },
+      {
+        label: "Senha",
+        type: mostrarSenha ? 'text' : 'password',
+        name: "password",
+        placeholder: "Digite sua senha",
+        value: formData.password,
+        onChange: handleChange('password'),
+        required: true,
+        icon: mostrarSenha ? olhoaberto : olhofechado,
+        onIconClick: () => setMostrarSenha(!mostrarSenha)
+      }
+    ],
+    actions: [
+      {
+        type: "submit",
+        variant: "primary",
+        children: "Entrar"
+      },
+      {
+        type: "button",
+        variant: "secondary",
+        icon: logoGoogle,
+        onClick: handleGoogleLogin, // A função agora redireciona a página
+        children: "Continuar com a Google"
+      }
+    ],
+    footer: {
+      text: "Não tem uma Conta?",
+      linkTo: "/cadastro",
+      linkText: "Cadastre-se"
+    },
+    showSeparator: true,
+    showForgotPassword: true,
+    onSubmit: handleSubmit
+  };
 
-            <div className="login-form-area">
-                {/* Mobile: logo pequena acima do form */}
-                <div className="login-logo-mobile">
-                    <img src={Nome_reflora_ae} alt="Reflora" />
-                </div>
+  return (
+    <AuthLayout title={loginConfig.title} subtitle={loginConfig.subtitle}>
+      <AuthForm {...loginConfig} />
+    </AuthLayout>
+  );
+};
 
-                <div className="login-header">
-                    <h1>Faça login</h1>
-                    <p>Acesse sua conta para continuar</p>
-                </div>
-
-                <form onSubmit={handleSubmit} className="login-form" noValidate>
-                    <div className="form-group">
-                        <label htmlFor="identifier">Nome, e-mail ou telefone</label>
-                        <input
-                            id="identifier"
-                            name="identifier"
-                            type="text"
-                            value={formData.identifier}
-                            onChange={handleInputChange}
-                            placeholder="Seu nome, e-mail ou telefone"
-                            className={errors.identifier ? 'error' : ''}
-                            autoComplete="username"
-                            aria-label="Nome, e-mail ou telefone"
-                        />
-                        {errors.identifier && (
-                            <span className="error-message">{errors.identifier}</span>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="password">Senha</label>
-                        <div className="password-input-container">
-                            <input
-                                id="password"
-                                name="password"
-                                type={showPassword ? 'text' : 'password'}
-                                value={formData.password}
-                                onChange={handleInputChange}
-                                placeholder="Sua senha"
-                                className={errors.password ? 'error' : ''}
-                                autoComplete="current-password"
-                                aria-label="Senha"
-                            />
-                            <button
-                                type="button"
-                                className="password-toggle"
-                                onClick={() => setShowPassword(!showPassword)}
-                                aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
-                            >
-                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                            </button>
-                        </div>
-                        {errors.password && (
-                            <span className="error-message">{errors.password}</span>
-                        )}
-                    </div>
-
-                    <div className="forgot-password">
-                        <span>Esqueceu sua conta?</span>
-                        <button
-                            type="button"
-                            className="link-button"
-                            onClick={handleForgotPassword}
-                        >
-                            Clique aqui
-                        </button>
-                    </div>
-
-                    <button type="submit" className="login-button">
-                        Entrar
-                    </button>
-
-                    <div className="divider">
-                        <span>Ou</span>
-                    </div>
-
-                    <button
-                        type="button"
-                        className="google-button"
-                        onClick={handleGoogleLogin}
-                    >
-                        <svg width="18" height="18" viewBox="0 0 18 18">
-                            <path
-                                fill="#4285F4"
-                                d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"
-                            />
-                            <path
-                                fill="#34A853"
-                                d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.04a4.8 4.8 0 0 1-2.7.75 4.8 4.8 0 0 1-4.52-3.36H1.83v2.07A8 8 0 0 0 8.98 17z"
-                            />
-                            <path
-                                fill="#FBBC05"
-                                d="M4.46 10.41a4.8 4.8 0 0 1-.25-1.41c0-.49.09-.97.25-1.41V5.52H1.83a8 8 0 0 0 0 7.17l2.63-2.28z"
-                            />
-                            <path
-                                fill="#EA4335"
-                                d="M8.98 3.58c1.32 0 2.5.45 3.44 1.35l2.54-2.54A8 8 0 0 0 8.98 1a8 8 0 0 0-7.15 4.42l2.63 2.28c.87-2.6 3.3-4.12 4.52-4.12z"
-                            />
-                        </svg>
-                        Continuar com Google
-                    </button>
-
-                    <div className="register-link">
-                        <span>Não tem uma conta? </span>
-                        <button
-                            type="button"
-                            className="link-button register"
-                            onClick={handleRegister}
-                        >
-                            Cadastre-se
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    )
-}
-
-export default Login
+export default Login;
