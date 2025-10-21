@@ -4,7 +4,7 @@
         height: 100vh;
     }
 
-    .botton-active {
+    .bottons-banco ul li.botton-active {
         background-color: #257024;
     }
 
