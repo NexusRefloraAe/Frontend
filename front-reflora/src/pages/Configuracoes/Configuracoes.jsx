@@ -24,8 +24,6 @@ const Configuracoes = () => {
 
   return (
     <div className="configuracoes-wrapper">
-      <h1 className="configuracoes-page__title">Configurações</h1>
-
       <BotaoSubmenus
         menus={configMenus}
         activeMenuId={activeTab}

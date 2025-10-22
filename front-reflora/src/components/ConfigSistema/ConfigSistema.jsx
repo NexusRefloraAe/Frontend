@@ -1,6 +1,5 @@
 import React, { useState } from 'react'; 
 import './ConfigSistema.css'; 
-
 import iconeSol from '../../assets/sol.svg'; 
 import iconeLua from '../../assets/lua.svg'; 
 import iconeNotificacaoLigada from '../../assets/clickon.svg'; 

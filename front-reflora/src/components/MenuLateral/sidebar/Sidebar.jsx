@@ -11,7 +11,7 @@ const Sidebar = ({ active, fixed }) => {
     if (active) active(false);
   };
 
-  const home = () => navigate("/");
+  const home = () => navigate("/home");
 
   return (
     <div className={`sidebar-container ${fixed ? "fixed" : ""} ${active ? "active" : ""}`}>
@@ -28,8 +28,8 @@ const Sidebar = ({ active, fixed }) => {
         <SidebarItem Icon={FaClipboardList} Text="Vistorias" />
         <SidebarItem Icon={FaTools} Text="Gestão de Insumos" />
         <SidebarItem Icon={FaChartBar} Text="Relatórios" />
-        <SidebarItem Icon={FaCog} Text="Configuração" />
-        <SidebarItem Icon={FaSignOutAlt} Text="Sair" isLogout onClick={() => navigate("/login")} />
+        <SidebarItem Icon={FaCog} Text="Configuração" onClick={() => navigate("/configuracoes")} />
+        <SidebarItem Icon={FaSignOutAlt} Text="Sair" isLogout onClick={() => navigate("/")} />
       </div>
     </div>
   );

@@ -7,12 +7,14 @@ const ContainerWithTitle = () => {
 
   let title = "";
 
-  if (path === "/") {
-    title = "Home";
+  if (path === "/home") {
+    title = "Menu Inicial";
   } else if (path.startsWith("/banco-sementes")) {
     title = "Banco de Sementes";
   } else if (path.startsWith("/gerenciar-sementes")) {
     title = "Gerenciar Sementes";
+  } else if (path.startsWith("/configuracoes")) {
+    title = "Configurações";
   } else {
     title = "";
   }
