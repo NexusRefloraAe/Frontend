@@ -1,0 +1,54 @@
+
+.Container{
+  height: 7vh;
+  width: 17vw;
+  display: flex;
+  background-color: var(--cor-verde-primario); 
+  box-shadow: 0 0 20px 0;
+  border-radius: 5px;
+  flex-direction: row;
+
+  @media (max-width: 1024px) {
+    width: 22vw;
+    height: 7vh;
+    border-radius: 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  @media (max-width: 480px) {
+    width: 50vw;
+    height: 100vh;
+    height: 7vh;
+    
+  }
+
+}
+
+.MenuToggle{
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: white;
+  margin: 32px; /* margem ao redor do conjunto */
+
+  svg {
+    color: white;
+    width: 30px;
+    height: 30px;
+    margin-right: 35px; /* espaço entre o ícone e o texto */
+  }
+
+  span {
+    font-weight: bold;
+    font-size: 35px;
+  }
+
+  @media (max-width: 1024px) {
+    span {
+      font-size: 22px;
+    }
+  }
+
+}
+
