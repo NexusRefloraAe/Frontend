@@ -1,0 +1,36 @@
+.login-form__fields,
+.login-form__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacamento-md);
+}
+
+.login-form__forgot-password {
+  text-align: right;
+  margin-top: var(--espacamento-xxs);
+  font-size: var(--tamanho-fonte-xs);
+  color: var(--cor-texto-secundario);
+}
+
+.login-form__forgot-password a {
+  color: var(--cor-texto-secundario);
+  font-weight: var(--peso-fonte-medium);
+  transition: color var(--transicao-rapida);
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  gap: var(--espacamento-sm);
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-fonte-xs);
+  margin: var(--espacamento-xs) 0;
+}
+
+.separator::before,
+.separator::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--cor-borda-cinza);
+}
