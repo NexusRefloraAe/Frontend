@@ -5,110 +5,333 @@
   font-family: "Poppins", Arial, sans-serif;
 }
 
-.navbar {
+.home-container {
+  width: 100%;
+  padding: 0.25rem; /* Reduzido para mobile */
+  max-width: 60rem;
+  margin: 0 auto;
+  background-color: var(--cor-fundo-verde-suave);
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  background-color: #25702480;
+  gap: 0.75rem; /* Reduzido o gap */
+  min-height: 100vh; /* Garante que ocupa toda a tela */
 }
 
-.container {
-  display: grid;
-  grid-template-columns: 1fr 3fr;
-  height: 100vh;
-}
-
-.content {
+/* Container dos Cards - SEM BORDA */
+.content-painel {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  gap: 0.75rem; /* Reduzido */
 }
 
-.content-menu {
-  background-color: #E1E1E1;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding: 20px 150px;
+.title-content h2 {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  margin-bottom: 0.5rem; /* Reduzido */
+  color: var(--cor-texto-primario);
+  text-align: left;
+  font-size: clamp(1.1rem, 4vw, 1.5rem); /* Um pouco menor */
 }
 
+/* Cards de métricas - LADO A LADO NO MOBILE */
 .cards {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.25rem; /* MUITO menor no mobile */
+  justify-content: center;
+  align-items: stretch;
+  width: 100%;
 }
 
-.card1, .card2, .card3 {
-  border: #25702495 solid 10px;
-  border-radius: 10px;
-  padding: 10px 42px;
+.card {
+  background: white;
+  border: 1.5px solid var(--cor-borda-verde); /* Borda mais fina */
+  border-radius: 6px;
+  padding: 0.5rem 0.25rem; /* Padding reduzido */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  min-height: 85px; /* Altura reduzida */
+  width: 100%; /* Garante que ocupa o espaço */
 }
 
-.notifications {
+.card p {
+  font-size: clamp(0.65rem, 2.5vw, 0.8rem); /* Fontes menores */
+  color: var(--cor-texto-primario);
+  margin-bottom: 2px; /* Reduzido */
+  line-height: 1.1;
+}
+
+.card h1 {
+  font-size: clamp(0.85rem, 4vw, 1rem); /* Números menores */
+  color: var(--cor-verde-primario);
+  margin: 2px 0; /* Reduzido */
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.card img {
+  width: clamp(1.2rem, 5vw, 1.8rem); /* Ícones menores */
+  height: auto;
+  margin-top: 4px; /* Reduzido */
+}
+
+/* Container para Notificações - MAIS COMPACTO */
+.notifications-container {
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid var(--cor-borda-verde);
+  padding: 0.75rem; /* Padding reduzido */
   display: flex;
   flex-direction: column;
-  background-color: white;
-  margin: 10px 50px;
-  padding: 15px 30px;
-  border-radius: 20px;
-  gap: 15px;
+  gap: 0.5rem; /* Gap reduzido */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
 }
 
 .title-notifications {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem; /* Gap mínimo */
+}
+
+.title-notifications h2 {
+  font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+  color: #257024;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.title-notifications span {
+  color: var(--cor-verde-medio-escuro);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: clamp(0.7rem, 2.5vw, 0.8rem);
 }
 
 .cards-notification {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 0.4rem; /* Gap reduzido */
 }
 
 .card-notification {
-  border-left: 10px solid #1C8A1A;
-  background-color: #A7E2BD;
-  padding: 15px 5px;
-  border-radius: 10px;
   display: flex;
-  gap: 5px;
+  align-items: flex-start;
+  gap: 0.4rem; /* Gap reduzido */
+  padding: 0.6rem; /* Padding reduzido */
+  background-color: #a7e2bd;
+  border-left: 3px solid #1c8a1a;
+  border-radius: 5px;
+  width: 100%;
 }
 
-.title-content {
-  text-decoration: underline;
-  text-shadow: 1px 1px 2px black;
-}
-
-.title-notifications h2 {
-  text-shadow: 1px 1px 2px black;
-}
-
-.info-text span {
-  font-size: 13px;
-  color: #666666;
-  font-weight: 400  ;
+.card-notification img {
+  width: clamp(14px, 4vw, 18px); /* Ícones menores */
+  height: clamp(14px, 4vw, 18px);
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 
 .info-text h4 {
-  font-weight: 500;
+  margin-bottom: 1px; /* Reduzido */
+  color: #1c5a1a;
+  font-weight: 600;
+  font-size: clamp(0.75rem, 3vw, 0.85rem);
+  line-height: 1.2;
 }
 
-.title-menu {
-  display: flex;
-  align-items: center;
-  padding: 10px;
+.info-text span {
+  font-size: clamp(0.65rem, 2.5vw, 0.7rem);
+  color: #555;
+  line-height: 1.2;
 }
 
-@media (max-width: 1280px) {
-  .content-menu {
-    padding: 20px 100px;
+/* =============== CORREÇÕES ESPECÍFICAS PARA MOBILE =============== */
+
+/* Mobile muito pequeno (até 320px) - CORRIGIDO */
+@media (max-width: 320px) {
+  .home-container {
+    padding: 0.15rem;
+    gap: 0.5rem;
   }
+  
   .cards {
-    gap: 20px;
+    gap: 0.15rem;
+  }
+  
+  .card {
+    padding: 0.4rem 0.15rem;
+    min-height: 75px;
+    border-radius: 4px;
+  }
+  
+  .card p {
+    font-size: 0.6rem;
+  }
+  
+  .card h1 {
+    font-size: 0.75rem;
+  }
+  
+  .notifications-container {
+    padding: 0.5rem;
+    gap: 0.4rem;
+  }
+  
+  .card-notification {
+    padding: 0.5rem;
+    gap: 0.3rem;
+  }
+}
+
+/* Mobile padrão (321px - 480px) - CORRIGIDO */
+@media (max-width: 480px) {
+  .home-container {
+    padding: 0.5rem;
+    gap: 0.75rem;
+  }
+  
+  .cards {
+    gap: 0.3rem;
+  }
+  
+  .card {
+    min-height: 80px;
+    padding: 0.5rem 0.3rem;
+  }
+  
+  .card-notification {
+    padding: 0.5rem;
+    gap: 0.4rem;
+  }
+}
+
+/* Ajustes para telas muito estreitas */
+@media (max-width: 360px) {
+  .card p {
+    font-size: 0.6rem;
+  }
+  
+  .card h1 {
+    font-size: 0.8rem;
+  }
+  
+  .info-text h4 {
+    font-size: 0.7rem;
+  }
+  
+  .info-text span {
+    font-size: 0.6rem;
+  }
+}
+
+/* Tablet pequeno (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .home-container {
+    padding: 1rem;
+    gap: 1.25rem;
+  }
+  
+  .cards {
+    gap: 0.75rem;
+  }
+  
+  .card {
+    padding: 1rem 0.75rem;
+    min-height: 110px;
+    border-radius: 10px;
+  }
+  
+  .notifications-container {
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+  
+  .cards-notification {
+    gap: 0.75rem;
+  }
+  
+  .card-notification {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+}
+
+/* Tablet grande e Desktop (769px+) */
+@media (min-width: 769px) {
+  .home-container {
+    padding: 1.5rem;
+    gap: 2rem;
+  }
+  
+  .cards {
+    gap: 1rem;
+    max-width: 50rem;
+    margin: 0 auto;
+  }
+  
+  .card {
+    padding: 1.25rem;
+    min-height: 140px;
+    border-radius: 12px;
+    border-width: 2px;
+  }
+  
+  .card p {
+    font-size: 1rem;
+  }
+  
+  .card h1 {
+    font-size: 2rem;
+  }
+  
+  .card img {
+    width: 3rem;
+  }
+  
+  .notifications-container {
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+  
+  .cards-notification {
+    gap: 12px;
+  }
+  
+  .card-notification {
+    padding: 14px;
+    gap: 12px;
+    border-left-width: 6px;
+    border-radius: 10px;
+  }
+  
+  .card-notification img {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .info-text h4 {
+    font-size: 1rem;
+  }
+  
+  .info-text span {
+    font-size: 0.875rem;
+  }
+}
+
+/* Desktop grande (1025px+) */
+@media (min-width: 1025px) {
+  .cards {
+    gap: 1.5rem;
+  }
+  
+  .card {
+    padding: 1.5rem;
+    min-height: 160px;
   }
 }
