@@ -2,9 +2,9 @@
 import React from 'react';
 import Input from '../Input/Input';
 import Button from '../Button/Button';
-import './FormsGeral.css';
+import './FormGeral.css';
 
-const FormsGeral = ({ 
+const FormGeral = ({ 
   title, 
   fields = [], 
   actions = [], 
@@ -61,4 +61,4 @@ const FormsGeral = ({
   );
 };
 
-export default FormsGeral;
+export default FormGeral;

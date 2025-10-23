@@ -1,6 +1,6 @@
 // src/components/PerfilUsuario/PerfilUsuario.jsx
 import React, { useState } from 'react';
-import FormsGeral from '../FormsGeral/FormsGeral'; // ✅ novo componente
+import FormsGeral from '../FormGeral/FormGeral'; // ✅ novo componente
 import Button from '../Button/Button';
 import perfilusuarioIcon from '../../assets/perfilusuario.svg';
 import botaoEditarIcon from '../../assets/botaoeditar.svg';
