@@ -1,0 +1,81 @@
+.gerenciarcanteiro-container {
+  min-height: 100vh;
+  background-color: var(--cor-fundo-verde-suave);
+  padding: var(--espacamento-md);
+}
+
+.gerenciarcanteiro-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacamento-sm);
+  margin-bottom: var(--espacamento-xl);
+  padding: var(--espacamento-sm);
+  background-color: var(--cor-fundo-branco);
+  border-radius: var(--raio-borda-md);
+  box-shadow: 0 2px 4px var(--cor-sombra);
+}
+
+.gerenciarcanteiro-nav-btn {
+  padding: var(--espacamento-sm) var(--espacamento-md);
+  background-color: var(--cor-fundo-cinza);
+  color: var(--cor-texto-primario);
+  text-decoration: none;
+  border-radius: var(--raio-borda-sm);
+  border: 1px solid var(--cor-borda-cinza);
+  font-size: var(--tamanho-fonte-xs);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  text-align: center;
+  flex: 1;
+  min-width: 120px;
+}
+
+.gerenciarcanteiro-nav-btn:hover {
+  background-color: var(--cor-verde-muito-claro);
+  border-color: var(--cor-verde-claro);
+  transform: translateY(-1px);
+}
+
+.gerenciarcanteiro-nav-btn.active {
+  background-color: var(--cor-verde-primario);
+  color: var(--cor-texto-branco);
+  border-color: var(--cor-verde-escuro);
+}
+
+.gerenciarcanteiro-content {
+  background-color: var(--cor-fundo-branco);
+  border-radius: var(--raio-borda-md);
+  padding: var(--espacamento-xl);
+  box-shadow: 0 2px 8px var(--cor-sombra);
+  min-height: 400px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .gerenciarcanteiro-container {
+    padding: var(--espacamento-sm);
+  }
+
+  .gerenciarcanteiro-nav {
+    gap: var(--espacamento-xs);
+    padding: var(--espacamento-xs);
+  }
+
+  .gerenciarcanteiro-nav-btn {
+    padding: var(--espacamento-xs) var(--espacamento-sm);
+    font-size: var(--tamanho-fonte-xxs);
+    min-width: 100px;
+    flex: 1 1 calc(50% - var(--espacamento-xs));
+  }
+
+  .gerenciarcanteiro-content {
+    padding: var(--espacamento-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .gerenciarcanteiro-nav-btn {
+    flex: 1 1 100%;
+  }
+}

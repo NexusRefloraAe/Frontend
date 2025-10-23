@@ -1,0 +1,26 @@
+/* src/pages/GerenciarCanteiros/CadastrarCanteiro/CadastrarCanteiro.css */
+.pagina-canteiro {
+  width: 100%;
+  padding: 0 var(--espacamento-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacamento-lg);
+}
+
+.pagina-canteiro__mensagem {
+  text-align: center;
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-fonte-md);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Estilos opcionais para ajustar o título do FormGeral */
+.form-geral__titulo {
+  text-align: center;
+  font-size: var(--tamanho-fonte-lg);
+  color: var(--cor-texto-primario);
+  margin-bottom: var(--espacamento-md);
+}
+
+/* O restante do layout (grid, botões, inputs) vem do FormGeral.css */

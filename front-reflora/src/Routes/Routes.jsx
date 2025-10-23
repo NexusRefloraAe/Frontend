@@ -10,6 +10,7 @@ import RedefinirSenha from '../pages/RedefinirSenha/RedefinirSenha';
 
 import Layout from "../components/MenuLateral/Layout";
 import GerenciarSementesLayout from "../pages/GerenciarSementes/GerenciarSementesLayout";
+import GerenciarCanteirosLayout from "../pages/GerenciarCanteiros/GerenciarCanteirosLayout";
 
 import Configuracoes from '../pages/Configuracoes/Configuracoes';
 
@@ -19,6 +20,10 @@ import CadastrarTestes from "../pages/GerenciarSementes/CadastrarTestes/Cadastra
 import HistoricoPlantio from "../pages/GerenciarSementes/HistoricoPlantio/HistoricoPlantio"
 import HistoricoTestes from "../pages/GerenciarSementes/HistoricoTestes/HistoricoTestes"
 import GerarRelatorio from "../pages/GerenciarSementes/GerarRelatorio/GerarRelatorio";
+
+{/* Telas do Gerenciar Canteiros */}
+import CadastrarCanteiro from "../pages/GerenciarCanteiros/CadastrarCanteiro/CadastrarCanteiro";
+// import EditarCanteiro from "../pages/GerenciarCanteiros/EditarCanteiro/EditarCanteiro";
 
 const AppRoutes = () => {
   return (
@@ -35,52 +40,32 @@ const AppRoutes = () => {
           <Route path="/home" element={<Home />} />
           <Route path="/banco-sementes" element={<BancoSementes />} />
 
-
-          {/* Rotas com layout */}
+          {/* Rotas do Gerenciar Sementes */}
           <Route path="/gerenciar-sementes" element={<GerenciarSementesLayout />}>
-            {/* Conteúdo padrão quando acessa /gerenciar-sementes */}
             <Route index element={<CadastrarPlantio />} />
-
-            {/* Outras telas com conteúdo próprio */}
             <Route path="historico" element={<HistoricoPlantio />} />
             <Route path="cadastrar-teste" element={<CadastrarTestes />} />
             <Route path="historico-teste" element={<HistoricoTestes />} />
             <Route path="relatorio" element={<GerarRelatorio />} />
           </Route>
 
-          <Route path="/configuracoes" element={<Configuracoes />} >
-          
-          
-          
+          {/* Rotas do Gerenciar Canteiros - CORRIGIDO */}
+          <Route path="/gerenciar-canteiros" element={<GerenciarCanteirosLayout />}>
+            <Route index element={<CadastrarCanteiro />} />
+            <Route path="cadastrar-plantio" element={<div>Cadastrar Plantio Canteiro - Em Desenvolvimento</div>} />
+            <Route path="historico" element={<div>Histórico Canteiros - Em Desenvolvimento</div>} />
+            <Route path="inspecao" element={<div>Inspeção de Mudas - Em Desenvolvimento</div>} />
+            <Route path="distribuicao" element={<div>Distribuição de Mudas - Em Desenvolvimento</div>} />
+            <Route path="rastrear" element={<div>Rastrear Muda - Em Desenvolvimento</div>} />
+            <Route path="relatorio" element={<div>Gerar Relatório - Em Desenvolvimento</div>} />
+            {/* <Route path="editar/:id" element={<EditarCanteiro />} /> */}
           </Route>
 
+          <Route path="/configuracoes" element={<Configuracoes />} />
         </Route>
       </Routes>
-    </Router >
+    </Router>
   );
 };
 
 export default AppRoutes;
-/*import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
-
-
-
-
-import { BrowserRouter, Routes, Route } from "react-router-dom"; 
-
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} /> 
-        
-        
-        
-        
-      </Routes>
-    </BrowserRouter>  
-  </StrictMode>
-);    */
