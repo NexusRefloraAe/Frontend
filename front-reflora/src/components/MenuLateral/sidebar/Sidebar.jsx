@@ -29,7 +29,7 @@ const Sidebar = ({ active, fixed }) => {
         <SidebarItem Icon={FaTools} Text="Gestão de Insumos" />
         <SidebarItem Icon={FaChartBar} Text="Relatórios" />
         <SidebarItem Icon={FaCog} Text="Configuração" onClick={() => navigate("/configuracoes")} />
-        <SidebarItem Icon={FaSignOutAlt} Text="Sair" isLogout onClick={() => navigate("/")} />
+        <SidebarItem Icon={FaSignOutAlt} Text="Sair" isLogout onClick={() => navigate("/login")} />
       </div>
     </div>
   );

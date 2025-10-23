@@ -18,9 +18,6 @@ import HistoricoPlantio from "../pages/GerenciarSementes/HistoricoPlantio/Histor
 import HistoricoTestes from "../pages/GerenciarSementes/HistoricoTestes/HistoricoTestes";
 import GerarRelatorio from "../pages/GerenciarSementes/GerarRelatorio/GerarRelatorio";
 
-// NOTA: CadastrarCanteiro e outros não são mais importados aqui,
-// pois são usados DENTRO de GerenciarCanteirosLayout
-
 const AppRoutes = () => {
   return (
     <Router>

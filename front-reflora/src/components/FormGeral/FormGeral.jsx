@@ -5,17 +5,33 @@ import Button from '../Button/Button';
 import './FormGeral.css';
 
 const FormGeral = ({ 
-  title, 
+  title,
+  subtitle,
   fields = [], 
   actions = [], 
   onSubmit, 
-  useGrid = false 
+  useGrid = false,
+  loading = false,
+  className = '',
+  layout = 'default'
 }) => {
-  return (
-    <div className="form-geral">
-      {title && <h2 className="form-geral__titulo">{title}</h2>}
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (onSubmit && !loading) {
+      onSubmit(e);
+    }
+  };
 
-      <form onSubmit={onSubmit} className="form-geral__conteudo">
+  return (
+    <div className={`form-geral form-geral--${layout} ${className}`.trim()}>
+      {(title || subtitle) && (
+        <div className="form-geral__header">
+          {title && <h2 className="form-geral__titulo">{title}</h2>}
+          {subtitle && <p className="form-geral__subtitulo">{subtitle}</p>}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="form-geral__form">
         <div className={`form-geral__campos ${useGrid ? 'form-geral__campos--grid' : ''}`}>
           {fields.map((field, index) => (
             <div
@@ -33,9 +49,11 @@ const FormGeral = ({
                 onChange={field.onChange}
                 required={field.required}
                 readOnly={field.readOnly}
+                disabled={field.disabled || loading}
                 options={field.options}
                 icon={field.icon}
                 onIconClick={field.onIconClick}
+                error={field.error}
               />
             </div>
           ))}
@@ -50,6 +68,7 @@ const FormGeral = ({
                 variant={action.variant}
                 icon={action.icon}
                 onClick={action.onClick}
+                disabled={action.disabled || loading}
               >
                 {action.children}
               </Button>

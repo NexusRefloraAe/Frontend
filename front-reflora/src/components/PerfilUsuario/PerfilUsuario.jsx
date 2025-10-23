@@ -1,6 +1,6 @@
 // src/components/PerfilUsuario/PerfilUsuario.jsx
 import React, { useState } from 'react';
-import FormsGeral from '../FormGeral/FormGeral'; // ✅ novo componente
+import FormGeral from '../FormGeral/FormGeral';
 import Button from '../Button/Button';
 import perfilusuarioIcon from '../../assets/perfilusuario.svg';
 import botaoEditarIcon from '../../assets/botaoeditar.svg';
@@ -14,21 +14,34 @@ const PerfilUsuario = () => {
     nomeCompleto: 'Maria Silva',
     email: 'maria.silva@exemplo.com',
     telefone: '(00) 9 0000-0000',
-    dataNascimento: '1900-01-01',
+    dataNascimento: '1990-01-01',
     genero: 'Feminino',
     empresa: 'XXXXX',
     endereco: 'Rua X, Nº 00, Bairro, Cidade/Estado',
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (field) => (e) => {
-    setUserData((prev) => ({ ...prev, [field]: e.target.value }));
+    setUserData(prev => ({ ...prev, [field]: e.target.value }));
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    console.log('Dados salvos:', userData);
+    setIsLoading(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Dados salvos:', userData);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Erro ao salvar:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
     setIsEditing(false);
   };
 
@@ -39,10 +52,19 @@ const PerfilUsuario = () => {
   };
 
   const handleTrocarFoto = () => {
-    alert('Iniciando a importação de nova foto...');
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        console.log('Foto selecionada:', file.name);
+      }
+    };
+    input.click();
   };
 
-  // Configuração dos campos (igual antes)
+  // Configuração dos campos
   const fieldsConfig = [
     {
       label: 'Nome Completo',
@@ -67,10 +89,9 @@ const PerfilUsuario = () => {
       label: 'Telefone',
       name: 'telefone',
       type: 'tel',
-      placeholder: '(XX) XXXXX-XXXX',
+      placeholder: '(XX) 9 XXXX-XXXX',
       value: userData.telefone,
       onChange: handleChange('telefone'),
-      required: true,
       readOnly: !isEditing,
     },
     {
@@ -85,11 +106,16 @@ const PerfilUsuario = () => {
     {
       label: 'Gênero',
       name: 'genero',
-      type: 'text',
+      type: 'select',
       value: userData.genero,
       onChange: handleChange('genero'),
-      required: true,
       readOnly: !isEditing,
+      options: [
+        { value: 'Feminino', label: 'Feminino' },
+        { value: 'Masculino', label: 'Masculino' },
+        { value: 'Outro', label: 'Outro' },
+        { value: 'Prefiro não informar', label: 'Prefiro não informar' },
+      ],
     },
     {
       label: 'Empresa',
@@ -116,22 +142,24 @@ const PerfilUsuario = () => {
     ? [
         {
           type: 'button',
-          variant: 'action-secondary',
-          children: 'Cancelar Edição',
-          onClick: () => setIsEditing(false),
+          variant: 'secondary',
+          children: 'Cancelar',
+          onClick: handleCancel,
+          disabled: isLoading,
         },
         {
           type: 'submit',
           variant: 'primary',
-          children: 'Salvar Edição',
-          icon: botaoSalvarIcon,
+          children: isLoading ? 'Salvando...' : 'Salvar Alterações',
+          icon: isLoading ? null : botaoSalvarIcon,
+          disabled: isLoading,
         },
       ]
     : [
         {
           type: 'button',
-          variant: 'action-primary',
-          children: 'Editar Informações',
+          variant: 'primary',
+          children: 'Editar Perfil',
           onClick: () => setIsEditing(true),
           icon: botaoEditarIcon,
         },
@@ -144,32 +172,34 @@ const PerfilUsuario = () => {
         },
       ];
 
-  const sectionTitle = isEditing ? 'Editar Informações do Usuário' : 'Informações Pessoais do Usuário';
-  const titleClass = isEditing
-    ? 'configuracoes-profile-section__title--editing'
-    : 'configuracoes-profile-section__title';
-
   return (
-    <div className="secao-perfil-usuario">
-      <h2 className={titleClass}>{sectionTitle}</h2>
-
-      <div className="secao-perfil-usuario__avatar-area">
-        <div className="secao-perfil-usuario__avatar-img">
+    <div className="perfil-usuario">
+      <div className="perfil-usuario__avatar-section">
+        <div className="perfil-usuario__avatar">
           <img src={perfilusuarioIcon} alt="Avatar do Usuário" />
+          {isEditing && (
+            <div className="perfil-usuario__avatar-overlay">
+              <Button
+                variant="outline"
+                icon={importarfotoIcon}
+                onClick={handleTrocarFoto}
+                size="small"
+              >
+                Trocar Foto
+              </Button>
+            </div>
+          )}
         </div>
-        {isEditing && (
-          <Button variant="primary" icon={importarfotoIcon} onClick={handleTrocarFoto} className="botao-trocar-foto">
-            Trocar Foto
-          </Button>
-        )}
       </div>
 
-      {/* ✅ Substituído AuthForm por FormGeral */}
-      <FormsGeral
+      <FormGeral
+        title={isEditing ? 'Editar Perfil' : 'Gerencie suas informações pessoais'}
         fields={fieldsConfig}
         actions={actionsConfig}
         onSubmit={handleSave}
         useGrid={true}
+        loading={isLoading}
+        layout="wide"
       />
     </div>
   );
