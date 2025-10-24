@@ -12,21 +12,55 @@ const Input = ({
   icon, 
   onIconClick,
   options, 
-  readOnly = false
+  readOnly = false,
+  onIncrement, // <-- Prop nova
+  onDecrement, // <-- Prop nova
 }) => {
-  const isSelect = type === 'select';
   
+  const isSelect = type === 'select';
+  // Verifica se deve renderizar o campo de quantidade (stepper)
+  const isStepper = type === 'number' && onIncrement && onDecrement;
+
   return (
     <div className="input-component-wrapper">
       {label && <label htmlFor={name}>{label}</label>}
-      <div className="input-field-container">
-        {isSelect ? (
+      
+      {/* Aqui está a principal mudança:
+        Movemos o .input-field-container para dentro da lógica condicional,
+        pois o "stepper" precisa de um layout HTML totalmente diferente.
+      */}
+
+      {isStepper ? (
+        // --- CASO 1: É UM STEPPER (Ex: Quantidade) ---
+        <div className="input-stepper-layout">
+          <input
+            type="number"
+            id={name}
+            name={name}
+            value={value}
+            onChange={onChange}
+            required={required}
+            readOnly={readOnly}
+            className="input-field"
+            // Removemos as setas padrão do navegador (ver CSS)
+          />
+          <div className="stepper-controls">
+            {/* O type="button" é importante para não submeter o form */}
+            <button type="button" onClick={onDecrement}>-</button>
+            <button type="button" onClick={onIncrement}>+</button>
+          </div>
+        </div>
+
+      ) : isSelect ? (
+        // --- CASO 2: É UM SELECT (Dropdown) ---
+        <div className="input-field-container">
           <select
             id={name}
             name={name}
             value={value}
             onChange={onChange}
             required={required}
+            readOnly={readOnly}
             className="input-field"
           >
             {placeholder && (
@@ -40,7 +74,11 @@ const Input = ({
               </option>
             ))}
           </select>
-        ) : (
+        </div>
+
+      ) : (
+        // --- CASO 3: É UM INPUT NORMAL (Texto, Data, etc.) ---
+        <div className="input-field-container">
           <input
             type={type}
             id={name}
@@ -49,20 +87,21 @@ const Input = ({
             value={value}
             onChange={onChange}
             required={required}
+            readOnly={readOnly}
             className="input-field"
             style={{ paddingRight: icon ? '2.5rem' : 'var(--espacamento-sm)' }}
           />
-        )}
- 
-        {icon && !isSelect && (
-          <img
-            src={icon}
-            alt="Ícone do Input"
-            className="input-icon"
-            onClick={onIconClick}
-          />
-        )}
-      </div>
+          {/* O ícone só aparece se for um input normal (não-select e não-stepper) */}
+          {icon && (
+            <img
+              src={icon}
+              alt="Ícone do Input"
+              className="input-icon"
+              onClick={onIconClick}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 };

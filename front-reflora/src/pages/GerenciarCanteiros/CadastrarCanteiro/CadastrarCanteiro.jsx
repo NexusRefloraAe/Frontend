@@ -1,171 +1,142 @@
-// src/pages/GerenciarCanteiros/CadastrarCanteiro/CadastrarCanteiro.jsx
 import React, { useState } from 'react';
-import BotaoSubmenus from '../../../components/BotaoSubmenus/BotaoSubmenus';
-import FormGeral from '../../../components/FormsGeral/FormsGeral';
-import Button from '../../../components/Button/Button';
+import FormGeral from '../../../components/FormGeral/FormGeral';
+// 1. Importamos o Input, pois agora a página é responsável por ele
+import Input from '../../../components/Input/Input'; 
 import './CadastrarCanteiro.css';
 
-// Ícones (substitua pelos seus reais)
-import iconeSalvar from '../../../assets/botaosalvar.svg';
-import iconeCancelar from '../../../assets/botaoeditar.svg'; // ou um ícone de "voltar"
-
 const CadastrarCanteiro = () => {
-  // Submenus da seção "Gerenciar Canteiros"
-  const submenus = [
-    { id: 'cadastrar', label: 'Cadastrar Canteiro', icon: null },
-    { id: 'listar', label: 'Meus Canteiros', icon: null },
-    // Adicione mais abas se quiser depois
-  ];
-
-  const [activeTab, setActiveTab] = useState('cadastrar');
-
-  // Só renderiza o formulário na aba "cadastrar"
-  if (activeTab !== 'cadastrar') {
-    return (
-      <div className="pagina-canteiro">
-        <BotaoSubmenus
-          menus={submenus}
-          activeMenuId={activeTab}
-          onMenuClick={setActiveTab}
-        />
-        <div className="pagina-canteiro__mensagem">
-          <p>Selecione a aba "Cadastrar Canteiro" para adicionar um novo canteiro.</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Estado do formulário
   const [formData, setFormData] = useState({
-    nomeCanteiro: '',
-    localizacao: '',
-    tipoSolo: '',
-    area: '',
-    irrigacao: '',
-    culturas: '',
+    nome: '',
+    data: '',
+    quantidade: 1200, // <-- Mudei para number para o stepper funcionar
+    especie: '',
   });
 
-  const handleChange = (field) => (e) => {
-    setFormData((prev) => ({ ...prev, [field]: e.target.value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Canteiro cadastrado:', formData);
-    alert('Canteiro cadastrado com sucesso!');
-    // Aqui você pode limpar o formulário ou redirecionar
-  };
-
-  const handleCancel = () => {
-    if (window.confirm('Deseja cancelar o cadastro? As alterações não salvas serão perdidas.')) {
+  const handleCancel = (confirmar = true) => {
+    const resetForm = () => {
       setFormData({
-        nomeCanteiro: '',
-        localizacao: '',
-        tipoSolo: '',
-        area: '',
-        irrigacao: '',
-        culturas: '',
+        nome: '',
+        data: '',
+        quantidade: 1200, // <-- Também mudei aqui para number
+        especie: '',
       });
+    };
+
+    if (confirmar) {
+      if (window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
+        resetForm();
+      }
+    } else {
+      resetForm();
     }
   };
 
-  // Configuração dos campos
-  const fields = [
-    {
-      label: 'Nome do Canteiro',
-      name: 'nomeCanteiro',
-      type: 'text',
-      value: formData.nomeCanteiro,
-      onChange: handleChange('nomeCanteiro'),
-      required: true,
-    },
-    {
-      label: 'Localização (Endereço ou Coordenadas)',
-      name: 'localizacao',
-      type: 'text',
-      value: formData.localizacao,
-      onChange: handleChange('localizacao'),
-      required: true,
-      span: 2,
-    },
-    {
-      label: 'Tipo de Solo',
-      name: 'tipoSolo',
-      type: 'select',
-      value: formData.tipoSolo,
-      onChange: handleChange('tipoSolo'),
-      required: true,
-      options: [
-        { value: '', label: 'Selecione o tipo de solo' },
-        { value: 'arenoso', label: 'Arenoso' },
-        { value: 'argiloso', label: 'Argiloso' },
-        { value: 'humifero', label: 'Húmico' },
-        { value: 'calcario', label: 'Calcário' },
-      ],
-    },
-    {
-      label: 'Área (m²)',
-      name: 'area',
-      type: 'number',
-      value: formData.area,
-      onChange: handleChange('area'),
-      required: true,
-    },
-    {
-      label: 'Sistema de Irrigação',
-      name: 'irrigacao',
-      type: 'select',
-      value: formData.irrigacao,
-      onChange: handleChange('irrigacao'),
-      required: true,
-      options: [
-        { value: '', label: 'Selecione o sistema' },
-        { value: 'gotejamento', label: 'Gotejamento' },
-        { value: 'aspersao', label: 'Aspersão' },
-        { value: 'manual', label: 'Manual' },
-        { value: 'gravidade', label: 'Por gravidade' },
-      ],
-    },
-    {
-      label: 'Culturas Planejadas (separadas por vírgula)',
-      name: 'culturas',
-      type: 'text',
-      value: formData.culturas,
-      onChange: handleChange('culturas'),
-      span: 2,
-    },
-  ];
+  // 2. Ajustamos o handleChange para converter 'number' corretamente
+  const handleChange = (field) => (e) => {
+    // Se o tipo for 'number', garante que o valor seja salvo como número
+    const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
-  // Botões de ação
+  // 3. Criamos handlers específicos para o stepper de Quantidade
+  const handleQuantidadeInc = () => {
+    setFormData(prev => ({ ...prev, quantidade: prev.quantidade + 1 }));
+  };
+
+  const handleQuantidadeDec = () => {
+    // Evita números negativos
+    setFormData(prev => ({ ...prev, quantidade: prev.quantidade > 0 ? prev.quantidade - 1 : 0 }));
+  };
+
+
+  const handleSubmit = (e) => {
+    // e.preventDefault() já é chamado dentro do FormGeral
+    console.log('Dados do Canteiro:', formData);
+    alert('Cadastro salvo com sucesso!');
+    handleCancel(false); // Reseta o form sem perguntar
+  };
+
+  // 4. O array 'fields' foi REMOVIDO.
+
+  // O array 'actions' permanece o mesmo, pois o FormGeral ainda o aceita.
   const actions = [
     {
       type: 'button',
       variant: 'action-secondary',
       children: 'Cancelar',
-      onClick: handleCancel,
+      onClick: () => handleCancel(true),
     },
     {
       type: 'submit',
       variant: 'primary',
-      children: 'Salvar Canteiro',
-      icon: iconeSalvar,
+      children: 'Salvar Cadastro',
     },
   ];
 
   return (
     <div className="pagina-canteiro">
-      <BotaoSubmenus
-        menus={submenus}
-        activeMenuId={activeTab}
-        onMenuClick={setActiveTab}
-      />
       <FormGeral
-        title="Cadastrar Novo Canteiro"
-        fields={fields}
+        title="Cadastrar Canteiro"
+        // 5. A prop 'fields' foi removida
         actions={actions}
         onSubmit={handleSubmit}
-        useGrid={true}
-      />
+        useGrid={false} // Mantém os campos em coluna única
+      >
+        {/* 6. Os Inputs agora são passados como 'children' */}
+        
+        <Input
+          label="Nome"
+          name="nome"
+          type="select"
+          value={formData.nome}
+          onChange={handleChange('nome')}
+          required={true}
+          placeholder="Selecione o canteiro" // Placeholder é usado pelo Input
+          options={[
+            // Removemos a opção "Selecione..." daqui, pois o placeholder já faz isso
+            { value: 'canteiro_1', label: 'Canteiro 1' },
+            { value: 'canteiro_2', label: 'Canteiro 2' },
+            { value: 'canteiro_3', label: 'Canteiro 3' },
+          ]}
+        />
+        
+        <Input
+          label="Data"
+          name="data"
+          type="date"
+          value={formData.data}
+          onChange={handleChange('data')}
+          required={true}
+          placeholder="xx/xx/xxxx"
+        />
+        
+        <Input
+          label="Quantidade"
+          name="quantidade"
+          type="number"
+          value={formData.quantidade}
+          onChange={handleChange('quantidade')} // Para digitação manual
+          onIncrement={handleQuantidadeInc}   // Para o botão '+'
+          onDecrement={handleQuantidadeDec}   // Para o botão '-'
+          required={true}
+        />
+        
+        <Input
+          label="Espécie"
+          name="especie"
+          type="select"
+          value={formData.especie}
+          onChange={handleChange('especie')}
+          required={true}
+          placeholder="Selecione a espécie"
+          options={[
+            { value: 'eucalyptus_globulus', label: 'Eucalyptus globulus' },
+            { value: 'ipe_amarelo', label: 'Ipê Amarelo' },
+            { value: 'pau_brasil', label: 'Pau-Brasil' },
+          ]}
+        />
+
+      </FormGeral>
     </div>
   );
 };

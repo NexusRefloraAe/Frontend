@@ -9,12 +9,13 @@
 
   /* PALETA DE VERDES (Baseada na tela Reflora) */
   --cor-verde-primario: #2e7d32;      /* Verde principal */
-  --cor-verde-escuro: #1b5e20;        /* Verde escuro */
+  --cor-verde-escuro: #1c5a1a;        /* Verde escuro */
   --cor-verde-medio: #4caf50;         /* Verde médio */
   --cor-verde-claro: #81c784;         /* Verde claro */
   --cor-verde-muito-claro: #c8e6c9;   /* Verde muito claro */
   --cor-verde-background: #f1f8e9;    /* Verde de fundo suave */
-   --cor-verde-overlay: rgba(35, 208, 43, 0.3); /* Overlay verde suave */
+  --cor-verde-medio-escuro: #257024;        /* Verde medio escuro */
+  --cor-verde-overlay: rgba(35, 208, 43, 0.3); /* Overlay verde suave */
 
   /* CORES DE TEXTO */
   --cor-texto-primario: #0e0d0d;

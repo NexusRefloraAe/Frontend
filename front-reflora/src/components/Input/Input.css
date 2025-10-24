@@ -7,7 +7,7 @@
 .input-component-wrapper label {
   display: block;
   color: var(--cor-texto-secundario);
-  margin-bottom: var(--espacamento-xs);
+  margin-bottom: 0;
   font-size: var(--tamanho-fonte-xs);
   font-weight: 500;
 }
@@ -25,7 +25,7 @@
   border-radius: var(--raio-borda-xs);
   font-size: var(--tamanho-fonte-sm);
   box-sizing: border-box;
-  min-height: 2.5rem;
+  min-height: 0;
   font-family: inherit;
 }
 
@@ -86,4 +86,77 @@
 .input-field[disabled]:focus {
   outline: none;
   border-color: var(--cor-borda-cinza);
+}
+
+/* ---------------------------------------------
+--- NOVO: ESTILOS PARA O CAMPO DE QUANTIDADE (STEPPER) ---
+---------------------------------------------
+*/
+
+/* O container que junta o input e os botões */
+.input-stepper-layout {
+  display: flex;
+  width: 100%;
+  /* A borda fica no container, não no input */
+  border: 1px solid var(--cor-borda-cinza);
+  border-radius: var(--raio-borda-xs);
+  overflow: hidden; /* Para os cantos arredondados funcionarem */
+}
+
+/* O input dentro do stepper NÃO tem borda */
+.input-stepper-layout .input-field {
+  border: none;
+  flex-grow: 1; /* Ocupa o espaço disponível */
+  min-width: 0; /* Correção de bug do flexbox */
+}
+
+/* Quando o conjunto recebe foco, a borda do container muda */
+.input-stepper-layout:focus-within {
+  border-color: var(--cor-borda-foco);
+}
+
+/* Container dos botões + e - */
+.stepper-controls {
+  display: flex;
+  flex-direction: column; /* Botões empilhados verticalmente */
+  flex-shrink: 0; /* Não deixa os botões encolherem */
+  width: 2.5rem; /* Largura da coluna de botões */
+  border-left: 1px solid var(--cor-borda-cinza);
+}
+
+.stepper-controls button {
+  width: 100%;
+  height: 1.25rem; /* Metade da altura total do input */
+  flex-grow: 1; /* Divide o espaço igualmente */
+  background-color: var(--cor-fundo-cinza, #f4f4f4);
+  border: none;
+  color: var(--cor-texto-secundario);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background-color 0.2s ease;
+}
+
+/* Linha que divide os botões + e - */
+.stepper-controls button:first-child {
+  border-bottom: 1px solid var(--cor-borda-cinza);
+}
+
+.stepper-controls button:hover {
+  background-color: #e0e0e0; /* Cor de hover */
+}
+
+/* Esconde as setas padrão do input[type=number] */
+.input-stepper-layout .input-field::-webkit-inner-spin-button,
+.input-stepper-layout .input-field::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.input-stepper-layout .input-field {
+  -moz-appearance: textfield; /* Para Firefox */
+  appearance: none;
 }
