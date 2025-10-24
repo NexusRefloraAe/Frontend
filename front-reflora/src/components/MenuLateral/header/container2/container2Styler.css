@@ -1,0 +1,23 @@
+.Container2{
+  flex: 1; /* ocupar o restante da tela */
+  background-color: #ffffff;
+  height: 7vh;
+  box-shadow: 0 0 15px 0;
+  border-radius: 1px;
+  display: flex;
+  align-items: center;     /* verticalmente centralizado */
+  padding-left: 14px;      /* espaçamento interno à esquerda */
+  padding-top: 13px;
+
+  span {
+    font-weight: bold;
+    font-size: 28px;
+    
+  }
+    @media (max-width: 1024px) {
+    
+    span {
+      font-size: 24px;
+    }
+  }
+}

@@ -1,0 +1,162 @@
+.input-component-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-component-wrapper label {
+  display: block;
+  color: var(--cor-texto-secundario);
+  margin-bottom: 0;
+  font-size: var(--tamanho-fonte-xs);
+  font-weight: 500;
+}
+
+.input-field-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Estilo base para input e select */
+.input-field {
+  width: 100%;
+  padding: var(--espacamento-sm);
+  border: 1px solid var(--cor-borda-cinza);
+  border-radius: var(--raio-borda-xs);
+  font-size: var(--tamanho-fonte-sm);
+  box-sizing: border-box;
+  min-height: 0;
+  font-family: inherit;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--cor-borda-foco);
+}
+
+/* Estilos específicos para select */
+.input-field-container select.input-field {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--espacamento-sm) center;
+  background-size: 1rem;
+  padding-right: calc(var(--espacamento-sm) * 3);
+  cursor: pointer;
+}
+
+/* Remove estilos padrão do IE */
+.input-field-container select.input-field::-ms-expand {
+  display: none;
+}
+
+/* Estilo para as opções do select */
+.input-field-container select.input-field option {
+  padding: var(--espacamento-sm);
+  font-size: var(--tamanho-fonte-sm);
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  right: var(--espacamento-sm);
+  transform: translateY(-50%);
+  cursor: pointer;
+  width: 1.25rem; 
+  height: auto;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.input-icon:hover {
+  opacity: 1;
+}
+
+/* Estilo para inputs e selects somente leitura */
+.input-field[readonly],
+.input-field[disabled] {
+  background-color: var(--cor-fundo-cinza); /* Fundo cinza claro */
+  cursor: not-allowed; /* Cursor de "proibido" */
+  border-color: var(--cor-borda-cinza);
+  color: var(--cor-texto-secundario); /* Cor do texto mais suave */
+}
+
+/* Remove outline em foco para campos readonly */
+.input-field[readonly]:focus,
+.input-field[disabled]:focus {
+  outline: none;
+  border-color: var(--cor-borda-cinza);
+}
+
+/* ---------------------------------------------
+--- NOVO: ESTILOS PARA O CAMPO DE QUANTIDADE (STEPPER) ---
+---------------------------------------------
+*/
+
+/* O container que junta o input e os botões */
+.input-stepper-layout {
+  display: flex;
+  width: 100%;
+  /* A borda fica no container, não no input */
+  border: 1px solid var(--cor-borda-cinza);
+  border-radius: var(--raio-borda-xs);
+  overflow: hidden; /* Para os cantos arredondados funcionarem */
+}
+
+/* O input dentro do stepper NÃO tem borda */
+.input-stepper-layout .input-field {
+  border: none;
+  flex-grow: 1; /* Ocupa o espaço disponível */
+  min-width: 0; /* Correção de bug do flexbox */
+}
+
+/* Quando o conjunto recebe foco, a borda do container muda */
+.input-stepper-layout:focus-within {
+  border-color: var(--cor-borda-foco);
+}
+
+/* Container dos botões + e - */
+.stepper-controls {
+  display: flex;
+  flex-direction: column; /* Botões empilhados verticalmente */
+  flex-shrink: 0; /* Não deixa os botões encolherem */
+  width: 2.5rem; /* Largura da coluna de botões */
+  border-left: 1px solid var(--cor-borda-cinza);
+}
+
+.stepper-controls button {
+  width: 100%;
+  height: 1.25rem; /* Metade da altura total do input */
+  flex-grow: 1; /* Divide o espaço igualmente */
+  background-color: var(--cor-fundo-cinza, #f4f4f4);
+  border: none;
+  color: var(--cor-texto-secundario);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background-color 0.2s ease;
+}
+
+/* Linha que divide os botões + e - */
+.stepper-controls button:first-child {
+  border-bottom: 1px solid var(--cor-borda-cinza);
+}
+
+.stepper-controls button:hover {
+  background-color: #e0e0e0; /* Cor de hover */
+}
+
+/* Esconde as setas padrão do input[type=number] */
+.input-stepper-layout .input-field::-webkit-inner-spin-button,
+.input-stepper-layout .input-field::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.input-stepper-layout .input-field {
+  -moz-appearance: textfield; /* Para Firefox */
+  appearance: none;
+}
