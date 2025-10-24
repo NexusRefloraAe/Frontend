@@ -1,51 +1,26 @@
-/* src/components/AuthForm/AuthForm.css */
-.auth-form {
+/* Garante que o grid funcione corretamente */
+.auth-form__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espacamento-md);
   width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
 }
 
-.auth-form__error {
-  background-color: var(--cor-erro-fundo);
-  color: var(--cor-erro-texto);
-  padding: var(--espacamento-sm);
-  border-radius: var(--raio-borda-sm);
-  margin-top: var(--espacamento-md);
-  border: 1px solid var(--cor-erro-borda);
-  text-align: center;
+@media (min-width: 48rem) {
+  .auth-form__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--espacamento-md) var(--espacamento-lg);
+  }
+  
+  .auth-form__grid-item--span-2 {
+    grid-column: span 2;
+  }
 }
 
-.auth-form__footer {
-  text-align: center;
-  margin-top: var(--espacamento-lg);
-  padding: var(--espacamento-md);
-  border-top: 1px solid var(--cor-borda-cinza);
-}
-
-.auth-form__footer p {
-  margin: 0;
-  color: var(--cor-texto-secundario);
+/* Inputs com tamanho adequado */
+.auth-form input,
+.auth-form select {
+  width: 100%;
+  min-height: 44px;
   font-size: var(--tamanho-fonte-sm);
-}
-
-.auth-form__footer a {
-  color: var(--cor-verde-primario);
-  text-decoration: none;
-}
-
-.auth-form__footer a:hover {
-  text-decoration: underline;
-}
-
-/* Variantes específicas */
-.auth-form--login {
-  max-width: 400px;
-}
-
-.auth-form--register {
-  max-width: 600px;
-}
-
-.auth-form--forgot-password {
-  max-width: 400px;
 }
