@@ -1,4 +1,4 @@
-/* src/components/FormGeral/FormGeral.css */
+/* ESTE ARQUIVO NÃO PRECISA DE MUDANÇAS */
 .form-geral {
   width: 100%;
   background-color: var(--cor-fundo-branco, #ffffff);
@@ -6,7 +6,7 @@
   box-shadow: 0 2px 8px var(--cor-sombra-forte, rgba(0, 0, 0, 0.1));
   border: 1px solid var(--cor-borda-verde, #e0e0e0);
   margin: 0 auto;
-  overflow: hidden; /* Remove bordas internas */
+  overflow: hidden; 
 }
 
 .form-geral--wide {
@@ -38,7 +38,6 @@
 /* Form - Remove qualquer borda/padding duplicado */
 .form-geral__form {
   padding: 0 var(--espacamento-xl, 10px) var(--espacamento-xl, 10px);
-  /* Remove qualquer borda interna */
 }
 
 /* Campos */
@@ -70,7 +69,7 @@
 .form-geral__acoes .button {
   min-width: 140px; /* Largura mínima reduzida */
   max-width: 200px; /* Largura máxima */
-  width: auto;
+  width: center;
   flex: 0 1 auto; /* Não expande demais */
 }
 

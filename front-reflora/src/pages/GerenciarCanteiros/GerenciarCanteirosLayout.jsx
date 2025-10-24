@@ -4,7 +4,8 @@ import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus';
 import CadastrarCanteiro from './CadastrarCanteiro/CadastrarCanteiro';
 
 // (Vamos deixar os outros comentados por enquanto)
-// import EditarCanteiro from './EditarCanteiro/EditarCanteiro';
+import EditarCanteiro from './EditarCanteiro/EditarCanteiro';
+import CadastrarPlantioCanteiro from './CadastrarPlantioCanteiro/CadastrarPlantioCanteiro';
 // import HistoricoCanteiros from './HistoricoCanteiros/HistoricoCanteiros'; 
 // import DistribuicaoMudas from './DistribuicaoMudas';
 // import RelatorioCanteiro from './RelatorioCanteiro/RelatorioCanteiro';
@@ -12,11 +13,12 @@ import CadastrarCanteiro from './CadastrarCanteiro/CadastrarCanteiro';
 import './GerenciarCanteirosLayout.css';
 
 const GerenciarCanteirosLayout = () => {
-  // ✅ CORREÇÃO DO USESTATE: Deve ser 'cadastrar-canteiro'
+  // USESTATE: Deve ser 'cadastrar-canteiro'
   const [activeTab, setActiveTab] = useState('cadastrar-canteiro');
 
   const canteiroMenus = [
     { id: 'cadastrar-canteiro', label: 'Cadastrar Canteiro' },
+    { id: 'cadastrar-plantio-canteiro', label: 'Cadastrar Plantio Canteiro' },
     { id: 'editar-canteiro', label: 'Editar Canteiro' },
     { id: 'historico', label: 'Histórico Canteiros' },
     { id: 'distribuicao', label: 'Distribuição de Mudas' },
@@ -34,8 +36,9 @@ const GerenciarCanteirosLayout = () => {
       </div>
 
       <div className="gerenciarcanteiro-content">
-        {/* Agora esta condição é VERDADEIRA e ele vai tentar renderizar */}
         {activeTab === 'cadastrar-canteiro' && <CadastrarCanteiro />}
+        {activeTab === 'cadastrar-plantio-canteiro' && <CadastrarPlantioCanteiro />} 
+        {activeTab === 'editar-canteiro' && <EditarCanteiro />}
       </div>
     </div>
   );

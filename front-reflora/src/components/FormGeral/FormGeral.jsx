@@ -1,13 +1,14 @@
 // src/components/FormGeral/FormGeral.jsx
 import React from 'react';
-import Input from '../Input/Input';
+// Não precisamos mais importar 'Input' aqui
 import Button from '../Button/Button';
 import './FormGeral.css';
 
 const FormGeral = ({ 
   title,
   subtitle,
-  fields = [], 
+  children, // Adicionamos 'children'
+  // 'fields' foi removido
   actions = [], 
   onSubmit, 
   useGrid = false,
@@ -32,31 +33,9 @@ const FormGeral = ({
       )}
 
       <form onSubmit={handleSubmit} className="form-geral__form">
+        {/* O 'children' agora é renderizado aqui dentro */}
         <div className={`form-geral__campos ${useGrid ? 'form-geral__campos--grid' : ''}`}>
-          {fields.map((field, index) => (
-            <div
-              key={field.name || index}
-              className={`form-geral__campo ${
-                useGrid && field.span === 2 ? 'form-geral__campo--span-2' : ''
-              }`}
-            >
-              <Input
-                label={field.label}
-                type={field.type || 'text'}
-                name={field.name}
-                placeholder={field.placeholder}
-                value={field.value}
-                onChange={field.onChange}
-                required={field.required}
-                readOnly={field.readOnly}
-                disabled={field.disabled || loading}
-                options={field.options}
-                icon={field.icon}
-                onIconClick={field.onIconClick}
-                error={field.error}
-              />
-            </div>
-          ))}
+          {children}
         </div>
 
         {actions.length > 0 && (

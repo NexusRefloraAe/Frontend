@@ -1,7 +1,7 @@
-// src/components/PerfilUsuario/PerfilUsuario.jsx
 import React, { useState } from 'react';
 import FormGeral from '../FormGeral/FormGeral';
 import Button from '../Button/Button';
+import Input from '../Input/Input'; // <-- 1. Importamos o Input
 import perfilusuarioIcon from '../../assets/perfilusuario.svg';
 import botaoEditarIcon from '../../assets/botaoeditar.svg';
 import botaoSalvarIcon from '../../assets/botaosalvar.svg';
@@ -28,7 +28,7 @@ const PerfilUsuario = () => {
   };
 
   const handleSave = async (e) => {
-    e.preventDefault();
+    // e.preventDefault() já é tratado pelo FormGeral
     setIsLoading(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -43,6 +43,8 @@ const PerfilUsuario = () => {
 
   const handleCancel = () => {
     setIsEditing(false);
+    // TODO: Resetar os dados para o estado original (antes da edição)
+    // Por enquanto, apenas sai do modo de edição.
   };
 
   const handleDeleteAccount = () => {
@@ -64,80 +66,9 @@ const PerfilUsuario = () => {
     input.click();
   };
 
-  // Configuração dos campos
-  const fieldsConfig = [
-    {
-      label: 'Nome Completo',
-      name: 'nomeCompleto',
-      type: 'text',
-      value: userData.nomeCompleto,
-      onChange: handleChange('nomeCompleto'),
-      required: true,
-      readOnly: !isEditing,
-      span: 2,
-    },
-    {
-      label: 'E-mail',
-      name: 'email',
-      type: 'email',
-      value: userData.email,
-      onChange: handleChange('email'),
-      required: true,
-      readOnly: !isEditing,
-    },
-    {
-      label: 'Telefone',
-      name: 'telefone',
-      type: 'tel',
-      placeholder: '(XX) 9 XXXX-XXXX',
-      value: userData.telefone,
-      onChange: handleChange('telefone'),
-      readOnly: !isEditing,
-    },
-    {
-      label: 'Data de Nascimento',
-      name: 'dataNascimento',
-      type: 'date',
-      value: userData.dataNascimento,
-      onChange: handleChange('dataNascimento'),
-      required: true,
-      readOnly: !isEditing,
-    },
-    {
-      label: 'Gênero',
-      name: 'genero',
-      type: 'select',
-      value: userData.genero,
-      onChange: handleChange('genero'),
-      readOnly: !isEditing,
-      options: [
-        { value: 'Feminino', label: 'Feminino' },
-        { value: 'Masculino', label: 'Masculino' },
-        { value: 'Outro', label: 'Outro' },
-        { value: 'Prefiro não informar', label: 'Prefiro não informar' },
-      ],
-    },
-    {
-      label: 'Empresa',
-      name: 'empresa',
-      type: 'text',
-      value: userData.empresa,
-      onChange: handleChange('empresa'),
-      readOnly: !isEditing,
-      span: 2,
-    },
-    {
-      label: 'Endereço',
-      name: 'endereco',
-      type: 'text',
-      value: userData.endereco,
-      onChange: handleChange('endereco'),
-      required: true,
-      readOnly: !isEditing,
-      span: 2,
-    },
-  ];
+  // 2. O 'fieldsConfig' foi REMOVIDO daqui.
 
+  // A lógica de 'actions' está correta e permanece.
   const actionsConfig = isEditing
     ? [
         {
@@ -194,13 +125,107 @@ const PerfilUsuario = () => {
 
       <FormGeral
         title={isEditing ? 'Editar Perfil' : 'Gerencie suas informações pessoais'}
-        fields={fieldsConfig}
+        // 3. A prop 'fields' foi removida
         actions={actionsConfig}
         onSubmit={handleSave}
         useGrid={true}
-        loading={isLoading}
+        loading={isLoading} // O FormGeral usa 'loading' para desabilitar as 'actions'
         layout="wide"
-      />
+      >
+        {/* 4. Inputs renderizados como 'children' */}
+        
+        {/* Nome Completo (span: 2) */}
+        <div className="form-geral__campo--span-2">
+          <Input
+            label="Nome Completo"
+            name="nomeCompleto"
+            type="text"
+            value={userData.nomeCompleto}
+            onChange={handleChange('nomeCompleto')}
+            required={true}
+            readOnly={!isEditing || isLoading} // 5. Lógica de ReadOnly atualizada
+          />
+        </div>
+
+        {/* E-mail */}
+        <Input
+          label="E-mail"
+          name="email"
+          type="email"
+          value={userData.email}
+          onChange={handleChange('email')}
+          required={true}
+          readOnly={!isEditing || isLoading}
+        />
+
+        {/* Telefone */}
+        <Input
+          label="Telefone"
+          name="telefone"
+          type="tel"
+          placeholder="(XX) 9 XXXX-XXXX"
+          value={userData.telefone}
+          onChange={handleChange('telefone')}
+          readOnly={!isEditing || isLoading}
+        />
+
+        {/* Data de Nascimento */}
+        <Input
+          label="Data de Nascimento"
+          name="dataNascimento"
+          type="date"
+          value={userData.dataNascimento}
+          onChange={handleChange('dataNascimento')}
+          required={true}
+          readOnly={!isEditing || isLoading}
+        />
+
+        {/* Gênero */}
+        <Input
+          label="Gênero"
+          name="genero"
+          type="select"
+          value={userData.genero}
+          onChange={handleChange('genero')}
+          readOnly={!isEditing || isLoading}
+          // O seu Input.jsx (do prompt anterior) usa 'readOnly'
+          // Idealmente, ele deveria usar 'disabled' para <select>
+          // Mas estamos usando 'readOnly' para manter consistência
+          // com o seu código anterior.
+          options={[
+            { value: 'Feminino', label: 'Feminino' },
+            { value: 'Masculino', label: 'Masculino' },
+            { value: 'Outro', label: 'Outro' },
+            { value: 'Prefiro não informar', label: 'Prefiro não informar' },
+          ]}
+        />
+
+        {/* Empresa (span: 2) */}
+        <div className="form-geral__campo--span-2">
+          <Input
+            label="Empresa"
+            name="empresa"
+            type="text"
+            value={userData.empresa}
+            onChange={handleChange('empresa')}
+            readOnly={!isEditing || isLoading}
+          />
+        </div>
+
+        {/* Endereço (span: 2) */}
+        <div className="form-geral__campo--span-2">
+          <Input
+            label="Endereço"
+            name="endereco"
+            type="text"
+            value={userData.endereco}
+            onChange={handleChange('endereco')}
+            required={true}
+            readOnly={!isEditing || isLoading}
+          />
+        </div>
+        
+      </FormGeral>
     </div>
   );
 };
