@@ -11,12 +11,16 @@ import GerenciarSementesLayout from "../pages/GerenciarSementes/GerenciarSemente
 import GerenciarCanteirosLayout from "../pages/GerenciarCanteiros/GerenciarCanteirosLayout";
 import Configuracoes from '../pages/Configuracoes/Configuracoes';
 
+import DistribuicaoMudasLayout from "../pages/DistribuicaoMudas/DistribuicaoMudasLayout";
+
 // Telas do Gerenciar Sementes (mantidas, pois usam <Outlet />)
 import CadastrarPlantio from "../pages/GerenciarSementes/CadastrarPlantio/CadastrarPlantio";
 import CadastrarTestes from "../pages/GerenciarSementes/CadastrarTestes/CadastrarTestes";
 import HistoricoPlantio from "../pages/GerenciarSementes/HistoricoPlantio/HistoricoPlantio";
 import HistoricoTestes from "../pages/GerenciarSementes/HistoricoTestes/HistoricoTestes";
 import GerarRelatorio from "../pages/GerenciarSementes/GerarRelatorio/GerarRelatorio";
+
+import TermoCompromisso from "../pages/DistribuicaoMudas/TermoCompromisso/TermoCompromisso";
 
 const AppRoutes = () => {
   return (
@@ -33,7 +37,7 @@ const AppRoutes = () => {
           <Route path="/home" element={<Home />} />
           <Route path="/banco-sementes" element={<BancoSementes />} />
 
-          {/* Gerenciar Sementes: mantém navegação por rotas (usa <Outlet />) */}
+          {/* Gerenciar Sementes ... */}
           <Route path="/gerenciar-sementes" element={<GerenciarSementesLayout />}>
             <Route index element={<CadastrarPlantio />} />
             <Route path="historico" element={<HistoricoPlantio />} />
@@ -42,8 +46,14 @@ const AppRoutes = () => {
             <Route path="relatorio" element={<GerarRelatorio />} />
           </Route>
 
-          {/* Gerenciar Canteiros: AGORA É UMA ÚNICA PÁGINA (sem <Outlet />) */}
+          {/* Gerenciar Canteiros (agora não tem mais "Revisão") */}
           <Route path="/gerenciar-canteiros" element={<GerenciarCanteirosLayout />} />
+
+          {/* 2. ADICIONAR A ROTA PARA A NOVA PÁGINA DE DISTRIBUIÇÃO */}
+          <Route path="/distribuicao-mudas" element={<DistribuicaoMudasLayout />} />
+
+          {/* Esta rota permanece, pois é chamada pelo 'navigate' */}
+          <Route path="/termo-compromisso" element={<TermoCompromisso />} />
 
           <Route path="/configuracoes" element={<Configuracoes />} />
         </Route>
