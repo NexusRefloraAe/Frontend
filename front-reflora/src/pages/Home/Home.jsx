@@ -1,95 +1,78 @@
-import React from 'react'
-import '../Home/Home.css'
-import card1 from '../../assets/card1.png'
-import card2 from '../../assets/card2.png'
-import card3 from '../../assets/card3.svg'
-import info from '../../assets/info.svg'
-import zapoff from '../../assets/off.svg'
-
+import React from 'react';
+import './Home.css';
+import card1 from '../../assets/card1.png';
+import card2 from '../../assets/card2.png';
+import card3 from '../../assets/card3.svg';
+import info from '../../assets/info.svg';
+import zapoff from '../../assets/off.svg';
 
 function Home() {
   return (
-    <div className='container'>
-      <div className="navbar">
-        <h1>Reflora_aê</h1>
-        <div className="options">
-          <ul>
-            <li>Banco de Sementes</li>
-            <li>Gerenciador de Sementes</li>
-            <li>Gerenciar Canteiro</li>
-            <li>Vistorias</li>
-            <li>Gestão de Insumos</li>
-            <li>Relatórios</li>
-            <li>Configuração</li>
-            <li>Sair</li>
-          </ul>
+    <div className="home-container">
+      {/* Container para os Cards - SEM BORDA */}
+      <div className="content-painel">
+        <div className="title-content">
+          <h2>Painel</h2>
+        </div>
+
+        <div className="cards">
+          <div className="card">
+            <p>Total Sementes (kg)</p>
+            <h1>200.000</h1>
+            <img src={card1} alt="Sementes" />
+          </div>
+          <div className="card">
+            <p>Total Canteiros</p>
+            <h1>150</h1>
+            <img src={card2} alt="Canteiros" />
+          </div>
+          <div className="card">
+            <p>Total Mudas</p>
+            <h1>150.000</h1>
+            <img src={card3} alt="Mudas" />
+          </div>
         </div>
       </div>
-      <div className="content">
-        <div className="title-menu">
-          <h1>Menu Inicial</h1>
+
+      {/* Container para as Notificações - APENAS UM FUNDO */}
+      <div className="notifications-container">
+        <div className="title-notifications">
+          <h2>Notificações de Alerta</h2>
+          <span>Marcar como lido</span>
         </div>
-        <div className="content-menu">
-          <div className="title-content">
-            <h2>Painel</h2>
-          </div>
-          <div className="cards">
-            <div className="card1">
-              <p>Total Sementes (kg)</p>
-              <h1>200.000</h1>
-              <img src={card1} alt="card1" />
-            </div>
-            <div className="card2">
-              <p>Total Canteiros</p>
-              <h1>150</h1>
-              <img src={card2} alt="card2" />
-            </div>
-            <div className="card3">
-              <p>Total Mudas</p>
-              <h1>150.000</h1>
-              <img src={card3} alt="card3" />
+        <div className="cards-notification">
+          <div className="card-notification">
+            <img src={info} alt="Info" />
+            <div className="info-text">
+              <h4>É hora de agendar a vistoria do Canteiro 01.</h4>
+              <span>Lembre-se de voltar lá para garantir o bom desenvolvimento.</span>
             </div>
           </div>
-          <div className="notifications">
-            <div className="title-notifications">
-              <h2>Notificações de Alerta</h2>
-              <span>Marcar como lido</span>
+          <div className="card-notification">
+            <img src={zapoff} alt="Estoque baixo" />
+            <div className="info-text">
+              <h4>O nível de estoque está baixo</h4>
+              <span>Lembre-se de repor os insumos para continuar o plantio.</span>
             </div>
-            <div className="cards-notification">
-              <div className="card-notification">
-                <img src={info} alt="" />
-                <div className="info-text">
-                  <h4>É hora de agendar a vistoria do Canteiro 01.</h4>
-                  <span>Lembre-se de voltar lá para garantir o bom desenvolvimento.</span>
-                </div>
-              </div>
-              <div className="card-notification">
-                <img src={zapoff} alt="" />
-                <div className="info-text">
-                  <h4>O nivel de estoque está baixo</h4>
-                  <span>Lembre-se de voltar lá para garantir o bom desenvolvimento.</span>
-                </div>
-              </div>
-              <div className="card-notification">
-                <img src={info} alt="" />
-                <div className="info-text">
-                  <h4>xxxxxxxxxxxxx</h4>
-                  <span>Lembre-se de voltar lá para garantir o bom desenvolvimento.</span>
-                </div>
-              </div>
-              <div className="card-notification">
-                <img src={info} alt="" />
-                <div className="info-text">
-                  <h4>xxxxxxxxxxxxx</h4>
-                  <span>Lembre-se de voltar lá para garantir o bom desenvolvimento.</span>
-                </div>
-              </div>
+          </div>
+          <div className="card-notification">
+            <img src={info} alt="Info" />
+            <div className="info-text">
+              <h4>Alerta de irrigação pendente</h4>
+              <span>O sistema detectou que o canteiro 03 não foi regado hoje.</span>
+            </div>
+          </div>
+          <div className="card-notification">
+            <img src={info} alt="Info" />
+            <div className="info-text">
+              <h4>Relatório semanal disponível</h4>
+              <span>Confira o desempenho das mudas na última semana.</span>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Home
+export default Home;
