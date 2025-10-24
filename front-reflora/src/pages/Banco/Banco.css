@@ -75,6 +75,7 @@
         text-decoration: underline;
         font-size: 25px;
     }
+
     .infos-sementes-card table {
         width: 100%;
     }
@@ -168,6 +169,41 @@
     .footer-content ul li a {
         text-decoration: none;
         color: #66605F;
+    }
+
+    /* Adicione isso ao seu arquivo .css */
+
+    /* Estiliza os links da paginação */
+    .footer-content nav ul li a {
+        text-decoration: none;
+        color: #66605F;
+        font-weight: bold;
+        padding: 8px 12px;
+        border-radius: 5px;
+        display: block;
+        /* Garante que o padding funcione bem */
+    }
+
+    /* Estilo do link 'disabled' */
+    .footer-content nav ul li a.disabled {
+        color: #CCCCCC;
+        /* Cor cinza claro */
+        pointer-events: none;
+        /* Desabilita o clique */
+        cursor: default;
+    }
+
+    /* Estilo do link 'active' (você já deve ter) */
+    .footer-content nav ul li a.active {
+        background-color: #257024;
+        color: white;
+    }
+
+    /* Estilo do '...' (span não clicável) */
+    .footer-content nav ul li span {
+        padding: 8px 12px;
+        color: #66605F;
+        font-weight: bold;
     }
 
     .active span {

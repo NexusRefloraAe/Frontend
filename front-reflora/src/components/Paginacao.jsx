@@ -8,37 +8,38 @@ const gerarPaginasVisiveis = (paginaAtual, totalPaginas, siblings = 1) => {
         if (pagina > 1 && pagina < totalPaginas) {
             paginas.add(pagina);
         }
+    }
 
-        paginas.add(1);
-        paginas.add(totalPaginas);
+    paginas.add(1);
+    paginas.add(totalPaginas);
 
-        paginas.add(paginaAtual);
+    paginas.add(paginaAtual);
 
-        const paginasArray = Array.from(paginas).sort((a, b) => a - b);
-        const paginasComElipses = [];
+    const paginasArray = Array.from(paginas).sort((a, b) => a - b);
+    const paginasComElipses = [];
 
-        let ultimoAdicionado = 0;
-        for (const pagina of paginasArray) {
-            if (ultimoAdicionado != 0 && pagina - ultimoAdicionado > 1) {
-                paginasComElipses.push('...');
-            }
-            paginasComElipses.push(pagina);
-            ultimoAdicionado = pagina;
+    let ultimoAdicionado = 0;
+    for (const pagina of paginasArray) {
+        if (ultimoAdicionado != 0 && pagina - ultimoAdicionado > 1) {
+            paginasComElipses.push('...');
         }
+        paginasComElipses.push(pagina);
+        ultimoAdicionado = pagina;
+    }
 
-        if (totalPaginas <= 5) {
-            return Array.from({ length: totalPaginas }, (_, i) => i + 1);
-        }
+    if (totalPaginas <= 5) {
+        return Array.from({ length: totalPaginas }, (_, i) => i + 1);
+    }
 
-        return paginasComElipses;
-    };
+    return paginasComElipses;
+};
 
-    /**
-    * @param {object} props
-    * @param {number} props.paginaAtual - Página atualmente ativa
-    * @param {number} props.totalPaginas - Total de páginas disponíveis
-    * @param {function(number): void} props.onPaginaChange - Função chamada quando a página é clicada
-    */
+/**
+* @param {object} props
+* @param {number} props.paginaAtual - Página atualmente ativa
+* @param {number} props.totalPaginas - Total de páginas disponíveis
+* @param {function(number): void} props.onPaginaChange - Função chamada quando a página é clicada
+*/
 function Paginacao({ paginaAtual, totalPaginas, onPaginaChange }) {
     const paginas = gerarPaginasVisiveis(paginaAtual, totalPaginas);
 
@@ -66,6 +67,26 @@ function Paginacao({ paginaAtual, totalPaginas, onPaginaChange }) {
     if (totalPaginas <= 1) {
         return null;
     }
+
+    return (
+        <nav>
+            <ul>
+                <li><a href="#" onClick={handlePrevious} className={paginaAtual === 1 ? 'disabled' : ''}>Anterior</a></li>
+                {paginas.map((pagina, index) => (
+                    <li key={index}>
+                        {pagina === '...' ? (
+                            <span>...</span>
+                        ) : (
+                            <a href="#" onClick={(e) => handlePaginaClick(e, pagina)} className={paginaAtual === pagina ? 'active' : ''}>
+                                {pagina}
+                            </a>
+                        )}
+                    </li>
+                ))}
+                <li><a href="#" onClick={handleNext} className={paginaAtual === totalPaginas ? 'disabled' : ''}>Próxima</a></li>
+            </ul>
+        </nav>
+    );
 }
 
 export default Paginacao;

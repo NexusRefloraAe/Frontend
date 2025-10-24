@@ -1,4 +1,9 @@
 import { useState } from "react"
+import LinhaSemente from "./LinhaSemente"
+import Paginacao from "./Paginacao"
+import search from '../assets/search.svg'
+import arrows from '../assets/arrows-up-down.svg'
+import share from '../assets/Share.svg'
 
 function Listasementes({ sementes }) {
 
@@ -16,6 +21,10 @@ function Listasementes({ sementes }) {
     const sementesPaginaAtual = sementesFiltradas.slice(indicePrimeiroItem, indiceUltimoItem);
 
     const totalPaginas = Math.ceil(sementesFiltradas.length / itensPorPagina);
+
+    const handlePageChange = (novapagina) => {
+        setPaginaAtual(novapagina);
+    }
 
     return (
         <div>
@@ -47,18 +56,7 @@ function Listasementes({ sementes }) {
                     </table>
                 </div>
                 <div className="footer-content">
-                    <nav>
-                        <ul>
-                            <li><a href="#">Previous</a></li>
-                            <li><a href="#" className='active'><span>1</span></a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">...</a></li>
-                            <li><a href="#">67</a></li>
-                            <li><a href="#">68</a></li>
-                            <li><a href="#">Next</a></li>
-                        </ul>
-                    </nav>
+                    <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onPaginaChange={handlePageChange} />
                     <button>Exportar <img src={share} alt="" /></button>
                 </div>
             </section>
