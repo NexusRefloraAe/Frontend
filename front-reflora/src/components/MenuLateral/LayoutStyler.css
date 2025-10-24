@@ -1,0 +1,16 @@
+.main-container {
+  display: flex;     
+       /* menu e conteúdo lado a lado */
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column; /* cabeçalho em cima, conteúdo embaixo */
+  flex-grow: 1;           /* ocupa o espaço restante da tela */
+}
+
+.page-content {
+  flex-grow: 1;
+  overflow-y: auto;       /* adiciona rolagem se o conteúdo for grande */
+  padding: 20px;          /* espaçamento interno */
+}

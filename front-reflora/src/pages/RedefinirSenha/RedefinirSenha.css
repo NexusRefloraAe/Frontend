@@ -1,0 +1,249 @@
+.login-container {
+  display: flex;
+  width: 100vw;
+  height: var(--altura-minima-tela);
+  background-color: var(--cor-fundo-verde-suave);
+  overflow: hidden;
+}
+
+/*  Banner Desktop */
+.login-banner {
+  flex: 0 0 40%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background: var(--cor-fundo-verde-suave);
+  overflow: hidden;
+}
+
+/*  Banner Mobile  */
+.login-banner-mobile {
+  display: none;
+}
+
+/* Área do Formulário */
+.login-form-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  padding: var(--espacamento-xxl);
+  background-color: var(--cor-fundo-verde-suave);
+}
+
+.login-form {
+  width: 100%;
+  max-width: 24rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacamento-md);
+  border: 1px solid var(--cor-verde-medio);
+  border-radius: var(--raio-borda-lg);
+  padding: var(--espacamento-xl);
+  background: var(--cor-fundo-branco);
+  box-shadow: var(--sombra-media);
+}
+
+/*  Cabeçalho do Formulário */
+.login-form__header {
+  text-align: center;
+  margin-bottom: var(--espacamento-md);
+}
+
+.login-form__header h1 {
+  font-size: var(--tamanho-fonte-xxl);
+  font-weight: var(--peso-fonte-bold);
+  color: var(--cor-texto-primario);
+  margin-bottom: var(--espacamento-xs);
+}
+
+
+
+/*  Campos do Formulário  */
+.login-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacamento-md);
+}
+
+/* - Link Esqueci Senha - */
+.login-form__forgot-password {
+  text-align: right;
+  margin-top: var(--espacamento-xxs);
+}
+
+.login-form__forgot-password p {
+  font-size: var(--tamanho-fonte-xs);
+  color: var(--cor-texto-secundario);
+}
+
+.login-form__forgot-password a {
+  text-decoration: none;
+  color: var(--cor-verde-primario);
+  font-weight: var(--peso-fonte-medium);
+  transition: color var(--transicao-rapida);
+}
+
+.login-form__forgot-password a:hover {
+  color: var(--cor-verde-escuro);
+  text-decoration: underline;
+}
+
+/* Ações do Formulário */
+.login-form__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacamento-md);
+  margin-top: var(--espacamento-sm);
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  gap: var(--espacamento-sm);
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-fonte-xs);
+  margin: var(--espacamento-xs) 0;
+}
+
+.separator::before,
+.separator::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--cor-borda-cinza);
+}
+
+/*  Rodapé do Formulário  */
+.login-form__footer {
+  text-align: center;
+  margin-top: var(--espacamento-lg);
+  padding-top: var(--espacamento-md);
+  border-top: 1px solid var(--cor-borda-cinza);
+}
+
+.login-form__footer p {
+  font-size: var(--tamanho-fonte-xs);
+  color: var(--cor-texto-secundario);
+}
+
+.login-form__footer a {
+  text-decoration: none;
+  color: var(--cor-verde-primario);
+  font-weight: var(--peso-fonte-semibold);
+  transition: color var(--transicao-rapida);
+}
+
+.login-form__footer a:hover {
+  color: var(--cor-verde-escuro);
+  text-decoration: underline;
+}
+
+/* Estilos para Mobile */
+@media (max-width: 48rem) {
+  .login-container {
+    flex-direction: column;
+    height: auto;
+    min-height: var(--altura-minima-tela);
+    overflow: auto;
+  }
+
+  /* Esconde o banner desktop no mobile */
+  .login-banner {
+    display: none;
+  }
+
+  /* Mostra o banner mobile */
+  .login-banner-mobile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 12rem;
+    background: var(--cor-fundo-verde-suave);
+    overflow: hidden;
+  }
+
+  .login-form-wrapper {
+    padding: var(--espacamento-lg) var(--espacamento-md);
+    flex: 1;
+  }
+
+  .login-form {
+    border: 1px solid var(--cor-verde-claro);
+    padding: var(--espacamento-lg);
+    box-shadow: var(--sombra-suave);
+    max-width: 100%;
+  }
+
+  .login-form__header h1 {
+    font-size: var(--tamanho-fonte-xl);
+  }
+
+  .login-form__header p {
+    font-size: var(--tamanho-fonte-xs);
+  }
+}
+
+/* Ajustes para telas muito pequenas */
+@media (max-width: 22.5rem) {
+  .login-banner-mobile {
+    height: 8rem;
+  }
+
+  .login-form-wrapper {
+    padding: var(--espacamento-md) var(--espacamento-sm);
+  }
+
+  .login-form {
+    padding: var(--espacamento-md);
+  }
+
+  .login-form__header h1 {
+    font-size: var(--tamanho-fonte-lg);
+  }
+
+  .login-form__header p {
+    font-size: var(--tamanho-fonte-xxs);
+  }
+
+  .login-form__footer p {
+    font-size: var(--tamanho-fonte-xxs);
+  }
+}
+
+/* Para telas altas */
+@media (min-height: 56.25rem) {
+  .login-form {
+    max-width: 26rem;
+    padding: var(--espacamento-xxl);
+  }
+}
+
+/* Estados de foco para acessibilidade */
+.login-form__forgot-password a:focus,
+.login-form__footer a:focus {
+  outline: 2px solid var(--cor-verde-primario);
+  outline-offset: 2px;
+  border-radius: var(--raio-borda-xs);
+}
+
+/* Alto contraste */
+@media (prefers-contrast: high) {
+  .login-form {
+    border: 2px solid var(--cor-texto-secundario);
+  }
+  
+  .separator::before,
+  .separator::after {
+    background: var(--cor-texto-primario);
+  }
+}
+
+/* Redução de movimento */
+@media (prefers-reduced-motion: reduce) {
+  .login-form__forgot-password a,
+  .login-form__footer a {
+    transition: none;
+  }
+}
