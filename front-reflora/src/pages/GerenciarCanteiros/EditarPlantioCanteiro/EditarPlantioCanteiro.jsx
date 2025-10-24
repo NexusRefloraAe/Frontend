@@ -70,7 +70,7 @@ const EditarPlantioCanteiro = () => {
     {
       type: 'submit',
       variant: 'primary',
-      children: 'Salvar Cadastro',
+      children: 'Salvar Edição',
     },
   ];
 
