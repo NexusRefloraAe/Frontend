@@ -1,9 +1,9 @@
 import { useState } from "react"
 import LinhaSemente from "./LinhaSemente"
-import Paginacao from "./Paginacao"
-import search from '../assets/search.svg'
-import arrows from '../assets/arrows-up-down.svg'
-import share from '../assets/Share.svg'
+import Paginacao from "../Paginacao/Paginacao"
+import search from '../../assets/search.svg'
+import arrows from '../../assets/arrows-up-down.svg'
+import share from '../../assets/Share.svg'
 
 function Listasementes({ sementes }) {
 
