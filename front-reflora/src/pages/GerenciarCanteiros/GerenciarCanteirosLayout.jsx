@@ -6,6 +6,7 @@ import CadastrarCanteiro from './CadastrarCanteiro/CadastrarCanteiro';
 // (Vamos deixar os outros comentados por enquanto)
 import EditarCanteiro from './EditarCanteiro/EditarCanteiro';
 import CadastrarPlantioCanteiro from './CadastrarPlantioCanteiro/CadastrarPlantioCanteiro';
+import EditarPlantioCanteiro from './EditarPlantioCanteiro/EditarPlantioCanteiro';
 // import HistoricoCanteiros from './HistoricoCanteiros/HistoricoCanteiros'; 
 // import DistribuicaoMudas from './DistribuicaoMudas';
 // import RelatorioCanteiro from './RelatorioCanteiro/RelatorioCanteiro';
@@ -20,6 +21,7 @@ const GerenciarCanteirosLayout = () => {
     { id: 'cadastrar-canteiro', label: 'Cadastrar Canteiro' },
     { id: 'cadastrar-plantio-canteiro', label: 'Cadastrar Plantio Canteiro' },
     { id: 'editar-canteiro', label: 'Editar Canteiro' },
+    { id: 'editar-plantio-canteiro', label: 'Editar Plantio Canteiro' },
     { id: 'historico', label: 'Histórico Canteiros' },
     { id: 'distribuicao', label: 'Distribuição de Mudas' },
     { id: 'relatorio', label: 'Relatório Canteiro' },
@@ -39,6 +41,7 @@ const GerenciarCanteirosLayout = () => {
         {activeTab === 'cadastrar-canteiro' && <CadastrarCanteiro />}
         {activeTab === 'cadastrar-plantio-canteiro' && <CadastrarPlantioCanteiro />} 
         {activeTab === 'editar-canteiro' && <EditarCanteiro />}
+        {activeTab === 'editar-plantio-canteiro' && <EditarPlantioCanteiro />}
       </div>
     </div>
   );
