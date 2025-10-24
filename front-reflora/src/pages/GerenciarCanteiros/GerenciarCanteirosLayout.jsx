@@ -3,18 +3,17 @@ import React, { useState } from 'react';
 import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus';
 import CadastrarCanteiro from './CadastrarCanteiro/CadastrarCanteiro';
 
-// (Vamos deixar os outros comentados por enquanto)
 import EditarCanteiro from './EditarCanteiro/EditarCanteiro';
 import CadastrarPlantioCanteiro from './CadastrarPlantioCanteiro/CadastrarPlantioCanteiro';
 import EditarPlantioCanteiro from './EditarPlantioCanteiro/EditarPlantioCanteiro';
-// import HistoricoCanteiros from './HistoricoCanteiros/HistoricoCanteiros'; 
-// import DistribuicaoMudas from './DistribuicaoMudas';
-// import RelatorioCanteiro from './RelatorioCanteiro/RelatorioCanteiro';
+import CadastrarInspecaoMudas from './InspecaoMudas/CadastrarInspecaoMudas';
+
+// 1. REMOVER O IMPORT de RevisaoDistribuicao
+// import RevisaoDistribuicao from '../DistribuicaoMudas/RevisaoDistribuicao/RevisaoDistribuicao';
 
 import './GerenciarCanteirosLayout.css';
 
 const GerenciarCanteirosLayout = () => {
-  // USESTATE: Deve ser 'cadastrar-canteiro'
   const [activeTab, setActiveTab] = useState('cadastrar-canteiro');
 
   const canteiroMenus = [
@@ -22,9 +21,8 @@ const GerenciarCanteirosLayout = () => {
     { id: 'cadastrar-plantio-canteiro', label: 'Cadastrar Plantio Canteiro' },
     { id: 'editar-canteiro', label: 'Editar Canteiro' },
     { id: 'editar-plantio-canteiro', label: 'Editar Plantio Canteiro' },
-    { id: 'historico', label: 'Histórico Canteiros' },
-    { id: 'distribuicao', label: 'Distribuição de Mudas' },
-    { id: 'relatorio', label: 'Relatório Canteiro' },
+    { id: 'cadastrar-inspecao-mudas', label: 'Cadastrar Inspeção de Mudas' },
+
   ];
 
   return (
@@ -39,9 +37,11 @@ const GerenciarCanteirosLayout = () => {
 
       <div className="gerenciarcanteiro-content">
         {activeTab === 'cadastrar-canteiro' && <CadastrarCanteiro />}
-        {activeTab === 'cadastrar-plantio-canteiro' && <CadastrarPlantioCanteiro />} 
+        {activeTab === 'cadastrar-plantio-canteiro' && <CadastrarPlantioCanteiro />}
         {activeTab === 'editar-canteiro' && <EditarCanteiro />}
         {activeTab === 'editar-plantio-canteiro' && <EditarPlantioCanteiro />}
+        {activeTab === 'cadastrar-inspecao-mudas' && <CadastrarInspecaoMudas />}
+
       </div>
     </div>
   );
