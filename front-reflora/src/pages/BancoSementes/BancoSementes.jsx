@@ -21,7 +21,7 @@ function Banco() {
         { id: 'I009', dataCadastro: '19/10/2024', nome: 'Embaúba', qtdAtual: '1100 kg', qtdSaida: 0, finalidade: 'outro' },
         // ... adicione mais 10 ou 20 para testar a paginação
     ];
-
+     
     const [sementes, setSementes] = useState([]);
 
     useEffect(() => {
