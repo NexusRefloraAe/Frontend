@@ -14,11 +14,11 @@ const GerenciarSementesLayout = () => {
   const [activeTab, setActiveTab] = useState('Cadastrar-Plantio');
   
     const sementesMenus = [
-      { id: 'Cadastrar-Plantio', label: 'Cadastrar Plantio' },
-      { id: 'Histórico-Plantio', label: 'Histórico Plantio' },
-      { id: 'Cadastrar-Teste', label: 'Cadastrar Teste' },
-      { id: 'Histórico-Testes', label: 'Histórico Testes' },
-      { id: 'Gerar-Relatório', label: ' Gerar Relatório' },
+      { id: 'Cadastrar-Plantio', label: ' Cadastrar Plantio' },
+      { id: 'Histórico-Plantio', label: ' Histórico Plantio ' },
+      { id: 'Cadastrar-Teste', label: ' Cadastrar Teste ' },
+      { id: 'Histórico-Testes', label: ' Histórico Testes ' },
+      { id: 'Gerar-Relatório', label: ' Gerar Relatório ' },
   
     ];
   return (

@@ -8,10 +8,10 @@ const CadastrarTestes = () => {
   const [formData, setFormData] = useState({
     Lote: '',
     nomePopular: '',
-    QtdSementes: Number, // <-- Mudei para number para o stepper funcionar
+    QtdSementes: 0, // <-- Mudei para number para o stepper funcionar
     dataPlantio: '',
     TipoPlantio: '',
-    QtdPlantada: '',
+    QtdPlantada: 0,
     CamaraFria: '',
   });
 
@@ -20,10 +20,10 @@ const CadastrarTestes = () => {
       setFormData({
         Lote: '',
         NomePopular: '',
-        QtdSementes: Number, // <-- Também mudei aqui para number
+        QtdSementes: 0, // <-- Também mudei aqui para number
         DataPlantio: '',
         TipoPlantio: '',
-        QtdPlantada: '',
+        QtdPlantada: 0,
         CamaraFria: '',
       });
     };
@@ -43,6 +43,17 @@ const CadastrarTestes = () => {
     const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+   // 3. Criamos handlers específicos para o stepper de Quantidade
+  const handleIncrement = (field) => {
+    setFormData(prev => ({ ...prev, [field]: prev[field] + 1 }));
+  };
+
+  const handleDecrement = (field) => {
+    // Evita números negativos
+    setFormData(prev => ({ ...prev, [field]: prev[field] > 0 ? prev[field] - 1 : 0 }));
+  };
+
   const handleSubmit = (e) => {
     // e.preventDefault() já é chamado dentro do FormGeral
     console.log('Dados do Canteiro:', formData);
@@ -107,8 +118,10 @@ const CadastrarTestes = () => {
           type="number"
           value={formData.QtdSementes}
           onChange={handleChange('QtdSementes')} // Para digitação manual
+          onIncrement={()=> handleIncrement("QtdSementes")}   // Para o botão '+'
+          onDecrement={()=> handleDecrement("QtdSementes")}   // Para o botão '-'
           required={true}
-          placeholder="30"
+         
         />
 
 
@@ -118,8 +131,9 @@ const CadastrarTestes = () => {
           type="number"
           value={formData.QtdPlantada}
           onChange={handleChange('QtdPlantada')} // Para digitação manual
+          onIncrement={()=> handleIncrement("QtdPlantada")}   // Para o botão '+'
+          onDecrement={()=> handleDecrement("QtdPlantada")}   // Para o botão '-'
           required={true}
-          placeholder="30"
         />
 
         <Input

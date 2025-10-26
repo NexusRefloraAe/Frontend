@@ -7,11 +7,11 @@ const CadastrarPlantio = () => {
 
   const [formData, setFormData] = useState({
     Lote: '',
-    nomePopular: '',
-    QtdSementes: Number, // <-- Mudei para number para o stepper funcionar
-    dataPlantio: '',
+    NomePopular: '',
+    QtdSementes: 0, // <-- Mudei para number para o stepper funcionar
+    DataPlantio: '',
     TipoPlantio: '',
-    QtdPlantada: '',
+    QtdPlantada: 0,
     CamaraFria: '',
   });
 
@@ -20,10 +20,10 @@ const CadastrarPlantio = () => {
       setFormData({
         Lote: '',
         NomePopular: '',
-        QtdSementes: Number, // <-- Também mudei aqui para number
+        QtdSementes: 0, // <-- Também mudei aqui para number
         DataPlantio: '',
         TipoPlantio: '',
-        QtdPlantada: '',
+        QtdPlantada: 0,
         CamaraFria: '',
       });
     };
@@ -43,6 +43,17 @@ const CadastrarPlantio = () => {
     const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+  // 3. Criamos handlers específicos para o stepper de Quantidade
+  const handleIncrement = (field) => {
+    setFormData(prev => ({ ...prev, [field]: prev[field] + 1 }));
+  };
+
+  const handleDecrement = (field) => {
+    // Evita números negativos
+    setFormData(prev => ({ ...prev, [field]: prev[field] > 0 ? prev[field] - 1 : 0 }));
+  };
+
   const handleSubmit = (e) => {
     // e.preventDefault() já é chamado dentro do FormGeral
     console.log('Dados do Canteiro:', formData);
@@ -70,7 +81,7 @@ const CadastrarPlantio = () => {
         // 5. A prop 'fields' foi removida
         actions={actions}
         onSubmit={handleSubmit}
-        useGrid={true} // Mantém os campos em coluna única
+        useGrid={true}
       >
         {/* 6. Os Inputs agora são passados como 'children' */}
         <Input
@@ -107,8 +118,11 @@ const CadastrarPlantio = () => {
           type="number"
           value={formData.QtdSementes}
           onChange={handleChange('QtdSementes')} // Para digitação manual
+          onIncrement={()=> handleIncrement("QtdSementes")}   // Para o botão '+'
+          onDecrement={()=> handleDecrement("QtdSementes")}   // Para o botão '-'
           required={true}
-          placeholder="30"
+
+
         />
 
 
@@ -118,8 +132,11 @@ const CadastrarPlantio = () => {
           type="number"
           value={formData.QtdPlantada}
           onChange={handleChange('QtdPlantada')} // Para digitação manual
+          onIncrement={()=> handleIncrement("QtdPlantada")}   // Para o botão '+'
+          onDecrement={()=> handleDecrement("QtdPlantada")}   // Para o botão '-'
           required={true}
-          placeholder="30"
+
+
         />
 
         <Input
@@ -135,9 +152,9 @@ const CadastrarPlantio = () => {
             { value: 'Saquinho', label: 'Saquinho' },
             { value: 'Chão', label: 'Chão' },
           ]}
-        />      
+        />
       </FormGeral>
-      
+
     </div>
   );
 };
