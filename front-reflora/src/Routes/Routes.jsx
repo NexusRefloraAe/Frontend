@@ -38,13 +38,7 @@ const AppRoutes = () => {
           <Route path="/banco-sementes" element={<BancoSementes />} />
 
           {/* Gerenciar Sementes ... */}
-          <Route path="/gerenciar-sementes" element={<GerenciarSementesLayout />}>
-            <Route index element={<CadastrarPlantio />} />
-            <Route path="historico" element={<HistoricoPlantio />} />
-            <Route path="cadastrar-teste" element={<CadastrarTestes />} />
-            <Route path="historico-teste" element={<HistoricoTestes />} />
-            <Route path="relatorio" element={<GerarRelatorio />} />
-          </Route>
+          <Route path="/gerenciar-sementes" element={<GerenciarSementesLayout />}/>
 
           {/* Gerenciar Canteiros (agora não tem mais "Revisão") */}
           <Route path="/gerenciar-canteiros" element={<GerenciarCanteirosLayout />} />
