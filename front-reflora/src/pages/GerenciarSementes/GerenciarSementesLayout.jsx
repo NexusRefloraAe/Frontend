@@ -20,7 +20,7 @@ const GerenciarSementesLayout = () => {
       { id: 'Histórico-Testes', label: ' Histórico Testes ' },
       { id: 'Gerar-Relatório', label: ' Gerar Relatório ' },
   
-    ];
+    ];  
   return (
     <div className="gerenciarcanteiro-container">
       <div className="gerenciarcanteiro-nav">

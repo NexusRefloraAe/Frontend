@@ -124,7 +124,7 @@ const CadastrarPlantio = () => {
 
 
         />
-
+  
 
         <Input
           label="Qtd plantada (und)"

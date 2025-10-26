@@ -33,7 +33,7 @@ const CadastrarTestes = () => {
         resetForm();
       }
     } else {
-      resetForm();
+      resetForm();   
     }
   };
 
