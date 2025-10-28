@@ -11,16 +11,15 @@
 
 .image-upload-container {
   width: 100%;
-  /* Proporção 16:9 ou similar. Ajuste conforme o protótipo */
-  aspect-ratio: 16 / 10; 
-  background-color: #f0f0f0;
-  border: 2px dashed #ccc;
+  height: 150px;            /* <-- ADICIONE ESTA LINHA */
+  background-color: #F0F0F0;
+  border: 1px solid #E0E0E0;
   border-radius: 8px;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden; 
+  overflow: hidden;
   transition: border-color 0.2s;
 }
 

@@ -5,6 +5,7 @@ import cadastrar from '../../assets/cadastrar.png'
 import listar from '../../assets/listar.png'
 import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus'
 import bell from '../../assets/bell.svg'
+import FormularioSemente from '../../components/FormularioSemente/FormularioSemente'
 
 const DADOS_SEMENTES_MOCK = [
     { id: 'A001', dataCadastro: '10/10/2024', nome: 'Ipê-amarelo', qtdAtual: '2000 kg', qtdSaida: 200, finalidade: 'germinacao' },
@@ -52,7 +53,7 @@ function Banco() {
                     {abaAtiva === 'listar' ? (
                         <ListaSementes sementes={sementes} />
                     ) : (
-                        <FormularioCadastro />
+                        <FormularioSemente />
                     )}
                 </main>
             </div>

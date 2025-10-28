@@ -1,0 +1,160 @@
+
+.form-geral {
+  width: 100%;
+  background-color: var(--cor-fundo-branco, #ffffff);
+  border-radius: var(--raio-borda-lg, 10px);
+  box-shadow: 0 2px 8px var(--cor-sombra-forte, rgba(0, 0, 0, 0.1));
+  border: 1px solid var(--cor-borda-verde, #e0e0e0);
+  margin: 0 auto;
+  overflow: hidden; 
+}
+
+.form-geral--wide {
+  max-width: 700px;
+}
+
+.form-geral--compact {
+  max-width: 500px;
+}
+
+/* Header - Remove borda inferior se não for necessário */
+.form-geral__header {
+  text-align: left;
+}
+
+.form-geral__titulo {
+  font-size: var(--tamanho-fonte-xl, 1.5rem);
+  color: var(--cor-texto-primario, #333);
+  font-weight: 600;
+  margin: 0 0 var(--espacamento-xs, 2px);
+}
+
+.form-geral__subtitulo {
+  font-size: var(--tamanho-fonte-sm, 0.875rem);
+  color: var(--cor-texto-secundario, #666);
+  margin: 0;
+}
+
+/* Form - Remove qualquer borda/padding duplicado */
+.form-geral__form {
+  padding: 0 var(--espacamento-xl, 10px) var(--espacamento-xl, 10px);
+}
+
+/* Campos */
+.form-geral__campos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacamento-md, 8px);
+}
+
+.form-geral__campos--grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espacamento-md, 16px);
+}
+
+.form-geral__campo--span-2 {
+  grid-column: span 2;
+}
+
+/* Ações - Botões mais compactos e sem borda superior */
+.form-geral__acoes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacamento-sm, 12px);
+  margin-top: var(--espacamento-lg, 24px);
+}
+
+/* Botões com largura controlada */
+.form-geral__acoes .button {
+  min-width: 140px; /* Largura mínima reduzida */
+  max-width: 200px; /* Largura máxima */
+  width: center;
+  flex: 0 1 auto; /* Não expande demais */
+}
+
+.form-geral__campos--grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Duas colunas de tamanho igual */
+    gap: 20px; /* Espaço entre os campos */
+}
+
+/* Classe para fazer um item ocupar as 2 colunas */
+.form-geral__campos--grid .form-span-2 {
+    grid-column: span 2;
+}
+
+/* Garante que os wrappers dos componentes ocupem a largura total */
+.form-geral__campos--grid .input-component-wrapper,
+.form-geral__campos--grid .image-upload-wrapper {
+    width: 100%;
+}
+
+.campo-linha-combinada {
+  display: flex;
+  align-items: flex-start; /* Alinha os campos pelo topo (bom por causa dos labels) */
+  gap: 16px; /* Espaço entre "Quantidade" e "Unidade" */
+}
+
+.campo-quantidade {
+  flex: 2; 
+}
+
+.campo-unidade {
+  flex: 1;
+}
+
+/* Responsividade */
+@media (min-width: 768px) {
+  .form-geral__header {
+    padding: var(--espacamento-xxl, 32px) var(--espacamento-xxl, 32px) var(--espacamento-lg, 20px);
+  }
+  
+  .form-geral__form {
+    padding: 0 var(--espacamento-xxl, 32px) var(--espacamento-xxl, 32px);
+  }
+  
+  .form-geral__campos--grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--espacamento-lg, 20px);
+  }
+  
+  .form-geral__acoes {
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: var(--espacamento-md, 16px);
+  }
+
+  /* Em telas maiores, botões podem ter largura automática */
+  .form-geral__acoes .button {
+    min-width: 120px;
+    max-width: 180px;
+  }
+}
+
+/* Variante sem header para formulários mais simples */
+.form-geral--sem-header .form-geral__form {
+  padding: var(--espacamento-xl, 24px);
+}
+
+.form-geral--sem-header .form-geral__campos {
+  padding-top: 0;
+}
+
+/* Fallback para variáveis CSS */
+:root {
+  --cor-fundo-branco: #ffffff;
+  --cor-borda-cinza: #e0e0e0;
+  --cor-texto-primario: #333333;
+  --cor-texto-secundario: #666666;
+  --cor-sombra-suave: rgba(0, 0, 0, 0.1);
+  --raio-borda-lg: 8px;
+  --espacamento-xs: 8px;
+  --espacamento-sm: 12px;
+  --espacamento-md: 16px;
+  --espacamento-lg: 20px;
+  --espacamento-xl: 24px;
+  --espacamento-xxl: 32px;
+  --tamanho-fonte-sm: 0.875rem;
+  --tamanho-fonte-xl: 1.5rem;
+}
