@@ -19,6 +19,9 @@ function Banco() {
         { id: 'G007', dataCadastro: '17/10/2024', nome: 'Copaíba', qtdAtual: '900 kg', qtdSaida: 0, finalidade: 'plantio' },
         { id: 'H008', dataCadastro: '18/10/2024', nome: 'Barbatimão', qtdAtual: '400 kg', qtdSaida: 0, finalidade: 'colheita' },
         { id: 'I009', dataCadastro: '19/10/2024', nome: 'Embaúba', qtdAtual: '1100 kg', qtdSaida: 0, finalidade: 'outro' },
+        { id: 'I019', dataCadastro: '19/10/2024', nome: 'Embaúba', qtdAtual: '1100 kg', qtdSaida: 0, finalidade: 'outro' },
+        
+        
         // ... adicione mais 10 ou 20 para testar a paginação
     ];
      
