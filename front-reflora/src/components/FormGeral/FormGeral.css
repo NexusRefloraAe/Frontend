@@ -1,3 +1,4 @@
+
 .form-geral {
   width: 100%;
   background-color: var(--cor-fundo-branco, #ffffff);
@@ -72,6 +73,36 @@
   flex: 0 1 auto; /* Não expande demais */
 }
 
+.form-geral__campos--grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Duas colunas de tamanho igual */
+    gap: 20px; /* Espaço entre os campos */
+}
+
+/* Classe para fazer um item ocupar as 2 colunas */
+.form-geral__campos--grid .form-span-2 {
+    grid-column: span 2;
+}
+
+/* Garante que os wrappers dos componentes ocupem a largura total */
+.form-geral__campos--grid .input-component-wrapper,
+.form-geral__campos--grid .image-upload-wrapper {
+    width: 100%;
+}
+
+.campo-linha-combinada {
+  display: flex;
+  align-items: flex-start; /* Alinha os campos pelo topo (bom por causa dos labels) */
+  gap: 16px; /* Espaço entre "Quantidade" e "Unidade" */
+}
+
+.campo-quantidade {
+  flex: 2; 
+}
+
+.campo-unidade {
+  flex: 1;
+}
 
 /* Responsividade */
 @media (min-width: 768px) {
