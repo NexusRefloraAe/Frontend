@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from '../Button/Button';
+import './BotaoSubmenus.css';
 
 const BotaoSubmenus = ({ menus, activeMenuId, onMenuClick }) => {
     return (

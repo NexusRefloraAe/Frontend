@@ -13,6 +13,10 @@ const ContainerWithTitle = () => {
     title = "Banco de Sementes";
   } else if (path.startsWith("/gerenciar-sementes")) {
     title = "Gerenciar Sementes";
+  } else if (path.startsWith("/gerenciar-canteiros")) {
+    title = "Gerenciar Canteiros";
+  } else if (path.startsWith("/distribuicao-mudas")) {
+    title = "Distribuir Mudas";
   } else if (path.startsWith("/configuracoes")) {
     title = "Configurações";
   } else {

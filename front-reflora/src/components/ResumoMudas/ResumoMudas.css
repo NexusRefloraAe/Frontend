@@ -1,0 +1,62 @@
+.resumo-mudas-box {
+  /* Fundo cinza-claro, como nas imagens */
+  background-color: #f4f4f4; 
+  
+  /* Borda cinza-clara padrão */
+  border: 1px solid #e0e0e0; 
+  
+  /* AQUI ESTÁ A MUDANÇA: 
+    Adiciona a barra verde à esquerda, como na primeira imagem.
+  */
+  border-left: 5px solid #28a745; /* 5px de espessura, cor verde */
+  
+  border-radius: 8px; /* Cantos arredondados */
+  padding: 16px;
+  margin-bottom: 1rem; 
+}
+
+.resumo-mudas-box h4 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: #333;
+  font-size: 1.1rem;
+  /* Garante que o título "Mudas Selecionadas" seja negrito */
+  font-weight: 700; 
+}
+
+.resumo-mudas-box ul {
+  list-style: none;
+  padding-left: 16px; /* Espaço para o '•' */
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.resumo-mudas-box ul li {
+  position: relative;
+  margin-bottom: 8px;
+  /* Cor mais escura para o texto da lista */
+  color: #333; 
+  /* Peso de fonte levemente mais forte */
+  font-weight: 500; 
+}
+
+/* O '•' verde */
+.resumo-mudas-box ul li::before {
+  content: '•';
+  color: #28a745; /* Cor verde */
+  font-weight: bold;
+  position: absolute;
+  left: -16px; /* Alinha o '•' no espaço do padding-left */
+  top: 0;
+}
+
+.resumo-mudas-box p {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.resumo-mudas-box p strong {
+  /* Garante que o "Total de mudas" seja negrito */
+  font-weight: 700; 
+}

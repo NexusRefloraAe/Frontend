@@ -31,6 +31,8 @@
         flex: 1;
         display: flex;
         flex-direction: column;
+        background-color: #E1E1E1;
+        height: 100%;
     }
 
     .bottons-banco ul {
@@ -71,7 +73,7 @@
         padding: 30px;
         margin: 0px 30px 30px 30px;
         background-color: white;
-        flex: 1;
+        height: 100%;
     }
 
     .header-content-semente {

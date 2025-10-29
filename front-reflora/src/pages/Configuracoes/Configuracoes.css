@@ -40,7 +40,6 @@
 
 .configuracoes-tabs .button--tab-inactive {
     background-color: var(--cor-verde-claro);
-    /* Cor de fundo verde clara */
     color: var(--cor-verde-primario);
     border: 1px solid var(--cor-verde-primario);
     box-shadow: none;
