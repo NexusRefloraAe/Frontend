@@ -1,0 +1,198 @@
+/* --- 1. O Fundo Escuro (Overlay) --- */
+.modal-overlay {
+  position: fixed; /* Cobre a tela inteira */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Preto semi-transparente */
+  z-index: 1000; /* Garante que fique na frente de tudo */
+  
+  /* Centraliza o card branco */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Permite rolar a tela se o modal for maior que a tela (mobile) */
+  overflow-y: auto;
+  padding: 20px; /* Um respiro para não colar nas bordas */
+}
+
+/* --- 2. O Card Branco (Conteúdo) --- */
+.modal-content {
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  
+  /* Tamanho */
+  width: 100%;
+  max-width: 1200px; /* Largura máxima, como no protótipo */
+  
+  /* Layout interno */
+  padding: 24px 30px;
+  position: relative; /* Necessário para o botão de fechar */
+}
+
+/* --- 3. O Botão de Fechar (X) --- */
+.modal-close-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+.modal-close-button img {
+  width: 24px;
+  height: 24px;
+  opacity: 0.7;
+}
+.modal-close-button:hover img {
+  opacity: 1;
+}
+
+/* --- 4. Título Principal --- */
+.modal-content h2 {
+  font-size: 28px;
+  color: #333;
+  margin-top: 10px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+/* --- 5. Seção de Detalhes (Superior) --- */
+.detalhe-container {
+  display: flex;
+  gap: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Coluna da Imagem */
+.detalhe-imagens {
+  flex: 1; /* Ocupa 1 parte do espaço */
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  /* Simula a colagem do protótipo (pode ser melhorado) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.detalhe-imagens img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Coluna de Informações */
+.detalhe-info {
+  flex: 2; /* Ocupa 2 partes (mais espaço) */
+  line-height: 1.6;
+}
+.detalhe-info p {
+  margin: 8px 0;
+  font-size: 16px;
+  color: #555;
+}
+.detalhe-info p strong {
+  color: #000;
+  margin-right: 8px;
+  min-width: 150px; /* Ajuda a alinhar os valores */
+  display: inline-block;
+}
+
+/* Coluna de Ações (Editar/Deletar) */
+.detalhe-acoes {
+  flex: 0 0 60px; /* Largura fixa */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.detalhe-acoes button {
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 50%; /* Botões redondos */
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.detalhe-acoes button:hover {
+  background-color: #e9e9e9;
+}
+.detalhe-acoes button img {
+  width: 24px;
+  height: 24px;
+}
+
+/* --- 6. Seção do Histórico (Inferior) --- */
+.historico-container {
+  margin-top: 24px;
+}
+.historico-container h3 {
+  font-size: 20px;
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* As duas colunas de tabela */
+.historico-tabelas {
+  display: flex;
+  gap: 24px;
+}
+.tabela-wrapper {
+  flex: 1; /* Cada tabela ocupa metade do espaço */
+}
+
+/* Os "títulos" verde e vermelho */
+.tabela-wrapper h4 {
+  padding: 12px 16px;
+  color: white;
+  font-size: 18px;
+  border-radius: 8px 8px 0 0; /* Arredondado só no topo */
+  margin: 0;
+}
+.tabela-entrada {
+  background-color: #257024; /* Verde */
+}
+.tabela-saida {
+  background-color: #D32F2F; /* Vermelho */
+}
+
+/* Estilo para as tabelas (que você vai adicionar) */
+.tabela-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+  border-top: none; /* A borda de cima é o <h4> */
+}
+.tabela-wrapper th,
+.tabela-wrapper td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+.tabela-wrapper th {
+  background-color: #f9f9f9;
+  font-weight: 600;
+}
+.tabela-wrapper tr:last-child td {
+  border-bottom: none;
+}
+
+/* --- 7. Rodapé do Modal --- */
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #eee;
+}

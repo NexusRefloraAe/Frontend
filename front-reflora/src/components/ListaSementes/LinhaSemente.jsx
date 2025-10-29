@@ -1,8 +1,13 @@
 import { useState } from "react";
 
-function LinhaSemente({ semente }) {
+function LinhaSemente({ semente, onVerDetalhes }) {
     const [quantidadeSaida, setQuantidadeSaida] = useState(semente.qtdSaida || 0);
     const [finalidade, setFinalidade] = useState(semente.finalidade);
+
+    const handleNomeClick = (e) => {
+        e.preventDefault();
+        onVerDetalhes(semente);
+    };
 
     const handleQuantidadeChange = (e) => {
         setQuantidadeSaida(e.target.value);
@@ -12,7 +17,7 @@ function LinhaSemente({ semente }) {
         <tr>
             <td>{semente.id}</td>
             <td>{semente.dataCadastro}</td>
-            <td><a href="">{semente.nome}</a></td>
+            <td><a href="#" onClick={handleNomeClick}>{semente.nome}</a></td>
             <td>{semente.qtdAtual}</td>
             <td>
                 <input
