@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import React, { useState,useEffect } from 'react'
 import ListaSementes from '../../components/ListaSementes/ListaSementes'
 import './BancoSementes.css'
 import cadastrar from '../../assets/cadastrar.png'
 import listar from '../../assets/listar.png'
 import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus'
-import bell from '../../assets/bell.svg'
 import FormularioSemente from '../../components/FormularioSemente/FormularioSemente'
 
 const DADOS_SEMENTES_MOCK = [
@@ -19,7 +17,6 @@ const DADOS_SEMENTES_MOCK = [
     { id: 'G007', dataCadastro: '17/10/2024', nome: 'Copaíba', qtdAtual: '900 kg', qtdSaida: 0, finalidade: 'plantio' },
     { id: 'H008', dataCadastro: '18/10/2024', nome: 'Barbatimão', qtdAtual: '400 kg', qtdSaida: 0, finalidade: 'colheita' },
     { id: 'I009', dataCadastro: '19/10/2024', nome: 'Embaúba', qtdAtual: '1100 kg', qtdSaida: 0, finalidade: 'outro' },
-    // ... adicione mais 10 ou 20 para testar a paginação
 ];
 
 const menusNavegacao = [
@@ -30,29 +27,9 @@ const menusNavegacao = [
 function Banco() {
 
     const [abaAtiva, setAbaAtiva] = useState('listar');
-import bell from '../../assets/bell.svg'
-
-function Banco() {
-
-    // Dados fictícios que simulam uma busca no banco de dados
-    const DADOS_SEMENTES_MOCK = [
-        { id: 'A001', dataCadastro: '10/10/2024', nome: 'Ipê-amarelo', qtdAtual: '2000 kg', qtdSaida: 200, finalidade: 'germinacao' },
-        { id: 'A002', dataCadastro: '11/10/2024', nome: 'Quaresmeira', qtdAtual: '1500 kg', qtdSaida: 0, finalidade: 'plantio' },
-        { id: 'B001', dataCadastro: '12/10/2024', nome: 'Pau-Brasil', qtdAtual: '500 kg', qtdSaida: 0, finalidade: 'germinacao' },
-        { id: 'C003', dataCadastro: '13/10/2024', nome: 'Manacá-da-serra', qtdAtual: '800 kg', qtdSaida: 0, finalidade: 'plantio' },
-        { id: 'D004', dataCadastro: '14/10/2024', nome: 'Jatobá', qtdAtual: '1200 kg', qtdSaida: 0, finalidade: 'colheita' },
-        { id: 'E005', dataCadastro: '15/10/2024', nome: 'Canafístula', qtdAtual: '600 kg', qtdSaida: 0, finalidade: 'outro' },
-        { id: 'F006', dataCadastro: '16/10/2024', nome: 'Aroeira', qtdAtual: '700 kg', qtdSaida: 0, finalidade: 'germinacao' },
-        { id: 'G007', dataCadastro: '17/10/2024', nome: 'Copaíba', qtdAtual: '900 kg', qtdSaida: 0, finalidade: 'plantio' },
-        { id: 'H008', dataCadastro: '18/10/2024', nome: 'Barbatimão', qtdAtual: '400 kg', qtdSaida: 0, finalidade: 'colheita' },
-        { id: 'I009', dataCadastro: '19/10/2024', nome: 'Embaúba', qtdAtual: '1100 kg', qtdSaida: 0, finalidade: 'outro' },
-        // ... adicione mais 10 ou 20 para testar a paginação
-    ];
-
     const [sementes, setSementes] = useState([]);
 
     useEffect(() => {
-        // Simula a busca dos dados
         setSementes(DADOS_SEMENTES_MOCK);
     }, []);
 
@@ -63,7 +40,7 @@ function Banco() {
     return (
         <div className="container-banco">
             <div className="content-banco">
-                <div>
+                <div className="banco-navegacao"> 
                     <BotaoSubmenus
                         menus={menusNavegacao}
                         activeMenuId={abaAtiva}
@@ -75,21 +52,10 @@ function Banco() {
                     ) : (
                         <FormularioSemente />
                     )}
-    return (
-        <div className="container-banco">
-            <div className="content-banco">
-                <nav className="bottons-banco">
-                    <ul>
-                        <li><button><img src={cadastrar} alt="Cadastrar Semente" />Cadastrar Semente</button></li>
-                        <li className='button-active'><button><img src={listar} alt="Listar Sementes" />Listar Sementes</button></li>
-                    </ul>
-                </nav>
-                <main>
-                    <ListaSementes sementes={sementes} />
                 </main>
             </div>
         </div>
     )
 }
 
-export default Banco
+export default Banco;
