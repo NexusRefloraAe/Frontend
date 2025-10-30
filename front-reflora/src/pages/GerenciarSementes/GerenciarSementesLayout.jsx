@@ -22,8 +22,8 @@ const GerenciarSementesLayout = () => {
   
     ];  
   return (
-    <div className="gerenciarcanteiro-container">
-      <div className="gerenciarcanteiro-nav">
+    <div className="gerenciarsementes-container">
+      <div className="gerenciarsementes-nav">
         <BotaoSubmenus
           menus={sementesMenus}
           activeMenuId={activeTab}
@@ -31,7 +31,7 @@ const GerenciarSementesLayout = () => {
         />
       </div>
 
-      <div className="gerenciarcanteiro-content">
+      <div className="gerenciarsementes-content">
         {activeTab === 'Cadastrar-Plantio' && <CadastrarPlantio />}
         {activeTab === 'Histórico-Plantio' && <HistoricoPlantio />}
         {activeTab === 'Cadastrar-Teste' && <CadastrarTestes />}

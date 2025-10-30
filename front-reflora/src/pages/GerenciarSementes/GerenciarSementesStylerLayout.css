@@ -16,8 +16,7 @@
   margin: 0 auto;
 }
 
-.gerenciarcanteiro-content {
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
+.gerenciarsementes-content {
+  background-color: #E1E1E1;
+  height: 100%;
 }
