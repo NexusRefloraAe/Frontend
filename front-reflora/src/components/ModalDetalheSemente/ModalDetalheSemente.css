@@ -25,8 +25,9 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   
   /* Tamanho */
-  width: 100%;
+  width: 70%;
   max-width: 1200px; /* Largura máxima, como no protótipo */
+  
   
   /* Layout interno */
   padding: 24px 30px;
@@ -57,17 +58,13 @@
   font-size: 28px;
   color: #333;
   margin-top: 10px;
-  margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #eee;
 }
 
 /* --- 5. Seção de Detalhes (Superior) --- */
 .detalhe-container {
   display: flex;
   gap: 24px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid #eee;
 }
 
 /* Coluna da Imagem */
@@ -93,14 +90,13 @@
   line-height: 1.6;
 }
 .detalhe-info p {
-  margin: 8px 0;
+  margin: 1px 0;
   font-size: 16px;
   color: #555;
 }
 .detalhe-info p strong {
   color: #000;
-  margin-right: 8px;
-  min-width: 150px; /* Ajuda a alinhar os valores */
+  margin-right: 1px;
   display: inline-block;
 }
 

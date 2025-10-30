@@ -44,13 +44,13 @@ function ModalDetalheSemente({ semente, onClose }) {
                         <img src={semente.imagem} alt={semente.nome} />
                     </div>
                     <div className="detalhe-info">
-                        <p><strong>Lote:</strong> {semente.id}</p>
-                        <p><strong>Data do Cadastro:</strong> {semente.dataCadastro}</p>
-                        <p><strong>Nome Popular:</strong> {semente.nome}</p>
-                        <p><strong>Nome Científico:</strong> {semente.nomeCientifico}</p>
-                        <p><strong>Família:</strong> {semente.familia}</p>
-                        <p><strong>Origem:</strong> {semente.origem}</p>
-                        <p><strong>Quantidade Atual:</strong> {semente.qtdAtual}</p>
+                        <p><strong>Lote:</strong>{semente.id}</p>
+                        <p><strong>Data do Cadastro:</strong>{semente.dataCadastro}</p>
+                        <p><strong>Nome Popular:</strong>{semente.nome}</p>
+                        <p><strong>Nome Científico:</strong>{semente.nomeCientifico}</p>
+                        <p><strong>Família:</strong>{semente.familia}</p>
+                        <p><strong>Origem:</strong>{semente.origem}</p>
+                        <p><strong>Quantidade Atual:</strong>{semente.qtdAtual}</p>
                         <p><strong>Local de armazenamento:</strong>Câmara fria</p>
                         <p><strong>Localização de Coleta:</strong>Araruna (-6.558, -35.742)</p>
                     </div>
