@@ -1,6 +1,6 @@
 // src/pages/HistoricoPlantio/HistoricoPlantio.jsx
 import React, { useState, useEffect } from "react";
-import TabelaComBuscaPaginacao from "../ListaGerenciarSementes/TabelaComBuscaPaginacao";
+import TabelaComBuscaPaginacao from "../../../components/ListaGerenciarSementes/TabelaComBuscaPaginacao";
 import "./HistoricoPlantioStyler.css";
 
 const HistoricoPlantio = () => {

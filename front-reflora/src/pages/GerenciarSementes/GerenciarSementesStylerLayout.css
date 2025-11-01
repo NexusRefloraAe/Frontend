@@ -8,15 +8,18 @@
   padding: var(--espacamento-lg);
   background-color: var(--cor-fundo-verde-suave);
   min-height: 100dvh;
+ 
 }
 
 .gerenciarcanteiro-nav {
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
+  
 }
 
 .gerenciarsementes-content {
   background-color: #E1E1E1;
   height: 100%;
+  
 }

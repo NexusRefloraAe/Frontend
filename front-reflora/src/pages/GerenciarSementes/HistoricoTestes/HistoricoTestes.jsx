@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import TabelaComBuscaPaginacao from "../ListaGerenciarSementes/TabelaComBuscaPaginacao";
+import TabelaComBuscaPaginacao from "../../../components/ListaGerenciarSementes/TabelaComBuscaPaginacao";
 import "./HistoricoTestesStyler.css";
 
 const HistoricoTestes = () => {
