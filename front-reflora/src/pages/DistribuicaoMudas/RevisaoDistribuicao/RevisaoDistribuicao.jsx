@@ -23,10 +23,10 @@ const RevisaoDistribuicao = () => {
         dataEntrega: '',
         responsavelRecebimento: 'THAIGO FARIAS',
         instituicao: 'SEMAS',
-        estadoSede: 'PB',          // Mantém o estado pré-selecionado
-        cidadeSede: '',            // Começa vazio
-        estadoDistribuicao: 'PB',  // Mantém o estado pré-selecionado
-        cidadeDistribuicao: '',    // Começa vazio
+        estadoSede: 'PB',          
+        cidadeSede: '',           
+        estadoDistribuicao: 'PB',  
+        cidadeDistribuicao: '',   
     });
 
     const [formData, setFormData] = useState(getInitialState());
@@ -41,7 +41,7 @@ const RevisaoDistribuicao = () => {
     const [loadingCidadesSede, setLoadingCidadesSede] = useState(false);
     const [loadingCidadesDistribuicao, setLoadingCidadesDistribuicao] = useState(false);
 
-    // Efeito 1: Buscar Estados (UFs)
+    // Buscar Estados (UFs)
     useEffect(() => {
         setLoadingEstados(true);
         fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome')
@@ -59,7 +59,7 @@ const RevisaoDistribuicao = () => {
             .finally(() => setLoadingEstados(false));
     }, []);
 
-    // Efeito 2: Buscar Cidades da Sede
+    // Buscar Cidades da Sede
     useEffect(() => {
         if (!formData.estadoSede) {
             setCidadesSede([]);
@@ -83,7 +83,7 @@ const RevisaoDistribuicao = () => {
 
     }, [formData.estadoSede]);
 
-    // Efeito 3: Buscar Cidades de Distribuição
+    // Buscar Cidades de Distribuição
     useEffect(() => {
         if (!formData.estadoDistribuicao) {
             setCidadesDistribuicao([]);
@@ -218,7 +218,6 @@ const RevisaoDistribuicao = () => {
                     options={estados}
                     loading={loadingEstados}
                     placeholder="Selecione o estado..."
-                    // required={true} REMOVIDO
                 />
 
                 <Input
