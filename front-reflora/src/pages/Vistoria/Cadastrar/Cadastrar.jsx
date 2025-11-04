@@ -1,49 +1,43 @@
-// src/pages/Vistorias/Cadastrar/Cadastrar.jsx
 import React, { useState } from 'react';
 import FormGeral from '../../../components/FormGeral/FormGeral';
 import Input from '../../../components/Input/Input';
 import './Cadastrar.css';
 
 const Cadastrar = () => {
+  const hoje = new Date().toISOString().split('T')[0];
+
   const [formData, setFormData] = useState({
     lote: 'A001',
+    dataVistoria: hoje,
     estadoSaude: 'Boa',
-    adubacao: false,
-    regacao: false,
+    tratosCulturais: 'Nenhum',
     estimativaMudas: 700,
     nomeResponsavel: 'Antônio Bezerra Santos',
-    observacoes: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+    observacoes: 'Lorem ipsum dolor sit amet...'
   });
 
   const handleCancel = (confirmar = true) => {
     const resetForm = () => {
       setFormData({
         lote: 'A001',
+        dataVistoria: hoje,
         estadoSaude: 'Boa',
-        adubacao: false,
-        regacao: false,
+        tratosCulturais: 'Nenhum',
         estimativaMudas: 700,
         nomeResponsavel: 'Antônio Bezerra Santos',
-        observacoes: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+        observacoes: 'Lorem ipsum...'
       });
     };
-
-    if (confirmar) {
-      if (window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
-        resetForm();
-      }
-    } else {
+    if (confirmar && window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
+      resetForm();
+    } else if (!confirmar) {
       resetForm();
     }
   };
 
   const handleChange = (field) => (e) => {
     const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleCheckboxChange = (field) => (e) => {
-    setFormData((prev) => ({ ...prev, [field]: e.target.checked }));
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleEstimativaInc = () => {
@@ -51,7 +45,7 @@ const Cadastrar = () => {
   };
 
   const handleEstimativaDec = () => {
-    setFormData(prev => ({ ...prev, estimativaMudas: prev.estimativaMudas > 0 ? prev.estimativaMudas - 1 : 0 }));
+    setFormData(prev => ({ ...prev, estimativaMudas: Math.max(0, prev.estimativaMudas - 1) }));
   };
 
   const handleSubmit = (e) => {
@@ -82,24 +76,28 @@ const Cadastrar = () => {
         onSubmit={handleSubmit}
         useGrid={false}
       >
-        {/* Seção Lote */}
-        <div className="form-section">
-          <h3 className="section-title">Lote</h3>
+        <div className="input-row">
           <Input
-            label=""
+            label="Lote"
             name="lote"
             type="text"
             value={formData.lote}
-            onChange={handleChange('lote')}
+            readOnly={true}
+            className="input-readonly"
+          />
+          <Input
+            label="Data da Vistoria"
+            name="dataVistoria"
+            type="date"
+            value={formData.dataVistoria}
+            onChange={handleChange('dataVistoria')}
             required={true}
           />
         </div>
 
-        {/* Seção Estado de Saúde */}
-        <div className="form-section">
-          <h3 className="section-title">Estado de Saúde</h3>
+        <div className="input-row">
           <Input
-            label=""
+            label="Estado de Saúde"
             name="estadoSaude"
             type="select"
             value={formData.estadoSaude}
@@ -113,39 +111,25 @@ const Cadastrar = () => {
               { value: 'Péssima', label: 'Péssima' }
             ]}
           />
-        </div>
-
-        {/* Seção Tratos Culturais */}
-        <div className="form-section">
-          <h3 className="section-title">Tratos Culturais</h3>
-          <div className="checkbox-group">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                name="adubacao"
-                checked={formData.adubacao}
-                onChange={handleCheckboxChange('adubacao')}
-              />
-              Adubação
-            </label>
-            
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                name="regacao"
-                checked={formData.regacao}
-                onChange={handleCheckboxChange('regacao')}
-              />
-              Regação
-            </label>
-          </div>
-        </div>
-
-        {/* Seção Estimativa de Mudas Prontas */}
-        <div className="form-section">
-          <h3 className="section-title">Estimativa de Mudas Prontas</h3>
           <Input
-            label=""
+            label="Tratos Culturais"
+            name="tratosCulturais"
+            type="select"
+            value={formData.tratosCulturais}
+            onChange={handleChange('tratosCulturais')}
+            required={true}
+            options={[
+              { value: 'Nenhum', label: 'Nenhum' },
+              { value: 'Adubação', label: 'Adubação' },
+              { value: 'Rega', label: 'Rega' },
+              { value: 'Adubação e Rega', label: 'Adubação e Rega' }
+            ]}
+          />
+        </div>
+
+        <div className="input-row">
+          <Input
+            label="Estimativa de Mudas"
             name="estimativaMudas"
             type="number"
             value={formData.estimativaMudas}
@@ -154,13 +138,8 @@ const Cadastrar = () => {
             onDecrement={handleEstimativaDec}
             required={true}
           />
-        </div>
-
-        {/* Seção Nome do Responsável */}
-        <div className="form-section">
-          <h3 className="section-title">Nome do Responsável</h3>
           <Input
-            label=""
+            label="Nome do Responsável"
             name="nomeResponsavel"
             type="text"
             value={formData.nomeResponsavel}
@@ -169,20 +148,15 @@ const Cadastrar = () => {
           />
         </div>
 
-        {/* Seção Observações */}
-        <div className="form-section">
-          <h3 className="section-title">Observações</h3>
-          <Input
-            label=""
-            name="observacoes"
-            type="textarea"
-            value={formData.observacoes}
-            onChange={handleChange('observacoes')}
-            required={false}
-            rows={4}
-          />
-        </div>
-
+        <Input
+          label="Observações"
+          name="observacoes"
+          type="textarea"
+          value={formData.observacoes}
+          onChange={handleChange('observacoes')}
+          required={false}
+          rows={4}
+        />
       </FormGeral>
     </div>
   );
