@@ -1,14 +1,11 @@
-// src/components/FormGeral/FormGeral.jsx
 import React from 'react';
-// Não precisamos mais importar 'Input' aqui
 import Button from '../Button/Button';
 import './FormGeral.css';
 
 const FormGeral = ({ 
   title,
   subtitle,
-  children, // Adicionamos 'children'
-  // 'fields' foi removido
+  children, 
   actions = [], 
   onSubmit, 
   useGrid = false,
