@@ -26,7 +26,7 @@ const Sidebar = ({ active, fixed }) => {
         <SidebarItem Icon={FaSeedling} Text="Gerenciar Sementes"  onClick={() => navigate("/gerenciar-sementes")}/>
         <SidebarItem Icon={GiFarmTractor} Text="Gerenciar Canteiros" onClick={() => navigate("/gerenciar-canteiros")}/>
         <SidebarItem Icon={FaClipboardList} Text="Distribuir Mudas" onClick={() => navigate("/distribuicao-mudas")}/>
-        <SidebarItem Icon={FaClipboardList} Text="Vistorias" />
+        <SidebarItem Icon={FaClipboardList} Text="Vistoria" onClick={() => navigate("/vistoria")} /> 
         <SidebarItem Icon={FaTools} Text="Gestão de Insumos" />
         <SidebarItem Icon={FaChartBar} Text="Relatórios" />
         <SidebarItem Icon={FaCog} Text="Configuração" onClick={() => navigate("/configuracoes")} />
