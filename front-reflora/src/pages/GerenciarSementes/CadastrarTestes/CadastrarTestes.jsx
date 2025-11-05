@@ -1,9 +1,5 @@
 import React from "react";
 
-import "./CadastrarTestesStyler.css";
-import FormGeral from "../../../components/FormGeral/FormGeral";
-import { useState } from "react";
-import Input from "../../../components/Input/Input";
 const CadastrarTestes = () => {
   const [formData, setFormData] = useState({
     Lote: '',

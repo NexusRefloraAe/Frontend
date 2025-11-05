@@ -1,12 +1,9 @@
-// src/pages/GerenciarCanteiros/DistribuicaoMudas/RevisaoDistribuicao.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FormGeral from '../../../components/FormGeral/FormGeral';
 import Input from '../../../components/Input/Input';
 import ResumoMudas from '../../../components/ResumoMudas/ResumoMudas';
-import './RevisaoDistribuicao.css';
 
-// ... (optionsResponsaveis e optionsInstituicoes sem alteração) ...
 const optionsResponsaveis = [
     { value: 'MARCELO', label: 'Marcelo' },
     { value: 'THAIGO FARIAS', label: 'Thaigo Farias' },
@@ -20,16 +17,15 @@ const optionsInstituicoes = [
 const RevisaoDistribuicao = () => {
     const navigate = useNavigate();
 
-    // Estado inicial ajustado (cidades começam vazias)
     const getInitialState = () => ({
         responsavelDistribuicao: 'MARCELO',
         dataEntrega: '',
         responsavelRecebimento: 'THAIGO FARIAS',
         instituicao: 'SEMAS',
-        estadoSede: 'PB',          // Mantém o estado pré-selecionado
-        cidadeSede: '',            // Começa vazio
-        estadoDistribuicao: 'PB',  // Mantém o estado pré-selecionado
-        cidadeDistribuicao: '',    // Começa vazio
+        estadoSede: 'PB',          
+        cidadeSede: '',           
+        estadoDistribuicao: 'PB',  
+        cidadeDistribuicao: '',   
     });
 
     const [formData, setFormData] = useState(getInitialState());
@@ -44,7 +40,7 @@ const RevisaoDistribuicao = () => {
     const [loadingCidadesSede, setLoadingCidadesSede] = useState(false);
     const [loadingCidadesDistribuicao, setLoadingCidadesDistribuicao] = useState(false);
 
-    // Efeito 1: Buscar Estados (UFs)
+    // Buscar Estados (UFs)
     useEffect(() => {
         setLoadingEstados(true);
         fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome')
@@ -62,7 +58,7 @@ const RevisaoDistribuicao = () => {
             .finally(() => setLoadingEstados(false));
     }, []);
 
-    // Efeito 2: Buscar Cidades da Sede
+    // Buscar Cidades da Sede
     useEffect(() => {
         if (!formData.estadoSede) {
             setCidadesSede([]);
@@ -86,7 +82,7 @@ const RevisaoDistribuicao = () => {
 
     }, [formData.estadoSede]);
 
-    // Efeito 3: Buscar Cidades de Distribuição
+    // Buscar Cidades de Distribuição
     useEffect(() => {
         if (!formData.estadoDistribuicao) {
             setCidadesDistribuicao([]);
@@ -140,11 +136,10 @@ const RevisaoDistribuicao = () => {
         }
     };
 
-    // Esta função AGORA SERÁ CHAMADA mesmo com campos vazios
     const handleSubmit = (e) => {
+        e.preventDefault();
         console.log('Botão "Gerar Termo" clicado. Navegando para /termo-compromisso');
         
-        // Verifica se a rota /termo-compromisso existe no seu projeto!
         navigate('/termo-compromisso', {
             state: {
                 dadosRevisao: formData,
@@ -156,7 +151,6 @@ const RevisaoDistribuicao = () => {
 
     const actions = [
         { type: 'button', variant: 'action-secondary', children: 'Cancelar', onClick: () => handleCancel(true) },
-        // O type: 'submit' ainda é o correto para o FormGeral
         { type: 'submit', variant: 'primary', children: 'Gerar Termo' },
     ];
 
@@ -175,8 +169,6 @@ const RevisaoDistribuicao = () => {
                 <div className="form-geral__campo--span-2">
                     <ResumoMudas mudas={mudasDoPedido} total={totalMudas} />
                 </div>
-
-                {/* --- Inputs --- */}
 
                 <Input
                     label="Responsável pela Distribuição"
@@ -225,7 +217,6 @@ const RevisaoDistribuicao = () => {
                     options={estados}
                     loading={loadingEstados}
                     placeholder="Selecione o estado..."
-                    // required={true} REMOVIDO
                 />
 
                 <Input

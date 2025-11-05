@@ -12,6 +12,10 @@ import GerenciarCanteirosLayout from "../pages/GerenciarCanteiros/GerenciarCante
 import Configuracoes from '../pages/Configuracoes/Configuracoes';
 
 import DistribuicaoMudasLayout from "../pages/DistribuicaoMudas/DistribuicaoMudasLayout";
+import TermoCompromisso from "../pages/DistribuicaoMudas/TermoCompromisso/TermoCompromisso";
+
+import VistoriaLayout from "../pages/Vistoria/VistoriaLayout";
+import InsumoLayout from "../pages/Insumo/InsumoLayout";
 
 // Telas do Gerenciar Sementes (mantidas, pois usam <Outlet />)
 import CadastrarPlantio from "../pages/GerenciarSementes/CadastrarPlantio/CadastrarPlantio";
@@ -20,7 +24,6 @@ import HistoricoPlantio from "../pages/GerenciarSementes/HistoricoPlantio/Histor
 import HistoricoTestes from "../pages/GerenciarSementes/HistoricoTestes/HistoricoTestes";
 import GerarRelatorio from "../pages/GerenciarSementes/GerarRelatorio/GerarRelatorio";
 
-import TermoCompromisso from "../pages/DistribuicaoMudas/TermoCompromisso/TermoCompromisso";
 
 const AppRoutes = () => {
   return (
@@ -40,14 +43,14 @@ const AppRoutes = () => {
           {/* Gerenciar Sementes ... */}
           <Route path="/gerenciar-sementes" element={<GerenciarSementesLayout />}/>
 
-          {/* Gerenciar Canteiros (agora não tem mais "Revisão") */}
+          {/* Gerenciar Canteiros  */}
           <Route path="/gerenciar-canteiros" element={<GerenciarCanteirosLayout />} />
-
-          {/* 2. ADICIONAR A ROTA PARA A NOVA PÁGINA DE DISTRIBUIÇÃO */}
           <Route path="/distribuicao-mudas" element={<DistribuicaoMudasLayout />} />
-
-          {/* Esta rota permanece, pois é chamada pelo 'navigate' */}
           <Route path="/termo-compromisso" element={<TermoCompromisso />} />
+
+          {/* Vistoria */}
+          <Route path="/vistoria" element={<VistoriaLayout />} />
+          <Route path="/insumo" element={<InsumoLayout />} />
 
           <Route path="/configuracoes" element={<Configuracoes />} />
         </Route>

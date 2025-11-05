@@ -8,20 +8,26 @@ const ContainerWithTitle = () => {
   let title = "";
 
   if (path === "/home") {
-    title = "Menu Inicial";
-  } else if (path.startsWith("/banco-sementes")) {
-    title = "Banco de Sementes";
-  } else if (path.startsWith("/gerenciar-sementes")) {
-    title = "Gerenciar Sementes";
-  } else if (path.startsWith("/gerenciar-canteiros")) {
-    title = "Gerenciar Canteiros";
-  } else if (path.startsWith("/distribuicao-mudas")) {
-    title = "Distribuir Mudas";
-  } else if (path.startsWith("/configuracoes")) {
-    title = "Configurações";
-  } else {
-    title = "";
-  }
+  title = "Menu Inicial";
+} else if (path.startsWith("/banco-sementes")) {
+  title = "Banco de Sementes";
+} else if (path.startsWith("/gerenciar-sementes")) {
+  title = "Gerenciar Sementes";
+} else if (path.startsWith("/gerenciar-canteiros")) {
+  title = "Gerenciar Canteiros";
+} else if (path.startsWith("/distribuicao-mudas")) {
+  title = "Distribuir Mudas";
+} else if (path === "/termo-compromisso") { 
+  title = "Distribuir Mudas";
+} else if (path.startsWith("/vistoria")) {
+  title = "Vistoria";
+} else if (path.startsWith("/insumo")) {
+  title = "Insumo";
+} else if (path.startsWith("/configuracoes")) {
+  title = "Configurações";
+} else {
+  title = "";
+}
 
   return <Container2 Text={title} />;
 };
