@@ -1,14 +1,17 @@
 import React from "react";
+import FormGeral from "../../../components/FormGeral/FormGeral";
+import { useState } from "react";
+import Input from "../../../components/Input/Input";
 
 const CadastrarTestes = () => {
   const [formData, setFormData] = useState({
     Lote: '',
-    nomePopular: '',
-    QtdSementes: 0, // <-- Mudei para number para o stepper funcionar
-    dataPlantio: '',
+    NomePopular: '',
+    DataPlantio: '',
     TipoPlantio: '',
-    QtdPlantada: 0,
     CamaraFria: '',
+    OmdSementes: 0,
+    OmdPlantada: 0,
   });
 
   const handleCancel = (confirmar = true) => {
@@ -16,11 +19,11 @@ const CadastrarTestes = () => {
       setFormData({
         Lote: '',
         NomePopular: '',
-        QtdSementes: 0, // <-- Também mudei aqui para number
         DataPlantio: '',
         TipoPlantio: '',
-        QtdPlantada: 0,
         CamaraFria: '',
+        OmdSementes: 0,
+        OmdPlantada: 0,
       });
     };
 
@@ -29,32 +32,27 @@ const CadastrarTestes = () => {
         resetForm();
       }
     } else {
-      resetForm();   
+      resetForm();
     }
   };
 
-  // 2. Ajustamos o handleChange para converter 'number' corretamente
   const handleChange = (field) => (e) => {
-    // Se o tipo for 'number', garante que o valor seja salvo como número
     const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-   // 3. Criamos handlers específicos para o stepper de Quantidade
   const handleIncrement = (field) => {
     setFormData(prev => ({ ...prev, [field]: prev[field] + 1 }));
   };
 
   const handleDecrement = (field) => {
-    // Evita números negativos
     setFormData(prev => ({ ...prev, [field]: prev[field] > 0 ? prev[field] - 1 : 0 }));
   };
 
   const handleSubmit = (e) => {
-    // e.preventDefault() já é chamado dentro do FormGeral
-    console.log('Dados do Canteiro:', formData);
+    console.log('Dados do Teste de Germinação:', formData);
     alert('Cadastro salvo com sucesso!');
-    handleCancel(false); // Reseta o form sem perguntar
+    handleCancel(false);
   };
 
   const actions = [
@@ -70,16 +68,15 @@ const CadastrarTestes = () => {
       children: 'Salvar Cadastro',
     },
   ];
+
   return (
-    <div className="pagina-sementes">
+    <div className="">
       <FormGeral
         title="Cadastro Teste de Germinação"
-        // 5. A prop 'fields' foi removida
         actions={actions}
         onSubmit={handleSubmit}
-        useGrid={true} // Mantém os campos em coluna única
+        useGrid={true}
       >
-        {/* 6. Os Inputs agora são passados como 'children' */}
         <Input
           label="Lote"
           name="Lote"
@@ -87,7 +84,7 @@ const CadastrarTestes = () => {
           value={formData.Lote}
           onChange={handleChange('Lote')}
           required={true}
-          placeholder="A001" // Placeholder é usado pelo Input
+          placeholder="A001"
         />
 
         <Input
@@ -99,37 +96,15 @@ const CadastrarTestes = () => {
           required={true}
           placeholder="Ipê"
         />
+
         <Input
-          label="Data"
+          label="Data do plantio"
           name="DataPlantio"
           type="date"
           value={formData.DataPlantio}
           onChange={handleChange('DataPlantio')}
           required={true}
-          placeholder="xx/xx/xxxx"
-        />
-        <Input
-          label="Qtd sementes (kg/g/und)"
-          name="QtdSementes"
-          type="number"
-          value={formData.QtdSementes}
-          onChange={handleChange('QtdSementes')} // Para digitação manual
-          onIncrement={()=> handleIncrement("QtdSementes")}   // Para o botão '+'
-          onDecrement={()=> handleDecrement("QtdSementes")}   // Para o botão '-'
-          required={true}
-         
-        />
-
-
-        <Input
-          label="Qtd plantada (und)"
-          name="QtdPlantada"
-          type="number"
-          value={formData.QtdPlantada}
-          onChange={handleChange('QtdPlantada')} // Para digitação manual
-          onIncrement={()=> handleIncrement("QtdPlantada")}   // Para o botão '+'
-          onDecrement={()=> handleDecrement("QtdPlantada")}   // Para o botão '-'
-          required={true}
+          placeholder="dd/mm/aaaa"
         />
 
         <Input
@@ -146,28 +121,43 @@ const CadastrarTestes = () => {
             { value: 'Chão', label: 'Chão' },
           ]}
         />
-        <div className="form-geral__campo--span-2">
-          <Input
-            label="Câmara fria"
-            name="CamaraFria"
-            type="select"
-            value={formData.CamaraFria}
-            onChange={handleChange('CamaraFria')}
-            required={true}
-            placeholder=""
-            options={[
-              { value: 'Sim', label: 'Sim' },
-              { value: 'Não', label: 'Não' }
-            ]}
-          />
 
-        </div>
+        <Input
+          label="Câmara fria"
+          name="CamaraFria"
+          type="select"
+          value={formData.CamaraFria}
+          onChange={handleChange('CamaraFria')}
+          required={true}
+          placeholder="Sim/não"
+          options={[
+            { value: 'Sim', label: 'Sim' },
+            { value: 'Não', label: 'Não' },
+          ]}
+        />
 
+        <Input
+          label="Qtd de sementes (kg/g/und)"
+          name="QtdSementes"
+          type="number"
+          value={formData.OmdSementes}
+          onChange={handleChange('QntdSementes')}
+          onIncrement={() => handleIncrement("QtdSementes")}
+          onDecrement={() => handleDecrement("QtdSementes")}
+          required={true}
+        />
 
-
-
+        <Input
+          label="Qtd plantada (und)"
+          name="QtdPlantada"
+          type="number"
+          value={formData.OmdPlantada}
+          onChange={handleChange('QtdPlantada')}
+          onIncrement={() => handleIncrement("QtdPlantada")}
+          onDecrement={() => handleDecrement("QtdPlantada")}
+          required={true}
+        />
       </FormGeral>
-
     </div>
   );
 };

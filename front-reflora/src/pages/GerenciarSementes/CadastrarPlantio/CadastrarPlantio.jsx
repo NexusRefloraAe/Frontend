@@ -1,5 +1,4 @@
 import React from "react";
-import "./CadastrarPlantioStyler.css";
 import FormGeral from "../../../components/FormGeral/FormGeral";
 import { useState } from "react";
 import Input from "../../../components/Input/Input";
