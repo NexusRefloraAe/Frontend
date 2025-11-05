@@ -15,6 +15,7 @@ import DistribuicaoMudasLayout from "../pages/DistribuicaoMudas/DistribuicaoMuda
 import TermoCompromisso from "../pages/DistribuicaoMudas/TermoCompromisso/TermoCompromisso";
 
 import VistoriaLayout from "../pages/Vistoria/VistoriaLayout";
+import InsumoLayout from "../pages/Insumo/InsumoLayout";
 
 // Telas do Gerenciar Sementes (mantidas, pois usam <Outlet />)
 import CadastrarPlantio from "../pages/GerenciarSementes/CadastrarPlantio/CadastrarPlantio";
@@ -55,6 +56,7 @@ const AppRoutes = () => {
 
           {/* Vistoria */}
           <Route path="/vistoria" element={<VistoriaLayout />} />
+          <Route path="/insumo" element={<InsumoLayout />} />
 
           <Route path="/configuracoes" element={<Configuracoes />} />
         </Route>

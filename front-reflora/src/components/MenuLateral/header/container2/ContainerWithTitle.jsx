@@ -17,10 +17,12 @@ const ContainerWithTitle = () => {
   title = "Gerenciar Canteiros";
 } else if (path.startsWith("/distribuicao-mudas")) {
   title = "Distribuir Mudas";
-} else if (path === "/termo-compromisso") { // ← linha adicionada
+} else if (path === "/termo-compromisso") { 
   title = "Distribuir Mudas";
 } else if (path.startsWith("/vistoria")) {
   title = "Vistoria";
+} else if (path.startsWith("/insumo")) {
+  title = "Insumo";
 } else if (path.startsWith("/configuracoes")) {
   title = "Configurações";
 } else {
