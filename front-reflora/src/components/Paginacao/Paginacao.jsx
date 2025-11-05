@@ -1,37 +1,42 @@
 import React from 'react'
 
 const gerarPaginasVisiveis = (paginaAtual, totalPaginas, siblings = 1) => {
-    const paginas = new Set();
+  // ✅ Caso simples: poucas páginas (não precisa de "...")
+  if (totalPaginas <= 5) {
+    return Array.from({ length: totalPaginas }, (_, i) => i + 1);
+  }
 
-    for (let i = -siblings; i <= siblings; i++) {
-        const pagina = paginaAtual + i;
-        if (pagina > 1 && pagina < totalPaginas) {
-            paginas.add(pagina);
-        }
+  const paginas = new Set();
+
+  // Adiciona a página atual e vizinhas
+  for (let i = -siblings; i <= siblings; i++) {
+    const pagina = paginaAtual + i;
+    if (pagina > 1 && pagina < totalPaginas) {
+      paginas.add(pagina);
     }
+  }
 
-    paginas.add(1);
-    paginas.add(totalPaginas);
+  // Garante que a primeira e última página sempre apareçam
+  paginas.add(1);
+  paginas.add(totalPaginas);
+  paginas.add(paginaAtual);
 
-    paginas.add(paginaAtual);
+  // Converte para array ordenado
+  const paginasArray = Array.from(paginas).sort((a, b) => a - b);
 
-    const paginasArray = Array.from(paginas).sort((a, b) => a - b);
-    const paginasComElipses = [];
+  // Adiciona "..." quando há saltos grandes
+  const paginasComElipses = [];
+  let ultimoAdicionado = 0;
 
-    let ultimoAdicionado = 0;
-    for (const pagina of paginasArray) {
-        if (ultimoAdicionado != 0 && pagina - ultimoAdicionado > 1) {
-            paginasComElipses.push('...');
-        }
-        paginasComElipses.push(pagina);
-        ultimoAdicionado = pagina;
+  for (const pagina of paginasArray) {
+    if (ultimoAdicionado !== 0 && pagina - ultimoAdicionado > 1) {
+      paginasComElipses.push("...");
     }
+    paginasComElipses.push(pagina);
+    ultimoAdicionado = pagina;
+  }
 
-    if (totalPaginas <= 5) {
-        return Array.from({ length: totalPaginas }, (_, i) => i + 1);
-    }
-
-    return paginasComElipses;
+  return paginasComElipses;
 };
 
 /**

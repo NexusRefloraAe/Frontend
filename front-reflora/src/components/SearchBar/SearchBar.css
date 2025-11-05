@@ -1,0 +1,51 @@
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 10px;
+  padding: 4px 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-bar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 8px;
+}
+
+.botao-buscar {
+  border: none;
+  background: #2d6a4f;
+  color: white;
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.botao-buscar:hover {
+  background: #1b4332;
+}
+
+/* 🔹 Loader */
+.loader {
+  border: 2px solid #fff;
+  border-top: 2px solid #1b4332;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

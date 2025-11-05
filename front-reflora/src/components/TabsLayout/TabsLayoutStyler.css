@@ -1,5 +1,4 @@
-/* src/components/GerenciarCanteirosLayout/GerenciarCanteirosLayout.css */
-.gerenciarcanteiro-container {
+.tabs-layout-container {
   width: 100%;
   max-width: 100%;
   display: flex;
@@ -10,14 +9,15 @@
   min-height: 100dvh;
 }
 
-.gerenciarcanteiro-nav {
+.tabs-layout-nav {
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
 }
 
-.gerenciarcanteiro-content {
+.tabs-layout-content {
   width: 100%;
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
 }
+

@@ -27,6 +27,7 @@
   color: var(--cor-texto-primario, #333);
   font-weight: 600;
   margin: 0 0 var(--espacamento-xs, 2px);
+  text-decoration: underline;
 }
 
 .form-geral__subtitulo {
