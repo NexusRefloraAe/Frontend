@@ -21,6 +21,16 @@
     }
 
     .content-banco {
+        background-color: white;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .content-banco > main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
         background-color: #E1E1E1;
         height: 100%;
     }
