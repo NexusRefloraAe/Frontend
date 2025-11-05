@@ -17,14 +17,6 @@ import TermoCompromisso from "../pages/DistribuicaoMudas/TermoCompromisso/TermoC
 import VistoriaLayout from "../pages/Vistoria/VistoriaLayout";
 import InsumoLayout from "../pages/Insumo/InsumoLayout";
 
-// Telas do Gerenciar Sementes (mantidas, pois usam <Outlet />)
-import CadastrarPlantio from "../pages/GerenciarSementes/CadastrarPlantio/CadastrarPlantio";
-import CadastrarTestes from "../pages/GerenciarSementes/CadastrarTestes/CadastrarTestes";
-import HistoricoPlantio from "../pages/GerenciarSementes/HistoricoPlantio/HistoricoPlantio";
-import HistoricoTestes from "../pages/GerenciarSementes/HistoricoTestes/HistoricoTestes";
-import GerarRelatorio from "../pages/GerenciarSementes/GerarRelatorio/GerarRelatorio";
-
-
 const AppRoutes = () => {
   return (
     <Router>
