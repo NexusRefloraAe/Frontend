@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import ListaSementes from '../../components/ListaSementes/ListaSementes'
+import { FaSeedling, FaList } from 'react-icons/fa'
 import './BancoSementes.css'
-import cadastrar from '../../assets/cadastrar.png'
-import listar from '../../assets/listar.png'
 import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus'
 import FormularioSemente from '../../components/FormularioSemente/FormularioSemente'
 
@@ -20,8 +19,8 @@ const DADOS_SEMENTES_MOCK = [
 ];
 
 const menusNavegacao = [
-    { id: 'cadastrar', label: 'Cadastrar Semente', icon: cadastrar },
-    { id: 'listar', label: 'Listar Sementes', icon: listar },
+    { id: 'cadastrar', label: 'Cadastrar Semente', icon: <FaSeedling />},
+    { id: 'listar', label: 'Listar Sementes', icon: <FaList /> },
 ];
 
 function Banco() {

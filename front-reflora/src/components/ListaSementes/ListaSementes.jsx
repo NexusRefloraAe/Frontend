@@ -1,6 +1,7 @@
 import { useState } from "react"
 import LinhaSemente from "./LinhaSemente"
 import Paginacao from "../Paginacao/Paginacao"
+import ModalDetalheSemente from "../ModalDetalheSemente/ModalDetalheSemente"
 import search from '../../assets/search.svg'
 import arrows from '../../assets/arrows-up-down.svg'
 import share from '../../assets/Share.svg'
@@ -9,6 +10,8 @@ function Listasementes({ sementes }) {
 
     const [termoBusca, setTermoBusca] = useState("");
     const [paginaAtual, setPaginaAtual] = useState(1);
+    const [sementeSelecionada, setSementeSelecionada] = useState(null);
+
     const itensPorPagina = 7;
 
     const sementesFiltradas = sementes.filter((semente) =>
@@ -21,6 +24,14 @@ function Listasementes({ sementes }) {
     const sementesPaginaAtual = sementesFiltradas.slice(indicePrimeiroItem, indiceUltimoItem);
 
     const totalPaginas = Math.ceil(sementesFiltradas.length / itensPorPagina);
+
+    const handleVerDetalhes = (semente) => {
+        setSementeSelecionada(semente);
+    };
+
+    const handleFecharDetalhes = () => {
+        setSementeSelecionada(null);
+    };
 
     const handlePageChange = (novapagina) => {
         setPaginaAtual(novapagina);
@@ -50,7 +61,7 @@ function Listasementes({ sementes }) {
                         </thead>
                         <tbody>
                             {sementesPaginaAtual.map((semente) => (
-                                <LinhaSemente key={semente.id} semente={semente} />
+                                <LinhaSemente key={semente.id} semente={semente} onVerDetalhes={handleVerDetalhes} />
                             ))}
                         </tbody>
                     </table>
@@ -60,6 +71,13 @@ function Listasementes({ sementes }) {
                     <button>Exportar <img src={share} alt="" /></button>
                 </div>
             </section>
+
+            {sementeSelecionada && (
+                <ModalDetalheSemente
+                    semente={sementeSelecionada}
+                    onClose={handleFecharDetalhes}
+                />
+            )}
         </div>
     )
 }

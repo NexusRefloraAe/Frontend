@@ -1,56 +1,51 @@
 import React from "react";
-import { Outlet, NavLink } from "react-router-dom";
-import "./GerenciarSementesStylerLayout.css";
+import { FaSeedling, FaEdit, FaLeaf, FaClipboardList, FaCheckCircle } from "react-icons/fa";
+import TabsLayout from "../../components/TabsLayout/TabsLayout";
+
+
+
+
+import CadastrarPlantio from "./CadastrarPlantio/CadastrarPlantio";
+import HistoricoPlantio from "./HistoricoPlantio/HistoricoPlantio";
+import CadastrarTestes from "./CadastrarTestes/CadastrarTestes";
+import HistoricoTestes from "./HistoricoTestes/HistoricoTestes";
+import GerarRelatorio from "./GerarRelatorio/GerarRelatorio";
 
 const GerenciarSementesLayout = () => {
-  return (
-    <div className="seed-page">
-      <nav className="seed-nav">
+   const tabs = [
+    {
+      id: "Cadastrar-Plantio",
+      label: "Cadastrar Plantio",
+      icon: <FaSeedling />,
+      page: CadastrarPlantio,
+    },
+    {
+      id: "Histórico-Plantio",
+      label: "Histórico Plantio",
+      icon: <FaLeaf />,
+      page: HistoricoPlantio,
+    },
+    {
+      id: "Cadastrar-Teste",
+      label: "Cadastrar Teste",
+      icon: <FaEdit />,
+      page: CadastrarTestes,
+    },
+    {
+      id: "Histórico-Testes",
+      label: "Histórico Testes",
+      icon: <FaClipboardList />,
+      page: HistoricoTestes,
+    },
+    {
+      id: "Gerar-Relatório",
+      label: "Gerar Relatório",
+      icon: <FaCheckCircle />,
+      page: GerarRelatorio,
+    },
+  ];
 
-        <NavLink
-          to="/gerenciar-sementes"
-          end
-          className={({ isActive }) => `nav-btn ${isActive ? "active" : ""}`}
-        >
-          Cadastrar Plantio
-        </NavLink>
-
-        <NavLink
-          to="/gerenciar-sementes/historico"
-          className={({ isActive }) => `nav-btn ${isActive ? "active" : ""}`}
-        >
-          Histórico Plantio
-        </NavLink>
-
-        <NavLink
-          to="/gerenciar-sementes/cadastrar-teste"
-          className={({ isActive }) => `nav-btn ${isActive ? "active" : ""}`}
-        >
-          Cadastrar Teste
-        </NavLink>
-
-        <NavLink
-          to="/gerenciar-sementes/historico-teste"
-          className={({ isActive }) => `nav-btn ${isActive ? "active" : ""}`}
-        >
-          Histórico Testes
-        </NavLink>
-
-        <NavLink
-          to="/gerenciar-sementes/relatorio"
-          className={({ isActive }) => `nav-btn ${isActive ? "active" : ""}`}
-        >
-          Gerar Relatório
-        </NavLink>
-
-      </nav>
-      
-
-      <div className="seed-content">
-        <Outlet />
-      </div>
-    </div>
-  );
+  return <TabsLayout tabs={tabs} defaultTabId="Cadastrar-Plantio" />;
 };
-
+  
 export default GerenciarSementesLayout;

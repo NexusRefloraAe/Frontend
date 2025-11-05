@@ -1,11 +1,11 @@
 import React from "react";
 
 const GerarRelatorio = () => {
-  
+
+
   return (
-    <div>
+    <div className="relatorio-container">
      
-      
     </div>
   );
 };
