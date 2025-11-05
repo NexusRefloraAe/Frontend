@@ -214,3 +214,15 @@
     border-radius: 5px;
     color: white;
 }
+.loading-text,
+.no-results {
+  text-align: center;
+  padding: 20px;
+  color: #555;
+  font-style: italic;
+}
+
+.no-results {
+  color: #b91c1c;
+  font-weight: 500;
+}

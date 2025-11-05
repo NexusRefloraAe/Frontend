@@ -1,7 +1,8 @@
 import React from "react";
-import { useState } from "react";
-import "./GerenciarSementesStylerLayout.css";
-import BotaoSubmenus from "../../components/BotaoSubmenus/BotaoSubmenus";
+import { FaSeedling, FaEdit, FaLeaf, FaClipboardList, FaCheckCircle } from "react-icons/fa";
+import TabsLayout from "../../components/TabsLayout/TabsLayout";
+
+
 
 
 import CadastrarPlantio from "./CadastrarPlantio/CadastrarPlantio";
@@ -11,36 +12,40 @@ import HistoricoTestes from "./HistoricoTestes/HistoricoTestes";
 import GerarRelatorio from "./GerarRelatorio/GerarRelatorio";
 
 const GerenciarSementesLayout = () => {
-  const [activeTab, setActiveTab] = useState('Cadastrar-Plantio');
-  
-    const sementesMenus = [
-      { id: 'Cadastrar-Plantio', label: ' Cadastrar Plantio' },
-      { id: 'Histórico-Plantio', label: ' Histórico Plantio ' },
-      { id: 'Cadastrar-Teste', label: ' Cadastrar Teste ' },
-      { id: 'Histórico-Testes', label: ' Histórico Testes ' },
-      { id: 'Gerar-Relatório', label: ' Gerar Relatório ' },
-  
-    ];  
-  return (
-    <div className="gerenciarsementes-container">
-      <div className="gerenciarsementes-nav">
-        <BotaoSubmenus
-          menus={sementesMenus}
-          activeMenuId={activeTab}
-          onMenuClick={setActiveTab}
-        />
-      </div>
+   const tabs = [
+    {
+      id: "Cadastrar-Plantio",
+      label: "Cadastrar Plantio",
+      icon: <FaSeedling />,
+      page: CadastrarPlantio,
+    },
+    {
+      id: "Histórico-Plantio",
+      label: "Histórico Plantio",
+      icon: <FaLeaf />,
+      page: HistoricoPlantio,
+    },
+    {
+      id: "Cadastrar-Teste",
+      label: "Cadastrar Teste",
+      icon: <FaEdit />,
+      page: CadastrarTestes,
+    },
+    {
+      id: "Histórico-Testes",
+      label: "Histórico Testes",
+      icon: <FaClipboardList />,
+      page: HistoricoTestes,
+    },
+    {
+      id: "Gerar-Relatório",
+      label: "Gerar Relatório",
+      icon: <FaCheckCircle />,
+      page: GerarRelatorio,
+    },
+  ];
 
-      <div className="gerenciarsementes-content">
-        {activeTab === 'Cadastrar-Plantio' && <CadastrarPlantio />}
-        {activeTab === 'Histórico-Plantio' && <HistoricoPlantio />}
-        {activeTab === 'Cadastrar-Teste' && <CadastrarTestes />}
-        {activeTab === 'Histórico-Testes' && <HistoricoTestes />}
-        {activeTab === 'Gerar-Relatório' && <GerarRelatorio/>}
-
-      </div>
-    </div>
-  );
+  return <TabsLayout tabs={tabs} defaultTabId="Cadastrar-Plantio" />;
 };
-
+  
 export default GerenciarSementesLayout;
