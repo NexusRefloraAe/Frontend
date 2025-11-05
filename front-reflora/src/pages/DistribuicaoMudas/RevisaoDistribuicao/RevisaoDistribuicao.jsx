@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import FormGeral from '../../../components/FormGeral/FormGeral';
 import Input from '../../../components/Input/Input';
 import ResumoMudas from '../../../components/ResumoMudas/ResumoMudas';
-import './RevisaoDistribuicao.css';
 
 const optionsResponsaveis = [
     { value: 'MARCELO', label: 'Marcelo' },

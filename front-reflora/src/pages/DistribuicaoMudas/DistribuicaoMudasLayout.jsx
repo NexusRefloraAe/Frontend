@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus';
 import RevisaoDistribuicao from './RevisaoDistribuicao/RevisaoDistribuicao';
-import './DistribuicaoMudasLayout.css';
 
 const DistribuicaoMudasLayout = () => {
     const [activeTab, setActiveTab] = useState('revisao-distribuicao');

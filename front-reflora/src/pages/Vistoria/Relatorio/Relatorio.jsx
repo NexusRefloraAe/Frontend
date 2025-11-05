@@ -1,6 +1,4 @@
-// src/pages/Vistorias/Relatorio/Relatorio.jsx
 import React from 'react';
-import './Relatorio.css';
 
 const Relatorio = () => {
   return (

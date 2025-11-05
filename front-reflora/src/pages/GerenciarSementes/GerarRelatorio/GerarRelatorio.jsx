@@ -1,7 +1,5 @@
 import React from "react";
 
-import "./GerarRelatorioStyler.css";
-
 const GerarRelatorio = () => {
   
   return (

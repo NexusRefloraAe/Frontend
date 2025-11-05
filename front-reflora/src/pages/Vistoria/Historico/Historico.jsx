@@ -1,6 +1,4 @@
-// src/pages/Vistorias/Historico/Historico.jsx
 import React from 'react';
-import './Historico.css';
 
 const Historico = () => {
   const historico = [

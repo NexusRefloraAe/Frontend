@@ -1,7 +1,5 @@
 import React from "react";
 
-import "./CadastrarTestesStyler.css";
-
 const CadastrarTestes = () => {
   
   return (

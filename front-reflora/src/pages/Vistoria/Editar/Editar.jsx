@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import FormGeral from '../../../components/FormGeral/FormGeral';
 import Input from '../../../components/Input/Input';
-import './Editar.css';
 
 const Editar = () => {
   const hoje = new Date().toISOString().split('T')[0];

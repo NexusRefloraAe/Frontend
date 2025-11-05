@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import FormGeral from '../../../components/FormGeral/FormGeral';
-// 1. Importar o Input
 import Input from '../../../components/Input/Input'; 
-import './EditarPlantioCanteiro.css';
 
 const EditarPlantioCanteiro = () => {
   const [formData, setFormData] = useState({
