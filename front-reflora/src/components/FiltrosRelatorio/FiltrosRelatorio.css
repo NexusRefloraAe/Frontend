@@ -1,8 +1,14 @@
+/* FiltrosRelatorio.css atualizado */
 .filtros-relatorio {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr auto;
   gap: 1rem;
   align-items: end;
+}
+
+/* Layout quando tem tipo de insumo */
+.filtros-relatorio.com-tipo-insumo {
+  grid-template-columns: 1fr 1fr 1fr 1fr auto;
 }
 
 .filtro-group {
@@ -31,6 +37,35 @@
   box-sizing: border-box;
 }
 
+/* Estilos para os botões de tipo de insumo */
+.tipo-insumo-buttons {
+  display: flex;
+  gap: 0.5rem;
+  height: 40px;
+}
+
+.tipo-insumo-buttons button {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+}
+
+.tipo-insumo-buttons button.active {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.tipo-insumo-buttons button:hover:not(.active) {
+  background: #f3f4f6;
+}
+
 .botoes-container {
   display: flex;
   align-items: center;
@@ -49,6 +84,10 @@
     grid-template-columns: 1fr 1fr;
   }
 
+  .filtros-relatorio.com-tipo-insumo {
+    grid-template-columns: 1fr 1fr;
+  }
+
   .botoes-container {
     grid-column: 1 / -1;
     justify-content: flex-end;
@@ -58,5 +97,17 @@
 @media (max-width: 768px) {
   .filtros-relatorio {
     grid-template-columns: 1fr;
+  }
+
+  .filtros-relatorio.com-tipo-insumo {
+    grid-template-columns: 1fr;
+  }
+
+  .tipo-insumo-buttons {
+    height: auto;
+  }
+
+  .tipo-insumo-buttons button {
+    padding: 0.75rem 1rem;
   }
 }
