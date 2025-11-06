@@ -11,9 +11,33 @@ function LinhaTabelaAcoes({ item, colunas, onEditar, onConfirmar, onExcluir }) {
 
       {mostrarAcoes && (
         <td className="acoes">
-          {onEditar && <FaEdit className="icone editar" onClick={() => onEditar(item)} />}
-          {onConfirmar && <FaCheck className="icone confirmar" onClick={() => onConfirmar(item)} />}
-          {onExcluir && <FaTrash className="icone excluir" onClick={() => onExcluir(item)} />}
+          {onEditar && (
+            <button 
+              className="btn-icone btn-editar"
+              onClick={() => onEditar(item)}
+              title="Editar"
+            >
+              <FaEdit className="icone" />
+            </button>
+          )}
+          {onConfirmar && (
+            <button 
+              className="btn-icone btn-confirmar"
+              onClick={() => onConfirmar(item)}
+              title="Visualizar"
+            >
+              <FaCheck className="icone" />
+            </button>
+          )}
+          {onExcluir && (
+            <button 
+              className="btn-icone btn-excluir"
+              onClick={() => onExcluir(item)}
+              title="Excluir"
+            >
+              <FaTrash className="icone" />
+            </button>
+          )}
         </td>
       )}
     </tr>

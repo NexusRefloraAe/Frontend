@@ -16,7 +16,7 @@ function TabelaComBuscaPaginacao({
   onExcluir,
   itensPorPagina = 7,
   habilitarBusca = true,
-  modoBusca = "auto", // 🔹 "auto" ou "manual"
+  modoBusca = "auto", 
 }) {
   const [termoBusca, setTermoBusca] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);

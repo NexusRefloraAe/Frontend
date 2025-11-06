@@ -1,0 +1,238 @@
+/* GerarRelatorioInsumo.css */
+.gerar-relatorio-insumo-container {
+  width: 100%;
+  padding: 1rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.gerar-relatorio-insumo-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Seção de Filtros */
+.filtros-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filtros-section h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+}
+
+/* Seletor de Tipo de Insumo */
+.tipo-insumo-selector {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tipo-insumo-selector label {
+  font-weight: 500;
+  color: #374151;
+}
+
+.tipo-insumo-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tipo-insumo-buttons button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tipo-insumo-buttons button.active {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.tipo-insumo-buttons button:hover:not(.active) {
+  background: #f3f4f6;
+}
+
+/* Filtros Comuns */
+.filtros-comuns {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.filtro-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filtro-item label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.filtro-item input {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  min-width: 120px;
+}
+
+.btn-pesquisar {
+  padding: 0.5rem 1.5rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-pesquisar:hover {
+  background: #059669;
+}
+
+/* Seção de Cards */
+.cards-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+/* CARDS COM BORDA COMPLETA */
+.cards-container .card {
+  height: 140px;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: white;
+  text-align: center;
+  position: relative;
+}
+
+.cards-container .card .card-titulo {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0 0 0.5rem 0;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.cards-container .card .card-valor {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: #1f2937;
+  line-height: 1;
+}
+
+.cards-container .card.card-estoque {
+  border: 3px solid #10B981;
+}
+
+.cards-container .card.card-consumo {
+  border: 3px solid #3B82F6;
+}
+
+.cards-container .card.card-critico {
+  border: 3px solid #EF4444;
+}
+
+/* Seção da Tabela */
+.tabela-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .cards-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .gerar-relatorio-insumo-container {
+    padding: 0.5rem;
+  }
+  
+  .cards-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .filtros-section,
+  .cards-section,
+  .tabela-section {
+    padding: 1rem;
+  }
+  
+  .cards-container .card {
+    height: 120px;
+    padding: 1.25rem;
+  }
+  
+  .cards-container .card .card-valor {
+    font-size: 2rem;
+  }
+  
+  .filtros-comuns {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .tipo-insumo-selector {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .gerar-relatorio-insumo-container {
+    padding: 0.25rem;
+  }
+  
+  .cards-container .card {
+    height: 110px;
+    padding: 1rem;
+  }
+  
+  .cards-container .card .card-valor {
+    font-size: 1.75rem;
+  }
+  
+  .cards-container .card .card-titulo {
+    font-size: 0.9rem;
+  }
+}
