@@ -1,4 +1,3 @@
-/* GerarRelatorio.css */
 .gerar-relatorio-container {
   width: 100%;
   padding: 1rem;
@@ -7,14 +6,14 @@
 }
 
 .gerar-relatorio-content {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-/* Seção de Filtros */
+/* Seção de Filtros — só wrapper */
 .filtros-section {
   background: white;
   padding: 1.5rem;
@@ -27,51 +26,6 @@
   font-weight: 600;
   color: #1f2937;
   margin-bottom: 1.5rem;
-}
-
-.filtros-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto;
-  gap: 1rem;
-  align-items: end;
-}
-
-.filtro-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.filtro-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-}
-
-.filtro-input .input-container {
-  margin-bottom: 0;
-}
-
-.filtro-input input {
-  height: 40px;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  width: 100%;
-}
-
-/* Container dos Botões */
-.botoes-container {
-  display: flex;
-  align-items: center;
-}
-
-.btn-gerar {
-  min-width: 140px;
-  height: 40px;
-  padding: 0.5rem 1.5rem;
-  white-space: nowrap;
 }
 
 /* Seção de Cards */
@@ -103,7 +57,6 @@
   position: relative;
 }
 
-/* Texto do título do card */
 .cards-container .card .card-titulo {
   font-size: 1rem;
   font-weight: 500;
@@ -112,7 +65,6 @@
   line-height: 1.4;
 }
 
-/* Valor do card */
 .cards-container .card .card-valor {
   font-size: 2.5rem;
   font-weight: 700;
@@ -121,7 +73,6 @@
   line-height: 1;
 }
 
-/* Borda completa com cores */
 .cards-container .card.card-entrada {
   border: 3px solid #10B981;
 }
@@ -142,7 +93,6 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Estilo para o título dentro da tabela */
 .tabela-com-busca .tabela-header {
   display: flex;
   justify-content: space-between;
@@ -157,18 +107,8 @@
   margin: 0;
 }
 
-/* Responsividade */
+/* Responsividade — só do layout geral e cards */
 @media (max-width: 1024px) {
-  .filtros-container {
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-  
-  .botoes-container {
-    grid-column: 1 / -1;
-    justify-content: flex-end;
-  }
-  
   .cards-container {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -177,11 +117,6 @@
 @media (max-width: 768px) {
   .gerar-relatorio-container {
     padding: 0.5rem;
-  }
-  
-  .filtros-container {
-    grid-template-columns: 1fr;
-    gap: 1rem;
   }
   
   .cards-container {
@@ -195,7 +130,6 @@
     padding: 1rem;
   }
   
-  /* Ajuste dos cards em mobile */
   .cards-container .card {
     height: 120px;
     padding: 1.25rem;

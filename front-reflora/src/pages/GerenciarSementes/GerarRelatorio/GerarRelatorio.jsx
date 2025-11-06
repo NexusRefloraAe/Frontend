@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
-import Input from "../../../components/Input/Input";
 import PainelCard from "../../../components/PainelCard/PainelCard";
-import Button from "../../../components/Button/Button";
+import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio"; // ✅ Novo
 import './GerarRelatorio.css';
 
 const GerarRelatorio = () => {
@@ -51,27 +50,46 @@ const GerarRelatorio = () => {
     setRelatorios(DADOS_RELATORIO_MOCK);
   }, []);
 
-  const handleFiltroChange = (field) => (e) => {
-    const value = e.target.value;
-    setFiltros(prev => ({ ...prev, [field]: value }));
+  // ✅ Nova função: genérica, recebe name + value
+  const handleFiltroChange = (name, value) => {
+    setFiltros(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleGerarRelatorio = (e) => {
-    e.preventDefault();
-    
-    // Filtra os dados baseado nos filtros aplicados
+  // ✅ Nova função: sem evento — chamada via form ou botão
+  const handleGerarRelatorio = () => {
+    const { nomePopular, dataInicio, dataFim } = filtros;
+
     const dadosFiltrados = DADOS_RELATORIO_MOCK.filter(item => {
-      const matchesNome = !filtros.nomePopular || 
-        item.Nomepopular.toLowerCase().includes(filtros.nomePopular.toLowerCase());
-      
-      // Aqui você pode adicionar lógica para filtrar por data também
-      return matchesNome;
+      // ✅ Filtro por nome popular (case-insensitive)
+      const matchesNome = !nomePopular || 
+        item.Nomepopular.toLowerCase().includes(nomePopular.toLowerCase());
+
+      // ✅ Filtro por data
+      let matchesData = true;
+
+      if (dataInicio || dataFim) {
+        // Converter "DD/MM/YYYY" → Date (ex: "01/01/2025" → new Date("2025-01-01"))
+        const [day, month, year] = item.Data.split('/');
+        const itemDate = new Date(`${year}-${month}-${day}`);
+
+        const startDate = dataInicio ? new Date(dataInicio) : null;
+        const endDate = dataFim ? new Date(dataFim) : null;
+
+        // Garantir que as datas estejam válidas
+        if (startDate && (isNaN(itemDate) || itemDate < startDate)) {
+          matchesData = false;
+        }
+        if (endDate && (isNaN(itemDate) || itemDate > endDate)) {
+          matchesData = false;
+        }
+      }
+
+      return matchesNome && matchesData;
     });
-    
+
     setRelatorios(dadosFiltrados);
   };
 
-  // Colunas atualizadas conforme a imagem
   const colunas = [
     { key: "Lote", label: "Lote" },
     { key: "Nomepopular", label: "Nome Popular" },
@@ -84,57 +102,14 @@ const GerarRelatorio = () => {
     <div className="gerar-relatorio-container">
       <div className="gerar-relatorio-content">
         
-        {/* Seção de Filtros */}
+        {/* Seção de Filtros — agora com componente genérico */}
         <section className="filtros-section">
           <h1>Gerar Relatório</h1>
-          <div className="filtros-container">
-            <div className="filtro-group">
-              <label className="filtro-label">Nome Popular</label>
-              <Input
-                name="nomePopular"
-                type="text"
-                value={filtros.nomePopular}
-                onChange={handleFiltroChange('nomePopular')}
-                placeholder="Ipê-amarelo"
-                className="filtro-input"
-              />
-            </div>
-            
-            <div className="filtro-group">
-              <label className="filtro-label">Data início</label>
-              <Input
-                name="dataInicio"
-                type="date"
-                value={filtros.dataInicio}
-                onChange={handleFiltroChange('dataInicio')}
-                placeholder="01/01/2025"
-                className="filtro-input"
-              />
-            </div>
-            
-            <div className="filtro-group">
-              <label className="filtro-label">Data fim</label>
-              <Input
-                name="dataFim"
-                type="date"
-                value={filtros.dataFim}
-                onChange={handleFiltroChange('dataFim')}
-                placeholder="31/03/2025"
-                className="filtro-input"
-              />
-            </div>
-            
-            <div className="botoes-container">
-              <Button 
-                variant="primary" 
-                onClick={handleGerarRelatorio}
-                className="btn-gerar"
-                type="submit"
-              >
-                Pesquisar
-              </Button>
-            </div>
-          </div>
+          <FiltrosRelatorio
+            filtros={filtros}
+            onFiltroChange={handleFiltroChange}
+            onPesquisar={handleGerarRelatorio}
+          />
         </section>
 
         {/* Seção de Cards de Resumo */}
@@ -151,7 +126,7 @@ const GerarRelatorio = () => {
           </div>
         </section>
 
-        {/* Seção da Tabela - Título integrado na tabela */}
+        {/* Seção da Tabela */}
         <section className="tabela-section">
           <TabelaComBuscaPaginacao
             titulo="Movimentações da Semente"
