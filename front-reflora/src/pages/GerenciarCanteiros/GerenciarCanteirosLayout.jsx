@@ -1,12 +1,12 @@
 import React from "react";
 import { FaSeedling, FaEdit, FaLeaf, FaClipboardList, FaCheckCircle } from "react-icons/fa";
 import TabsLayout from "../../components/TabsLayout/TabsLayout";
-
 import CadastrarCanteiro from "./CadastrarCanteiro/CadastrarCanteiro";
 import EditarCanteiro from "./EditarCanteiro/EditarCanteiro";
 import CadastrarPlantioCanteiro from "./CadastrarPlantioCanteiro/CadastrarPlantioCanteiro";
 import EditarPlantioCanteiro from "./EditarPlantioCanteiro/EditarPlantioCanteiro";
 import CadastrarInspecaoMudas from "./InspecaoMudas/CadastrarInspecaoMudas";
+import Historico from "./Historico/Historico";
 
 const GerenciarCanteirosLayout = () => {
   const tabs = [
@@ -40,6 +40,12 @@ const GerenciarCanteirosLayout = () => {
       icon: <FaCheckCircle />,
       page: CadastrarInspecaoMudas,
     },
+    { // ✅ Aqui estava faltando o '{'
+      id: "historico",
+      label: "Histórico", // ✅ Também corrigi a acentuação (opcional, mas recomendado)
+      icon: <FaCheckCircle />,
+      page: Historico,
+    }, // ✅ Agora está correto: objeto dentro do array
   ];
 
   return <TabsLayout tabs={tabs} defaultTabId="cadastrar-canteiro" />;

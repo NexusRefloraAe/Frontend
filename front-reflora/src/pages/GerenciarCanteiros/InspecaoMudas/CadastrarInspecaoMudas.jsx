@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import FormGeral from '../../../components/FormGeral/FormGeral';
 import Input from '../../../components/Input/Input';
-// 1. Importar o CSS correspondente
-import './CadastrarInspecaoMudas.css';
 
-// 2. Renomear o componente
 const CadastrarInspecaoMudas = () => {
     // 3. Atualizar o estado inicial para os campos da imagem
     const [formData, setFormData] = useState({

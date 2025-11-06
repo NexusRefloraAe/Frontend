@@ -1,0 +1,79 @@
+/* RelatorioVistoria.css */
+
+.relatorio-vistoria-container {
+  width: 100%;
+  padding: 1rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.relatorio-vistoria-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Seção de Filtros */
+.filtros-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filtros-section h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+}
+
+/* Seção da Tabela */
+.tabela-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo do título da tabela — sublinhado verde */
+.tabela-com-busca .tabela-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+  text-decoration: underline;
+  text-decoration-color: #4ade80;
+  text-decoration-thickness: 2px;
+}
+
+/* Botão Exportar — alinhado à direita */
+.exportar-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .relatorio-vistoria-content {
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .relatorio-vistoria-container {
+    padding: 0.5rem;
+  }
+
+  .filtros-section,
+  .tabela-section {
+    padding: 1rem;
+  }
+
+  .exportar-container {
+    margin-top: 0.5rem;
+  }
+}

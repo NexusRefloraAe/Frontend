@@ -5,7 +5,15 @@ import autoTable from "jspdf-autotable";
 import { CSVLink } from "react-csv";
 import "./ExportButton.css";
 
-const ExportButton = ({ data = [], columns = [], fileName = "relatorio" }) => {
+const ExportButton = ({ 
+  tipo = "exportar", // "exportar" ou "selecionar"
+  data = [], 
+  columns = [], 
+  fileName = "relatorio",
+  onClick,
+  disabled = false,
+  selecionadosCount = 0
+}) => {
     const [menuAberto, setMenuAberto] = useState(false);
     const menuRef = useRef(null);
 
@@ -43,6 +51,19 @@ const ExportButton = ({ data = [], columns = [], fileName = "relatorio" }) => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    if (tipo === "selecionar") {
+        return (
+            <button 
+                className={`btn-selecionar ${disabled ? 'disabled' : ''}`}
+                onClick={onClick}
+                disabled={disabled}
+            >
+                Selecionar ({selecionadosCount})
+            </button>
+        );
+    }
+
+    // Tipo exportar (padrão)
     return (
         <div className="export-dropdown" ref={menuRef}>
             <button

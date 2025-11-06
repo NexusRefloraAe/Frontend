@@ -1,12 +1,9 @@
-// src/pages/DistribuicaoMudas/TermoCompromisso/TermoCompromisso.jsx
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Paginacao from '../../../components/Paginacao/Paginacao';
 import './TermoCompromisso.css';
 
 const TermoCompromisso = () => {
-    // ... (todo o seu código de lógica, states e fallbacks permanece igual) ...
-    // ... (const location, navigate, fallbackState, states, paginação, etc) ...
     const location = useLocation();
     const navigate = useNavigate();
 

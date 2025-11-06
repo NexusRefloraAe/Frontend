@@ -1,7 +1,5 @@
-
 import React, { useState, useEffect } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
-import "./HistoricoTestesStyler.css";
 
 const HistoricoTestes = () => {
 const DADOS_SEMENTES_MOCK = [

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from 'react'
+import React, { useState, useEffect } from 'react'
 import './ModalDetalheSemente.css'
 import Paginacao from '../Paginacao/Paginacao'
 import Button from '../Button/Button'
@@ -29,13 +29,12 @@ const colunasSaida = [
  * @param {object} props
  * @param {object} props.semente - Objeto com os detalhes da semente a ser exibida no modal
  * @param {function(): void} props.onClose - Função para fechar o modal
- }}
  */
-
 function ModalDetalheSemente({ semente, onClose }) {
     const [paginaHistorico, setPaginaHistorico] = useState(1);
     const [historicoEntrada, setHistoricoEntrada] = useState([]);
     const [historicoSaida, setHistoricoSaida] = useState([]);
+    const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
 
     useEffect(() => {
         setHistoricoEntrada([
@@ -64,13 +63,14 @@ function ModalDetalheSemente({ semente, onClose }) {
     const saidasPagina = historicoSaida.slice(indicePrimeiro, indiceUltimo);
 
     return (
-        <div className='modal-overlay' onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <button className='modal-close-button' onClick={onClose}>
-                    <img src={closeIcon} alt="Fechar" />
-                </button>
+        <>
+            <div className='modal-overlay' onClick={onClose}>
+                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <button className='modal-close-button' onClick={onClose}>
+                        <img src={closeIcon} alt="Fechar" />
+                    </button>
 
-                <h2>Detalhes da Semente</h2>
+                    <h2>Detalhes da Semente</h2>
 
                 <div className="detalhe-container">
                     <div className="detalhe-imagens">
@@ -112,6 +112,18 @@ function ModalDetalheSemente({ semente, onClose }) {
                             />
                         </div>
                     </div>
+                    <div className="historico-container">
+                        <h3>Histórico de Movimentação</h3>
+                        <div className="historico-tabelas">
+                            <div className="tabela-wrapper">
+                                <h4 className='tabela-entrada'>Entradas</h4>
+                                {/* Tabela de entradas aqui */}
+                            </div>
+                            <div className="tabela-wrapper">
+                                <h4 className='tabela-saida'>Saídas</h4>
+                                {/* Tabela de saídas aqui */}
+                            </div>
+                        </div>
 
                     <div className="footer-content">
                         <Paginacao paginaAtual={paginaHistorico} totalPaginas={totalPaginas} onPaginaChange={setPaginaHistorico} />
@@ -119,7 +131,19 @@ function ModalDetalheSemente({ semente, onClose }) {
                     </div>
                 </div>
             </div>
-        </div>
+
+            {/* Modal de Exclusão */}
+            <ModalExcluir
+                isOpen={modalExcluirAberto}
+                onClose={handleFecharModalExcluir}
+                onConfirm={handleConfirmarExclusao}
+                nomeItem={semente.nome}
+                titulo="Confirmar Exclusão"
+                mensagem={`Tem certeza que deseja excluir a semente "${semente.nome}" (Lote: ${semente.id})? Esta ação não pode ser desfeita.`}
+                textoConfirmar="Excluir"
+                textoCancelar="Cancelar"
+            />
+        </>
     )
 }
 
