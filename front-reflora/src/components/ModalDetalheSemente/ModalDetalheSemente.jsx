@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import './ModalDetalheSemente.css'
 import Paginacao from '../Paginacao/Paginacao'
-import Button from '../Button/Button'
 import ModalExcluir from '../ModalExcluir/ModalExcluir' // Importar o ModalExcluir
-//Icons
 import closeIcon from '../../assets/close.svg'
 import editIcon from '../../assets/edit.svg'
 import deleteIcon from '../../assets/delete.svg'

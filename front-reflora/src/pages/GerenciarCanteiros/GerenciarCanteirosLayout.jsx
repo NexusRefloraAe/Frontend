@@ -1,7 +1,6 @@
 import React from "react";
 import { FaSeedling, FaEdit, FaLeaf, FaClipboardList, FaCheckCircle } from "react-icons/fa";
 import TabsLayout from "../../components/TabsLayout/TabsLayout";
-
 import CadastrarCanteiro from "./CadastrarCanteiro/CadastrarCanteiro";
 import EditarCanteiro from "./EditarCanteiro/EditarCanteiro";
 import CadastrarPlantioCanteiro from "./CadastrarPlantioCanteiro/CadastrarPlantioCanteiro";
@@ -41,13 +40,12 @@ const GerenciarCanteirosLayout = () => {
       icon: <FaCheckCircle />,
       page: CadastrarInspecaoMudas,
     },
-
-     {
       id: "historico",
       label: "Historico",
       icon: <FaCheckCircle />,
       page: Historico,
     },
+
   ];
 
   return <TabsLayout tabs={tabs} defaultTabId="cadastrar-canteiro" />;
