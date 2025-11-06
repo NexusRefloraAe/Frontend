@@ -3,6 +3,7 @@ import './ModalDetalheSemente.css'
 import Paginacao from '../Paginacao/Paginacao'
 import Button from '../Button/Button'
 import TabelaHistorico from '../TabelaHistorico/TabelaHistorico'
+import ModalExcluir from '../ModalExcluir/ModalExcluir'
 //Icons
 import closeIcon from '../../assets/close.svg'
 import editIcon from '../../assets/edit.svg'
@@ -51,6 +52,16 @@ function ModalDetalheSemente({ semente, onClose }) {
         ])
     }, [semente.id]);
 
+    const handleFecharModalExcluir = () => {
+        setModalExcluirAberto(false);
+    };
+
+    const handleConfirmarExclusao = () => {
+        console.log("Semente excluída:", semente);
+        setModalExcluirAberto(false);
+        onClose();
+    };
+
     const ITENS_POR_PAGINA = 2;
 
     const totalItens = Math.max(historicoEntrada.length, historicoSaida.length);
@@ -72,62 +83,62 @@ function ModalDetalheSemente({ semente, onClose }) {
 
                     <h2>Detalhes da Semente</h2>
 
-                <div className="detalhe-container">
-                    <div className="detalhe-imagens">
-                        <img src={semente.imagem} alt={semente.nome} />
-                    </div>
-                    <div className="detalhe-info">
-                        <p><strong>Lote:</strong>{semente.id}</p>
-                        <p><strong>Data do Cadastro:</strong>{semente.dataCadastro}</p>
-                        <p><strong>Nome Popular:</strong>{semente.nome}</p>
-                        <p><strong>Nome Científico:</strong>{semente.nomeCientifico}</p>
-                        <p><strong>Família:</strong>{semente.familia}</p>
-                        <p><strong>Origem:</strong>{semente.origem}</p>
-                        <p><strong>Quantidade Atual:</strong>{semente.qtdAtual}</p>
-                        <p><strong>Local de armazenamento:</strong>Câmara fria</p>
-                        <p><strong>Localização de Coleta:</strong>Araruna (-6.558, -35.742)</p>
-                    </div>
-                    <div className="detalhe-acoes">
-                        <button><img src={deleteIcon} alt="Deletar" /></button>
-                        <button><img src={editIcon} alt="Editar" /></button>
-                    </div>
-                </div>
-                <div className="historico-container">
-                    <h3>Historico de Movimentação</h3>
-                    <div className="historico-tabelas">
-                        <div className="tabela-wrapper">
-                            <h4 className='tabela-entrada'>Entradas</h4>
-                            <TabelaHistorico
-                                colunas={colunasEntrada}
-                                dados={entradasPagina}
-                                variant="entrada"
-                            />
+                    <div className="detalhe-container">
+                        <div className="detalhe-imagens">
+                            <img src={semente.imagem} alt={semente.nome} />
                         </div>
-                        <div className="tabela-wrapper">
-                            <h4 className='tabela-saida'>Saídas</h4>
-                            <TabelaHistorico
-                                colunas={colunasSaida}
-                                dados={saidasPagina}
-                                variant="saida"
-                            />
+                        <div className="detalhe-info">
+                            <p><strong>Lote:</strong>{semente.id}</p>
+                            <p><strong>Data do Cadastro:</strong>{semente.dataCadastro}</p>
+                            <p><strong>Nome Popular:</strong>{semente.nome}</p>
+                            <p><strong>Nome Científico:</strong>{semente.nomeCientifico}</p>
+                            <p><strong>Família:</strong>{semente.familia}</p>
+                            <p><strong>Origem:</strong>{semente.origem}</p>
+                            <p><strong>Quantidade Atual:</strong>{semente.qtdAtual}</p>
+                            <p><strong>Local de armazenamento:</strong>Câmara fria</p>
+                            <p><strong>Localização de Coleta:</strong>Araruna (-6.558, -35.742)</p>
+                        </div>
+                        <div className="detalhe-acoes">
+                            <button onClick={() => setModalExcluirAberto(true)}>
+                                <img src={deleteIcon} alt="Deletar" />
+                            </button>
+                            <button>
+                                <img src={editIcon} alt="Editar" />
+                            </button>
                         </div>
                     </div>
+
                     <div className="historico-container">
                         <h3>Histórico de Movimentação</h3>
                         <div className="historico-tabelas">
                             <div className="tabela-wrapper">
                                 <h4 className='tabela-entrada'>Entradas</h4>
-                                {/* Tabela de entradas aqui */}
+                                <TabelaHistorico
+                                    colunas={colunasEntrada}
+                                    dados={entradasPagina}
+                                    variant="entrada"
+                                />
                             </div>
                             <div className="tabela-wrapper">
                                 <h4 className='tabela-saida'>Saídas</h4>
-                                {/* Tabela de saídas aqui */}
+                                <TabelaHistorico
+                                    colunas={colunasSaida}
+                                    dados={saidasPagina}
+                                    variant="saida"
+                                />
                             </div>
                         </div>
 
-                    <div className="footer-content">
-                        <Paginacao paginaAtual={paginaHistorico} totalPaginas={totalPaginas} onPaginaChange={setPaginaHistorico} />
-                        <Button variant='primary' icon={shareIcon}>Exportar</Button>
+                        <div className="footer-content">
+                            <Paginacao 
+                                paginaAtual={paginaHistorico} 
+                                totalPaginas={totalPaginas} 
+                                onPaginaChange={setPaginaHistorico} 
+                            />
+                            <Button variant='primary' icon={shareIcon}>
+                                Exportar
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -147,4 +158,4 @@ function ModalDetalheSemente({ semente, onClose }) {
     )
 }
 
-export default ModalDetalheSemente
+export default ModalDetalheSemente;
