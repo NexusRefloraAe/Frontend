@@ -40,12 +40,12 @@ const GerenciarCanteirosLayout = () => {
       icon: <FaCheckCircle />,
       page: CadastrarInspecaoMudas,
     },
+    { // ✅ Aqui estava faltando o '{'
       id: "historico",
-      label: "Historico",
+      label: "Histórico", // ✅ Também corrigi a acentuação (opcional, mas recomendado)
       icon: <FaCheckCircle />,
       page: Historico,
-    },
-
+    }, // ✅ Agora está correto: objeto dentro do array
   ];
 
   return <TabsLayout tabs={tabs} defaultTabId="cadastrar-canteiro" />;
