@@ -143,7 +143,9 @@
   gap: 24px;
 }
 .tabela-wrapper {
-  flex: 1; /* Cada tabela ocupa metade do espaço */
+  flex: 1;
+  min-width: 0; 
+  overflow-x: auto;
 }
 
 /* Os "títulos" verde e vermelho */

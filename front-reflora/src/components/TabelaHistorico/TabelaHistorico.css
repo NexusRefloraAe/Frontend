@@ -1,0 +1,43 @@
+.tabela-historico {
+  width: 100%;
+  border-collapse: collapse;
+  border: none; 
+}
+
+.tabela-historico th,
+.tabela-historico td {
+  padding: 12px;
+  font-size: 14px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.tabela-historico th {
+  font-weight: 600;
+  color: white;
+}
+
+/* Ícones de ordenação */
+.tabela-historico th img {
+  width: 14px;
+  height: 14px;
+  margin-left: 8px;
+  opacity: 0.8;
+}
+
+/* Linhas com fundo cinza claro */
+.tabela-historico tbody tr {
+  background-color: #F8F9FA; 
+}
+.tabela-historico tbody tr:nth-child(even) {
+  background-color: #F1F3F5; 
+}
+
+/* --- Variantes de Cor do Cabeçalho --- */
+.tabela-historico--entrada th {
+  background-color: #25702490;
+}
+
+.tabela-historico--saida th {
+  background-color: #D32F2F90;
+}
