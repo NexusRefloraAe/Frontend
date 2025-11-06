@@ -7,6 +7,8 @@ import EditarCanteiro from "./EditarCanteiro/EditarCanteiro";
 import CadastrarPlantioCanteiro from "./CadastrarPlantioCanteiro/CadastrarPlantioCanteiro";
 import EditarPlantioCanteiro from "./EditarPlantioCanteiro/EditarPlantioCanteiro";
 import CadastrarInspecaoMudas from "./InspecaoMudas/CadastrarInspecaoMudas";
+import Historico from "./Historico/Historico";
+
 
 const GerenciarCanteirosLayout = () => {
   const tabs = [
@@ -40,6 +42,13 @@ const GerenciarCanteirosLayout = () => {
       icon: <FaCheckCircle />,
       page: CadastrarInspecaoMudas,
     },
+    {
+      id: "historico",
+      label: "Historico",
+      icon: <FaCheckCircle />,
+      page: Historico,
+    },
+
   ];
 
   return <TabsLayout tabs={tabs} defaultTabId="cadastrar-canteiro" />;

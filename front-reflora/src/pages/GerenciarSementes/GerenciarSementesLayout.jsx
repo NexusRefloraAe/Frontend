@@ -1,10 +1,6 @@
 import React from "react";
 import { FaSeedling, FaEdit, FaLeaf, FaClipboardList, FaCheckCircle } from "react-icons/fa";
 import TabsLayout from "../../components/TabsLayout/TabsLayout";
-
-
-
-
 import CadastrarPlantio from "./CadastrarPlantio/CadastrarPlantio";
 import HistoricoPlantio from "./HistoricoPlantio/HistoricoPlantio";
 import CadastrarTestes from "./CadastrarTestes/CadastrarTestes";
