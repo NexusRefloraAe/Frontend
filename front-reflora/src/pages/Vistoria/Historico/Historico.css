@@ -1,0 +1,90 @@
+/* Historico.css */
+
+.historico-container {
+  width: 100%;
+  padding: 1rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+/* Cabeçalho com título e filtros */
+.header-filtros {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.header-filtros h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+/* Estilo do FiltrosRelatorio — garantir que os inputs fiquem lado a lado */
+.filtros-relatorio {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 1rem;
+  align-items: end;
+}
+
+@media (max-width: 1024px) {
+  .filtros-relatorio {
+    grid-template-columns: 1fr 1fr;
+  }
+  .botoes-container {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 768px) {
+  .filtros-relatorio {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tabela wrapper — com borda verde */
+.tabela-wrapper {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Título da tabela — negrito e sublinhado */
+.tabela-com-busca .tabela-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+  text-decoration: underline;
+  text-decoration-color: #4ade80;
+  text-decoration-thickness: 2px;
+}
+
+/* Botão Exportar — alinhado à direita */
+.exportar-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .historico-container {
+    padding: 0.5rem;
+  }
+
+  .header-filtros,
+  .tabela-wrapper {
+    padding: 1rem;
+  }
+
+  .exportar-container {
+    margin-top: 0.5rem;
+  }
+}
