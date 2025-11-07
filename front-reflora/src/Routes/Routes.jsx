@@ -10,6 +10,7 @@ import Layout from "../components/MenuLateral/Layout";
 import GerenciarSementesLayout from "../pages/GerenciarSementes/GerenciarSementesLayout";
 import GerenciarCanteirosLayout from "../pages/GerenciarCanteiros/GerenciarCanteirosLayout";
 import Configuracoes from '../pages/Configuracoes/Configuracoes';
+import Notificacoes from '../components/Notificacoes/Notificacoes';
 
 import DistribuicaoMudasLayout from "../pages/DistribuicaoMudas/DistribuicaoMudasLayout";
 import TermoCompromisso from "../pages/DistribuicaoMudas/TermoCompromisso/TermoCompromisso";
@@ -45,6 +46,7 @@ const AppRoutes = () => {
           <Route path="/insumo" element={<InsumoLayout />} />
 
           <Route path="/configuracoes" element={<Configuracoes />} />
+          <Route path="/notificacoes" element={<Notificacoes />} />
         </Route>
       </Routes>
     </Router>

@@ -8,6 +8,15 @@
   align-items: center;     /* verticalmente centralizado */
   padding-left: 14px;      /* espaçamento interno à esquerda */
   padding-top: 13px;
+  justify-content: space-between;
+
+
+  .bell {
+    margin-right: 20px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+  }
 
   span {
     font-weight: bold;

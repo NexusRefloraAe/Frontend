@@ -25,6 +25,8 @@ const ContainerWithTitle = () => {
   title = "Insumo";
 } else if (path.startsWith("/configuracoes")) {
   title = "Configurações";
+} else if (path.startsWith("/notificacoes")) {
+  title = "Notificações";
 } else {
   title = "";
 }
