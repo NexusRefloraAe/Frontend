@@ -23,6 +23,11 @@ const HistoricoFerramenta = () => {
     const [ferramentaExcluindo, setFerramentaExcluindo] = useState(null);
     const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
     const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
+    
+    // Estados para paginação
+    const [paginaAtual, setPaginaAtual] = useState(1);
+    const [itensPorPagina, setItensPorPagina] = useState(5);
+    const [termoBusca, setTermoBusca] = useState('');
 
     useEffect(() => {
         setDados(DADOS_HISTORICO_FERRAMENTA_MOCK);
@@ -81,6 +86,12 @@ const HistoricoFerramenta = () => {
         setFerramentaExcluindo(null);
     };
 
+    // Função para lidar com a busca
+    const handleBuscaChange = (termo) => {
+        setTermoBusca(termo);
+        setPaginaAtual(1);
+    };
+
     const colunas = [
         { key: "NomeInsumo", label: "Nome do Insumo" },
         { key: "Data", label: "Data" },
@@ -124,6 +135,13 @@ const HistoricoFerramenta = () => {
                     onEditar={handleEditar}
                     onConfirmar={(item) => console.log("Visualizar:", item)}
                     onExcluir={handleExcluir}
+                    // Props de paginação ADICIONADAS
+                    paginaAtual={paginaAtual}
+                    itensPorPagina={itensPorPagina}
+                    onPaginaChange={setPaginaAtual}
+                    onItensPorPaginaChange={setItensPorPagina}
+                    onBuscaChange={handleBuscaChange}
+                    termoBusca={termoBusca}
                 />
             </div>
         </div>
