@@ -3,9 +3,9 @@ import { FaSeedling, FaLeaf, FaClipboardList, FaCheckCircle, FaFileAlt } from "r
 import TabsLayout from "../../components/TabsLayout/TabsLayout";
 import CadastrarCanteiro from "./CadastrarCanteiro/CadastrarCanteiro";
 import CadastrarPlantioCanteiro from "./CadastrarPlantioCanteiro/CadastrarPlantioCanteiro";
-import EditarPlantioCanteiro from "./EditarPlantioCanteiro/EditarPlantioCanteiro";
-import CadastrarInspecaoMudas from "./InspecaoMudas/CadastrarInspecaoMudas";
+import CadastrarInspecaoMudas from "./CadastrarInspecao/CadastrarInspecaoMudas";
 import Historico from "./Historico/Historico";
+import HistoricoInspecao from "./HistoricoInspecao/HistoricoInspecao";
 import RelatorioCanteiro from "./RelatorioCanteiro/RelatorioCanteiro";
 
 const GerenciarCanteirosLayout = () => {
@@ -25,16 +25,16 @@ const GerenciarCanteirosLayout = () => {
     },
     
     {
-      id: "editar-plantio-canteiro",
-      label: "Editar Plantio",
-      icon: <FaClipboardList />,
-      page: <EditarPlantioCanteiro />,
-    },
-    {
       id: "cadastrar-inspecao-mudas",
-      label: "Vistoria de Mudas",
+      label: "Cadastrar Inspeção",
       icon: <FaCheckCircle />,
       page: <CadastrarInspecaoMudas />,
+    },
+    {
+      id: "historico-inspecao",
+      label: "Histórico de Inspeção",
+      icon: <FaCheckCircle />,
+      page: <HistoricoInspecao />,
     },
     {
       id: "historico",

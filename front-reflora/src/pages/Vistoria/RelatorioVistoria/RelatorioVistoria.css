@@ -1,4 +1,4 @@
-/* RelatorioVistoria.css */
+/* Estilos copiados e adaptados de RelatorioCanteiro.css */
 
 .relatorio-vistoria-container {
   width: 100%;
@@ -30,6 +30,65 @@
   margin-bottom: 1.5rem;
 }
 
+/* Seção de Cards (Adicionada) */
+.cards-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+/* Estilos dos Cards */
+.cards-container .card {
+  height: 140px;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: white;
+  text-align: center;
+  position: relative;
+}
+
+.cards-container .card .card-titulo {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0 0 0.5rem 0;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.cards-container .card .card-valor {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: #1f2937;
+  line-height: 1;
+}
+
+/* Cores específicas para os cards de Vistoria */
+.cards-container .card.card-total {
+  border: 3px solid #3B82F6; /* Azul */
+}
+
+.cards-container .card.card-finalizadas {
+  border: 3px solid #10B981; /* Verde */
+}
+
+.cards-container .card.card-cadastradas {
+  border: 3px solid #F59E0B; /* Amarelo/Laranja */
+}
+
+
 /* Seção da Tabela */
 .tabela-section {
   background: white;
@@ -38,28 +97,32 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Estilo do título da tabela — sublinhado verde */
-.tabela-com-busca .tabela-header h2 {
-  font-size: 1.5rem;
+/* Botão Exportar (Adicionado) */
+.btn-exportar {
+  background-color: #3B82F6;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
   font-weight: 600;
-  color: #1f2937;
-  margin: 0 0 1rem 0;
-  text-decoration: underline;
-  text-decoration-color: #4ade80;
-  text-decoration-thickness: 2px;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-/* Botão Exportar — alinhado à direita */
-.exportar-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
+.btn-exportar:hover {
+  background-color: #2563EB;
 }
+
+/* Remove o sublinhado verde do título da tabela (se existir) */
+.tabela-com-busca .tabela-header h2 {
+  text-decoration: none; 
+}
+
 
 /* Responsividade */
 @media (max-width: 1024px) {
-  .relatorio-vistoria-content {
-    gap: 1rem;
+  .cards-container {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -67,13 +130,43 @@
   .relatorio-vistoria-container {
     padding: 0.5rem;
   }
-
+  
+  .cards-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
   .filtros-section,
+  .cards-section,
   .tabela-section {
     padding: 1rem;
   }
+  
+  .cards-container .card {
+    height: 120px;
+    padding: 1.25rem;
+  }
+  
+  .cards-container .card .card-valor {
+    font-size: 2rem;
+  }
+}
 
-  .exportar-container {
-    margin-top: 0.5rem;
+@media (max-width: 480px) {
+  .relatorio-vistoria-container {
+    padding: 0.25rem;
+  }
+  
+  .cards-container .card {
+    height: 110px;
+    padding: 1rem;
+  }
+  
+  .cards-container .card .card-valor {
+    font-size: 1.75rem;
+  }
+  
+  .cards-container .card .card-titulo {
+    font-size: 0.9rem;
   }
 }
