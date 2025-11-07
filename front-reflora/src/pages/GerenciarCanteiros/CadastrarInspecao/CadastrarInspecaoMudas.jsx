@@ -85,7 +85,7 @@ const CadastrarInspecaoMudas = () => {
         // 7. Atualizar classe CSS
         <div className="inspecao-mudas-pagina">
             <FormGeral
-                title="Inspeção de Mudas" // 8. Título da imagem
+                title="Cadastrar Inspeção" // 8. Título da imagem
                 actions={actions}
                 onSubmit={handleSubmit}
                 useGrid={true} // Mantido para layout lado a lado
