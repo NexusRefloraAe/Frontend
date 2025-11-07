@@ -1,51 +1,53 @@
 import React from "react";
-import { FaSeedling, FaEdit, FaLeaf, FaClipboardList, FaCheckCircle } from "react-icons/fa";
+import { FaSeedling, FaLeaf, FaClipboardList, FaCheckCircle, FaFileAlt } from "react-icons/fa";
 import TabsLayout from "../../components/TabsLayout/TabsLayout";
 import CadastrarCanteiro from "./CadastrarCanteiro/CadastrarCanteiro";
-import EditarCanteiro from "./EditarCanteiro/EditarCanteiro";
 import CadastrarPlantioCanteiro from "./CadastrarPlantioCanteiro/CadastrarPlantioCanteiro";
 import EditarPlantioCanteiro from "./EditarPlantioCanteiro/EditarPlantioCanteiro";
 import CadastrarInspecaoMudas from "./InspecaoMudas/CadastrarInspecaoMudas";
 import Historico from "./Historico/Historico";
+import RelatorioCanteiro from "./RelatorioCanteiro/RelatorioCanteiro";
 
 const GerenciarCanteirosLayout = () => {
+
   const tabs = [
     {
       id: "cadastrar-canteiro",
       label: "Cadastrar Canteiro",
       icon: <FaSeedling />,
-      page: CadastrarCanteiro,
+      page: <CadastrarCanteiro />,
     },
     {
       id: "cadastrar-plantio-canteiro",
       label: "Cadastrar Plantio",
       icon: <FaLeaf />,
-      page: CadastrarPlantioCanteiro,
+      page: <CadastrarPlantioCanteiro />,
     },
-    {
-      id: "editar-canteiro",
-      label: "Editar Canteiro",
-      icon: <FaEdit />,
-      page: EditarCanteiro,
-    },
+    
     {
       id: "editar-plantio-canteiro",
       label: "Editar Plantio",
       icon: <FaClipboardList />,
-      page: EditarPlantioCanteiro,
+      page: <EditarPlantioCanteiro />,
     },
     {
       id: "cadastrar-inspecao-mudas",
-      label: "Inspeção de Mudas",
+      label: "Vistoria de Mudas",
       icon: <FaCheckCircle />,
-      page: CadastrarInspecaoMudas,
+      page: <CadastrarInspecaoMudas />,
     },
-    { // ✅ Aqui estava faltando o '{'
+    {
       id: "historico",
-      label: "Histórico", 
+      label: "Histórico Canteiro",
       icon: <FaCheckCircle />,
-      page: Historico,
-    }, 
+      page: <Historico />,
+    },
+    {
+      id: "relatorio-canteiro",
+      label: "Relatório Canteiro",
+      icon: <FaFileAlt />,
+      page: <RelatorioCanteiro />,
+    },
   ];
 
   return <TabsLayout tabs={tabs} defaultTabId="cadastrar-canteiro" />;

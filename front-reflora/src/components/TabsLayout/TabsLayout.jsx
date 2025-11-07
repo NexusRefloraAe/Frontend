@@ -11,6 +11,9 @@ import "./TabsLayoutStyler.css";
 const TabsLayout = ({ tabs, defaultTabId }) => {
   const [activeTab, setActiveTab] = useState(defaultTabId || tabs[0]?.id);
 
+  // Encontra a aba ativa
+  const activeTabData = tabs.find(tab => tab.id === activeTab);
+
   return (
     <div className="tabs-layout-container">
       {/* Barra de navegação com botões */}
@@ -24,9 +27,7 @@ const TabsLayout = ({ tabs, defaultTabId }) => {
 
       {/* Conteúdo da aba ativa */}
       <div className="tabs-layout-content">
-        {tabs.map(({ id, page: Page }) =>
-          id === activeTab ? <Page key={id} /> : null
-        )}
+        {activeTabData?.page || <div>Conteúdo não encontrado</div>}
       </div>
     </div>
   );

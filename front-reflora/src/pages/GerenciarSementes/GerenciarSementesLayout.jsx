@@ -13,31 +13,31 @@ const GerenciarSementesLayout = () => {
       id: "Cadastrar-Plantio",
       label: "Cadastrar Plantio",
       icon: <FaSeedling />,
-      page: CadastrarPlantio,
+      page: <CadastrarPlantio />, // ✅ CORRIGIDO: elemento JSX
     },
     {
       id: "Histórico-Plantio",
       label: "Histórico Plantio",
       icon: <FaLeaf />,
-      page: HistoricoPlantio,
+      page: <HistoricoPlantio />, // ✅ CORRIGIDO: elemento JSX
     },
     {
       id: "Cadastrar-Teste",
       label: "Cadastrar Teste",
       icon: <FaEdit />,
-      page: CadastrarTestes,
+      page: <CadastrarTestes />, // ✅ CORRIGIDO: elemento JSX
     },
     {
       id: "Histórico-Testes",
       label: "Histórico Testes",
       icon: <FaClipboardList />,
-      page: HistoricoTestes,
+      page: <HistoricoTestes />, // ✅ CORRIGIDO: elemento JSX
     },
     {
       id: "Gerar-Relatório",
       label: "Gerar Relatório",
       icon: <FaCheckCircle />,
-      page: GerarRelatorio,
+      page: <GerarRelatorio />, // ✅ CORRIGIDO: elemento JSX
     },
   ];
 

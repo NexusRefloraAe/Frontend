@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
-import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio"; // ✅ Reutilizável
+import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio";
 import './RelatorioVistoria.css';
 
 const RelatorioVistoria = () => {
@@ -25,6 +25,11 @@ const RelatorioVistoria = () => {
     beneficiario: ''
   });
 
+  // Estados para paginação
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [itensPorPagina, setItensPorPagina] = useState(5);
+  const [termoBusca, setTermoBusca] = useState('');
+
   useEffect(() => {
     setRelatorios(DADOS_RELATORIO_VISTORIA_MOCK);
   }, []);
@@ -40,7 +45,7 @@ const RelatorioVistoria = () => {
 
     const dadosFiltrados = DADOS_RELATORIO_VISTORIA_MOCK.filter(item => {
       // 🟢 Lote da Muda (se for um dropdown, pode ser exato)
-      const matchesLote = !loteMuda || item.Lote === loteMuda; // ❗ Se usar mock sem campo Lote, ajuste aqui
+      const matchesLote = !loteMuda || item.Lote === loteMuda;
 
       // 🟢 Beneficiário
       const matchesBeneficiario = !beneficiario ||
@@ -63,6 +68,13 @@ const RelatorioVistoria = () => {
     });
 
     setRelatorios(dadosFiltrados);
+    setPaginaAtual(1); // Reset para primeira página após filtrar
+  };
+
+  // Função para lidar com a busca
+  const handleBuscaChange = (termo) => {
+    setTermoBusca(termo);
+    setPaginaAtual(1);
   };
 
   // Colunas da tabela — conforme imagem
@@ -86,7 +98,7 @@ const RelatorioVistoria = () => {
             onFiltroChange={handleFiltroChange}
             onPesquisar={handleGerarRelatorio}
             buttonText="Pesquisar"
-            buttonVariant="success" // 👈 botão verde
+            buttonVariant="success" 
           />
         </section>
 
@@ -97,14 +109,19 @@ const RelatorioVistoria = () => {
             dados={relatorios}
             colunas={colunas}
             chaveBusca="Especie"
-            mostrarBusca={true} // 👈 habilitado conforme mock
-            mostrarAcoes={false} // 👈 sem ações
+            mostrarBusca={true}
+            mostrarAcoes={false}
             onEditar={() => {}}
             onConfirmar={() => {}}
             onExcluir={() => {}}
+            // Props de paginação adicionadas
+            paginaAtual={paginaAtual}
+            itensPorPagina={itensPorPagina}
+            onPaginaChange={setPaginaAtual}
+            onItensPorPaginaChange={setItensPorPagina}
+            onBuscaChange={handleBuscaChange}
+            termoBusca={termoBusca}
           />
-
-          
         </section>
       </div>
     </div>
