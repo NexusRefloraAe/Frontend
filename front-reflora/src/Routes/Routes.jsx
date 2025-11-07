@@ -8,7 +8,9 @@ import Cadastro from '../pages/Cadastro/Cadastro';
 import RedefinirSenha from '../pages/RedefinirSenha/RedefinirSenha';
 import Layout from "../components/MenuLateral/Layout";
 import GerenciarSementesLayout from "../pages/GerenciarSementes/GerenciarSementesLayout";
+
 import GerenciarCanteirosLayout from "../pages/GerenciarCanteiros/GerenciarCanteirosLayout";
+import RelatorioCanteiro from "../pages/GerenciarCanteiros/RelatorioCanteiro/RelatorioCanteiro";
 import Configuracoes from '../pages/Configuracoes/Configuracoes';
 
 import DistribuicaoMudasLayout from "../pages/DistribuicaoMudas/DistribuicaoMudasLayout";
@@ -16,6 +18,12 @@ import TermoCompromisso from "../pages/DistribuicaoMudas/TermoCompromisso/TermoC
 
 import VistoriaLayout from "../pages/Vistoria/VistoriaLayout";
 import InsumoLayout from "../pages/Insumo/InsumoLayout";
+
+import Relatorios from "../pages/Relatorios/Relatorios";
+
+import RelatorioVistoria from '../pages/Vistoria/RelatorioVistoria/RelatorioVistoria';
+import GerarRelatorio from '../pages/GerenciarSementes/GerarRelatorio/GerarRelatorio';
+import GerarRelatorioInsumo from '../pages/Insumo/GerarRelatorioInsumo/GerarRelatorioInsumo';
 
 const AppRoutes = () => {
   return (
@@ -32,17 +40,24 @@ const AppRoutes = () => {
           <Route path="/home" element={<Home />} />
           <Route path="/banco-sementes" element={<BancoSementes />} />
 
-          {/* Gerenciar Sementes ... */}
-          <Route path="/gerenciar-sementes" element={<GerenciarSementesLayout />}/>
+          <Route path="/gerenciar-sementes" element={<GerenciarSementesLayout />} />
 
-          {/* Gerenciar Canteiros  */}
           <Route path="/gerenciar-canteiros" element={<GerenciarCanteirosLayout />} />
+
+          <Route path="/gerenciar-canteiros/relatorio" element={<RelatorioCanteiro />} />
+
+
           <Route path="/distribuicao-mudas" element={<DistribuicaoMudasLayout />} />
           <Route path="/termo-compromisso" element={<TermoCompromisso />} />
 
-          {/* Vistoria */}
           <Route path="/vistoria" element={<VistoriaLayout />} />
           <Route path="/insumo" element={<InsumoLayout />} />
+
+          <Route path="/relatorios" element={<Relatorios />} />
+
+          <Route path="/vistoria/relatorio-vistoria" element={<RelatorioVistoria />} />
+          <Route path="/insumo/relatorio-materiais" element={<GerarRelatorioInsumo tipo="materiais" />} />
+          <Route path="/gerenciamento-sementes/relatorio" element={<GerarRelatorio />} />
 
           <Route path="/configuracoes" element={<Configuracoes />} />
         </Route>

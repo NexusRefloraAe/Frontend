@@ -28,7 +28,7 @@ const Sidebar = ({ active, fixed }) => {
         <SidebarItem Icon={FaClipboardList} Text="Distribuir Mudas" onClick={() => navigate("/distribuicao-mudas")}/>
         <SidebarItem Icon={FaClipboardList} Text="Vistoria" onClick={() => navigate("/vistoria")} /> 
         <SidebarItem Icon={FaTools} Text="Gestão de Insumos" onClick={() => navigate("/insumo")} />
-        <SidebarItem Icon={FaChartBar} Text="Relatórios" onClick={() => navigate("/relatorio")} />
+        <SidebarItem Icon={FaChartBar} Text="Relatórios" onClick={() => navigate("/relatorios")} />
         <SidebarItem Icon={FaCog} Text="Configuração" onClick={() => navigate("/configuracoes")} />
         <SidebarItem Icon={FaSignOutAlt} Text="Sair" isLogout onClick={() => navigate("/login")} />
       </div>
