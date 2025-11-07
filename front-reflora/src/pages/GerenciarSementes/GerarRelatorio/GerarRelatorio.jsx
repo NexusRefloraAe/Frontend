@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
 import PainelCard from "../../../components/PainelCard/PainelCard";
-import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio"; // ✅ Novo
+import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio"; 
 import './GerarRelatorio.css';
 
 const GerarRelatorio = () => {
