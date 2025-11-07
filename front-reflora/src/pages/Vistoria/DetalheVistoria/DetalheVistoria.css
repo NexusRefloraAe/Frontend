@@ -1,0 +1,29 @@
+/* src/components/DetalheVistoria/DetalheVistoria.css */
+
+.detalhe-vistoria-info-custom p {
+  margin: 8px 0; /* Espaçamento entre as linhas */
+  line-height: 1.5;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.detalhe-vistoria-info-custom p strong {
+  color: #000;
+  margin-right: 8px;
+  font-weight: 600; /* Um pouco mais forte */
+}
+
+/* Layout especial para "Observações" (como na imagem) */
+.detalhe-vistoria-info-custom p.observacoes {
+  margin-top: 16px;
+  line-height: 1.6;
+}
+
+.detalhe-vistoria-info-custom p.observacoes strong {
+  display: block; /* O label "Observações" fica em cima */
+  margin-bottom: 4px;
+}
+
+.detalhe-vistoria-info-custom p.observacoes span {
+  color: #444; /* Texto da observação com cor mais suave */
+}
