@@ -1,95 +1,126 @@
 import React, { useState, useEffect } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
+import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio"; // 👈 Importado
+import './HistoricoFerramenta.css';
+
+import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico"; // 👈 Importado
 import EditarFerramenta from "../EditarFerramenta/EditarFerramenta";
 import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
-import './HistoricoFerramenta.css';
 
 const HistoricoFerramenta = () => {
     const DADOS_HISTORICO_FERRAMENTA_MOCK = [
-        { NomeInsumo: 'Ancinho', Data: '11/09/2025', Status: 'Entrada', Quantidade: 50, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
-        { NomeInsumo: 'Pá Grande', Data: '11/09/2025', Status: 'Emprestada', Quantidade: 10, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Ramil', ResponsavelRecebe: 'Arthur' },
-        { NomeInsumo: 'Enxada', Data: '11/09/2025', Status: 'Devolvida', Quantidade: 10, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
-        { NomeInsumo: 'Cavadeira', Data: '11/09/2025', Status: 'Emprestada', Quantidade: 75, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Ramil', ResponsavelRecebe: 'Arthur' },
-        { NomeInsumo: 'Regador', Data: '11/09/2025', Status: 'Entrada', Quantidade: 50, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
-        { NomeInsumo: 'Podão', Data: '12/09/2025', Status: 'Emprestada', Quantidade: 20, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Maria', ResponsavelRecebe: 'João' },
-        { NomeInsumo: 'Tesoura de Podar', Data: '13/09/2025', Status: 'Devolvida', Quantidade: 15, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'João', ResponsavelRecebe: 'Maria' },
-        { NomeInsumo: 'Rastelo', Data: '14/09/2025', Status: 'Entrada', Quantidade: 30, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Carlos', ResponsavelRecebe: 'Ana' },
-        { NomeInsumo: 'Martelo', Data: '15/09/2025', Status: 'Emprestada', Quantidade: 8, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Ana', ResponsavelRecebe: 'Carlos' },
-        { NomeInsumo: 'Serrote', Data: '16/09/2025', Status: 'Entrada', Quantidade: 12, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Pedro', ResponsavelRecebe: 'Lucas' },
+        // 👇 IDs adicionados
+        { id: 1, NomeInsumo: 'Ancinho', Data: '11/09/2025', Status: 'Entrada', Quantidade: 50, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
+        { id: 2, NomeInsumo: 'Pá Grande', Data: '11/09/2025', Status: 'Emprestada', Quantidade: 10, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Ramil', ResponsavelRecebe: 'Arthur' },
+        { id: 3, NomeInsumo: 'Enxada', Data: '11/09/2025', Status: 'Devolvida', Quantidade: 10, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
+        { id: 4, NomeInsumo: 'Cavadeira', Data: '11/09/2025', Status: 'Emprestada', Quantidade: 75, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Ramil', ResponsavelRecebe: 'Arthur' },
+        { id: 5, NomeInsumo: 'Regador', Data: '11/09/2025', Status: 'Entrada', Quantidade: 50, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
+        { id: 6, NomeInsumo: 'Podão', Data: '12/09/2025', Status: 'Emprestada', Quantidade: 20, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Maria', ResponsavelRecebe: 'João' },
+        { id: 7, NomeInsumo: 'Tesoura de Podar', Data: '13/09/2025', Status: 'Devolvida', Quantidade: 15, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'João', ResponsavelRecebe: 'Maria' },
+        { id: 8, NomeInsumo: 'Rastelo', Data: '14/09/2025', Status: 'Entrada', Quantidade: 30, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Carlos', ResponsavelRecebe: 'Ana' },
+        { id: 9, NomeInsumo: 'Martelo', Data: '15/09/2025', Status: 'Emprestada', Quantidade: 8, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Ana', ResponsavelRecebe: 'Carlos' },
+        { id: 10, NomeInsumo: 'Serrote', Data: '16/09/2025', Status: 'Entrada', Quantidade: 12, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Pedro', ResponsavelRecebe: 'Lucas' },
     ];
 
-    const [dados, setDados] = useState([]);
-    const [ferramentaEditando, setFerramentaEditando] = useState(null);
-    const [ferramentaExcluindo, setFerramentaExcluindo] = useState(null);
+    const [ferramentas, setFerramentas] = useState([]);
+    const [filtros, setFiltros] = useState({
+        nomeInsumo: '',
+        dataInicio: '',
+        dataFim: ''
+    });
+
+    // Estados unificados para controlar os modais
+    const [itemSelecionado, setItemSelecionado] = useState(null);
+    const [modalDetalheAberto, setModalDetalheAberto] = useState(false);
     const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
     const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
     
-    // Estados para paginação
-    const [paginaAtual, setPaginaAtual] = useState(1);
-    const [itensPorPagina, setItensPorPagina] = useState(5);
-    const [termoBusca, setTermoBusca] = useState('');
-
     useEffect(() => {
-        setDados(DADOS_HISTORICO_FERRAMENTA_MOCK);
+        setFerramentas(DADOS_HISTORICO_FERRAMENTA_MOCK);
     }, []);
 
-    const handleEditar = (ferramenta) => {
-        setFerramentaEditando(ferramenta);
+    // Lógica de Filtro
+    const handleFiltroChange = (name, value) => {
+        setFiltros(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handlePesquisar = () => {
+        const { nomeInsumo, dataInicio, dataFim } = filtros;
+        const dadosFiltrados = DADOS_HISTORICO_FERRAMENTA_MOCK.filter(item => {
+            const matchesNome = !nomeInsumo ||
+                item.NomeInsumo.toLowerCase().includes(nomeInsumo.toLowerCase());
+
+            let matchesData = true;
+            if (dataInicio || dataFim) {
+                const [day, month, year] = item.Data.split('/');
+                const itemDate = new Date(`${year}-${month}-${day}`);
+                const startDate = dataInicio ? new Date(dataInicio) : null;
+                const endDate = dataFim ? new Date(dataFim) : null;
+                
+                if (endDate) endDate.setDate(endDate.getDate() + 1); // Inclui o dia final
+
+                if (startDate && (isNaN(itemDate) || itemDate < startDate)) matchesData = false;
+                if (endDate && (isNaN(itemDate) || itemDate >= endDate)) matchesData = false;
+            }
+            return matchesNome && matchesData;
+        });
+        setFerramentas(dadosFiltrados);
+    };
+
+    // Handlers unificados para abrir os modais
+    const handleVisualizar = (item) => {
+        setItemSelecionado(item);
+        setModalDetalheAberto(true);
+    };
+
+    const handleEditar = (item) => {
+        setItemSelecionado(item);
+        setModalDetalheAberto(false);
         setModalEdicaoAberto(true);
     };
 
-    const handleExcluir = (ferramenta) => {
-        setFerramentaExcluindo(ferramenta);
+    const handleExcluir = (item) => {
+        setItemSelecionado(item);
+        setModalDetalheAberto(false);
         setModalExclusaoAberto(true);
     };
 
-    const handleSalvarEdicao = (dadosEditados) => {
-        setDados(prev => prev.map(item => 
-            item.NomeInsumo === ferramentaEditando.NomeInsumo && 
-            item.Data === ferramentaEditando.Data ? 
-            { 
-                ...item, 
-                NomeInsumo: dadosEditados.nomeInsumo,
-                Status: dadosEditados.status,
-                Quantidade: dadosEditados.quantidade,
-                UnidadeMedida: dadosEditados.unidadeMedida,
-                Data: dadosEditados.dataRegistro,
-                ResponsavelEntrega: dadosEditados.responsavelEntrega,
-                ResponsavelRecebe: dadosEditados.responsavelReceber
-            } : item
-        ));
-        
-        console.log("Ferramenta atualizada:", dadosEditados);
+    // Handlers para fechar/salvar
+    const handleFecharModalDetalhe = () => {
+        setModalDetalheAberto(false);
+        setItemSelecionado(null);
+    };
+
+    const handleSalvarEdicao = (dadosAtualizados) => {
+        setFerramentas(prev =>
+            prev.map(item =>
+                item.id === dadosAtualizados.id ? dadosAtualizados : item
+            )
+        );
+        console.log("Ferramenta atualizada:", dadosAtualizados);
         setModalEdicaoAberto(false);
-        setFerramentaEditando(null);
+        setItemSelecionado(null);
     };
 
     const handleConfirmarExclusao = () => {
-        if (ferramentaExcluindo) {
-            setDados(prev => prev.filter(item => 
-                !(item.NomeInsumo === ferramentaExcluindo.NomeInsumo && 
-                  item.Data === ferramentaExcluindo.Data)
-            ));
-            console.log("Ferramenta excluída:", ferramentaExcluindo);
+        if (itemSelecionado) {
+            setFerramentas(prev =>
+                prev.filter(item => item.id !== itemSelecionado.id)
+            );
+            console.log("Ferramenta excluída:", itemSelecionado);
         }
         setModalExclusaoAberto(false);
-        setFerramentaExcluindo(null);
+        setItemSelecionado(null);
     };
 
     const handleCancelarEdicao = () => {
         setModalEdicaoAberto(false);
-        setFerramentaEditando(null);
+        setItemSelecionado(null);
     };
 
     const handleCancelarExclusao = () => {
         setModalExclusaoAberto(false);
-        setFerramentaExcluindo(null);
-    };
-
-    // Função para lidar com a busca
-    const handleBuscaChange = (termo) => {
-        setTermoBusca(termo);
-        setPaginaAtual(1);
+        setItemSelecionado(null);
     };
 
     const colunas = [
@@ -102,14 +133,76 @@ const HistoricoFerramenta = () => {
         { key: "ResponsavelRecebe", label: "Responsável por Receber" },
     ];
 
+    // Define os campos para o ModalDetalheGenerico
+    const camposDetalhes = [
+        { label: "Nome do Insumo", key: "NomeInsumo" },
+        { label: "Data", key: "Data" },
+        { label: "Status", key: "Status" },
+        { label: "Quantidade", key: "Quantidade" },
+        { label: "Unidade de Medida", key: "UnidadeMedida" },
+        { label: "Resp. Entrega", key: "ResponsavelEntrega" },
+        { label: "Resp. Recebimento", key: "ResponsavelRecebe" },
+    ];
+
     return (
         <div className="historico-ferramenta-container">
+            {/* Layout de Filtros (ADICIONADO) */}
+            <div className="header-filtros">
+                <h1>Histórico de Movimentação</h1>
+                <FiltrosRelatorio
+                    filtros={filtros}
+                    onFiltroChange={handleFiltroChange}
+                    onPesquisar={handlePesquisar}
+                    buttonText="Pesquisar"
+                    buttonVariant="success"
+                    // Passa os campos de filtro específicos
+                    camposFiltro={[
+                        { name: 'nomeInsumo', label: 'Nome da Ferramenta', type: 'text' },
+                        { name: 'dataInicio', label: 'Data Início', type: 'date' },
+                        { name: 'dataFim', label: 'Data Fim', type: 'date' },
+                    ]}
+                />
+            </div>
+            
+            <div className="tabela-wrapper">
+                <TabelaComBuscaPaginacao
+                    titulo="Histórico de Movimentação de Ferramentas"
+                    dados={ferramentas}
+                    colunas={colunas}
+                    chaveBusca="NomeInsumo"
+                    mostrarBusca={true}
+                    mostrarAcoes={true}
+                    // Handlers atualizados
+                    onEditar={handleEditar}
+                    onConfirmar={handleVisualizar} // 👈 'onConfirmar' chama 'handleVisualizar'
+                    onExcluir={handleExcluir}
+                />
+            </div>
+
+            {/* Renderização dos 3 modais */}
+
+            {/* MODAL DE DETALHES (Visualizar) - (ADICIONADO) */}
+            {modalDetalheAberto && itemSelecionado && (
+                <ModalDetalheGenerico
+                    item={itemSelecionado} 
+                    titulo="Detalhes da Movimentação"
+                    camposDetalhes={camposDetalhes} 
+                    onClose={handleFecharModalDetalhe}
+                    onEditar={() => handleEditar(itemSelecionado)}
+                    onExcluir={() => handleExcluir(itemSelecionado)}
+                    mostrarHistorico={false}
+                    mostrarExportar={false}
+                    mostrarAcoes={true}
+                />
+            )}
+
             {/* MODAL DE EDIÇÃO DE FERRAMENTA */}
             <EditarFerramenta
                 isOpen={modalEdicaoAberto}
                 onClose={handleCancelarEdicao}
-                ferramenta={ferramentaEditando}
                 onSalvar={handleSalvarEdicao}
+                // Prop padronizada para 'itemParaEditar'
+                itemParaEditar={itemSelecionado} 
             />
 
             {/* MODAL DE EXCLUSÃO */}
@@ -117,33 +210,12 @@ const HistoricoFerramenta = () => {
                 isOpen={modalExclusaoAberto}
                 onClose={handleCancelarExclusao}
                 onConfirm={handleConfirmarExclusao}
-                nomeItem={ferramentaExcluindo?.NomeInsumo}
+                nomeItem={itemSelecionado?.NomeInsumo} // Usa 'itemSelecionado'
                 titulo="Excluir Ferramenta"
-                mensagem={`Tem certeza que deseja excluir "${ferramentaExcluindo?.NomeInsumo}" do histórico? Esta ação não pode ser desfeita.`}
+                mensagem={`Tem certeza que deseja excluir "${itemSelecionado?.NomeInsumo}" do histórico? Esta ação não pode ser desfeita.`}
                 textoConfirmar="Excluir"
                 textoCancelar="Cancelar"
             />
-
-            <div className="tabela-wrapper">
-                <TabelaComBuscaPaginacao
-                    titulo="Histórico de Movimentação de Ferramentas"
-                    dados={dados}
-                    colunas={colunas}
-                    chaveBusca="NomeInsumo"
-                    mostrarBusca={true}
-                    mostrarAcoes={true}
-                    onEditar={handleEditar}
-                    onConfirmar={(item) => console.log("Visualizar:", item)}
-                    onExcluir={handleExcluir}
-                    // Props de paginação ADICIONADAS
-                    paginaAtual={paginaAtual}
-                    itensPorPagina={itensPorPagina}
-                    onPaginaChange={setPaginaAtual}
-                    onItensPorPaginaChange={setItensPorPagina}
-                    onBuscaChange={handleBuscaChange}
-                    termoBusca={termoBusca}
-                />
-            </div>
         </div>
     );
 };

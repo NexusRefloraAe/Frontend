@@ -1,96 +1,129 @@
 import React, { useState, useEffect } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
+import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio"; // 👈 Importado
+import './HistoricoMaterial.css';
+
+import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico"; // 👈 Importado
 import EditarMaterial from "../EditarMaterial/EditarMaterial";
 import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
-import './HistoricoMaterial.css';
 
 const HistoricoMaterial = () => {
   const DADOS_HISTORICO_MATERIAL_MOCK = [
-    { NomeInsumo: 'Adubo', Data: '11/09/2025', Status: 'Entrada', Quantidade: 500, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
-    { NomeInsumo: 'Terra', Data: '11/09/2025', Status: 'Saída', Quantidade: 100, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Ramil', ResponsavelRecebe: 'Arthur' },
-    { NomeInsumo: 'Adubo', Data: '11/09/2025', Status: 'Saída', Quantidade: 100, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
-    { NomeInsumo: 'Substrato', Data: '11/09/2025', Status: 'Saída', Quantidade: 750, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Ramil', ResponsavelRecebe: 'Arthur' },
-    { NomeInsumo: 'Terra', Data: '11/09/2025', Status: 'Entrada', Quantidade: 500, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
-    { NomeInsumo: 'Sementes', Data: '12/09/2025', Status: 'Entrada', Quantidade: 2000, UnidadeMedida: 'und', ResponsavelEntrega: 'Maria', ResponsavelRecebe: 'João' },
-    { NomeInsumo: 'Fertilizante', Data: '13/09/2025', Status: 'Saída', Quantidade: 300, UnidadeMedida: 'L', ResponsavelEntrega: 'João', ResponsavelRecebe: 'Maria' },
-    { NomeInsumo: 'Adubo Orgânico', Data: '14/09/2025', Status: 'Entrada', Quantidade: 1000, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Carlos', ResponsavelRecebe: 'Ana' },
-    { NomeInsumo: 'Plástico para Estufa', Data: '15/09/2025', Status: 'Saída', Quantidade: 50, UnidadeMedida: 'm²', ResponsavelEntrega: 'Ana', ResponsavelRecebe: 'Carlos' },
-    { NomeInsumo: 'Água', Data: '16/09/2025', Status: 'Entrada', Quantidade: 10000, UnidadeMedida: 'L', ResponsavelEntrega: 'Pedro', ResponsavelRecebe: 'Lucas' },
+    // 👇 IDs adicionados para consistência com a lógica de 'itemSelecionado'
+    { id: 1, NomeInsumo: 'Adubo', Data: '11/09/2025', Status: 'Entrada', Quantidade: 500, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
+    { id: 2, NomeInsumo: 'Terra', Data: '11/09/2025', Status: 'Saída', Quantidade: 100, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Ramil', ResponsavelRecebe: 'Arthur' },
+    { id: 3, NomeInsumo: 'Adubo', Data: '11/09/2025', Status: 'Saída', Quantidade: 100, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
+    { id: 4, NomeInsumo: 'Substrato', Data: '11/09/2025', Status: 'Saída', Quantidade: 750, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Ramil', ResponsavelRecebe: 'Arthur' },
+    { id: 5, NomeInsumo: 'Terra', Data: '11/09/2025', Status: 'Entrada', Quantidade: 500, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
+    { id: 6, NomeInsumo: 'Sementes', Data: '12/09/2025', Status: 'Entrada', Quantidade: 2000, UnidadeMedida: 'und', ResponsavelEntrega: 'Maria', ResponsavelRecebe: 'João' },
+    { id: 7, NomeInsumo: 'Fertilizante', Data: '13/09/2025', Status: 'Saída', Quantidade: 300, UnidadeMedida: 'L', ResponsavelEntrega: 'João', ResponsavelRecebe: 'Maria' },
+    { id: 8, NomeInsumo: 'Adubo Orgânico', Data: '14/09/2025', Status: 'Entrada', Quantidade: 1000, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Carlos', ResponsavelRecebe: 'Ana' },
+    { id: 9, NomeInsumo: 'Plástico para Estufa', Data: '15/09/2025', Status: 'Saída', Quantidade: 50, UnidadeMedida: 'm²', ResponsavelEntrega: 'Ana', ResponsavelRecebe: 'Carlos' },
+    { id: 10, NomeInsumo: 'Água', Data: '16/09/2025', Status: 'Entrada', Quantidade: 10000, UnidadeMedida: 'L', ResponsavelEntrega: 'Pedro', ResponsavelRecebe: 'Lucas' },
   ];
 
-  const [dados, setDados] = useState([]);
-  const [materialEditando, setMaterialEditando] = useState(null);
-  const [materialExcluindo, setMaterialExcluindo] = useState(null);
+  const [materiais, setMateriais] = useState([]);
+  const [filtros, setFiltros] = useState({
+    nomeInsumo: '', // 👈 Filtro específico
+    dataInicio: '',
+    dataFim: ''
+  });
+
+  // Estados unificados para controlar os modais (padrão Historico.jsx)
+  const [itemSelecionado, setItemSelecionado] = useState(null);
+  const [modalDetalheAberto, setModalDetalheAberto] = useState(false);
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
   
-  // Estados para paginação
-  const [paginaAtual, setPaginaAtual] = useState(1);
-  const [itensPorPagina, setItensPorPagina] = useState(5);
-  const [termoBusca, setTermoBusca] = useState('');
-
   useEffect(() => {
-    setDados(DADOS_HISTORICO_MATERIAL_MOCK);
+    setMateriais(DADOS_HISTORICO_MATERIAL_MOCK);
   }, []);
 
-  const handleEditar = (material) => {
-    setMaterialEditando(material);
+  // Lógica de Filtro (padrão Historico.jsx)
+  const handleFiltroChange = (name, value) => {
+    setFiltros(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handlePesquisar = () => {
+    const { nomeInsumo, dataInicio, dataFim } = filtros;
+    const dadosFiltrados = DADOS_HISTORICO_MATERIAL_MOCK.filter(item => {
+      const matchesNome = !nomeInsumo ||
+        item.NomeInsumo.toLowerCase().includes(nomeInsumo.toLowerCase());
+
+      let matchesData = true;
+      if (dataInicio || dataFim) {
+        // Assume formato DD/MM/AAAA. Ajuste se necessário.
+        const [day, month, year] = item.Data.split('/');
+        const itemDate = new Date(`${year}-${month}-${day}`);
+        const startDate = dataInicio ? new Date(dataInicio) : null;
+        const endDate = dataFim ? new Date(dataFim) : null;
+
+        // Adiciona 1 dia ao endDate para incluir o dia final na busca
+        if (endDate) endDate.setDate(endDate.getDate() + 1);
+
+        if (startDate && (isNaN(itemDate) || itemDate < startDate)) matchesData = false;
+        if (endDate && (isNaN(itemDate) || itemDate >= endDate)) matchesData = false;
+      }
+      return matchesNome && matchesData;
+    });
+    setMateriais(dadosFiltrados);
+  };
+
+  // Handlers unificados para abrir os modais (padrão Historico.jsx)
+  const handleVisualizar = (item) => {
+    setItemSelecionado(item);
+    setModalDetalheAberto(true);
+  };
+
+  const handleEditar = (item) => {
+    setItemSelecionado(item);
+    setModalDetalheAberto(false); // Fecha o de detalhe se estiver aberto
     setModalEdicaoAberto(true);
   };
 
-  const handleExcluir = (material) => {
-    setMaterialExcluindo(material);
+  const handleExcluir = (item) => {
+    setItemSelecionado(item);
+    setModalDetalheAberto(false); // Fecha o de detalhe se estiver aberto
     setModalExclusaoAberto(true);
   };
 
-  const handleSalvarEdicao = (dadosEditados) => {
-    setDados(prev => prev.map(item => 
-      item.NomeInsumo === materialEditando.NomeInsumo && 
-      item.Data === materialEditando.Data ? 
-      { 
-        ...item, 
-        NomeInsumo: dadosEditados.nomeInsumo,
-        Status: dadosEditados.status,
-        Quantidade: dadosEditados.quantidade,
-        UnidadeMedida: dadosEditados.unidadeMedida,
-        Data: dadosEditados.dataRegistro,
-        ResponsavelEntrega: dadosEditados.responsavelEntrega,
-        ResponsavelRecebe: dadosEditados.responsavelReceber
-      } : item
-    ));
-    
-    console.log("Material atualizado:", dadosEditados);
+  // Handlers para fechar/salvar (padrão Historico.jsx)
+  const handleFecharModalDetalhe = () => {
+    setModalDetalheAberto(false);
+    setItemSelecionado(null);
+  };
+
+  const handleSalvarEdicao = (dadosAtualizados) => {
+    setMateriais(prev =>
+      prev.map(item =>
+        // Assume que 'dadosAtualizados' contém o 'id'
+        item.id === dadosAtualizados.id ? dadosAtualizados : item
+      )
+    );
     setModalEdicaoAberto(false);
-    setMaterialEditando(null);
+    setItemSelecionado(null);
   };
 
   const handleConfirmarExclusao = () => {
-    if (materialExcluindo) {
-      setDados(prev => prev.filter(item => 
-        !(item.NomeInsumo === materialExcluindo.NomeInsumo && 
-          item.Data === materialExcluindo.Data)
-      ));
-      console.log("Material excluído:", materialExcluindo);
+    if (itemSelecionado) {
+      setMateriais(prev =>
+        prev.filter(item => item.id !== itemSelecionado.id) // Usa o ID
+      );
     }
     setModalExclusaoAberto(false);
-    setMaterialExcluindo(null);
+    setItemSelecionado(null);
   };
 
   const handleCancelarEdicao = () => {
     setModalEdicaoAberto(false);
-    setMaterialEditando(null);
+    setItemSelecionado(null);
   };
 
   const handleCancelarExclusao = () => {
     setModalExclusaoAberto(false);
-    setMaterialExcluindo(null);
+    setItemSelecionado(null);
   };
 
-  // Função para lidar com a busca
-  const handleBuscaChange = (termo) => {
-    setTermoBusca(termo);
-    setPaginaAtual(1);
-  };
 
   const colunas = [
     { key: "NomeInsumo", label: "Nome do Insumo" },
@@ -102,14 +135,84 @@ const HistoricoMaterial = () => {
     { key: "ResponsavelRecebe", label: "Responsável por Receber" },
   ];
 
+  // Define os campos para o ModalDetalheGenerico
+  const camposDetalhes = [
+    { label: "Nome do Insumo", key: "NomeInsumo" },
+    { label: "Data", key: "Data" },
+    { label: "Status", key: "Status" },
+    { label: "Quantidade", key: "Quantidade" },
+    { label: "Unidade de Medida", key: "UnidadeMedida" },
+    { label: "Resp. Entrega", key: "ResponsavelEntrega" },
+    { label: "Resp. Recebimento", key: "ResponsavelRecebe" },
+  ];
+
   return (
     <div className="historico-material-container">
-      {/* MODAL DE EDIÇÃO DE MATERIAL */}
+      {/* Layout de Filtros (padrão Historico.jsx) */}
+      <div className="header-filtros">
+        <h1>Histórico de Movimentação</h1>
+        <FiltrosRelatorio
+          filtros={filtros}
+          onFiltroChange={handleFiltroChange}
+          onPesquisar={handlePesquisar}
+          buttonText="Pesquisar"
+          buttonVariant="success"
+          // Passa os campos de filtro específicos para este componente
+          camposFiltro={[
+             { name: 'nomeInsumo', label: 'Nome do Insumo', type: 'text' },
+             { name: 'dataInicio', label: 'Data Início', type: 'date' },
+             { name: 'dataFim', label: 'Data Fim', type: 'date' },
+          ]}
+        />
+      </div>
+
+      <div className="tabela-wrapper">
+        <TabelaComBuscaPaginacao
+          titulo="Histórico de Movimentação de Materiais"
+          dados={materiais}
+          colunas={colunas}
+          chaveBusca="NomeInsumo"
+          mostrarBusca={true}
+          mostrarAcoes={true}
+
+          // Handlers atualizados
+          onEditar={handleEditar}
+          onExcluir={handleExcluir}
+          onConfirmar={handleVisualizar} // 👈 'onConfirmar' chama 'handleVisualizar'
+        />
+      </div>
+
+      {/* Renderização dos 3 modais */}
+
+      {/* MODAL DE DETALHES (Visualizar) - (padrão Historico.jsx) */}
+      {modalDetalheAberto && itemSelecionado && (
+        <ModalDetalheGenerico
+          item={itemSelecionado} 
+          titulo="Detalhes da Movimentação"
+          
+          // Usa 'camposDetalhes' para renderizar os dados
+          camposDetalhes={camposDetalhes} 
+
+          onClose={handleFecharModalDetalhe}
+          onEditar={() => handleEditar(itemSelecionado)}
+          onExcluir={() => handleExcluir(itemSelecionado)}
+
+          // Configurações visuais
+          mostrarHistorico={false}
+          mostrarExportar={false}
+          mostrarAcoes={true}
+        >
+          {/* Poderia adicionar filhos customizados aqui, mas 'camposDetalhes' já resolve */}
+        </ModalDetalheGenerico>
+      )}
+
+      {/* MODAL DE EDIÇÃO */}
       <EditarMaterial
         isOpen={modalEdicaoAberto}
         onClose={handleCancelarEdicao}
-        material={materialEditando}
-        onSalvar={handleSalvarEdicao}
+        onSave={handleSalvarEdicao}
+        // Prop renomeada para consistência (antes era 'material')
+        itemParaEditar={itemSelecionado} 
       />
 
       {/* MODAL DE EXCLUSÃO */}
@@ -117,33 +220,12 @@ const HistoricoMaterial = () => {
         isOpen={modalExclusaoAberto}
         onClose={handleCancelarExclusao}
         onConfirm={handleConfirmarExclusao}
-        nomeItem={materialExcluindo?.NomeInsumo}
-        titulo="Excluir Material"
-        mensagem={`Tem certeza que deseja excluir "${materialExcluindo?.NomeInsumo}" do histórico? Esta ação não pode ser desfeita.`}
+        nomeItem={itemSelecionado?.NomeInsumo} // Usa 'itemSelecionado'
+        titulo="Confirmar Exclusão"
+        mensagem={`Tem certeza que deseja excluir a movimentação do insumo "${itemSelecionado?.NomeInsumo}"?`}
         textoConfirmar="Excluir"
         textoCancelar="Cancelar"
       />
-
-      <div className="tabela-wrapper">
-        <TabelaComBuscaPaginacao
-          titulo="Histórico de Movimentação de Materiais"
-          dados={dados}
-          colunas={colunas}
-          chaveBusca="NomeInsumo"
-          mostrarBusca={true}
-          mostrarAcoes={true}
-          onEditar={handleEditar}
-          onConfirmar={(item) => console.log("Visualizar:", item)}
-          onExcluir={handleExcluir}
-          // Props de paginação ADICIONADAS
-          paginaAtual={paginaAtual}
-          itensPorPagina={itensPorPagina}
-          onPaginaChange={setPaginaAtual}
-          onItensPorPaginaChange={setItensPorPagina}
-          onBuscaChange={handleBuscaChange}
-          termoBusca={termoBusca}
-        />
-      </div>
     </div>
   );
 };
