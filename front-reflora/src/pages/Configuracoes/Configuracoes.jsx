@@ -1,4 +1,5 @@
-import React, { useState } from 'react';import PerfilUsuario from '../../components/PerfilUsuario/PerfilUsuario';
+import React, { useState } from 'react';
+import PerfilUsuario from '../../components/PerfilUsuario/PerfilUsuario';
 import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus';
 import ConfigSistema from '../../components/ConfigSistema/ConfigSistema'; 
 import './Configuracoes.css';

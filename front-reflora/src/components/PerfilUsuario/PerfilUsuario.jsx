@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react'; 
 import FormGeral from '../FormGeral/FormGeral';
-import Button from '../Button/Button';
-import Input from '../Input/Input'; // <-- 1. Importamos o Input
+import Input from '../Input/Input';
 import perfilusuarioIcon from '../../assets/perfilusuario.svg';
 import botaoEditarIcon from '../../assets/botaoeditar.svg';
 import botaoSalvarIcon from '../../assets/botaosalvar.svg';
 import botaoExcluirIcon from '../../assets/botaoexcluir.svg';
-import importarfotoIcon from '../../assets/importarfoto.svg';
 import './PerfilUsuario.css';
 
 const PerfilUsuario = () => {
@@ -18,21 +16,26 @@ const PerfilUsuario = () => {
     genero: 'Feminino',
     empresa: 'XXXXX',
     endereco: 'Rua X, Nº 00, Bairro, Cidade/Estado',
+    avatarFile: null, // Estado para guardar o arquivo
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // 2. Estado para controlar a pré-visualização da imagem
+  const [avatarPreview, setAvatarPreview] = useState(perfilusuarioIcon);
+  // 3. Ref para o input de arquivo oculto
+  const fileInputRef = useRef(null);
 
   const handleChange = (field) => (e) => {
     setUserData(prev => ({ ...prev, [field]: e.target.value }));
   };
 
   const handleSave = async (e) => {
-    // e.preventDefault() já é tratado pelo FormGeral
     setIsLoading(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Dados salvos:', userData);
+      console.log('Dados salvos (incluindo avatar):', userData);
       setIsEditing(false);
     } catch (error) {
       console.error('Erro ao salvar:', error);
@@ -43,34 +46,46 @@ const PerfilUsuario = () => {
 
   const handleCancel = () => {
     setIsEditing(false);
-    // TODO: Resetar os dados para o estado original (antes da edição)
-    // Por enquanto, apenas sai do modo de edição.
+    // Reseta a foto para a original se a edição for cancelada
+    setAvatarPreview(perfilusuarioIcon);
+    setUserData(prev => ({ ...prev, avatarFile: null }));
+    // TODO: Resetar o resto dos dados
   };
 
   const handleDeleteAccount = () => {
+    // Substituir window.confirm por um modal customizado é o ideal
     if (window.confirm('Tem certeza que deseja excluir sua conta? Esta ação é irreversível.')) {
       console.log('Conta excluída:', userData.email);
     }
   };
 
-  const handleTrocarFoto = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        console.log('Foto selecionada:', file.name);
-      }
-    };
-    input.click();
+  // 4. Função que lê o arquivo e atualiza o estado
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Guarda o arquivo para upload
+      setUserData(prev => ({ ...prev, avatarFile: file }));
+      
+      // Cria a pré-visualização
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result); // base64 string
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
-  // 2. O 'fieldsConfig' foi REMOVIDO daqui.
+  // 5. Função para acionar o clique no input oculto
+  const triggerFileInput = () => {
+    // Só permite o clique se estiver em modo de edição
+    if (isEditing) {
+      fileInputRef.current.click();
+    }
+  };
 
-  // A lógica de 'actions' está correta e permanece.
   const actionsConfig = isEditing
     ? [
+        // ... (configuração de ações 'isEditing' permanece a mesma)
         {
           type: 'button',
           variant: 'secondary',
@@ -81,12 +96,13 @@ const PerfilUsuario = () => {
         {
           type: 'submit',
           variant: 'primary',
-          children: isLoading ? 'Salvando...' : 'Salvar Alterações',
+          children: isLoading ? 'Salvando...' : 'Salvar Edições',
           icon: isLoading ? null : botaoSalvarIcon,
           disabled: isLoading,
         },
       ]
     : [
+        // ... (configuração de ações 'not isEditing' permanece a mesma)
         {
           type: 'button',
           variant: 'primary',
@@ -105,35 +121,54 @@ const PerfilUsuario = () => {
 
   return (
     <div className="perfil-usuario">
+      
+      {/* 6. Bloco do Avatar ATUALIZADO */}
       <div className="perfil-usuario__avatar-section">
-        <div className="perfil-usuario__avatar">
-          <img src={perfilusuarioIcon} alt="Avatar do Usuário" />
-          {isEditing && (
-            <div className="perfil-usuario__avatar-overlay">
-              <Button
-                variant="outline"
-                icon={importarfotoIcon}
-                onClick={handleTrocarFoto}
-                size="small"
-              >
-                Trocar Foto
-              </Button>
-            </div>
-          )}
+        {/* Usamos as classes do 'ImageUpload' como solicitado */}
+        <div className="image-upload-wrapper">
+          <div 
+            className="image-upload-container" 
+            onClick={triggerFileInput} // Aciona o input de arquivo
+            // Muda o cursor apenas se estiver editando
+            style={{ cursor: isEditing ? 'pointer' : 'default' }}
+          >
+            {/* Input de arquivo real, mas oculto */}
+            <input 
+              type="file" 
+              accept="image/*" 
+              onChange={handleFileChange} 
+              ref={fileInputRef} 
+              style={{ display: 'none' }} 
+            />
+            
+            {/* Renderiza a pré-visualização ou o ícone padrão.
+              Usamos classes diferentes para aplicar 'object-fit'
+            */}
+            <img 
+              src={avatarPreview} 
+              alt="Avatar" 
+              className={
+                avatarPreview === perfilusuarioIcon 
+                ? 'image-placeholder-icon' // Classe para o ícone padrão
+                : 'image-preview'          // Classe para a foto do usuário
+              }
+            />
+          </div>
         </div>
       </div>
 
       <FormGeral
         title={isEditing ? 'Editar Perfil' : 'Gerencie suas informações pessoais'}
-        // 3. A prop 'fields' foi removida
         actions={actionsConfig}
         onSubmit={handleSave}
         useGrid={true}
-        loading={isLoading} // O FormGeral usa 'loading' para desabilitar as 'actions'
+        loading={isLoading}
         layout="wide"
       >
-        {/* 4. Inputs renderizados como 'children' */}
-        
+        {/* Os campos <Input> permanecem exatamente os mesmos.
+          ...
+        */}
+
         {/* Nome Completo (span: 2) */}
         <div className="form-geral__campo--span-2">
           <Input
@@ -143,7 +178,7 @@ const PerfilUsuario = () => {
             value={userData.nomeCompleto}
             onChange={handleChange('nomeCompleto')}
             required={true}
-            readOnly={!isEditing || isLoading} // 5. Lógica de ReadOnly atualizada
+            readOnly={!isEditing || isLoading}
           />
         </div>
 
@@ -188,10 +223,6 @@ const PerfilUsuario = () => {
           value={userData.genero}
           onChange={handleChange('genero')}
           readOnly={!isEditing || isLoading}
-          // O seu Input.jsx (do prompt anterior) usa 'readOnly'
-          // Idealmente, ele deveria usar 'disabled' para <select>
-          // Mas estamos usando 'readOnly' para manter consistência
-          // com o seu código anterior.
           options={[
             { value: 'Feminino', label: 'Feminino' },
             { value: 'Masculino', label: 'Masculino' },
