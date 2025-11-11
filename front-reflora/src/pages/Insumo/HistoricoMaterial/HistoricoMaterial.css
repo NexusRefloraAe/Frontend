@@ -1,9 +1,52 @@
+/* HistoricoMaterial.css */
+
 .historico-material-container {
   width: 100%;
   padding: 1rem;
   background-color: #f8fafc;
   min-height: 100vh;
 }
+
+/* Cabeçalho com título e filtros (ADICIONADO) */
+.header-filtros {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.header-filtros h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+/* Estilo do FiltrosRelatorio (ADICIONADO) */
+.filtros-relatorio {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 1rem;
+  align-items: end;
+}
+
+@media (max-width: 1024px) {
+  .filtros-relatorio {
+    grid-template-columns: 1fr 1fr;
+  }
+  .botoes-container {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 768px) {
+  .filtros-relatorio {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 /* Tabela wrapper — com borda sutil e fundo branco */
 .tabela-wrapper {
@@ -24,7 +67,7 @@
   text-decoration-thickness: 2px;
 }
 
-/* Botão Exportar */
+/* Botão Exportar (Estilo existente) */
 .exportar-container {
   display: flex;
   justify-content: flex-end;
@@ -49,12 +92,13 @@
   border-color: #2ecc71;
 }
 
-/* Responsividade */
+/* Responsividade (Ajustada) */
 @media (max-width: 768px) {
   .historico-material-container {
     padding: 0.5rem;
   }
 
+  .header-filtros, /* (ADICIONADO) */
   .tabela-wrapper {
     padding: 1rem;
   }

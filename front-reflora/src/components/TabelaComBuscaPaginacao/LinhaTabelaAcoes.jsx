@@ -1,4 +1,4 @@
-import { FaEdit, FaCheck, FaTrash } from "react-icons/fa";
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa"; // <-- 1. Alterado aqui
 
 function LinhaTabelaAcoes({ item, colunas, onEditar, onConfirmar, onExcluir }) {
   const mostrarAcoes = onEditar || onConfirmar || onExcluir;
@@ -12,7 +12,7 @@ function LinhaTabelaAcoes({ item, colunas, onEditar, onConfirmar, onExcluir }) {
       {mostrarAcoes && (
         <td className="acoes">
           {onEditar && (
-            <button 
+            <button
               className="btn-icone btn-editar"
               onClick={() => onEditar(item)}
               title="Editar"
@@ -21,16 +21,16 @@ function LinhaTabelaAcoes({ item, colunas, onEditar, onConfirmar, onExcluir }) {
             </button>
           )}
           {onConfirmar && (
-            <button 
+            <button
               className="btn-icone btn-confirmar"
               onClick={() => onConfirmar(item)}
               title="Visualizar"
             >
-              <FaCheck className="icone" />
+              <FaEye className="icone" /> {/* <-- 2. Alterado aqui */}
             </button>
           )}
           {onExcluir && (
-            <button 
+            <button
               className="btn-icone btn-excluir"
               onClick={() => onExcluir(item)}
               title="Excluir"
