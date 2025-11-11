@@ -1,7 +1,12 @@
-/*  SISTEMA DE FONTES  */
+/*  SISTEMA DE FONTES  */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
+  /* ======================================
+    TEMA CLARO (Padrão)
+    ======================================
+  */
+
   /* PALETA DE CORES PRINCIPAIS */
   --cor-primaria: #1976d2;
   --cor-primaria-escura: #2a12cc;
@@ -10,11 +15,11 @@
   /* PALETA DE VERDES (Baseada na tela Reflora) */
   --cor-verde-primario: #2e7d32;      /* Verde principal */
   --cor-verde-escuro: #1c5a1a;        /* Verde escuro */
-  --cor-verde-medio: #4caf50;         /* Verde médio */
-  --cor-verde-claro: #81c784;         /* Verde claro */
+  --cor-verde-medio: #4caf50;        /* Verde médio */
+  --cor-verde-claro: #81c784;        /* Verde claro */
   --cor-verde-muito-claro: #c8e6c9;   /* Verde muito claro */
-  --cor-verde-background: #f1f8e9;    /* Verde de fundo suave */
-  --cor-verde-medio-escuro: #257024;        /* Verde medio escuro */
+  --cor-verde-background: #f1f8e9;   /* Verde de fundo suave */
+  --cor-verde-medio-escuro: #257024;     /* Verde medio escuro */
   --cor-verde-overlay: rgba(35, 208, 43, 0.3); /* Overlay verde suave */
 
   /* CORES DE TEXTO */
@@ -25,13 +30,13 @@
   --cor-texto-verde: #2e7d32;
 
   /* CORES DE FUNDO */
-  --cor-fundo-branco: #ffffff;
+  --cor-fundo-branco: #ffffff;       /* Usado para Cards */
   --cor-fundo-cinza: #f8f9fa;
   --cor-fundo-overlay: #f5f5f5;
-  --cor-fundo-verde-suave: #f8fbf8;
+  --cor-fundo-verde-suave: #f8fbf8;  /* Fundo principal do Body */
 
   /* CORES DE BORDA E LINHA */
-  --cor-borda-cinza: #e0e0e0;
+  --cor-borda-cinza: #e0e0e0;       /* Borda principal */
   --cor-borda-foco: #1976d2;
   --cor-borda-verde: #4caf50;
   --cor-borda-google: #dadce0;
@@ -79,7 +84,55 @@
   --altura-minima-tela: 100vh;
 }
 
-/*  CONFIGURAÇÕES BASE RESPONSIVAS  */
+/* ======================================
+  TEMA ESCURO (Quando [data-theme="dark"] é aplicado no <html>)
+  ======================================
+*/
+[data-theme="dark"] {
+  /* Os verdes precisam ser mais brilhantes para se destacar no escuro */
+  --cor-verde-primario: #4ade80;
+  --cor-verde-escuro: #369b5f;
+  --cor-verde-medio: #5fcf64;
+  --cor-verde-claro: #81c784; /* Pode manter ou ajustar */
+  --cor-verde-muito-claro: #374151; /* Usar para fundos sutis */
+  --cor-verde-background: #111c11; /* Fundo de tela bem escuro com tom verde */
+  --cor-verde-medio-escuro: #369b5f;
+  --cor-verde-overlay: rgba(74, 222, 128, 0.1);
+
+  /* Cores de Texto Invertidas */
+  --cor-texto-primario: #f9fafb;     /* Quase branco */
+  --cor-texto-secundario: #d1d5db;  /* Cinza claro */
+  --cor-texto-claro: #9ca3af;       /* Cinza mais escuro */
+  --cor-texto-branco: #ffffff;
+  --cor-texto-verde: #4ade80;
+
+  /* Fundos Invertidos */
+  --cor-fundo-branco: #1f2937;       /* Fundo do Card (cinza-azulado escuro) */
+  --cor-fundo-cinza: #111827;        /* Fundo secundário */
+  --cor-fundo-overlay: #374151;
+  --cor-fundo-verde-suave: #111827;  /* Fundo principal do Body (cinza-azulado bem escuro) */
+
+  /* Bordas Invertidas */
+  --cor-borda-cinza: #374151;       /* Borda principal */
+  --cor-borda-foco: #42a5f5;
+  --cor-borda-verde: #4ade80;
+  --cor-borda-google: #5f6368;
+
+  /* Cores de Estado (podem precisar de mais brilho) */
+  --cor-erro: #f87171;
+  --cor-sucesso: #4ade80;
+  --cor-aviso: #fbbf24;
+
+  /* Sombras (quase imperceptíveis no escuro, pode usar bordas) */
+  --cor-sombra: rgba(0, 0, 0, 0.1);
+  --cor-sombra-forte: rgba(0, 0, 0, 0.15);
+  --cor-sombra-verde: rgba(74, 222, 128, 0.05);
+}
+
+/* ======================================
+  ESTILOS BASE (Globais)
+  ======================================
+*/
 html {
   font-size: 16px;
 }
@@ -87,13 +140,14 @@ html {
 /* MOBILE - Telas menores que 768px */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  
+  /* IMPORTANTE: Agora usamos as variáveis que são trocadas pelo tema.
+    O 'body' usa o fundo principal e a cor de texto principal. 
+  */
   background-color: var(--cor-fundo-verde-suave);
   color: var(--cor-texto-primario);
-  line-height: 1.6;
-  font-size: var(--tamanho-fonte-sm);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background-color: var(--cor-fundo-verde-suave);
-  color: var(--cor-texto-primario);
+  transition: background-color 0.3s, color 0.3s; /* Transição suave */
+  
   line-height: 1.6;
   font-size: var(--tamanho-fonte-sm);
   min-height: 100vh;
@@ -113,4 +167,24 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+/* Classes de utilidade (Exemplo: Cards)
+  Garante que seus cards também troquem de cor
+*/
+.auth-form,
+.configuracoes-card,
+.tabela-wrapper,
+.header-filtros {
+  background-color: var(--cor-fundo-branco); /* Usa o fundo do card */
+  border: 1px solid var(--cor-borda-cinza);
+  color: var(--cor-texto-secundario);
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* Atualiza o avatar também */
+.image-upload-container {
+  background-color: var(--cor-fundo-cinza); /* Fundo do avatar */
+  border: 2px solid var(--cor-verde-primario);
+  transition: background-color 0.3s, border-color 0.3s;
 }
