@@ -5,25 +5,25 @@ import Input from "../../../components/Input/Input";
 const CadastrarPlantio = () => {
 
   const [formData, setFormData] = useState({
-    Lote: '',
-    NomePopular: '',
-    QtdSementes: 0, // <-- Mudei para number para o stepper funcionar
-    DataPlantio: '',
-    TipoPlantio: '',
-    QtdPlantada: 0,
-    CamaraFria: '',
+    lote: '',
+    nomePopular: '',
+    qntdSementes: 0,
+    dataPlantio: '',
+    tipoPlantio: '',
+    qntdPlantada: 0,
+
   });
 
   const handleCancel = (confirmar = true) => {
     const resetForm = () => {
       setFormData({
-        Lote: '',
-        NomePopular: '',
-        QtdSementes: 0, // <-- Também mudei aqui para number
-        DataPlantio: '',
-        TipoPlantio: '',
-        QtdPlantada: 0,
-        CamaraFria: '',
+        lote: '',
+        nomePopular: '',
+        qntdSementes: 0,
+        dataPlantio: '',
+        tipoPlantio: '',
+        qntdPlantada: 0,
+
       });
     };
 
@@ -117,13 +117,13 @@ const CadastrarPlantio = () => {
           type="number"
           value={formData.QtdSementes}
           onChange={handleChange('QtdSementes')} // Para digitação manual
-          onIncrement={()=> handleIncrement("QtdSementes")}   // Para o botão '+'
-          onDecrement={()=> handleDecrement("QtdSementes")}   // Para o botão '-'
+          onIncrement={() => handleIncrement("QtdSementes")}   // Para o botão '+'
+          onDecrement={() => handleDecrement("QtdSementes")}   // Para o botão '-'
           required={true}
 
 
         />
-  
+
 
         <Input
           label="Qtd plantada (und)"
@@ -131,8 +131,8 @@ const CadastrarPlantio = () => {
           type="number"
           value={formData.QtdPlantada}
           onChange={handleChange('QtdPlantada')} // Para digitação manual
-          onIncrement={()=> handleIncrement("QtdPlantada")}   // Para o botão '+'
-          onDecrement={()=> handleDecrement("QtdPlantada")}   // Para o botão '-'
+          onIncrement={() => handleIncrement("QtdPlantada")}   // Para o botão '+'
+          onDecrement={() => handleDecrement("QtdPlantada")}   // Para o botão '-'
           required={true}
 
 

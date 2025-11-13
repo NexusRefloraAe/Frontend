@@ -128,23 +128,23 @@ const EditarInspecao = ({ isOpen, onClose, onSalvar, inspecao }) => {
                     <Input
                         label="Lote"
                         name="lote"
-                        type="select"
+                        type="text"
                         value={formData.lote}
                         onChange={handleChange('lote')}
                         required={true}
                         options={[ { value: 'A001', label: 'A001' }, /* ...outros... */ ]}
-                        disabled={true} // Opcional: desabilitar edição do Lote
+                        
                     />
 
                     <Input
                         label="Nome Popular"
                         name="nomePopular"
-                        type="select"
+                        type="text"
                         value={formData.nomePopular}
                         onChange={handleChange('nomePopular')}
                         required={true}
                         options={[ { value: 'Ipê-amarelo', label: 'Ipê-amarelo' }, /* ...outros... */ ]}
-                        disabled={true} // Opcional: desabilitar edição
+                        
                     />
 
                     <Input

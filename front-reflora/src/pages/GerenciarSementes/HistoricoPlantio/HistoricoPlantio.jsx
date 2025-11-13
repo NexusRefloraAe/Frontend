@@ -6,21 +6,21 @@ import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
 
 const HistoricoPlantio = () => {
   const DADOS_SEMENTES_MOCK = [
-    { Lote: 'A001', Dataplantio: '10/10/2024', Nomepopular: 'Ipê-amarelo', QntdSementes: '2000 kg', Qntdplantada: 200, TipoPlantio: 'Sementeira' },
-    { Lote: 'A002', Dataplantio: '12/10/2024', Nomepopular: 'Jacarandá', QntdSementes: '1500 kg', Qntdplantada: 180, TipoPlantio: 'Saquinho' },
-    { Lote: 'A003', Dataplantio: '15/10/2024', Nomepopular: 'Pau-brasil', QntdSementes: '800 kg', Qntdplantada: 120, TipoPlantio: 'Chão' },
-    { Lote: 'A004', Dataplantio: '18/10/2024', Nomepopular: 'Cedro-rosa', QntdSementes: '2200 kg', Qntdplantada: 250, TipoPlantio: 'Sementeira' },
-    { Lote: 'A005', Dataplantio: '20/10/2024', Nomepopular: 'Jatobá', QntdSementes: '1900 kg', Qntdplantada: 210, TipoPlantio: 'Saquinho' },
-    { Lote: 'A006', Dataplantio: '22/10/2024', Nomepopular: 'Ipê-roxo', QntdSementes: '1600 kg', Qntdplantada: 190, TipoPlantio: 'Chão' },
-    { Lote: 'A007', Dataplantio: '25/10/2024', Nomepopular: 'Angico', QntdSementes: '2400 kg', Qntdplantada: 260, TipoPlantio: 'Sementeira' },
-    { Lote: 'A008', Dataplantio: '28/10/2024', Nomepopular: 'Sucupira', QntdSementes: '1300 kg', Qntdplantada: 175, TipoPlantio: 'Saquinho' },
-    { Lote: 'A009', Dataplantio: '30/10/2024', Nomepopular: 'Castanheira', QntdSementes: '3000 kg', Qntdplantada: 300, TipoPlantio: 'Chão' },
-    { Lote: 'A010', Dataplantio: '02/11/2024', Nomepopular: 'Ipê-branco', QntdSementes: '1700 kg', Qntdplantada: 195, TipoPlantio: 'Saquinho' },
-    { Lote: 'A011', Dataplantio: '05/11/2024', Nomepopular: 'Sibipiruna', QntdSementes: '2100 kg', Qntdplantada: 230, TipoPlantio: 'Sementeira' },
-    { Lote: 'A012', Dataplantio: '08/11/2024', Nomepopular: 'Pau-ferro', QntdSementes: '1400 kg', Qntdplantada: 185, TipoPlantio: 'Chão' },
-    { Lote: 'A013', Dataplantio: '10/11/2024', Nomepopular: 'Jequitibá', QntdSementes: '2600 kg', Qntdplantada: 280, TipoPlantio: 'Saquinho' },
-    { Lote: 'A014', Dataplantio: '12/11/2024', Nomepopular: 'Caroba', QntdSementes: '1100 kg', Qntdplantada: 150, TipoPlantio: 'Sementeira' },
-    { Lote: 'A015', Dataplantio: '15/11/2024', Nomepopular: 'Embaúba', QntdSementes: '900 kg', Qntdplantada: 130, TipoPlantio: 'Chão' }
+    { lote: 'A001', dataPlantio: '10/10/2024', nomePopular: 'Ipê-amarelo', qntdSementes: 2000 , qntdPlantada: 200, tipoPlantio: 'Sementeira' },
+    { lote: 'A002', dataPlantio: '12/10/2024', nomePopular: 'Jacarandá', qntdSementes: 1500 , qntdPlantada: 180, tipoPlantio: 'Saquinho' },
+    { lote: 'A003', dataPlantio: '15/10/2024', nomePopular: 'Pau-brasil', qntdSementes: 800 , qntdPlantada: 120, tipoPlantio: 'Chão' },
+    { lote: 'A004', dataPlantio: '18/10/2024', nomePopular: 'Cedro-rosa', qntdSementes: 2200 , qntdPlantada: 250, tipoPlantio: 'Sementeira' },
+    { lote: 'A005', dataPlantio: '20/10/2024', nomePopular: 'Jatobá', qntdSementes: 1900 , qntdPlantada: 210, tipoPlantio: 'Saquinho' },
+    { lote: 'A006', dataPlantio: '22/10/2024', nomePopular: 'Ipê-roxo', qntdSementes: 1600 , qntdPlantada: 190, tipoPlantio: 'Chão' },
+    { lote: 'A007', dataPlantio: '25/10/2024', nomePopular: 'Angico', qntdSementes: 2400 , qntdPlantada: 260, tipoPlantio: 'Sementeira' },
+    { lote: 'A008', dataPlantio: '28/10/2024', nomePopular: 'Sucupira', qntdSementes: 1300 , qntdPlantada: 175, tipoPlantio: 'Saquinho' },
+    { lote: 'A009', dataPlantio: '30/10/2024', nomePopular: 'Castanheira', qntdSementes: 3000 , qntdPlantada: 300, tipoPlantio: 'Chão' },
+    { lote: 'A010', dataPlantio: '02/11/2024', nomePopular: 'Ipê-branco', qntdSementes: 1700 , qntdPlantada: 195, tipoPlantio: 'Saquinho' },
+    { lote: 'A011', dataPlantio: '05/11/2024', nomePopular: 'Sibipiruna', qntdSementes: 2100 , qntdPlantada: 230, tipoPlantio: 'Sementeira' },
+    { lote: 'A012', dataPlantio: '08/11/2024', nomePopular: 'Pau-ferro', qntdSementes: 1400 , qntdPlantada: 185, tipoPlantio: 'Chão' },
+    { lote: 'A013', dataPlantio: '10/11/2024', nomePopular: 'Jequitibá', qntdSementes: 2600 , qntdPlantada: 280, tipoPlantio: 'Saquinho' },
+    { lote: 'A014', dataPlantio: '12/11/2024', nomePopular: 'Caroba', qntdSementes: 1100 , qntdPlantada: 150, tipoPlantio: 'Sementeira' },
+    { lote: 'A015', dataPlantio: '15/11/2024', nomePopular: 'Embaúba', qntdSementes: 900 , qntdPlantada: 130, tipoPlantio: 'Chão' },
   ];
 
   const [sementes, setSementes] = useState([]);
@@ -28,7 +28,7 @@ const HistoricoPlantio = () => {
   const [plantioEditando, setPlantioEditando] = useState(null);
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
 
-  const [plantioExcluindo,setPlantioExcluindo]= useState(null);
+  const [plantioExcluindo, setPlantioExcluindo] = useState(null);
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
 
   useEffect(() => {
@@ -44,14 +44,14 @@ const HistoricoPlantio = () => {
     setModalEdicaoAberto(true);
   };
   const handleSalvarEdicao = (dadosEditados) => {
-    setSementes((prev) => prev.map((item) => 
-      item.Lote === plantioEditando.Lote ? dadosEditados : item
-  ));
+    setSementes((prev) => prev.map((item) =>
+      item.lote === plantioEditando.lote ? dadosEditados : item
+    ));
     console.log("Plantio atualizado:", dadosEditados);
     setModalEdicaoAberto(false);
     setPlantioEditando(null);
   }
-   const handleCancelarEdicao = () => {
+  const handleCancelarEdicao = () => {
     setModalEdicaoAberto(false);
     setPlantioEditando(null);
   };
@@ -66,26 +66,27 @@ const HistoricoPlantio = () => {
     setModalExclusaoAberto(false);
   };
   const handleConfirmarExclusao = () => {
-    if(plantioExcluindo){
-      setSementes((prev) => prev.filter((item) => 
-        item.Lote !== plantioExcluindo.Lote
-    ));
-    console.log("Excluindo plantio:", plantioExcluindo);
+    if (plantioExcluindo) {
+      setSementes((prev) => prev.filter((item) =>
+        item.lote !== plantioExcluindo.lote
+      ));
+      console.log("Excluindo plantio:", plantioExcluindo);
     }
     setPlantioExcluindo(null);
     setModalExclusaoAberto(false);
-    
+
   }
 
   // 🧩 Definindo as colunas da tabela
-  const colunas = [
-    { key: "lote", label: "Lote" },
-    { key: "nomeopular", label: "Nome popular" },
-    { key: "dataPlantio", label: "Data de plantio" },
-    { key: "qntdSementes", label: "Qtd. Sementes (kg/g/un)" },
-    { key: "qntdPlantada", label: "Qtd. Plantada" },
-    { key: "tipoPlantio", label: "Tipo de Plantio" },
-  ];
+ const colunas = [
+  { key: "lote", label: "Lote" },
+  { key: "nomePopular", label: "Nome popular" },
+  { key: "dataPlantio", label: "Data de plantio" },
+  { key: "qntdSementes", label: "Qtd. Sementes (kg/g/un)" },
+  { key: "qntdPlantada", label: "Qtd. Plantada" },
+  { key: "tipoPlantio", label: "Tipo de Plantio" },
+];
+
 
   return (
     <div className="historico-container-banco">
@@ -95,12 +96,12 @@ const HistoricoPlantio = () => {
           onCancelar={handleCancelarEdicao}
           plantio={plantioEditando}
           onSalvar={handleSalvarEdicao}
-          />
+        />
       )}
-      
 
-      
-        
+
+
+
 
 
 
@@ -123,7 +124,7 @@ const HistoricoPlantio = () => {
             titulo="Histórico de Plantio"
             dados={sementes}
             colunas={colunas}
-            chaveBusca="Nomepopular"
+            chaveBusca="nomePopular"
             onEditar={handleEditar}
             onConfirmar={(item) => console.log("Confirmar:", item)}
             onExcluir={handleExcluir}

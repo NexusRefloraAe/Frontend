@@ -4,49 +4,56 @@ import Input from "../../../components/Input/Input";
 
 const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
   const [formData, setFormData] = useState({
-    Lote: '',
-    NomePopular: '',
-    QtndSementes: 0,
-    DataPlantio: '',
-    TipoPlantio: '',
-    Qntdplantada: 0,
-    CamaraFria: '',
+    lote: '',
+    nomePopular: '',
+    qntdSementes: 0,
+    dataPlantio: '',
+    tipoPlantio: '',
+    qntdPlantada: 0,
   });
+
   useEffect(() => {
     if (plantio) {
       setFormData({
-        Lote: plantio.Lote || '',
-        NomePopular: plantio.Nomepopular || '',
-        QntdSementes: plantio.QntdSementes || 0,
-        DataPlantio: plantio.DataPlantio || '',
-        TipoPlantio: plantio.TipoPlantio || '',
-        Qntdplantada: plantio.Qntdplantada || 0,
-        CamaraFria: plantio.CamaraFria || '',
+        lote: plantio.lote || '',
+        nomePopular: plantio.nomePopular || '',
+        qntdSementes: plantio.qntdSementes || 0,
+        dataPlantio: plantio.dataPlantio ? plantio.dataPlantio.split('/').reverse().join('-'): '',
+        tipoPlantio: plantio.tipoPlantio || '',
+        qntdPlantada: plantio.qntdPlantada || 0,
       });
     }
   }, [plantio]);
-  if (!isOpen) {
-    return null;
-  }
 
+  const handleCancel = (confirmar = true) => {
+    if (confirmar) {
+      if (window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
+        onCancelar(); // Chama a função do 'Historico.jsx'
+      }
+    } else {
+      onCancelar();
+    }
+  };
+
+  
   const handleSubmit = () => {
-        // 3. Formata os dados de volta e chama onSalvar
-        const dadosSalvos = {
-            ...plantio, // Mantém dados originais (como 'id')
-            ...formData, // Sobrescreve com dados do form
-            // Mapeia de volta para os nomes de chave originais (com letra maiúscula)
-            Lote: formData.Lote,
-            NomePopular: formData.NomePopular,
-            DataPlantio: formData.DataPlantio, 
-            QtdSementes: formData.QtdSementes,
-            TipoPlantio: formData.TipoPlantio,
-            QtdPlantada: formData.QtdPlantada,
-            CamaraFria: formData.CamaraFria,
-        };
-        
-        onSalvar(dadosSalvos);
-        onCancelar(); // Fecha o modal após salvar
+    // 3. Formata os dados de volta e chama onSalvar
+    const dadosSalvos = {
+      ...plantio, // Mantém dados originais (como 'id')
+      ...formData, // Sobrescreve com dados do form
+      // Mapeia de volta para os nomes de chave originais (com letra maiúscula)
+      lote: formData.lote,
+      nomePopular: formData.nomePopular,
+      dataPlantio: formData.dataPlantio.split('-').reverse().join('/'),
+      qntdSementes: formData.qntdSementes,
+      tipoPlantio: formData.tipoPlantio,
+      qntdPlantada: formData.qntdPlantada,
+
     };
+
+    onSalvar(dadosSalvos);
+    
+  };
 
   const handleChange = (field) => (e) => {
     const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
@@ -70,21 +77,26 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
       type: 'button',
       variant: 'action-secondary',
       children: 'Cancelar',
-      onClick: onCancelar, // Apenas fecha o modal
+      onClick: () => handleCancel(true), // Apenas fecha o modal
     },
     {
       type: 'submit',
       variant: 'primary',
       children: 'Salvar Edições', // Novo texto
     },
+    
   ];
+
+  if (!isOpen) {
+    return null;
+  }
   return (
     // 5. Estrutura do Modal
-    <div className="modal-overlay" onClick={onCancelar}>
+    <div className="modal-overlay" onClick={() => handleCancel(false)}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
 
         {/* Botão de fechar (opcional, mas bom para modais) */}
-        <button type="button" className="modal-close-button" onClick={onCancelar}>
+        <button type="button" className="modal-close-button" onClick={() => handleCancel(false)}>
           &times;
         </button>
 
@@ -99,42 +111,42 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
           <Input
             label="Lote"
             name="Lote"
-            type="select"
-            value={formData.Lote}
-            onChange={handleChange('Lote')}
+            type="text"
+            value={formData.lote}
+            onChange={handleChange('lote')}
             required={true}
             placeholder="A001" // Placeholder é usado pelo Input
-            disabled={true} // Opcional: desabilitar edição do Lote
+            
           />
 
           <Input
             label="Nome Popular"
-            name="Nomepopular"
-            type="select"
-            value={formData.NomePopular}
-            onChange={handleChange('Nomeopular')}
+            name="nomePopular"
+            type="text"
+            value={formData.nomePopular}
+            onChange={handleChange('nomePopular')}
             required={true}
             placeholder="Ipê"
-            disabled={true} // Opcional: desabilitar edição do Lote
+            
           />
-          
+
           <Input
             label="Data"
             name="DataPlantio"
             type="date"
-            value={formData.DataPlantio}
-            onChange={handleChange('DataPlantio')}
+            value={formData.dataPlantio}
+            onChange={handleChange('dataPlantio')}
             required={true}
             placeholder="xx/xx/xxxx"
           />
           <Input
             label="Qtd sementes (kg/g/und)"
-            name="QtdSementes"
+            name="qntdSementes"
             type="number"
-            value={formData.QtdSementes}
-            onChange={handleChange('QtdSementes')} // Para digitação manual
-            onIncrement={handleIncrement("QtdSementes")}   // Para o botão '+'
-            onDecrement={handleDecrement("QtdSementes")}   // Para o botão '-'
+            value={formData.qntdSementes}
+            onChange={handleChange('qntdSementes')}
+            onIncrement={handleIncrement('qntdSementes')}
+            onDecrement={handleDecrement('qntdSementes')}
             required={true}
 
 
@@ -145,10 +157,10 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
             label="Qtd plantada (und)"
             name="QtdPlantada"
             type="number"
-            value={formData.QtdPlantada}
-            onChange={handleChange('QtdPlantada')} // Para digitação manual
-            onIncrement={() => handleIncrement("QtdPlantada")}   // Para o botão '+'
-            onDecrement={() => handleDecrement("QtdPlantada")}   // Para o botão '-'
+            value={formData.qntdPlantada}
+            onChange={handleChange('qntdPlantada')} // Para digitação manual
+            onIncrement={handleIncrement("qntdPlantada")}   // Para o botão '+'
+            onDecrement={handleDecrement("qntdPlantada")}   // Para o botão '-'
             required={true}
 
 
@@ -158,8 +170,8 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
             label="Tipo de plantio"
             name="TipoPlantio"
             type="select"
-            value={formData.TipoPlantio}
-            onChange={handleChange('TipoPlantio')}
+            value={formData.tipoPlantio}
+            onChange={handleChange('tipoPlantio')}
             required={true}
             placeholder="Sementeira/saquinho/chão"
             options={[
