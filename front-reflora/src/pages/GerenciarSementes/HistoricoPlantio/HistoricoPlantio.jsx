@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
 import "./HistoricoPlantioStyler.css";
+import EditarPlantioSementes from "../EditarPlantioSementes/EditarPlantioSementes";
+import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
 
 const HistoricoPlantio = () => {
   const DADOS_SEMENTES_MOCK = [
@@ -23,22 +25,98 @@ const HistoricoPlantio = () => {
 
   const [sementes, setSementes] = useState([]);
 
+  const [plantioEditando, setPlantioEditando] = useState(null);
+  const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
+
+  const [plantioExcluindo,setPlantioExcluindo]= useState(null);
+  const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
+
   useEffect(() => {
     setSementes(DADOS_SEMENTES_MOCK);
   }, []);
 
+
+  // 3. Handlers para abrir/fechar modais
+
+
+  const handleEditar = (plantio) => {
+    setPlantioEditando(plantio);
+    setModalEdicaoAberto(true);
+  };
+  const handleSalvarEdicao = (dadosEditados) => {
+    setSementes((prev) => prev.map((item) => 
+      item.Lote === plantioEditando.Lote ? dadosEditados : item
+  ));
+    console.log("Plantio atualizado:", dadosEditados);
+    setModalEdicaoAberto(false);
+    setPlantioEditando(null);
+  }
+   const handleCancelarEdicao = () => {
+    setModalEdicaoAberto(false);
+    setPlantioEditando(null);
+  };
+
+
+  const handleExcluir = (plantio) => {
+    setPlantioExcluindo(plantio);
+    setModalExclusaoAberto(true);
+  };
+  const handleCancelarExclusao = () => {
+    setPlantioExcluindo(null);
+    setModalExclusaoAberto(false);
+  };
+  const handleConfirmarExclusao = () => {
+    if(plantioExcluindo){
+      setSementes((prev) => prev.filter((item) => 
+        item.Lote !== plantioExcluindo.Lote
+    ));
+    console.log("Excluindo plantio:", plantioExcluindo);
+    }
+    setPlantioExcluindo(null);
+    setModalExclusaoAberto(false);
+    
+  }
+
   // 🧩 Definindo as colunas da tabela
   const colunas = [
-    { key: "Lote", label: "Lote" },
-    { key: "Nomepopular", label: "Nome popular" },
-    { key: "Dataplantio", label: "Data de plantio" },
-    { key: "QntdSementes", label: "Qtd. Sementes (kg/g/un)" },
-    { key: "Qntdplantada", label: "Qtd. Plantada" },
-    { key: "TipoPlantio", label: "Tipo de Plantio" },
+    { key: "lote", label: "Lote" },
+    { key: "nomeopular", label: "Nome popular" },
+    { key: "dataPlantio", label: "Data de plantio" },
+    { key: "qntdSementes", label: "Qtd. Sementes (kg/g/un)" },
+    { key: "qntdPlantada", label: "Qtd. Plantada" },
+    { key: "tipoPlantio", label: "Tipo de Plantio" },
   ];
 
   return (
     <div className="historico-container-banco">
+      {modalEdicaoAberto && (
+        <EditarPlantioSementes
+          isOpen={modalEdicaoAberto}
+          onCancelar={handleCancelarEdicao}
+          plantio={plantioEditando}
+          onSalvar={handleSalvarEdicao}
+          />
+      )}
+      
+
+      
+        
+
+
+
+
+      <ModalExcluir
+        isOpen={modalExclusaoAberto}
+        onClose={handleCancelarExclusao}
+        onConfirm={handleConfirmarExclusao}
+        nomeItem={plantioExcluindo?.Nomepopular}
+        titulo="Excluir Plantio"
+        mensagem={`Você tem certeza que deseja excluir o plantio do lote ${plantioExcluindo?.Lote}?`}
+        textoConfirmar="Excluir"
+        textoCancelar="Cancelar"
+      />
+
+
       <div className="historico-content-banco">
         <main>
           <TabelaComBuscaPaginacao
@@ -46,9 +124,9 @@ const HistoricoPlantio = () => {
             dados={sementes}
             colunas={colunas}
             chaveBusca="Nomepopular"
-            onEditar={(item) => console.log("Editar:", item)}
+            onEditar={handleEditar}
             onConfirmar={(item) => console.log("Confirmar:", item)}
-            onExcluir={(item) => console.log("Excluir:", item)}
+            onExcluir={handleExcluir}
           />
         </main>
       </div>

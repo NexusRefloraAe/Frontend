@@ -8,10 +8,10 @@ const RelatorioCanteiro = () => {
   const DADOS_RELATORIO_CANTEIRO_MOCK = [
     { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '01/01/2025', QuantidadeEntrada: 350, DataSaida: '20/01/2025', QuantidadeSaida: 100, TempoNoCanteiro: '20 dias' },
     { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '01/01/2025', QuantidadeEntrada: 100, DataSaida: '05/01/2025', QuantidadeSaida: 50, TempoNoCanteiro: '5 dias' },
-    { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '01/01/2025', QuantidadeEntrada: 200, DataSaida: '10/01/2025', QuantidadeSaida: 100, TempoNoCanteiro: '10 dias' },
+    { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '05/01/2025', QuantidadeEntrada: 200, DataSaida: '10/01/2025', QuantidadeSaida: 100, TempoNoCanteiro: '10 dias' },
     { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '01/01/2025', QuantidadeEntrada: 50, DataSaida: '01/02/2025', QuantidadeSaida: 50, TempoNoCanteiro: '31 dias' },
-    { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '01/01/2025', QuantidadeEntrada: 900, DataSaida: '15/01/2025', QuantidadeSaida: 400, TempoNoCanteiro: '15 dias' },
-    { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '01/01/2025', QuantidadeEntrada: 400, DataSaida: '25/01/2025', QuantidadeSaida: 200, TempoNoCanteiro: '25 dias' },
+    { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '05/01/2025', QuantidadeEntrada: 900, DataSaida: '15/01/2025', QuantidadeSaida: 400, TempoNoCanteiro: '15 dias' },
+    { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '05/01/2025', QuantidadeEntrada: 400, DataSaida: '25/01/2025', QuantidadeSaida: 200, TempoNoCanteiro: '25 dias' },
     { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '01/01/2025', QuantidadeEntrada: 100, DataSaida: '01/02/2025', QuantidadeSaida: 100, TempoNoCanteiro: '31 dias' },
     { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '01/01/2025', QuantidadeEntrada: 100, DataSaida: '01/02/2025', QuantidadeSaida: 100, TempoNoCanteiro: '31 dias' },
     { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '01/01/2025', QuantidadeEntrada: 100, DataSaida: '01/02/2025', QuantidadeSaida: 100, TempoNoCanteiro: '31 dias' },
