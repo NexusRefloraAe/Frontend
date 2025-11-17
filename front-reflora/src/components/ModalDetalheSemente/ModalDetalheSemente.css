@@ -19,15 +19,14 @@
 }
 
 /* --- 2. O Card Branco (Conteúdo) --- */
-.modal-content {
+.modal-content-semente {
   background-color: white;
   border-radius: 20px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   
   /* Tamanho */
-  width: 70%;
+  width: 75%;
   max-width: 1200px; /* Largura máxima, como no protótipo */
-  
   
   /* Layout interno */
   padding: 24px 30px;
@@ -127,10 +126,11 @@
 }
 
 /* --- 6. Seção do Histórico (Inferior) --- */
-.historico-container {
+.historico-container-modal {
   margin-top: 24px;
+  max-height: 500px;
 }
-.historico-container h3 {
+.historico-container-modal h3 {
   font-size: 20px;
   text-align: center;
   color: #333;
@@ -158,6 +158,7 @@
 }
 .tabela-entrada {
   background-color: #257024; /* Verde */
+  width: 100%;
 }
 .tabela-saida {
   background-color: #D32F2F; /* Vermelho */

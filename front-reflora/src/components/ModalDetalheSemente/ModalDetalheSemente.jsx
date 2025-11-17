@@ -76,7 +76,7 @@ function ModalDetalheSemente({ semente, onClose }) {
     return (
         <>
             <div className='modal-overlay' onClick={onClose}>
-                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-content-semente" onClick={(e) => e.stopPropagation()}>
                     <button className='modal-close-button' onClick={onClose}>
                         <img src={closeIcon} alt="Fechar" />
                     </button>
@@ -108,7 +108,7 @@ function ModalDetalheSemente({ semente, onClose }) {
                         </div>
                     </div>
 
-                    <div className="historico-container">
+                    <div className="historico-container-modal">
                         <h3>Histórico de Movimentação</h3>
                         <div className="historico-tabelas">
                             <div className="tabela-wrapper">
