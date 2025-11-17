@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import Paginacao from '../Paginacao/Paginacao'
-import Button from '../Button/Button'
+import ExportButton from '../ExportButton/ExportButton'
 import TabelaHistorico from '../TabelaHistorico/TabelaHistorico'
 import ModalExcluir from '../ModalExcluir/ModalExcluir'
 import closeIcon from '../../assets/close.svg'
 import editIcon from '../../assets/edit.svg'
 import deleteIcon from '../../assets/delete.svg'
-import shareIcon from '../../assets/Share.svg'
 
 /**
  * @param {object} props
@@ -28,7 +27,7 @@ import shareIcon from '../../assets/Share.svg'
  * @param {boolean} props.mostrarExportar - Se mostra o botão de exportar
  * @param {ReactNode} props.children - Conteúdo adicional personalizado
  */
-function ModalDetalheGenerico({ 
+function ModalDetalheGenerico({
     item = {},
     titulo = 'Detalhes',
     camposDetalhes = [],
@@ -37,7 +36,7 @@ function ModalDetalheGenerico({
     dadosEntrada = [],
     dadosSaida = [],
     onCarregarHistorico,
-    onClose, 
+    onClose,
     onEditar,
     onExcluir,
     onExportar,
@@ -51,6 +50,17 @@ function ModalDetalheGenerico({
     const [historicoEntrada, setHistoricoEntrada] = useState(dadosEntrada);
     const [historicoSaida, setHistoricoSaida] = useState(dadosSaida);
     const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
+
+    const dadosParaExportar = [
+        ...historicoEntrada.map(item => ({ ...item, tipo: 'Entrada' })),
+        ...historicoSaida.map(item => ({ ...item, tipo: 'Saída' })),
+    ];
+
+    const colunasparaExportar = [
+    { label: 'Data', key: 'data' },
+    { label: 'Nome Responsavel', key: 'responsavel' },
+    { label: 'Quantidade', key: 'quantidade' },
+];
 
     useEffect(() => {
         if (onCarregarHistorico) {
@@ -133,17 +143,17 @@ function ModalDetalheGenerico({
                                 <img src={item.imagem} alt={obterNomeItem()} />
                             </div>
                         )}
-                        
+
                         <div className="detalhe-info">
                             {camposDetalhes.map((campo, index) => (
                                 <p key={index}>
                                     <strong>{campo.label}</strong> {obterValorCampo(campo)}
                                 </p>
                             ))}
-                            
+
                             {children}
                         </div>
-                        
+
                         {mostrarAcoes && (
                             <div className="detalhe-acoes">
                                 <button onClick={() => setModalExcluirAberto(true)}>
@@ -179,15 +189,13 @@ function ModalDetalheGenerico({
                             </div>
 
                             <div className="footer-content">
-                                <Paginacao 
-                                    paginaAtual={paginaHistorico} 
-                                    totalPaginas={totalPaginas} 
-                                    onPaginaChange={setPaginaHistorico} 
+                                <Paginacao
+                                    paginaAtual={paginaHistorico}
+                                    totalPaginas={totalPaginas}
+                                    onPaginaChange={setPaginaHistorico}
                                 />
                                 {mostrarExportar && (
-                                    <Button variant='primary' icon={shareIcon} onClick={handleExportar}>
-                                        Exportar
-                                    </Button>
+                                    <ExportButton data={dadosParaExportar} columns={colunasparaExportar} fileName={`historico_movimentacao_canteiro${item.id}`} />
                                 )}
                             </div>
                         </div>

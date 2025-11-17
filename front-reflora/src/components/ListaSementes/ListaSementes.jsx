@@ -2,6 +2,8 @@ import { useState } from "react"
 import LinhaSemente from "./LinhaSemente"
 import Paginacao from "../Paginacao/Paginacao"
 import ModalDetalheSemente from "../ModalDetalheSemente/ModalDetalheSemente"
+import ExportButton from "../ExportButton/ExportButton"
+//Icons
 import search from '../../assets/search.svg'
 import arrows from '../../assets/arrows-up-down.svg'
 import share from '../../assets/Share.svg'
@@ -13,6 +15,15 @@ function Listasementes({ sementes }) {
     const [sementeSelecionada, setSementeSelecionada] = useState(null);
 
     const itensPorPagina = 7;
+
+    const colunasparaExportar = [
+        { label: 'Lote', key: 'id' },
+        { label: 'Data Cadastro', key: 'dataCadastro' },
+        { label: 'Nome Popular', key: 'nome' },
+        { label: 'Quantidade Atual (kg)', key: 'qtdAtual' },
+        { label: 'Quantidade Saída (kg)', key: 'qtdSaida' },
+        { label: 'Finalidade', key: 'finalidade' },
+    ];
 
     const sementesFiltradas = sementes.filter((semente) =>
         semente.nome.toLowerCase().includes(termoBusca.toLowerCase()) ||
@@ -51,10 +62,10 @@ function Listasementes({ sementes }) {
                     <table>
                         <thead>
                             <tr>
-                                <th>Lote   <img src={arrows} alt="Ordenar" /></th>
-                                <th>Data Cadastro    <img src={arrows} alt="Ordenar" /></th>
-                                <th>Nome popular    <img src={arrows} alt="Ordenar" /></th>
-                                <th>Quantidade Atual <img src={arrows} alt="Ordenar" /></th>
+                                <th>Lote<img src={arrows} alt="Ordenar" /></th>
+                                <th>Data Cadastro<img src={arrows} alt="Ordenar" /></th>
+                                <th>Nome popular<img src={arrows} alt="Ordenar" /></th>
+                                <th>Quantidade Atual<img src={arrows} alt="Ordenar" /></th>
                                 <th>Quantidade Saida</th>
                                 <th>Finalidade</th>
                             </tr>
@@ -68,7 +79,7 @@ function Listasementes({ sementes }) {
                 </div>
                 <div className="footer-content">
                     <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onPaginaChange={handlePageChange} />
-                    <button>Exportar <img src={share} alt="" /></button>
+                    <ExportButton data={sementesFiltradas} columns={colunasparaExportar} fileName="sementes_exportadas" />
                 </div>
             </section>
 

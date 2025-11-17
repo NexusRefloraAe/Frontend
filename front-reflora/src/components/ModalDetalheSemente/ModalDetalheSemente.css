@@ -1,13 +1,16 @@
 /* --- 1. O Fundo Escuro (Overlay) --- */
 .modal-overlay {
-  position: fixed; /* Cobre a tela inteira */
+  position: fixed;
+  /* Cobre a tela inteira */
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6); /* Preto semi-transparente */
-  z-index: 1000; /* Garante que fique na frente de tudo */
-  
+  background-color: rgba(0, 0, 0, 0.6);
+  /* Preto semi-transparente */
+  z-index: 1000;
+  /* Garante que fique na frente de tudo */
+
   /* Centraliza o card branco */
   display: flex;
   justify-content: center;
@@ -15,7 +18,8 @@
 
   /* Permite rolar a tela se o modal for maior que a tela (mobile) */
   overflow-y: auto;
-  padding: 20px; /* Um respiro para não colar nas bordas */
+  padding: 20px;
+  /* Um respiro para não colar nas bordas */
 }
 
 /* --- 2. O Card Branco (Conteúdo) --- */
@@ -23,14 +27,16 @@
   background-color: white;
   border-radius: 20px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  
+
   /* Tamanho */
   width: 75%;
-  max-width: 1200px; /* Largura máxima, como no protótipo */
-  
+  max-width: 1200px;
+  /* Largura máxima, como no protótipo */
+
   /* Layout interno */
   padding: 24px 30px;
-  position: relative; /* Necessário para o botão de fechar */
+  position: relative;
+  /* Necessário para o botão de fechar */
 }
 
 /* --- 3. O Botão de Fechar (X) --- */
@@ -43,11 +49,13 @@
   cursor: pointer;
   padding: 5px;
 }
+
 .modal-close-button img {
   width: 24px;
   height: 24px;
   opacity: 0.7;
 }
+
 .modal-close-button:hover img {
   opacity: 1;
 }
@@ -68,7 +76,8 @@
 
 /* Coluna da Imagem */
 .detalhe-imagens {
-  flex: 1; /* Ocupa 1 parte do espaço */
+  flex: 1;
+  /* Ocupa 1 parte do espaço */
   background-color: #f0f0f0;
   border-radius: 8px;
   /* Simula a colagem do protótipo (pode ser melhorado) */
@@ -77,6 +86,7 @@
   justify-content: center;
   overflow: hidden;
 }
+
 .detalhe-imagens img {
   width: 100%;
   height: auto;
@@ -85,14 +95,17 @@
 
 /* Coluna de Informações */
 .detalhe-info {
-  flex: 2; /* Ocupa 2 partes (mais espaço) */
+  flex: 2;
+  /* Ocupa 2 partes (mais espaço) */
   line-height: 1.6;
 }
+
 .detalhe-info p {
   margin: 1px 0;
   font-size: 16px;
   color: #555;
 }
+
 .detalhe-info p strong {
   color: #000;
   margin-right: 1px;
@@ -101,15 +114,18 @@
 
 /* Coluna de Ações (Editar/Deletar) */
 .detalhe-acoes {
-  flex: 0 0 60px; /* Largura fixa */
+  flex: 0 0 60px;
+  /* Largura fixa */
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
+
 .detalhe-acoes button {
   background-color: #f4f4f4;
   border: 1px solid #ddd;
-  border-radius: 50%; /* Botões redondos */
+  border-radius: 50%;
+  /* Botões redondos */
   width: 50px;
   height: 50px;
   cursor: pointer;
@@ -117,9 +133,11 @@
   align-items: center;
   justify-content: center;
 }
+
 .detalhe-acoes button:hover {
   background-color: #e9e9e9;
 }
+
 .detalhe-acoes button img {
   width: 24px;
   height: 24px;
@@ -130,6 +148,7 @@
   margin-top: 24px;
   max-height: 500px;
 }
+
 .historico-container-modal h3 {
   font-size: 20px;
   text-align: center;
@@ -142,9 +161,10 @@
   display: flex;
   gap: 24px;
 }
+
 .tabela-wrapper {
   flex: 1;
-  min-width: 0; 
+  min-width: 0;
   overflow-x: auto;
 }
 
@@ -153,15 +173,20 @@
   padding: 12px 16px;
   color: white;
   font-size: 18px;
-  border-radius: 8px 8px 0 0; /* Arredondado só no topo */
+  border-radius: 8px 8px 0 0;
+  /* Arredondado só no topo */
   margin: 0;
 }
+
 .tabela-entrada {
-  background-color: #257024; /* Verde */
+  background-color: #257024;
+  /* Verde */
   width: 100%;
 }
+
 .tabela-saida {
-  background-color: #D32F2F; /* Vermelho */
+  background-color: #D32F2F;
+  /* Vermelho */
 }
 
 /* Estilo para as tabelas (que você vai adicionar) */
@@ -169,8 +194,10 @@
   width: 100%;
   border-collapse: collapse;
   border: 1px solid #ddd;
-  border-top: none; /* A borda de cima é o <h4> */
+  border-top: none;
+  /* A borda de cima é o <h4> */
 }
+
 .tabela-wrapper th,
 .tabela-wrapper td {
   padding: 12px;
@@ -178,10 +205,12 @@
   border-bottom: 1px solid #eee;
   font-size: 14px;
 }
+
 .tabela-wrapper th {
   background-color: #f9f9f9;
   font-weight: 600;
 }
+
 .tabela-wrapper tr:last-child td {
   border-bottom: none;
 }
