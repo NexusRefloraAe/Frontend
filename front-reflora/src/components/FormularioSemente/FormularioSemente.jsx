@@ -3,7 +3,7 @@ import FormGeral from '../FormGeral/FormGeral'
 import ImageUpload from '../ImageUpload/ImageUpload'
 import Input from '../Input/Input'
 
-import saveIcon from '../../assets/botaosalvar.svg'
+import { FaSave } from 'react-icons/fa'
 import calendarIcon from '../../assets/calendaricon.svg'
 import locationIcon from '../../assets/locationicon.svg'
 
@@ -65,7 +65,8 @@ function FormularioSemente() {
             children: 'Salvar cadastro',
             variant: 'primary',
             type: 'submit',
-            icon: saveIcon
+            icon: <FaSave />
+
         }
     ];
 
