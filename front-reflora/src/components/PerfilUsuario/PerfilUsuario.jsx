@@ -2,9 +2,8 @@ import React, { useState, useRef } from 'react';
 import FormGeral from '../FormGeral/FormGeral';
 import Input from '../Input/Input';
 import perfilusuarioIcon from '../../assets/perfilusuario.svg';
-import botaoEditarIcon from '../../assets/botaoeditar.svg';
-import botaoSalvarIcon from '../../assets/botaosalvar.svg';
-import botaoExcluirIcon from '../../assets/botaoexcluir.svg';
+import { FaEdit, FaSave } from 'react-icons/fa';
+import { RiDeleteBin6Line } from 'react-icons/ri';
 import './PerfilUsuario.css';
 
 const PerfilUsuario = () => {
@@ -97,7 +96,7 @@ const PerfilUsuario = () => {
           type: 'submit',
           variant: 'primary',
           children: isLoading ? 'Salvando...' : 'Salvar Edições',
-          icon: isLoading ? null : botaoSalvarIcon,
+          icon: isLoading ? null : <FaSave />,
           disabled: isLoading,
         },
       ]
@@ -108,14 +107,14 @@ const PerfilUsuario = () => {
           variant: 'primary',
           children: 'Editar Perfil',
           onClick: () => setIsEditing(true),
-          icon: botaoEditarIcon,
+          icon: <FaEdit />,
         },
         {
           type: 'button',
           variant: 'danger',
           children: 'Excluir Conta',
           onClick: handleDeleteAccount,
-          icon: botaoExcluirIcon,
+          icon: <RiDeleteBin6Line />,
         },
       ];
 

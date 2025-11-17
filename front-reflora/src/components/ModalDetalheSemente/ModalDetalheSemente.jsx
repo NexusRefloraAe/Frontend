@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import './ModalDetalheSemente.css'
 import Paginacao from '../Paginacao/Paginacao'
-import Button from '../Button/Button'
+import ExportButton from '../ExportButton/ExportButton'
 import TabelaHistorico from '../TabelaHistorico/TabelaHistorico'
 import ModalExcluir from '../ModalExcluir/ModalExcluir'
 //Icons
@@ -9,6 +9,15 @@ import closeIcon from '../../assets/close.svg'
 import editIcon from '../../assets/edit.svg'
 import deleteIcon from '../../assets/delete.svg'
 import shareIcon from '../../assets/Share.svg'
+
+const colunasparaExportar = [
+    { label: 'Tipo', key: 'tipo' },
+    { label: 'Lote', key: 'lote' },
+    { label: 'Data', key: 'data' },
+    { label: 'Nome Popular', key: 'nome' },
+    { label: 'Quantidade (kg)', key: 'qtd' },
+    { label: 'Câmara Fria', key: 'camaraFria' },
+];
 
 const colunasEntrada = [
     { titulo: 'Lote', chave: 'lote', sortable: true },
@@ -37,6 +46,8 @@ function ModalDetalheSemente({ semente, onClose }) {
     const [historicoSaida, setHistoricoSaida] = useState([]);
     const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
 
+
+
     useEffect(() => {
         setHistoricoEntrada([
             { lote: 'A001', data: '20/05/2025', nome: 'Eucalipito', qtd: 2000, camaraFria: 'Sim' },
@@ -51,6 +62,11 @@ function ModalDetalheSemente({ semente, onClose }) {
             { lote: 'A002', data: '12/08/2025', nome: 'Pau-Brasil', qtd: 300, camaraFria: 'Não' },
         ])
     }, [semente.id]);
+
+    const dadosParaExportar = [
+        ...historicoEntrada.map(item => ({ ...item, tipo: 'Entrada' })),
+        ...historicoSaida.map(item => ({ ...item, tipo: 'Saída' })),
+    ];
 
     const handleFecharModalExcluir = () => {
         setModalExcluirAberto(false);
@@ -76,7 +92,7 @@ function ModalDetalheSemente({ semente, onClose }) {
     return (
         <>
             <div className='modal-overlay' onClick={onClose}>
-                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-content-semente" onClick={(e) => e.stopPropagation()}>
                     <button className='modal-close-button' onClick={onClose}>
                         <img src={closeIcon} alt="Fechar" />
                     </button>
@@ -108,7 +124,7 @@ function ModalDetalheSemente({ semente, onClose }) {
                         </div>
                     </div>
 
-                    <div className="historico-container">
+                    <div className="historico-container-modal">
                         <h3>Histórico de Movimentação</h3>
                         <div className="historico-tabelas">
                             <div className="tabela-wrapper">
@@ -130,14 +146,12 @@ function ModalDetalheSemente({ semente, onClose }) {
                         </div>
 
                         <div className="footer-content">
-                            <Paginacao 
-                                paginaAtual={paginaHistorico} 
-                                totalPaginas={totalPaginas} 
-                                onPaginaChange={setPaginaHistorico} 
+                            <Paginacao
+                                paginaAtual={paginaHistorico}
+                                totalPaginas={totalPaginas}
+                                onPaginaChange={setPaginaHistorico}
                             />
-                            <Button variant='primary' icon={shareIcon}>
-                                Exportar
-                            </Button>
+                            <ExportButton data={dadosParaExportar} columns={colunasparaExportar} fileName={`historico_movimentacao_${semente.id}`} />
                         </div>
                     </div>
                 </div>

@@ -6,7 +6,8 @@ const Button = ({ children, variant = 'primary', icon, type = 'button', onClick 
 
   return (
     <button type={type} className={buttonClass} onClick={onClick}>
-      {children}
+      {icon && <span className="button-icon">{icon}</span>}
+      <span className="button-label">{children}</span>
     </button>
   );
 };

@@ -4,8 +4,8 @@ import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus';
 import ConfigSistema from '../../components/ConfigSistema/ConfigSistema'; 
 import './Configuracoes.css';
 
-import perfilUsuarioIcon from '../../assets/perfilusuario.svg';
-import configuracaoSistemaIcon from '../../assets/configuracaosistema.svg';
+import { CgProfile } from 'react-icons/cg';
+import { GrConfigure } from 'react-icons/gr';
 
 const Configuracoes = () => {
   const [activeTab, setActiveTab] = useState('profile');
@@ -14,12 +14,12 @@ const Configuracoes = () => {
     {
       id: 'profile',
       label: 'Perfil do Usuário',
-      icon: perfilUsuarioIcon,
+      icon: <CgProfile />,
     },
     {
       id: 'system',
       label: 'Configuração do Sistema',
-      icon: configuracaoSistemaIcon,
+      icon: <GrConfigure />,
     },
   ];
 
