@@ -166,7 +166,7 @@ const GerarRelatorioInsumo = () => {
             dados={relatorios}
             colunas={colunas}
             chaveBusca="NomeInsumo"
-            mostrarBusca={false}
+            habilitarBusca={false}
             mostrarAcoes={false}
             // ✅ PROPS DE PAGINAÇÃO ADICIONADAS
             paginaAtual={paginaAtual}

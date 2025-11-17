@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
 import "./HistoricoPlantioStyler.css";
-import EditarPlantioSementes from "../EditarPlantioSementes/EditarPlantioSementes";
+
+
+import EditarPlantioSementes from "./EditarPlantioSementes/EditarPlantioSementes";
 import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
+import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico";
+import DetalhesPlantio from "./DetalhesPlantio/DetalhesPlantio";
 
 const HistoricoPlantio = () => {
   const DADOS_SEMENTES_MOCK = [
@@ -25,54 +29,71 @@ const HistoricoPlantio = () => {
 
   const [sementes, setSementes] = useState([]);
 
-  const [plantioEditando, setPlantioEditando] = useState(null);
+  const [itemSelecionado, setItemSelecionado] = useState(null);
+
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
 
-  const [plantioExcluindo, setPlantioExcluindo] = useState(null);
+  const [modalDetalheAberto, setModalDetalheAberto] = useState(false);
+
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
+
+
+
 
   useEffect(() => {
     setSementes(DADOS_SEMENTES_MOCK);
   }, []);
 
 
-  // 3. Handlers para abrir/fechar modais
+ // Handlers unificados para abrir os modais
+  const handleVisualizar = (item) => {
+    setItemSelecionado(item);
+    setModalDetalheAberto(true);
+  };
+  const handleFecharModalDetalhe = () => {
+    setModalDetalheAberto(false);
+    setItemSelecionado(null);
+  };
 
 
-  const handleEditar = (plantio) => {
-    setPlantioEditando(plantio);
+  const handleEditar = (item) => {
+    setItemSelecionado(item);
+    setModalDetalheAberto(false);
     setModalEdicaoAberto(true);
   };
+
   const handleSalvarEdicao = (dadosEditados) => {
     setSementes((prev) => prev.map((item) =>
-      item.lote === plantioEditando.lote ? dadosEditados : item
+      item.id === dadosEditados.id ? dadosEditados : item
     ));
-    console.log("Plantio atualizado:", dadosEditados);
+    
     setModalEdicaoAberto(false);
-    setPlantioEditando(null);
+    setItemSelecionado(null);
   }
   const handleCancelarEdicao = () => {
     setModalEdicaoAberto(false);
-    setPlantioEditando(null);
+    setItemSelecionado(null);
   };
 
 
-  const handleExcluir = (plantio) => {
-    setPlantioExcluindo(plantio);
+
+  const handleExcluir = (item) => {
+    setItemSelecionado(item);
+    setModalDetalheAberto(false);
     setModalExclusaoAberto(true);
   };
   const handleCancelarExclusao = () => {
-    setPlantioExcluindo(null);
     setModalExclusaoAberto(false);
+    setItemSelecionado(null);
   };
   const handleConfirmarExclusao = () => {
     if (plantioExcluindo) {
       setSementes((prev) => prev.filter((item) =>
-        item.lote !== plantioExcluindo.lote
+        item.id !== itemSelecionado.id
       ));
-      console.log("Excluindo plantio:", plantioExcluindo);
+      
     }
-    setPlantioExcluindo(null);
+    setItemSelecionado(null);
     setModalExclusaoAberto(false);
 
   }
@@ -90,29 +111,47 @@ const HistoricoPlantio = () => {
 
   return (
     <div className="historico-container-banco">
-      {modalEdicaoAberto && (
-        <EditarPlantioSementes
-          isOpen={modalEdicaoAberto}
-          onCancelar={handleCancelarEdicao}
-          plantio={plantioEditando}
-          onSalvar={handleSalvarEdicao}
-        />
+
+      {/* Renderização dos 3 modais */}
+
+      {/* MODAL DE DETALHES (Visualizar) */}
+      {modalDetalheAberto && itemSelecionado && (
+        <ModalDetalheGenerico
+          item={itemSelecionado} // Passa o item (para pegar a 'item.imagem')
+          titulo="Detalhes da Vistoria"
+
+          camposDetalhes={[]} // Deixamos vazio para usar o 'children'
+
+          onClose={handleFecharModalDetalhe}
+          onEditar={() => handleEditar(itemSelecionado)}
+          onExcluir={() => handleExcluir(itemSelecionado)}
+
+          // Configurado como na imagem
+          mostrarHistorico={false}
+          mostrarExportar={false}
+          mostrarAcoes={true}
+        >
+          {/* Passa o componente customizado como 'children' */}
+          <DetalhesPlantio item={itemSelecionado} />
+        </ModalDetalheGenerico>
       )}
+      
+      <EditarPlantioSementes
+        isOpen={modalEdicaoAberto}
+        onCancelar={handleCancelarEdicao}
+        plantio={itemSelecionado}
+        onSalvar={handleSalvarEdicao}
 
-
-
-
-
-
-
+      />
+      
 
       <ModalExcluir
         isOpen={modalExclusaoAberto}
         onClose={handleCancelarExclusao}
         onConfirm={handleConfirmarExclusao}
-        nomeItem={plantioExcluindo?.Nomepopular}
+        nomeItem={itemSelecionado?.nomePopular}
         titulo="Excluir Plantio"
-        mensagem={`Você tem certeza que deseja excluir o plantio do lote ${plantioExcluindo?.Lote}?`}
+        mensagem={`Você tem certeza que deseja excluir o plantio do lote ${itemSelecionado?.lote}?`}
         textoConfirmar="Excluir"
         textoCancelar="Cancelar"
       />
@@ -126,7 +165,7 @@ const HistoricoPlantio = () => {
             colunas={colunas}
             chaveBusca="nomePopular"
             onEditar={handleEditar}
-            onConfirmar={(item) => console.log("Confirmar:", item)}
+            onConfirmar={handleVisualizar}
             onExcluir={handleExcluir}
           />
         </main>

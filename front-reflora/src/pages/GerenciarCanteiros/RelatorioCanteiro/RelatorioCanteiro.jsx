@@ -132,7 +132,7 @@ const RelatorioCanteiro = () => {
             dados={relatorios}
             colunas={colunas}
             chaveBusca="NomePopular"
-            mostrarBusca={false}
+            habilitarBusca={false}
             mostrarAcoes={false}
             footerContent={
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>

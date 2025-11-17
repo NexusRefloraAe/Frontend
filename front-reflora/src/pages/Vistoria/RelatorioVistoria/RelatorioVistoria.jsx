@@ -125,7 +125,7 @@ const RelatorioVistoria = () => {
             dados={relatorios}
             colunas={colunas}
             chaveBusca="Especie"
-            mostrarBusca={false} // 7. Alterado para false
+            habilitarBusca={false} // 7. Alterado para false
             mostrarAcoes={false}
             // 8. Remove props de paginação e busca externa
             

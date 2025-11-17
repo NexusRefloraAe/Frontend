@@ -133,7 +133,7 @@ const GerarRelatorio = () => {
             dados={relatorios}
             colunas={colunas}
             chaveBusca="Nomepopular"
-            mostrarBusca={false}
+            habilitarBusca={false}
             mostrarAcoes={false}
           />
         </section>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import FormGeral from "../../../components/FormGeral/FormGeral";
-import Input from "../../../components/Input/Input";
+import FormGeral from "../../../../components/FormGeral/FormGeral";
+import Input from "../../../../components/Input/Input";
 
 const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
   const [formData, setFormData] = useState({
@@ -96,7 +96,7 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
 
         {/* Botão de fechar (opcional, mas bom para modais) */}
-        <button type="button" className="modal-close-button" onClick={() => handleCancel(false)}>
+        <button type="button" className="modal-close-button" onClick={() => handleCancel(true)}>
           &times;
         </button>
 
