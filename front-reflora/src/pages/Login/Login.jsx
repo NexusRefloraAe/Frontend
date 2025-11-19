@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthLayout from '../../components/Layout/AuthLayout';
 import AuthForm from '../../components/AuthForm/AuthForm';
-import logoGoogle from '../../assets/logoGoogle.svg';
+import { FcGoogle } from 'react-icons/fc';
 import olhoaberto from '../../assets/olhoaberto.svg';
 import olhofechado from '../../assets/olhofechado.svg';
 
@@ -64,7 +64,7 @@ const Login = () => {
       {
         type: "button",
         variant: "secondary",
-        icon: logoGoogle,
+        icon: <FcGoogle />,
         onClick: handleGoogleLogin, // A função agora redireciona a página
         children: "Continuar com a Google"
       }
