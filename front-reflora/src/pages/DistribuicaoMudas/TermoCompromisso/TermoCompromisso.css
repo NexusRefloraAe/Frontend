@@ -121,58 +121,75 @@
 
 /* ESTILOS DE IMPRESSÃO (ESSENCIAL PARA "EXPORTAR") */
 @media print {
-    
-    body {
-        background-color: var(--cor-fundo-branco) !important;
+
+    /* Remove TODOS os elementos externos da aplicação */
+    body * {
+        visibility: hidden !important;
     }
 
-    /* Esconde os botões e a paginação */
+    /* Exibe SOMENTE o termo */
+    .termo-compromisso,
+    .termo-compromisso * {
+        visibility: visible !important;
+    }
+
+    /* Remove botões e paginação */
     .termo-compromisso__actions,
     .termo-compromisso__paginacao {
         display: none !important;
+        visibility: hidden !important;
     }
 
-    /* Reseta o layout da página e do documento */
+    /* Prepara o layout do termo para impressão */
     .termo-compromisso {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
         padding: 0 !important;
-        min-height: auto !important;
+        margin: 0 !important;
+        background: #fff !important;
     }
 
     .termo-compromisso__documento {
         box-shadow: none !important;
         border-radius: 0 !important;
         padding: 0 !important;
-        max-width: 100% !important;
+        width: 100% !important;
+        max-width: none !important;
         margin: 0 !important;
+        background: #fff !important;
     }
-    
-    /* Centraliza a tabela na impressão também */
+
+    /* Tabela centralizada */
     .termo-compromisso__tabela {
-        width: 80% !important; /* Mantém largura menor */
-        margin: 0 auto !important;
+        width: 80% !important;
+        margin: 20px auto !important;
+        border-collapse: collapse !important;
     }
 
-    /* Garante que todo o texto seja preto */
-    .termo-compromisso__documento h2,
-    .termo-compromisso__texto,
-    .termo-compromisso__tabela td {
+    /* Texto sempre preto */
+    .termo-compromisso__documento * {
         color: #000 !important;
     }
 
-    /* Estilo de impressão para o cabeçalho da tabela */
+    /* Cabeçalho da tabela */
     .termo-compromisso__tabela th {
-        background-color: #f0f0f0 !important; 
+        background-color: #e5e5e5 !important;
         color: #000 !important;
-        border: 1px solid #ccc;
+        border: 1px solid #333 !important;
     }
 
-    /* Remove o "zebrado" e adiciona bordas em tudo */
-    .termo-compromisso__tabela tbody tr:nth-child(even) {
-        background-color: var(--cor-fundo-branco) !important;
+    /* Bordas em tudo */
+    .termo-compromisso__tabela td,
+    .termo-compromisso__tabela th {
+        border: 1px solid #333 !important;
+        padding: 6px !important;
     }
-    
-    .termo-compromisso__tabela th,
-    .termo-compromisso__tabela td {
-        border: 1px solid #ccc;
+
+    /* Remove zebra */
+    .termo-compromisso__tabela tbody tr:nth-child(even),
+    .termo-compromisso__tabela tbody tr:nth-child(odd) {
+        background: #fff !important;
     }
 }
