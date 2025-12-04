@@ -64,7 +64,10 @@ export const authService = {
         // Tenta ler o JSON de erro padronizado do Java (StandardError)
         const errorData = await response.json();
         // Prioridade: message > error > texto padrão
-        errorMessage = errorData.message || errorData.error || errorMessage;
+        errorMessage = errorData.message 
+                    || (errorData.errors && errorData.errors.length > 0 ? errorData.errors[0] : null)
+                    || errorData.error 
+                    || errorMessage;
       } catch (e) {
         console.error("Não foi possível ler o JSON de erro (pode ser texto puro):", e);
 
@@ -95,9 +98,24 @@ export const authService = {
     });
 
     if (!response.ok) {
-      // Tenta pegar a mensagem de erro do backend (ex: UsuarioNotFoundException)
-      const errorMsg = await response.text();
-      throw new Error(errorMsg || "Erro ao alterar senha");
+      let errorMessage = 'Erro ao cadastrar';
+      try {
+        // Tenta ler o JSON de erro padronizado do Java (StandardError)
+        const errorData = await response.json();
+        // Prioridade: message > error > texto padrão
+        errorMessage = errorData.message 
+                    || (errorData.errors && errorData.errors.length > 0 ? errorData.errors[0] : null)
+                    || errorData.error 
+                    || errorMessage;
+      } catch (e) {
+        console.error("Não foi possível ler o JSON de erro (pode ser texto puro):", e);
+
+        // Se a resposta não for JSON (ex: erro fatal do servidor), lê como texto
+        const textError = await response.text();
+        if (textError) errorMessage = textError;
+      }
+      // Lança o erro para o componente React exibir na tela
+      throw new Error(errorMessage);
     }
 
     return await response.text(); // Retorna "Senha alterada com sucesso!"
