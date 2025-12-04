@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AuthLayout from '../../components/Layout/AuthLayout';
 import AuthForm from '../../components/AuthForm/AuthForm';
 import olhoaberto from '../../assets/olhoaberto.svg';
 import olhofechado from '../../assets/olhofechado.svg';
+import { authService } from '../../services/authService';
 
 const Cadastro = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     nomeCompleto: '', email: '', celular: '', dataNascimento: '',
     genero: '', empresa: '', senha: '', confirmarSenha: ''
@@ -17,13 +21,29 @@ const Cadastro = () => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setError(''); // Limpa erros antigos
+
+    // 1. Validação Visual (Frontend)
     if (formData.senha !== formData.confirmarSenha) {
       setError("As senhas não coincidem!");
       return;
     }
-    setError('');
-    console.log("Dados do cadastro:", formData);
+
+    try {
+      
+      // 2. Chama o Serviço (Conecta com o Java)
+      await authService.register(formData); 
+      
+      // 3. Sucesso: Feedback e Redirecionamento
+      alert("Cadastro realizado com sucesso!");
+      navigate('/login'); // Redireciona para o login
+
+    } catch (err) {
+      console.error(err);
+      // 4. Erro: Mostra a mensagem que veio do Backend (ex: "Email já existe")
+      setError(err.message); 
+    }
   };
 
   const cadastroConfig = {
@@ -72,10 +92,10 @@ const Cadastro = () => {
         onChange: handleChange('genero'),
         required: true,
         options: [
-          { value: "masculino", label: "Masculino" },
-          { value: "feminino", label: "Feminino" },
-          { value: "outro", label: "Outro" },
-          { value: "nao-informar", label: "Prefiro não informar" }
+          { value: "MASCULINO", label: "Masculino" },
+          { value: "FEMININO", label: "Feminino" },
+          { value: "OUTRO", label: "Outro" },
+          { value: "NAO_INFORMAR", label: "Prefiro não informar" }
         ]
       },
       {
