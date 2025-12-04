@@ -48,11 +48,11 @@ const RedefinirSenha = () => {
       // Regex simples para identificar se é email ou telefone
       const isEmail = /\S+@\S+\.\S+/.test(valor);
       // Regex flexível para telefone (aceita com ou sem máscara)
-      const isPhone = /^\(?\d{2}\)?\s?9?\s?\d{4}-?\d{4}$/.test(valor) || /^\d{10,11}$/.test(valor);
+      const looksLikePhone = /^[\d\(\)\-\s]+$/.test(valor);
 
       if (isEmail) {
         payload.email = valor;
-      } else if (isPhone) {
+      } else if (looksLikePhone) {
         // Se for telefone, garante a formatação correta se seu backend exigir, ou envia limpo
         payload.numeroCelular = valor; 
       } else {
