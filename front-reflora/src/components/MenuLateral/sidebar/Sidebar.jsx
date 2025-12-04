@@ -4,6 +4,8 @@ import { FaTimes, FaSeedling, FaTools, FaClipboardList, FaChartBar, FaCog, FaSig
 import { GiPlantSeed, GiFarmTractor } from "react-icons/gi";
 import SidebarItem from "../sidebarItem/SidebarItem";
 import "./SidebarStyler.css";
+import { authService } from "../../../services/authService";
+
 const Sidebar = ({ active, fixed }) => {
   const navigate = useNavigate();
 
@@ -12,6 +14,19 @@ const Sidebar = ({ active, fixed }) => {
   };
 
   const home = () => navigate("/home");
+
+  // 2. Crie a função de logout
+  const handleLogout = async () => {
+    try {
+      // Chama o serviço para invalidar o token no back-end e limpar o localStorage
+      await authService.logout();
+    } catch (error) {
+      console.error("Erro ao tentar fazer logout:", error);
+    } finally {
+      // Independente de dar erro ou sucesso no servidor, redireciona para login
+      navigate("/login");
+    }
+  };
 
   return (
     <div className={`sidebar-container ${fixed ? "fixed" : ""} ${active ? "active" : ""}`}>
@@ -29,7 +44,7 @@ const Sidebar = ({ active, fixed }) => {
         <SidebarItem Icon={FaTools} Text="Gestão de Insumos" />
         <SidebarItem Icon={FaChartBar} Text="Relatórios" />
         <SidebarItem Icon={FaCog} Text="Configuração" onClick={() => navigate("/configuracoes")} />
-        <SidebarItem Icon={FaSignOutAlt} Text="Sair" isLogout onClick={() => navigate("/login")} />
+        <SidebarItem Icon={FaSignOutAlt} Text="Sair" isLogout onClick={handleLogout} />
       </div>
     </div>
   );
