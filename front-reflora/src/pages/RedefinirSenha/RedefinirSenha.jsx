@@ -3,21 +3,73 @@ import AuthLayout from '../../components/Layout/AuthLayout';
 import AuthForm from '../../components/AuthForm/AuthForm';
 import olhoaberto from '../../assets/olhoaberto.svg';
 import olhofechado from '../../assets/olhofechado.svg';
+import { useNavigate } from 'react-router-dom';
+import { authService } from '../../services/authService';
 
 const RedefinirSenha = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
+    identificador: '',
     novaSenha: '',
     confirmarSenha: ''
   });
   const [mostrarNovaSenha, setMostrarNovaSenha] = useState(false);
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
+  const [error, setError] = useState('');
+
 
   const handleChange = (field) => (e) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
   };
 
-  const handleSubmit = () => {
-    console.log("Formulário de redefinição enviado");
+    const handleSubmit = async () => {
+    setError('');
+
+    // Validações Básicas
+    if (formData.novaSenha !== formData.confirmarSenha) {
+      setError("As senhas não coincidem!");
+      return;
+    }
+    if (!formData.identificador) {
+      setError("Por favor, informe seu email, usuário ou celular.");
+      return;
+    }
+
+    try {
+
+      // 2. Lógica de Detecção do Tipo de Identificador (A "Mágica")
+      const valor = formData.identificador;
+      const payload = {
+        novaSenha: formData.novaSenha,
+        confirmarNovaSenha: formData.confirmarSenha
+      };
+
+      // Regex simples para identificar se é email ou telefone
+      const isEmail = /\S+@\S+\.\S+/.test(valor);
+      // Regex flexível para telefone (aceita com ou sem máscara)
+      const isPhone = /^\(?\d{2}\)?\s?9?\s?\d{4}-?\d{4}$/.test(valor) || /^\d{10,11}$/.test(valor);
+
+      if (isEmail) {
+        payload.email = valor;
+      } else if (isPhone) {
+        // Se for telefone, garante a formatação correta se seu backend exigir, ou envia limpo
+        payload.numeroCelular = valor; 
+      } else {
+        // Se não parece email nem telefone, assumimos que é nome de usuário
+        payload.nomeUsuario = valor;
+      }
+
+      // 3. Chamada ao serviço
+      await authService.changePassword(payload);
+      
+      alert("Senha alterada com sucesso!");
+      navigate('/login');
+
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Erro ao redefinir senha.");
+    } 
   };
 
   // Configuração específica da Redefinição de Senha
@@ -25,6 +77,17 @@ const RedefinirSenha = () => {
     title: "Redefinir Senha",
     subtitle: "Faça uma nova senha para acessar sua conta.",
     fields: [
+      {
+        // 4. Novo Campo no Formulário
+        label: "Nome Completo, Email ou número de celular",
+        name: "identificador",
+        type: "text",
+        placeholder: "Digite seu nome completo, email ou número de celular",
+        value: formData.identificador,
+        onChange: handleChange('identificador'),
+        required: true,
+        span: 2 // Ocupa largura total se estiver usando grid
+      },
       {
         label: "Nova Senha",
         type: mostrarNovaSenha ? 'text' : 'password',
@@ -60,6 +123,7 @@ const RedefinirSenha = () => {
       linkTo: "/login",
       linkText: "Voltar para o Login"
     },
+    error: error,
     onSubmit: handleSubmit
   };
 
