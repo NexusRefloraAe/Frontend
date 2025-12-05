@@ -10,6 +10,7 @@ import { FaEdit, FaSave } from 'react-icons/fa';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import './PerfilUsuario.css';
 import importarfotoIcon from '../../assets/importarfoto.svg';
+import { getBackendErrorMessage } from '../../utils/errorHandler';
 
 const PerfilUsuario = () => {
   const navigate = useNavigate();
@@ -88,7 +89,8 @@ const PerfilUsuario = () => {
         });
 
       } catch (error) {
-        console.error("Erro ao carregar perfil", error);
+        const mensagem = getBackendErrorMessage(error);
+        console.error("Erro ao carregar perfil", mensagem);
       }
     };
 
@@ -112,7 +114,8 @@ const PerfilUsuario = () => {
       window.location.reload(); 
 
     } catch (error) {
-      console.error('Erro ao salvar:', error);
+      const mensagem = getBackendErrorMessage(error);
+      console.error('Erro ao salvar:', mensagem);
       alert('Ocorreu um erro ao salvar as alterações.');
     } finally {
       setIsLoading(false);
@@ -142,7 +145,8 @@ const PerfilUsuario = () => {
         window.location.href = '/login'; 
 
       } catch (error) {
-        console.error('Erro ao excluir:', error);
+        const mensagem = getBackendErrorMessage(error);
+        console.error('Erro ao excluir:', mensagem);
         alert('Erro ao excluir conta.');
       }
     }
@@ -205,11 +209,23 @@ const PerfilUsuario = () => {
       
       {/* 6. Bloco do Avatar ATUALIZADO */}
       <div className="perfil-usuario__avatar-section">
-        <div className="perfil-usuario__avatar">
+        <div className="perfil-usuario__avatar" 
+        style={{ 
+                width: '150px', 
+                height: '150px', 
+                overflow: 'hidden', 
+                borderRadius: '50%', 
+                position: 'relative',
+                border: '2px solid #ccc', // Adicionei uma borda suave para melhor visualização
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: '#f0f0f0'
+            }}>
           <img 
             src={imagemExibida} 
             alt="Avatar do Usuário" 
-            style={{ objectFit: 'cover' }} 
+            style={{ objectFit: 'cover', width: '100%', height: '100%' }} 
             onError={(e) => {
                 // Fallback caso a URL ainda falhe
                 e.target.onerror = null; 
@@ -220,7 +236,7 @@ const PerfilUsuario = () => {
             <div className="perfil-usuario__avatar-overlay">
               <Button
                 variant="outline"
-                icon={importarfotoIcon}
+                icon={<img src={importarfotoIcon} alt="Ícone de Câmera" style={{ width: '20px', height: '20px' }} />}
                 onClick={handleTrocarFoto}
                 size="small"
               >

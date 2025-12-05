@@ -5,6 +5,7 @@ import AuthForm from '../../components/AuthForm/AuthForm';
 import olhoaberto from '../../assets/olhoaberto.svg';
 import olhofechado from '../../assets/olhofechado.svg';
 import { authService } from '../../services/authService';
+import { getBackendErrorMessage } from '../../utils/errorHandler';
 
 const Cadastro = () => {
   const navigate = useNavigate();
@@ -41,8 +42,9 @@ const Cadastro = () => {
 
     } catch (err) {
       console.error(err);
+      const mensagem = getBackendErrorMessage(err);
       // 4. Erro: Mostra a mensagem que veio do Backend (ex: "Email já existe")
-      setError(err.message); 
+      setError(mensagem); 
     }
   };
 

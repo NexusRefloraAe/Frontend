@@ -5,6 +5,7 @@ import olhoaberto from '../../assets/olhoaberto.svg';
 import olhofechado from '../../assets/olhofechado.svg';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
+import { getBackendErrorMessage } from '../../utils/errorHandler';
 
 const RedefinirSenha = () => {
   const navigate = useNavigate();
@@ -68,7 +69,8 @@ const RedefinirSenha = () => {
 
     } catch (err) {
       console.error(err);
-      setError(err.message || "Erro ao redefinir senha.");
+      const mensagem = getBackendErrorMessage(err);
+      setError(mensagem || "Erro ao redefinir senha.");
     } 
   };
 

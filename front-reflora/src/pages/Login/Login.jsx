@@ -6,6 +6,7 @@ import { FcGoogle } from 'react-icons/fc';
 import olhoaberto from '../../assets/olhoaberto.svg';
 import olhofechado from '../../assets/olhofechado.svg';
 import { authService } from '../../services/authService';
+import { getBackendErrorMessage } from '../../utils/errorHandler';
 
 const Login = () => {
   const navigate = useNavigate(); // INICIALIZAR O HOOK
@@ -35,8 +36,9 @@ const Login = () => {
       navigate('/home');
     } catch (err) {
       console.error(err);
+      const mensagem = getBackendErrorMessage(err);
       // Define a mensagem de erro para aparecer no formulário
-      setError(err.message || "Erro ao conectar com o servidor.");
+      setError(mensagem);
     }
   };
 
