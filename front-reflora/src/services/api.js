@@ -1,32 +1,22 @@
 import axios from 'axios';
 
-// URL base do seu backend
-export const API_URL = 'http://localhost:8087/api';
-
+// Cria a instância do Axios
 const api = axios.create({
-  baseURL: API_URL,
-  withCredentials: true, // IMPORTANTE: Permite enviar/receber Cookies (HttpOnly)
+  baseURL: 'http://localhost:8087/api', // Ajuste a porta se necessário
+  withCredentials: true,// IMPORTANTE: Permite enviar/receber Cookies (HttpOnly)
   // CORREÇÃO: Removemos o cabeçalho 'Content-Type': 'application/json' fixo.
   // O Axios é inteligente o suficiente para:
   // 1. Usar 'application/json' automaticamente quando enviamos um objeto JS.
   // 2. Usar 'multipart/form-data' com o boundary correto quando enviamos um FormData (uploads).
 });
 
-// 1. Interceptor de Requisição: Adiciona o Token JWT se existir
+// --- INTERCEPTOR DE REQUISIÇÃO ---
+// Antes de enviar, adiciona o Token de Acesso se ele existir no LocalStorage
 api.interceptors.request.use(
   (config) => {
-    // O token está dentro do objeto 'user', não solto no localStorage
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        // Só adiciona o token se ele existir e se a rota não for de refresh (evita loops)
-        if (user && user.accessToken && !config.url.includes('/auth/refresh')) {
-            config.headers['Authorization'] = `Bearer ${user.accessToken}`;
-        }
-      } catch (e) {
-        console.error("Erro ao ler token do usuário", e);
-      }
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.accessToken) {
+      config.headers.Authorization = `Bearer ${user.accessToken}`;
     }
     return config;
   },
@@ -35,7 +25,7 @@ api.interceptors.request.use(
   }
 );
 
-// 2. Interceptor de Resposta: Trata o Token Expirado
+// --- INTERCEPTOR DE RESPOSTA (AQUI ESTAVA O PROBLEMA) ---
 api.interceptors.response.use(
   (response) => {
     return response;
@@ -43,37 +33,40 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Se receber 401 (Não Autorizado) e ainda não tentamos rodar o refresh...
-    if (error.response && (error.response.status === 401 || error.response.status === 403) && !originalRequest._retry) {
-      originalRequest._retry = true; 
+    // 1. SE O ERRO FOR NO LOGIN, NÃO FAZ NADA, SÓ RETORNA O ERRO
+    // Isso evita o loop infinito quando você erra a senha
+    if (originalRequest.url.includes('/auth/login')) {
+        return Promise.reject(error);
+    }
+
+    // 2. Se o erro for 401 (Não autorizado) e NÃO for uma tentativa repetida
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true; // Marca que já tentamos renovar uma vez
 
       try {
-        // Tenta renovar o token usando o Cookie HttpOnly
-        // A rota aqui deve incluir o /auth pois a baseURL é só /api
-        const response = await api.post('/auth/refresh');
+        // Tenta pegar um novo token usando o cookie HttpOnly
+        // O backend deve ter um endpoint /auth/refresh-token que lê o cookie e devolve novo access token
+        const rs = await api.post('/auth/refresh-token');
 
-        // O backend retorna um AuthResponse com { accessToken: "..." }
-        const { accessToken } = response.data; 
+        const { accessToken } = rs.data;
 
-        // Atualiza o token dentro do objeto 'user' no LocalStorage
-        const userStr = localStorage.getItem('user');
-        if (userStr) {
-            const user = JSON.parse(userStr);
+        // Atualiza o token no LocalStorage
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
             user.accessToken = accessToken;
             localStorage.setItem('user', JSON.stringify(user));
         }
 
-        // Atualiza o header da requisição original que falhou com o novo token
-        originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
-
-        // Refaz a requisição original
+        // Atualiza o header da requisição original e tenta de novo
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return api(originalRequest);
-      } catch (refreshError) {
-        // Se o refresh falhar (ex: refresh token expirou ou é inválido)
-        console.error("Sessão expirada. Faça login novamente.");
+
+      } catch (_error) {
+        // Se a renovação falhar (refresh token expirou ou inválido)
+        // Limpa tudo e força logout
         localStorage.removeItem('user');
-        window.location.href = '/login'; // Redireciona para o login
-        return Promise.reject(refreshError);
+        window.location.href = '/login';
+        return Promise.reject(_error);
       }
     }
 
