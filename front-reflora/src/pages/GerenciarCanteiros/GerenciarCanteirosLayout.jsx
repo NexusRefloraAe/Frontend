@@ -1,50 +1,56 @@
-// src/pages/GerenciarCanteiros/GerenciarCanteirosLayout.jsx
-import React, { useState } from 'react';
-import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus';
-import CadastrarCanteiro from './CadastrarCanteiro/CadastrarCanteiro';
-
-// (Vamos deixar os outros comentados por enquanto)
-import EditarCanteiro from './EditarCanteiro/EditarCanteiro';
-import CadastrarPlantioCanteiro from './CadastrarPlantioCanteiro/CadastrarPlantioCanteiro';
-import EditarPlantioCanteiro from './EditarPlantioCanteiro/EditarPlantioCanteiro';
-// import HistoricoCanteiros from './HistoricoCanteiros/HistoricoCanteiros'; 
-// import DistribuicaoMudas from './DistribuicaoMudas';
-// import RelatorioCanteiro from './RelatorioCanteiro/RelatorioCanteiro';
-
-import './GerenciarCanteirosLayout.css';
+import React from "react";
+import { FaSeedling, FaLeaf, FaClipboardList, FaCheckCircle, FaFileAlt } from "react-icons/fa";
+import TabsLayout from "../../components/TabsLayout/TabsLayout";
+import CadastrarCanteiro from "./CadastrarCanteiro/CadastrarCanteiro";
+import CadastrarPlantioCanteiro from "./CadastrarPlantioCanteiro/CadastrarPlantioCanteiro";
+import CadastrarInspecaoMudas from "./CadastrarInspecao/CadastrarInspecaoMudas";
+import Historico from "./Historico/Historico";
+import HistoricoInspecao from "./HistoricoInspecao/HistoricoInspecao";
+import RelatorioCanteiro from "./RelatorioCanteiro/RelatorioCanteiro";
 
 const GerenciarCanteirosLayout = () => {
-  // USESTATE: Deve ser 'cadastrar-canteiro'
-  const [activeTab, setActiveTab] = useState('cadastrar-canteiro');
 
-  const canteiroMenus = [
-    { id: 'cadastrar-canteiro', label: 'Cadastrar Canteiro' },
-    { id: 'cadastrar-plantio-canteiro', label: 'Cadastrar Plantio Canteiro' },
-    { id: 'editar-canteiro', label: 'Editar Canteiro' },
-    { id: 'editar-plantio-canteiro', label: 'Editar Plantio Canteiro' },
-    { id: 'historico', label: 'Histórico Canteiros' },
-    { id: 'distribuicao', label: 'Distribuição de Mudas' },
-    { id: 'relatorio', label: 'Relatório Canteiro' },
+  const tabs = [
+    {
+      id: "cadastrar-canteiro",
+      label: "Cadastrar Canteiro",
+      icon: <FaSeedling />,
+      page: <CadastrarCanteiro />,
+    },
+    {
+      id: "cadastrar-plantio-canteiro",
+      label: "Cadastrar Plantio",
+      icon: <FaLeaf />,
+      page: <CadastrarPlantioCanteiro />,
+    },
+    
+    {
+      id: "cadastrar-inspecao-mudas",
+      label: "Cadastrar Inspeção",
+      icon: <FaCheckCircle />,
+      page: <CadastrarInspecaoMudas />,
+    },
+    {
+      id: "historico-inspecao",
+      label: "Histórico de Inspeção",
+      icon: <FaCheckCircle />,
+      page: <HistoricoInspecao />,
+    },
+    {
+      id: "historico",
+      label: "Histórico Canteiro",
+      icon: <FaCheckCircle />,
+      page: <Historico />,
+    },
+    {
+      id: "relatorio-canteiro",
+      label: "Relatório Canteiro",
+      icon: <FaFileAlt />,
+      page: <RelatorioCanteiro />,
+    },
   ];
 
-  return (
-    <div className="gerenciarcanteiro-container">
-      <div className="gerenciarcanteiro-nav">
-        <BotaoSubmenus
-          menus={canteiroMenus}
-          activeMenuId={activeTab}
-          onMenuClick={setActiveTab}
-        />
-      </div>
-
-      <div className="gerenciarcanteiro-content">
-        {activeTab === 'cadastrar-canteiro' && <CadastrarCanteiro />}
-        {activeTab === 'cadastrar-plantio-canteiro' && <CadastrarPlantioCanteiro />} 
-        {activeTab === 'editar-canteiro' && <EditarCanteiro />}
-        {activeTab === 'editar-plantio-canteiro' && <EditarPlantioCanteiro />}
-      </div>
-    </div>
-  );
+  return <TabsLayout tabs={tabs} defaultTabId="cadastrar-canteiro" />;
 };
 
 export default GerenciarCanteirosLayout;

@@ -8,6 +8,7 @@ const ContainerWithTitle = () => {
   let title = "";
 
   if (path === "/home") {
+
     title = "Menu Inicial";
   } else if (path.startsWith("/banco-sementes")) {
     title = "Banco de Sementes";
@@ -15,9 +16,34 @@ const ContainerWithTitle = () => {
     title = "Gerenciar Sementes";
   } else if (path.startsWith("/gerenciar-canteiros")) {
     title = "Gerenciar Canteiros";
+  } else if (path.startsWith("/distribuicao-mudas")) {
+    title = "Distribuir Mudas";
+  } else if (path === "/termo-compromisso") {
+    title = "Distribuir Mudas";
+  } else if (path.startsWith("/vistoria")) {
+    title = "Vistoria";
+  } else if (path.startsWith("/insumo")) {
+    title = "Insumo";
+  } else if (path.startsWith("/relatorios")) {
+    title = "Relatorios";
+  } else if (path.startsWith("/gerenciar-canteiros/relatorio")) {
+    title = "Relatório de Canteiros";
+
+  } else if (path.startsWith("/vistoria/relatorio-vistoria")) {
+    title = "Relatório de Vistorias";
+  } else if (path.startsWith("/gerenciamento-sementes/relatorio")) {
+    title = "Relatório de Sementes";
+
+  } else if (path.startsWith("/insumo/relatorio-materiais")) {
+    title = "Relatório de Materiais";
+
   } else if (path.startsWith("/configuracoes")) {
     title = "Configurações";
+
+    } else if (path.startsWith("/notificacoes")) {
+  title = "Notificações";
   } else {
+
     title = "";
   }
 

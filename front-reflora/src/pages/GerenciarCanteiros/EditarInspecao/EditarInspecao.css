@@ -1,0 +1,47 @@
+/* src/pages/GerenciarCanteiros/Historico/EditarInspecao/EditarInspecao.css */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fundo escuro semi-transparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Garantir que fique na frente */
+}
+
+.modal-content {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 800px; /* Largura máxima do modal */
+    width: 90%;
+    max-height: 90vh; /* Altura máxima */
+    overflow-y: auto; /* Adiciona scroll se o conteúdo for grande */
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Botão de fechar (copiado do exemplo do ModalDetalheGenerico) */
+.modal-close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #888;
+}
+
+.modal-close-button:hover {
+    color: #333;
+}
+
+/* Ajuste para o FormGeral dentro do modal */
+.modal-content .form-geral {
+    padding-top: 20px; /* Adiciona espaço para o título e botão de fechar */
+}

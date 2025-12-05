@@ -6,11 +6,10 @@ import FormGeral from '../FormGeral/FormGeral';
 import Button from '../Button/Button';
 import Input from '../Input/Input'; 
 import perfilusuarioIcon from '../../assets/perfilusuario.svg';
-import botaoEditarIcon from '../../assets/botaoeditar.svg';
-import botaoSalvarIcon from '../../assets/botaosalvar.svg';
-import botaoExcluirIcon from '../../assets/botaoexcluir.svg';
-import importarfotoIcon from '../../assets/importarfoto.svg';
+import { FaEdit, FaSave } from 'react-icons/fa';
+import { RiDeleteBin6Line } from 'react-icons/ri';
 import './PerfilUsuario.css';
+import importarfotoIcon from '../../assets/importarfoto.svg';
 
 const PerfilUsuario = () => {
   const navigate = useNavigate();
@@ -165,6 +164,7 @@ const PerfilUsuario = () => {
 
   const actionsConfig = isEditing
     ? [
+        // ... (configuração de ações 'isEditing' permanece a mesma)
         {
           type: 'button',
           variant: 'secondary',
@@ -175,25 +175,26 @@ const PerfilUsuario = () => {
         {
           type: 'submit',
           variant: 'primary',
-          children: isLoading ? 'Salvando...' : 'Salvar Alterações',
-          icon: isLoading ? null : botaoSalvarIcon,
+          children: isLoading ? 'Salvando...' : 'Salvar Edições',
+          icon: isLoading ? null : <FaSave />,
           disabled: isLoading,
         },
       ]
     : [
+        // ... (configuração de ações 'not isEditing' permanece a mesma)
         {
           type: 'button',
           variant: 'primary',
           children: 'Editar Perfil',
           onClick: () => setIsEditing(true),
-          icon: botaoEditarIcon,
+          icon: <FaEdit />,
         },
         {
           type: 'button',
           variant: 'danger',
           children: 'Excluir Conta',
           onClick: handleDeleteAccount,
-          icon: botaoExcluirIcon,
+          icon: <RiDeleteBin6Line />,
         },
       ];
       
@@ -201,6 +202,8 @@ const PerfilUsuario = () => {
 
   return (
     <div className="perfil-usuario">
+      
+      {/* 6. Bloco do Avatar ATUALIZADO */}
       <div className="perfil-usuario__avatar-section">
         <div className="perfil-usuario__avatar">
           <img 

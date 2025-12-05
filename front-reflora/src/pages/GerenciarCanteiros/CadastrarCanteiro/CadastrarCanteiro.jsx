@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import FormGeral from '../../../components/FormGeral/FormGeral';
 // 1. Importamos o Input, pois agora a página é responsável por ele
 import Input from '../../../components/Input/Input'; 
-import './CadastrarCanteiro.css';
 
 const CadastrarCanteiro = () => {
   const [formData, setFormData] = useState({

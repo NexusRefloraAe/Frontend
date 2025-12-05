@@ -1,0 +1,115 @@
+/* HistoricoMaterial.css */
+
+.historico-material-container {
+  width: 100%;
+  padding: 1rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+/* Cabeçalho com título e filtros (ADICIONADO) */
+.header-filtros {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.header-filtros h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+/* Estilo do FiltrosRelatorio (ADICIONADO) */
+.filtros-relatorio {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 1rem;
+  align-items: end;
+}
+
+@media (max-width: 1024px) {
+  .filtros-relatorio {
+    grid-template-columns: 1fr 1fr;
+  }
+  .botoes-container {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 768px) {
+  .filtros-relatorio {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Tabela wrapper — com borda sutil e fundo branco */
+.tabela-wrapper {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo do título interno da tabela — sublinhado verde */
+.tabela-com-busca .tabela-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+  text-decoration: underline;
+  text-decoration-color: #4ade80;
+  text-decoration-thickness: 2px;
+}
+
+/* Botão Exportar (Estilo existente) */
+.exportar-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.btn-exportar {
+  min-width: 100px;
+  height: 40px;
+  padding: 0.5rem 1rem;
+  background-color: #4ade80;
+  border-color: #4ade80;
+  color: white;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-exportar:hover {
+  background-color: #2ecc71;
+  border-color: #2ecc71;
+}
+
+/* Responsividade (Ajustada) */
+@media (max-width: 768px) {
+  .historico-material-container {
+    padding: 0.5rem;
+  }
+
+  .header-filtros, /* (ADICIONADO) */
+  .tabela-wrapper {
+    padding: 1rem;
+  }
+
+  .exportar-container {
+    margin-top: 0.75rem;
+  }
+
+  .btn-exportar {
+    min-width: 90px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.875rem;
+  }
+}

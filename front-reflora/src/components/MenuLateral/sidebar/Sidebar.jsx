@@ -40,9 +40,10 @@ const Sidebar = ({ active, fixed }) => {
         <SidebarItem Icon={GiPlantSeed} Text="Banco de Sementes" onClick={() => navigate("/banco-sementes")} />
         <SidebarItem Icon={FaSeedling} Text="Gerenciar Sementes"  onClick={() => navigate("/gerenciar-sementes")}/>
         <SidebarItem Icon={GiFarmTractor} Text="Gerenciar Canteiros" onClick={() => navigate("/gerenciar-canteiros")}/>
-        <SidebarItem Icon={FaClipboardList} Text="Vistorias" />
-        <SidebarItem Icon={FaTools} Text="Gestão de Insumos" />
-        <SidebarItem Icon={FaChartBar} Text="Relatórios" />
+        <SidebarItem Icon={FaClipboardList} Text="Distribuir Mudas" onClick={() => navigate("/distribuicao-mudas")}/>
+        <SidebarItem Icon={FaClipboardList} Text="Vistoria" onClick={() => navigate("/vistoria")} /> 
+        <SidebarItem Icon={FaTools} Text="Gestão de Insumos" onClick={() => navigate("/insumo")} />
+        <SidebarItem Icon={FaChartBar} Text="Relatórios" onClick={() => navigate("/relatorios")} />
         <SidebarItem Icon={FaCog} Text="Configuração" onClick={() => navigate("/configuracoes")} />
         <SidebarItem Icon={FaSignOutAlt} Text="Sair" isLogout onClick={handleLogout} />
       </div>

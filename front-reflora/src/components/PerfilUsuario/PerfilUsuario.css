@@ -1,5 +1,4 @@
 /* src/components/PerfilUsuario/PerfilUsuario.css */
-/* NENHUMA ALTERAÇÃO NECESSÁRIA */
 .perfil-usuario {
   max-width: 800px;
   margin: 0 auto;
@@ -14,42 +13,60 @@
   padding: 0;
 }
 
-.perfil-usuario__avatar {
+/* --- ESTILOS ANTIGOS REMOVIDOS ---
+  .perfil-usuario__avatar,
+  .perfil-usuario__avatar img,
+  .perfil-usuario__avatar-overlay 
+  ...NÃO SÃO MAIS USADOS
+*/
+
+/* --- NOVOS ESTILOS ADICIONADOS --- */
+
+/* Wrapper para centralizar o container */
+.image-upload-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* O container do upload de imagem, estilizado
+  exatamente como o avatar antigo.
+*/
+.image-upload-container {
   position: relative;
   width: 80px;
   height: 80px;
-  border-radius: 50%;
+  border-radius: 50%; /* <-- AQUI FICA REDONDO */
   background-color: var(--cor-fundo-cinza, #f5f5f5);
   border: 2px solid var(--cor-verde-primario, #2e7d32);
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: hidden; /* Mantém a imagem dentro do círculo */
+  cursor: default; /* Cursor padrão (JS muda para 'pointer' se editando) */
+  transition: border-color 0.2s;
 }
 
-.perfil-usuario__avatar img {
-  width: 90%;
-  height: 90%;
+/* Hover (só terá efeito se o cursor for 'pointer') */
+.image-upload-container:hover {
+  border-color: #257024; /* Verde mais escuro no hover */
+}
+
+/* A imagem de pré-visualização (foto do usuário) */
+.image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Garante que a foto cubra o círculo */
+}
+
+/* O ícone de placeholder (avatar padrão) */
+.image-placeholder-icon {
+  width: 90%; /* Mesmo estilo do img antigo */
+  height: 90%; /* Mesmo estilo do img antigo */
   object-fit: contain;
 }
 
-.perfil-usuario__avatar-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.perfil-usuario__avatar:hover .perfil-usuario__avatar-overlay {
-  opacity: 1;
-}
+/* --- ESTILOS DO FORM GERAL (permanecem) --- */
 
 /* Remove qualquer estilo que crie container duplicado */
 .perfil-usuario .form-geral {
@@ -63,14 +80,15 @@
   max-width: 100%;
 }
 
-/* Responsividade */
+/* Responsividade (AJUSTADA) */
 @media (max-width: 768px) {
   .perfil-usuario__avatar-section {
     padding: var(--espacamento-lg, 10px) var(--espacamento-lg, 10px) 0;
     margin-bottom: var(--espacamento-lg, 10px);
   }
   
-  .perfil-usuario__avatar {
+  /* Ajusta o tamanho do novo container no mobile */
+  .image-upload-container {
     width: 50px;
     height: 50px;
   }

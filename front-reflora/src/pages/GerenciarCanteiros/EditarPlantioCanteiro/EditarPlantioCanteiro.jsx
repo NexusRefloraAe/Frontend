@@ -1,76 +1,66 @@
-import React, { useState } from 'react';
-import FormGeral from '../../../components/FormGeral/FormGeral';
-// 1. Importar o Input
-import Input from '../../../components/Input/Input'; 
-import './EditarPlantioCanteiro.css';
+// src/pages/GerenciarCanteiros/EditarPlantioCanteiro/EditarPlantioCanteiro.jsx
 
-const EditarPlantioCanteiro = () => {
+import React, { useState, useEffect } from 'react';
+import FormGeral from '../../../components/FormGeral/FormGeral';
+import Input from '../../../components/Input/Input'; 
+
+const EditarPlantioCanteiro = ({ itemParaEditar, onSave, onCancel }) => {
+  
   const [formData, setFormData] = useState({
     lote: '',
     nomePopular: '',
-    quantidadeGerminada: 0, // <-- 2. Melhor usar 'number' no estado inicial
+    quantidadeGerminada: 0,
     dataEnvio: '',
     localPlantio: '',
   });
 
-  const handleCancel = (confirmar = true) => {
-    const resetForm = () => {
+  // Efeito para preencher o formulário
+  useEffect(() => {
+    if (itemParaEditar) {
       setFormData({
-        lote: '',
-        nomePopular: '',
-        quantidadeGerminada: 0,
-        dataEnvio: '',
-        localPlantio: '',
+        lote: itemParaEditar.NomeCanteiro || '',
+        nomePopular: itemParaEditar.NomePopular || '',
+        quantidadeGerminada: itemParaEditar.Quantidade || 0,
+        dataEnvio: itemParaEditar.DataPlantio || '', 
+        localPlantio: itemParaEditar.Localizacao || '',
       });
-    };
+    }
+  }, [itemParaEditar]);
 
-    if (confirmar) {
-      if (window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
-        resetForm();
-      }
-    } else {
-      resetForm();
+  const handleCancelClick = () => {
+    if (window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
+      onCancel(); 
     }
   };
 
-  // 3. Handler 'onChange' que entende 'number'
   const handleChange = (field) => (e) => {
     const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = (e) => {
-    // e.preventDefault() já é tratado no FormGeral
-    console.log('Dados do Plantio no Canteiro:', formData);
-    alert('Cadastro salvo com sucesso!');
-    handleCancel(false);
+    const dadosAtualizados = {
+      ...itemParaEditar, 
+      NomeCanteiro: formData.lote,
+      NomePopular: formData.nomePopular,
+      Quantidade: formData.quantidadeGerminada,
+      DataPlantio: formData.dataEnvio,
+      Localizacao: formData.localPlantio,
+    };
+    onSave(dadosAtualizados);
   };
-
-  // 4. Handlers do Stepper (simplificados, pois o estado já é 'number')
-  const handleIncrement = (field) => () => {
-    setFormData((prev) => ({ ...prev, [field]: prev[field] + 1 }));
-  };
-
-  const handleDecrement = (field) => () => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: Math.max(0, prev[field] - 1), // Garante que não seja negativo
-    }));
-  };
-
-  // 5. O array 'fields' foi REMOVIDO.
 
   const actions = [
     {
       type: 'button',
       variant: 'action-secondary',
       children: 'Cancelar',
-      onClick: () => handleCancel(true),
+      onClick: handleCancelClick,
     },
     {
       type: 'submit',
       variant: 'primary',
-      children: 'Salvar Cadastro',
+      children: 'Salvar Cadastro', 
     },
   ];
 
@@ -78,32 +68,35 @@ const EditarPlantioCanteiro = () => {
     <div className="editar-plantio-canteiro-pagina">
       <FormGeral
         title="Editar Plantio no Canteiro"
-        // 6. Prop 'fields' removida
         actions={actions}
         onSubmit={handleSubmit}
-        useGrid={true} // <-- 7. ATIVADO para layout lado a lado
+        useGrid={true}
       >
-        {/* 8. Inputs renderizados como 'children' e organizados em grid */}
-
-        <Input
-          label="Lote"
-          name="lote"
-          type="text"
-          value={formData.lote}
-          onChange={handleChange('lote')}
-          required={true}
-          placeholder="Ex: A001"
-        />
         
-        <Input
-          label="Nome Popular"
-          name="nomePopular"
-          type="text"
-          value={formData.nomePopular}
-          onChange={handleChange('nomePopular')}
-          required={true}
-          placeholder="Ex: Ipê"
-        />
+        {/* ✅ ALTERAÇÃO FEITA AQUI 👇 */}
+        <div className="form-geral__campo--span-2">
+          <Input
+            label="Nome do canteiro" 
+            name="canteiro"
+            type="text"
+            value={formData.lote}
+            onChange={handleChange('lote')}
+            required={true}
+            placeholder="Canteiro 1"
+          />
+        </div>
+        
+        <div className="form-geral__campo--span-2">
+          <Input
+            label="Nome Popular"
+            name="nomePopular"
+            type="text"
+            value={formData.nomePopular}
+            onChange={handleChange('nomePopular')}
+            required={true}
+            placeholder="Ipê"
+          />
+        </div>
 
         <Input
           label="Quantidade germinada (und)"
@@ -112,8 +105,7 @@ const EditarPlantioCanteiro = () => {
           value={formData.quantidadeGerminada}
           onChange={handleChange('quantidadeGerminada')}
           required={true}
-          onIncrement={handleIncrement('quantidadeGerminada')}
-          onDecrement={handleDecrement('quantidadeGerminada')}
+          placeholder="20"
         />
         
         <Input
@@ -123,11 +115,8 @@ const EditarPlantioCanteiro = () => {
           value={formData.dataEnvio}
           onChange={handleChange('dataEnvio')}
           required={true}
-          placeholder="dd/mm/aaaa"
         />
 
-        {/* 9. Este 'div' usa a classe do CSS do FormGeral
-               para fazer este campo ocupar 2 colunas */}
         <div className="form-geral__campo--span-2">
           <Input
             label="Local do plantio"
@@ -136,12 +125,12 @@ const EditarPlantioCanteiro = () => {
             value={formData.localPlantio}
             onChange={handleChange('localPlantio')}
             required={true}
-            placeholder="Selecione o local" // Usando placeholder
+            placeholder="Selecione o local"
             options={[
-              // Opção 'Selecione' removida, pois o placeholder faz isso
-              { value: 'canteiro_1', label: 'Canteiro 1' },
-              { value: 'canteiro_2', label: 'Canteiro 2' },
-              { value: 'canteiro_3', label: 'Canteiro 3' },
+              { value: 'Setor A', label: 'Canteiro 1 (Setor A)' },
+              { value: 'Setor B', label: 'Canteiro 2 (Setor B)' },
+              { value: 'Setor C', label: 'Canteiro 3 (Setor C)' },
+              { value: 'Setor D', label: 'Canteiro 4 (Setor D)' },
             ]}
           />
         </div>

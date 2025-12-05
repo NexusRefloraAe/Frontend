@@ -1,0 +1,20 @@
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem; /* 20px */
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .input-row {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+.input-readonly input {
+  background-color: #f5f5f5;
+  color: #666;
+  cursor: not-allowed;
+}

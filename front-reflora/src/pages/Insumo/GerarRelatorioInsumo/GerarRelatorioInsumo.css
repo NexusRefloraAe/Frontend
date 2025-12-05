@@ -1,0 +1,233 @@
+/* GerarRelatorioInsumo.css */
+.gerar-relatorio-insumo-container {
+  width: 100%;
+  padding: 1rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.gerar-relatorio-insumo-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ===== SEÇÃO DE FILTROS ===== */
+.filtros-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filtros-section h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+}
+
+/* Seletor de Tipo de Insumo */
+.tipo-insumo-selector {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tipo-insumo-selector label {
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.tipo-insumo-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tipo-insumo-buttons button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.tipo-insumo-buttons button.active {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.tipo-insumo-buttons button:hover:not(.active) {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+/* Filtros Comuns */
+.filtros-comuns {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.filtro-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 150px;
+}
+
+.filtro-item label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.filtro-item input {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease;
+}
+
+.filtro-item input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.btn-pesquisar {
+  padding: 0.5rem 1.5rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: background 0.2s ease;
+  height: fit-content;
+}
+
+.btn-pesquisar:hover {
+  background: #059669;
+}
+
+/* ===== SEÇÃO DA TABELA ===== */
+.tabela-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 1024px) {
+  .gerar-relatorio-insumo-content {
+    max-width: 900px;
+  }
+}
+
+@media (max-width: 768px) {
+  .gerar-relatorio-insumo-container {
+    padding: 0.5rem;
+  }
+  
+  .gerar-relatorio-insumo-content {
+    gap: 1rem;
+  }
+  
+  .filtros-section,
+  .tabela-section {
+    padding: 1.25rem;
+  }
+  
+  .filtros-comuns {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  .filtro-item {
+    min-width: auto;
+  }
+  
+  .tipo-insumo-selector {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .tipo-insumo-buttons {
+    width: 100%;
+  }
+  
+  .tipo-insumo-buttons button {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .btn-pesquisar {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .gerar-relatorio-insumo-container {
+    padding: 0.25rem;
+  }
+  
+  .filtros-section,
+  .tabela-section {
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
+  .filtros-section h1 {
+    font-size: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .tipo-insumo-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .tipo-insumo-buttons button {
+    padding: 0.75rem;
+  }
+}
+
+/* ===== ESTILOS PARA ESTADOS DE CARREGAMENTO ===== */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ===== ESTILOS PARA MENSAGENS DE ERRO/VAZIO ===== */
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+}
+
+.empty-state h3 {
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  font-size: 0.875rem;
+}

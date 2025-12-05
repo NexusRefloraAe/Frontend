@@ -21,7 +21,7 @@
 
 .configuracoes-tabs .button {
     padding: var(--espacamento-sm) var(--espacamento-lg);
-    font-size: var(--tamanho-fonte-sm);
+    font-size: var(--tamanho-fonte-lg);
     min-width: 180px;
     font-weight: 600;
     transition: all 0.3s ease;

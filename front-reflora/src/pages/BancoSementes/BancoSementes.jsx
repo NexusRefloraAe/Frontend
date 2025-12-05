@@ -1,10 +1,60 @@
+import React, { useState, useEffect } from 'react'
+import ListaSementes from '../../components/ListaSementes/ListaSementes'
+import { FaSeedling, FaList } from 'react-icons/fa'
+import './BancoSementes.css'
+import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus'
+import FormularioSemente from '../../components/FormularioSemente/FormularioSemente'
 
-import "./BancoSementes.css"
-const BancoSementes = () => {
+const DADOS_SEMENTES_MOCK = [
+    { id: 'A001', dataCadastro: '10/10/2024', nome: 'Ipê-amarelo', qtdAtual: '2000 kg', qtdSaida: 200, finalidade: 'germinacao' },
+    { id: 'A002', dataCadastro: '11/10/2024', nome: 'Quaresmeira', qtdAtual: '1500 kg', qtdSaida: 0, finalidade: 'plantio' },
+    { id: 'B001', dataCadastro: '12/10/2024', nome: 'Pau-Brasil', qtdAtual: '500 kg', qtdSaida: 0, finalidade: 'germinacao' },
+    { id: 'C003', dataCadastro: '13/10/2024', nome: 'Manacá-da-serra', qtdAtual: '800 kg', qtdSaida: 0, finalidade: 'plantio' },
+    { id: 'D004', dataCadastro: '14/10/2024', nome: 'Jatobá', qtdAtual: '1200 kg', qtdSaida: 0, finalidade: 'colheita' },
+    { id: 'E005', dataCadastro: '15/10/2024', nome: 'Canafístula', qtdAtual: '600 kg', qtdSaida: 0, finalidade: 'outro' },
+    { id: 'F006', dataCadastro: '16/10/2024', nome: 'Aroeira', qtdAtual: '700 kg', qtdSaida: 0, finalidade: 'germinacao' },
+    { id: 'G007', dataCadastro: '17/10/2024', nome: 'Copaíba', qtdAtual: '900 kg', qtdSaida: 0, finalidade: 'plantio' },
+    { id: 'H008', dataCadastro: '18/10/2024', nome: 'Barbatimão', qtdAtual: '400 kg', qtdSaida: 0, finalidade: 'colheita' },
+    { id: 'I009', dataCadastro: '19/10/2024', nome: 'Embaúba', qtdAtual: '1100 kg', qtdSaida: 0, finalidade: 'outro' },
+];
 
-  return (
-    <div><h1>sakdmsak</h1></div>
-  )
+const menusNavegacao = [
+    { id: 'cadastrar', label: 'Cadastrar Semente', icon: <FaSeedling />},
+    { id: 'listar', label: 'Listar Sementes', icon: <FaList /> },
+];
+
+function Banco() {
+
+    const [abaAtiva, setAbaAtiva] = useState('listar');
+    const [sementes, setSementes] = useState([]);
+
+    useEffect(() => {
+        setSementes(DADOS_SEMENTES_MOCK);
+    }, []);
+
+    const handleMenuClick = (menuId) => {
+        setAbaAtiva(menuId);
+    }
+
+    return (
+        <div className="container-banco">
+            <div className="content-banco">
+                <div className="banco-navegacao"> 
+                    <BotaoSubmenus
+                        menus={menusNavegacao}
+                        activeMenuId={abaAtiva}
+                        onMenuClick={handleMenuClick} />
+                </div>
+                <main>
+                    {abaAtiva === 'listar' ? (
+                        <ListaSementes sementes={sementes} />
+                    ) : (
+                        <FormularioSemente />
+                    )}
+                </main>
+            </div>
+        </div>
+    )
 }
 
-export default BancoSementes 
+export default Banco;
