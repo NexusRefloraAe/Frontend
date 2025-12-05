@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authService } from '../../services/authService';
+import { usuarioService } from '../../services/usuarioService';
 import FormGeral from '../FormGeral/FormGeral';
 import Button from '../Button/Button';
-import Input from '../Input/Input'; // <-- 1. Importamos o Input
+import Input from '../Input/Input'; 
 import perfilusuarioIcon from '../../assets/perfilusuario.svg';
 import botaoEditarIcon from '../../assets/botaoeditar.svg';
 import botaoSalvarIcon from '../../assets/botaosalvar.svg';
@@ -10,32 +13,108 @@ import importarfotoIcon from '../../assets/importarfoto.svg';
 import './PerfilUsuario.css';
 
 const PerfilUsuario = () => {
+  const navigate = useNavigate();
+
+  const [currentUser, setCurrentUser] = useState(null);
+  const [fotoFile, setFotoFile] = useState(null);
+  const [fotoPreview, setFotoPreview] = useState(null); 
+
   const [userData, setUserData] = useState({
-    nomeCompleto: 'Maria Silva',
-    email: 'maria.silva@exemplo.com',
-    telefone: '(00) 9 0000-0000',
-    dataNascimento: '1990-01-01',
-    genero: 'Feminino',
-    empresa: 'XXXXX',
-    endereco: 'Rua X, Nº 00, Bairro, Cidade/Estado',
+    nomeCompleto: '',
+    email: '',
+    telefone: '',
+    dataNascimento: '',
+    genero: '',
+    empresa: '',
+    endereco: '',
+    fotoUrl: null
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = authService.getCurrentUser();
+        
+        if (!user || !user.id) {
+            navigate('/login');
+            return;
+        }
+        setCurrentUser(user);
+
+        const data = await usuarioService.getUsuario(user.id);
+        console.log("Dados do usuário:", data);
+
+        // --- Tratamento de Data ---
+        let dataNascFormatada = '';
+        if (data.dataNascimento) {
+            if(data.dataNascimento.includes('T') || data.dataNascimento.includes(' ')) {
+                dataNascFormatada = data.dataNascimento.substring(0, 10);
+            } else if (data.dataNascimento.includes('/')) {
+                const parts = data.dataNascimento.split('/'); 
+                if(parts.length === 3) {
+                    dataNascFormatada = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                }
+            } else {
+                dataNascFormatada = data.dataNascimento;
+            }
+        }
+
+        // --- CORREÇÃO DA URL DA FOTO (Docker -> Localhost) ---
+        // 1. Pega a URL bruta vinda do backend (agora mapeada como fotoUsuario)
+        let rawUrl = data.fotoUsuario?.url || data.fotoUsuarioResponseDTO?.url || data.fotoUrl || null;
+
+        // 2. Corrige o hostname se for interno do Docker
+        if (rawUrl) {
+            // Se a URL contiver o nome do container (ex: reflora-minio), troca por localhost
+            // Ajuste 'reflora-minio' para o nome exato que aparece no seu erro se for diferente
+            if (rawUrl.includes("reflora-minio")) {
+                rawUrl = rawUrl.replace("reflora-minio", "localhost");
+            } else if (rawUrl.includes("minio")) { // Fallback genérico
+                 rawUrl = rawUrl.replace("minio", "localhost");
+            }
+        }
+
+        setUserData({
+            nomeCompleto: data.nomeCompleto || '',
+            email: data.email || '',
+            telefone: data.numeroCelular || '', 
+            dataNascimento: dataNascFormatada,
+            genero: data.genero || '', 
+            empresa: data.empresa || '',
+            endereco: data.endereco || '',
+            fotoUrl: rawUrl // Usa a URL corrigida
+        });
+
+      } catch (error) {
+        console.error("Erro ao carregar perfil", error);
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]);
 
   const handleChange = (field) => (e) => {
     setUserData(prev => ({ ...prev, [field]: e.target.value }));
   };
 
   const handleSave = async (e) => {
-    // e.preventDefault() já é tratado pelo FormGeral
+    if (e && e.preventDefault) e.preventDefault();
+
     setIsLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Dados salvos:', userData);
+      await usuarioService.updateUsuario(currentUser.id, userData, fotoFile);
+      
+      alert('Dados salvos com sucesso!');
       setIsEditing(false);
+      setFotoFile(null); 
+      window.location.reload(); 
+
     } catch (error) {
       console.error('Erro ao salvar:', error);
+      alert('Ocorreu um erro ao salvar as alterações.');
     } finally {
       setIsLoading(false);
     }
@@ -43,13 +122,30 @@ const PerfilUsuario = () => {
 
   const handleCancel = () => {
     setIsEditing(false);
-    // TODO: Resetar os dados para o estado original (antes da edição)
-    // Por enquanto, apenas sai do modo de edição.
+    setFotoFile(null);
+    setFotoPreview(null);
+    window.location.reload();
   };
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     if (window.confirm('Tem certeza que deseja excluir sua conta? Esta ação é irreversível.')) {
-      console.log('Conta excluída:', userData.email);
+      try {
+        await usuarioService.deleteUsuario(currentUser.id);
+        
+        alert('Conta excluída.');
+        
+        // 1. Limpa o LocalStorage
+        authService.logout(); 
+        
+        // 2. FORÇA um recarregamento total da página para matar qualquer 
+        // requisição pendente ou interceptor em loop.
+        // Ao invés de navigate('/login'), use:
+        window.location.href = '/login'; 
+
+      } catch (error) {
+        console.error('Erro ao excluir:', error);
+        alert('Erro ao excluir conta.');
+      }
     }
   };
 
@@ -60,15 +156,13 @@ const PerfilUsuario = () => {
     input.onchange = (e) => {
       const file = e.target.files[0];
       if (file) {
-        console.log('Foto selecionada:', file.name);
+        setFotoFile(file); 
+        setFotoPreview(URL.createObjectURL(file)); 
       }
     };
     input.click();
   };
 
-  // 2. O 'fieldsConfig' foi REMOVIDO daqui.
-
-  // A lógica de 'actions' está correta e permanece.
   const actionsConfig = isEditing
     ? [
         {
@@ -102,12 +196,23 @@ const PerfilUsuario = () => {
           icon: botaoExcluirIcon,
         },
       ];
+      
+  const imagemExibida = fotoPreview || userData.fotoUrl || perfilusuarioIcon;
 
   return (
     <div className="perfil-usuario">
       <div className="perfil-usuario__avatar-section">
         <div className="perfil-usuario__avatar">
-          <img src={perfilusuarioIcon} alt="Avatar do Usuário" />
+          <img 
+            src={imagemExibida} 
+            alt="Avatar do Usuário" 
+            style={{ objectFit: 'cover' }} 
+            onError={(e) => {
+                // Fallback caso a URL ainda falhe
+                e.target.onerror = null; 
+                e.target.src = perfilusuarioIcon;
+            }}
+          />
           {isEditing && (
             <div className="perfil-usuario__avatar-overlay">
               <Button
@@ -125,16 +230,12 @@ const PerfilUsuario = () => {
 
       <FormGeral
         title={isEditing ? 'Editar Perfil' : 'Gerencie suas informações pessoais'}
-        // 3. A prop 'fields' foi removida
         actions={actionsConfig}
         onSubmit={handleSave}
         useGrid={true}
-        loading={isLoading} // O FormGeral usa 'loading' para desabilitar as 'actions'
+        loading={isLoading}
         layout="wide"
       >
-        {/* 4. Inputs renderizados como 'children' */}
-        
-        {/* Nome Completo (span: 2) */}
         <div className="form-geral__campo--span-2">
           <Input
             label="Nome Completo"
@@ -143,11 +244,10 @@ const PerfilUsuario = () => {
             value={userData.nomeCompleto}
             onChange={handleChange('nomeCompleto')}
             required={true}
-            readOnly={!isEditing || isLoading} // 5. Lógica de ReadOnly atualizada
+            readOnly={!isEditing || isLoading}
           />
         </div>
 
-        {/* E-mail */}
         <Input
           label="E-mail"
           name="email"
@@ -158,7 +258,6 @@ const PerfilUsuario = () => {
           readOnly={!isEditing || isLoading}
         />
 
-        {/* Telefone */}
         <Input
           label="Telefone"
           name="telefone"
@@ -169,7 +268,6 @@ const PerfilUsuario = () => {
           readOnly={!isEditing || isLoading}
         />
 
-        {/* Data de Nascimento */}
         <Input
           label="Data de Nascimento"
           name="dataNascimento"
@@ -180,27 +278,21 @@ const PerfilUsuario = () => {
           readOnly={!isEditing || isLoading}
         />
 
-        {/* Gênero */}
         <Input
           label="Gênero"
           name="genero"
           type="select"
-          value={userData.genero}
+          value={userData.genero} 
           onChange={handleChange('genero')}
           readOnly={!isEditing || isLoading}
-          // O seu Input.jsx (do prompt anterior) usa 'readOnly'
-          // Idealmente, ele deveria usar 'disabled' para <select>
-          // Mas estamos usando 'readOnly' para manter consistência
-          // com o seu código anterior.
           options={[
-            { value: 'Feminino', label: 'Feminino' },
-            { value: 'Masculino', label: 'Masculino' },
-            { value: 'Outro', label: 'Outro' },
-            { value: 'Prefiro não informar', label: 'Prefiro não informar' },
+            { value: 'FEMININO', label: 'Feminino' },
+            { value: 'MASCULINO', label: 'Masculino' },
+            { value: 'OUTRO', label: 'Outro' },
+            { value: 'NAO_INFORMAR', label: 'Prefiro não informar' },
           ]}
         />
 
-        {/* Empresa (span: 2) */}
         <div className="form-geral__campo--span-2">
           <Input
             label="Empresa"
@@ -212,7 +304,6 @@ const PerfilUsuario = () => {
           />
         </div>
 
-        {/* Endereço (span: 2) */}
         <div className="form-geral__campo--span-2">
           <Input
             label="Endereço"
