@@ -6,6 +6,7 @@ import './HistoricoMaterial.css';
 import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico"; // 👈 Importado
 import EditarMaterial from "../EditarMaterial/EditarMaterial";
 import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
+import DetalhesMaterial from "./DetalhesMaterial/DetalhesMaterial";
 
 const HistoricoMaterial = () => {
   const DADOS_HISTORICO_MATERIAL_MOCK = [
@@ -135,16 +136,6 @@ const HistoricoMaterial = () => {
     { key: "ResponsavelRecebe", label: "Responsável por Receber" },
   ];
 
-  // Define os campos para o ModalDetalheGenerico
-  const camposDetalhes = [
-    { label: "Nome do Insumo", key: "NomeInsumo" },
-    { label: "Data", key: "Data" },
-    { label: "Status", key: "Status" },
-    { label: "Quantidade", key: "Quantidade" },
-    { label: "Unidade de Medida", key: "UnidadeMedida" },
-    { label: "Resp. Entrega", key: "ResponsavelEntrega" },
-    { label: "Resp. Recebimento", key: "ResponsavelRecebe" },
-  ];
 
   return (
     <div className="historico-material-container">
@@ -185,13 +176,14 @@ const HistoricoMaterial = () => {
       {/* Renderização dos 3 modais */}
 
       {/* MODAL DE DETALHES (Visualizar) - (padrão Historico.jsx) */}
-      {modalDetalheAberto && itemSelecionado && (
+      
         <ModalDetalheGenerico
+          isOpen={modalDetalheAberto}
           item={itemSelecionado} 
           titulo="Detalhes da Movimentação"
           
           // Usa 'camposDetalhes' para renderizar os dados
-          camposDetalhes={camposDetalhes} 
+          camposDetalhes={[]} 
 
           onClose={handleFecharModalDetalhe}
           onEditar={() => handleEditar(itemSelecionado)}
@@ -203,8 +195,9 @@ const HistoricoMaterial = () => {
           mostrarAcoes={true}
         >
           {/* Poderia adicionar filhos customizados aqui, mas 'camposDetalhes' já resolve */}
+        <DetalhesMaterial item={itemSelecionado} />
         </ModalDetalheGenerico>
-      )}
+    
 
       {/* MODAL DE EDIÇÃO */}
       <EditarMaterial

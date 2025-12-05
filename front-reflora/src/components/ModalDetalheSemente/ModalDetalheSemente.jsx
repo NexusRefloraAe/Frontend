@@ -4,6 +4,7 @@ import Paginacao from '../Paginacao/Paginacao'
 import ExportButton from '../ExportButton/ExportButton'
 import TabelaHistorico from '../TabelaHistorico/TabelaHistorico'
 import ModalExcluir from '../ModalExcluir/ModalExcluir'
+import EditarSementes from './EditarSementes/EditarSementes'
 //Icons
 import closeIcon from '../../assets/close.svg'
 import editIcon from '../../assets/edit.svg'
@@ -45,6 +46,7 @@ function ModalDetalheSemente({ semente, onClose }) {
     const [historicoEntrada, setHistoricoEntrada] = useState([]);
     const [historicoSaida, setHistoricoSaida] = useState([]);
     const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
+    const [modalEditarAberto, setModalEditarAberto] = useState(false);
 
 
 
@@ -71,11 +73,19 @@ function ModalDetalheSemente({ semente, onClose }) {
     const handleFecharModalExcluir = () => {
         setModalExcluirAberto(false);
     };
+    const handleFecharModalEditar = () => {
+        setModalEditarAberto(false);
+        semente(null);
+    };
 
     const handleConfirmarExclusao = () => {
         console.log("Semente excluída:", semente);
         setModalExcluirAberto(false);
         onClose();
+    };
+    const handleSalvarEdicao = (dadosEditados) => {
+        console.log("Semente editada:", dadosEditados);
+        setModalEditarAberto(false);
     };
 
     const ITENS_POR_PAGINA = 2;
@@ -118,7 +128,7 @@ function ModalDetalheSemente({ semente, onClose }) {
                             <button onClick={() => setModalExcluirAberto(true)}>
                                 <img src={deleteIcon} alt="Deletar" />
                             </button>
-                            <button>
+                            <button onClick={() => setModalEditarAberto(true)}>
                                 <img src={editIcon} alt="Editar" />
                             </button>
                         </div>
@@ -168,6 +178,12 @@ function ModalDetalheSemente({ semente, onClose }) {
                 textoConfirmar="Excluir"
                 textoCancelar="Cancelar"
             />
+            <EditarSementes
+                isOpen={modalEditarAberto}
+                semente={semente}
+                onCancelar={handleFecharModalEditar}
+                onSalvar={handleSalvarEdicao}
+                />
         </>
     )
 }

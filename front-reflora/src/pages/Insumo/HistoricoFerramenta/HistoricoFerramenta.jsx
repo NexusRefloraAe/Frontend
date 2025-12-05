@@ -6,7 +6,7 @@ import './HistoricoFerramenta.css';
 import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico"; // 👈 Importado
 import EditarFerramenta from "../EditarFerramenta/EditarFerramenta";
 import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
-
+import DetalhesFerramenta from "./DetalhesFerramenta/DetalhesFerramenta";
 const HistoricoFerramenta = () => {
     const DADOS_HISTORICO_FERRAMENTA_MOCK = [
         // 👇 IDs adicionados
@@ -34,7 +34,7 @@ const HistoricoFerramenta = () => {
     const [modalDetalheAberto, setModalDetalheAberto] = useState(false);
     const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
     const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
-    
+
     useEffect(() => {
         setFerramentas(DADOS_HISTORICO_FERRAMENTA_MOCK);
     }, []);
@@ -56,7 +56,7 @@ const HistoricoFerramenta = () => {
                 const itemDate = new Date(`${year}-${month}-${day}`);
                 const startDate = dataInicio ? new Date(dataInicio) : null;
                 const endDate = dataFim ? new Date(dataFim) : null;
-                
+
                 if (endDate) endDate.setDate(endDate.getDate() + 1); // Inclui o dia final
 
                 if (startDate && (isNaN(itemDate) || itemDate < startDate)) matchesData = false;
@@ -163,7 +163,7 @@ const HistoricoFerramenta = () => {
                     ]}
                 />
             </div>
-            
+
             <div className="tabela-wrapper">
                 <TabelaComBuscaPaginacao
                     titulo="Histórico de Movimentação de Ferramentas"
@@ -182,19 +182,22 @@ const HistoricoFerramenta = () => {
             {/* Renderização dos 3 modais */}
 
             {/* MODAL DE DETALHES (Visualizar) - (ADICIONADO) */}
-            {modalDetalheAberto && itemSelecionado && (
-                <ModalDetalheGenerico
-                    item={itemSelecionado} 
-                    titulo="Detalhes da Movimentação"
-                    camposDetalhes={camposDetalhes} 
-                    onClose={handleFecharModalDetalhe}
-                    onEditar={() => handleEditar(itemSelecionado)}
-                    onExcluir={() => handleExcluir(itemSelecionado)}
-                    mostrarHistorico={false}
-                    mostrarExportar={false}
-                    mostrarAcoes={true}
-                />
-            )}
+
+            <ModalDetalheGenerico
+                isOpen={modalDetalheAberto}
+                item={itemSelecionado}
+                titulo="Detalhes da Movimentação"
+                camposDetalhes={[]}
+                onClose={handleFecharModalDetalhe}
+                onEditar={() => handleEditar(itemSelecionado)}
+                onExcluir={() => handleExcluir(itemSelecionado)}
+                mostrarHistorico={false}
+                mostrarExportar={false}
+                mostrarAcoes={true}
+            >
+                < DetalhesFerramenta item={itemSelecionado} />
+            </ModalDetalheGenerico>
+
 
             {/* MODAL DE EDIÇÃO DE FERRAMENTA */}
             <EditarFerramenta
@@ -202,7 +205,7 @@ const HistoricoFerramenta = () => {
                 onClose={handleCancelarEdicao}
                 onSalvar={handleSalvarEdicao}
                 // Prop padronizada para 'itemParaEditar'
-                itemParaEditar={itemSelecionado} 
+                itemParaEditar={itemSelecionado}
             />
 
             {/* MODAL DE EXCLUSÃO */}

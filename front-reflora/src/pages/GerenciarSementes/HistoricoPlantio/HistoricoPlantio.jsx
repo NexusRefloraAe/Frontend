@@ -115,8 +115,9 @@ const HistoricoPlantio = () => {
       {/* Renderização dos 3 modais */}
 
       {/* MODAL DE DETALHES (Visualizar) */}
-      {modalDetalheAberto && itemSelecionado && (
+      
         <ModalDetalheGenerico
+          isOpen={modalDetalheAberto}
           item={itemSelecionado} // Passa o item (para pegar a 'item.imagem')
           titulo="Detalhes da Vistoria"
 
@@ -134,7 +135,7 @@ const HistoricoPlantio = () => {
           {/* Passa o componente customizado como 'children' */}
           <DetalhesPlantio item={itemSelecionado} />
         </ModalDetalheGenerico>
-      )}
+   
       
       <EditarPlantioSementes
         isOpen={modalEdicaoAberto}

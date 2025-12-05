@@ -116,8 +116,9 @@ const HistoricoTestes = () => {
       {/* Renderização dos 3 modais */}
 
       {/* MODAL DE DETALHES (Visualizar) */}
-      {modalDetalheAberto && itemSelecionado && (
+      
         <ModalDetalheGenerico
+          isOpen={modalDetalheAberto}
           item={itemSelecionado} // Passa o item (para pegar a 'item.imagem')
           titulo="Detalhes da Vistoria"
 
@@ -135,8 +136,7 @@ const HistoricoTestes = () => {
           {/* Passa o componente customizado como 'children' */}
           <DetalhesTestes item={itemSelecionado} />
         </ModalDetalheGenerico>
-      )}
-
+    
       <EditarTeste
         isOpen={modalEdicaoAberto}
         onCancelar={handleCancelarEdicao}
