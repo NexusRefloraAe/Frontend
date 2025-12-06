@@ -15,7 +15,10 @@ function Listasementes({
     onSearchChange,
     loading,
     onEditar, // Recebido do Banco.jsx
-    onDeletar // Recebido do Banco.jsx
+    onDeletar, // Recebido do Banco.jsx    
+    ordemAtual,
+    direcaoAtual,
+    onOrdenar
 }) {
 
     const [sementeSelecionada, setSementeSelecionada] = useState(null);
@@ -37,6 +40,26 @@ function Listasementes({
         setSementeSelecionada(null);
     };
 
+    const renderSeta = (campo) => {
+        // Se a coluna não for a que está sendo ordenada atualmente, mostra a imagem padrão (neutra)
+        if (ordemAtual !== campo) {
+            return <img src={arrows} alt="Ordenar" style={{ opacity: 0.5, width: '12px', marginLeft: '5px' }} />;
+        }
+
+        return (
+            <img 
+                src={arrows} 
+                alt="Ordenar" 
+                style={{ 
+                    width: '12px', 
+                    marginLeft: '5px',
+                    transform: direcaoAtual === 'asc' ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.2s'
+                }} 
+            />
+        );
+    }
+
     return (
         <div>
             <section className="content-semente">
@@ -57,10 +80,18 @@ function Listasementes({
                     <table>
                         <thead>
                             <tr>
-                                <th>Lote<img src={arrows} alt="Ordenar" /></th>
-                                <th>Data Cadastro<img src={arrows} alt="Ordenar" /></th>
-                                <th>Nome popular<img src={arrows} alt="Ordenar" /></th>
-                                <th>Qtd Atual<img src={arrows} alt="Ordenar" /></th>
+                                <th onClick={() => onOrdenar('lote')} style={{cursor: 'pointer'}}>
+                                    Lote{renderSeta('lote')}
+                                </th>
+                                <th onClick={() => onOrdenar('dataDeCadastro')} style={{cursor: 'pointer'}}>
+                                    Data Cadastro{renderSeta('dataDeCadastro')}
+                                </th>
+                                <th onClick={() => onOrdenar('nomePopular')} style={{cursor: 'pointer'}}>
+                                    Nome popular{renderSeta('nomePopular')}
+                                </th>
+                                <th onClick={() => onOrdenar('quantidade')} style={{cursor: 'pointer'}}>
+                                    Qtd Atual{renderSeta('quantidade')}
+                                </th>
                                 <th>Qtd Saída</th>
                                 <th>Finalidade</th>
                           </tr>
