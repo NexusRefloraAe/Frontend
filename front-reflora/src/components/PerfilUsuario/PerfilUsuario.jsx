@@ -62,17 +62,13 @@ const PerfilUsuario = () => {
             }
         }
 
-        // --- CORREÇÃO DA URL DA FOTO (Docker -> Localhost) ---
-        // 1. Pega a URL bruta vinda do backend (agora mapeada como fotoUsuario)
+        // --- CORREÇÃO DA URL DA FOTO ---
         let rawUrl = data.fotoUsuario?.url || data.fotoUsuarioResponseDTO?.url || data.fotoUrl || null;
 
-        // 2. Corrige o hostname se for interno do Docker
         if (rawUrl) {
-            // Se a URL contiver o nome do container (ex: reflora-minio), troca por localhost
-            // Ajuste 'reflora-minio' para o nome exato que aparece no seu erro se for diferente
             if (rawUrl.includes("reflora-minio")) {
                 rawUrl = rawUrl.replace("reflora-minio", "localhost");
-            } else if (rawUrl.includes("minio")) { // Fallback genérico
+            } else if (rawUrl.includes("minio")) { 
                  rawUrl = rawUrl.replace("minio", "localhost");
             }
         }
@@ -85,7 +81,7 @@ const PerfilUsuario = () => {
             genero: data.genero || '', 
             empresa: data.empresa || '',
             endereco: data.endereco || '',
-            fotoUrl: rawUrl // Usa a URL corrigida
+            fotoUrl: rawUrl 
         });
 
       } catch (error) {
@@ -135,13 +131,7 @@ const PerfilUsuario = () => {
         await usuarioService.deleteUsuario(currentUser.id);
         
         alert('Conta excluída.');
-        
-        // 1. Limpa o LocalStorage
         authService.logout(); 
-        
-        // 2. FORÇA um recarregamento total da página para matar qualquer 
-        // requisição pendente ou interceptor em loop.
-        // Ao invés de navigate('/login'), use:
         window.location.href = '/login'; 
 
       } catch (error) {
@@ -168,7 +158,6 @@ const PerfilUsuario = () => {
 
   const actionsConfig = isEditing
     ? [
-        // ... (configuração de ações 'isEditing' permanece a mesma)
         {
           type: 'button',
           variant: 'secondary',
@@ -185,7 +174,6 @@ const PerfilUsuario = () => {
         },
       ]
     : [
-        // ... (configuração de ações 'not isEditing' permanece a mesma)
         {
           type: 'button',
           variant: 'primary',
@@ -207,16 +195,18 @@ const PerfilUsuario = () => {
   return (
     <div className="perfil-usuario">
       
-      {/* 6. Bloco do Avatar ATUALIZADO */}
-      <div className="perfil-usuario__avatar-section">
+      {/* --- SEÇÃO DO AVATAR CORRIGIDA --- */}
+      {/* Usamos flex-column para colocar o botão embaixo da imagem */}
+      <div className="perfil-usuario__avatar-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
+        
+        {/* Container da imagem (Circular) */}
         <div className="perfil-usuario__avatar" 
-        style={{ 
+          style={{ 
                 width: '150px', 
                 height: '150px', 
                 overflow: 'hidden', 
                 borderRadius: '50%', 
-                position: 'relative',
-                border: '2px solid #ccc', // Adicionei uma borda suave para melhor visualização
+                border: '2px solid #ccc',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -227,13 +217,15 @@ const PerfilUsuario = () => {
             alt="Avatar do Usuário" 
             style={{ objectFit: 'cover', width: '100%', height: '100%' }} 
             onError={(e) => {
-                // Fallback caso a URL ainda falhe
                 e.target.onerror = null; 
                 e.target.src = perfilusuarioIcon;
             }}
           />
-          {isEditing && (
-            <div className="perfil-usuario__avatar-overlay">
+        </div>
+
+        {/* Botão movido para FORA do círculo da imagem */}
+        {isEditing && (
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
               <Button
                 variant="outline"
                 icon={<img src={importarfotoIcon} alt="Ícone de Câmera" style={{ width: '20px', height: '20px' }} />}
@@ -243,8 +235,7 @@ const PerfilUsuario = () => {
                 Trocar Foto
               </Button>
             </div>
-          )}
-        </div>
+        )}
       </div>
 
       <FormGeral
