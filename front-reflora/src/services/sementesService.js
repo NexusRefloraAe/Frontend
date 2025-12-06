@@ -2,20 +2,19 @@ import api from './api';
 
 export const sementesService = {
 
-  getAll: async (termoBusca = '', pagina = 0, itensPorPagina = 5) => {
+  getAll: async (termoBusca = '', pagina = 0, itensPorPagina = 5, campoOrdenacao = 'dataDeCadastro', direcao = 'desc') => {
     const params = {
       page: pagina,
       size: itensPorPagina,
-      sort: 'dataDeCadastro,desc',
+      sort: `${campoOrdenacao},${direcao}`, // Monta a string ex: "lote,asc"
       searchTerm: termoBusca 
     };
+    
     const response = await api.get('/bancoSementes', { params });
     
-    // ALTERAÇÃO 2: Normalização da resposta
-    // Se o backend devolver { content: [...], page: { totalPages: 2 } }
-    // nós transformamos para ficar plano: { content: [...], totalPages: 2 }
     const data = response.data;
     
+    // Normalização (mantive sua lógica anterior)
     if (data.page && data.page.totalPages) {
         return {
             content: data.content,
@@ -25,7 +24,6 @@ export const sementesService = {
         };
     }
     
-    // Retorna normal se já estiver no formato padrão
     return data; 
   },
 
