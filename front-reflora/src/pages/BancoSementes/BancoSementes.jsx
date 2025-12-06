@@ -93,7 +93,14 @@ function Banco() {
         try {
             await sementesService.delete(id);
             alert("Semente excluída com sucesso!");
-            fetchSementes(); // Atualiza a lista
+            if (sementes.length === 1 && paginaAtual > 1) {
+                // Se for o último item e não estivermos na pág 1, voltamos uma página.
+                // Ao mudar o estado 'paginaAtual', o useEffect disparará o fetchSementes automaticamente.
+                setPaginaAtual(paginaAtual - 1);
+            } else {
+                // Caso contrário, apenas recarrega a lista na página atual
+                fetchSementes(); 
+            }
         } catch (error) {
             const msg = getBackendErrorMessage(error);
             alert(msg);
