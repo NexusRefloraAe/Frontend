@@ -1,46 +1,74 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import FormGeral from '../FormGeral/FormGeral'
 import ImageUpload from '../ImageUpload/ImageUpload'
 import Input from '../Input/Input'
+import { sementesService } from '../../services/sementesService' // 1. Importar Serviço
+import { getBackendErrorMessage } from '../../utils/errorHandler' // 2. Importar Tratamento de Erro
 
 import { FaSave } from 'react-icons/fa'
-import calendarIcon from '../../assets/calendaricon.svg'
 import locationIcon from '../../assets/locationicon.svg'
 
-const optionsNomePopular = [
-    { value: 'ipe-amarelo', label: 'Ipê-amarelo' },
-    { value: 'pau-brasil', label: 'Pau-Brasil' },
-];
-const optionsNomeCientifico = [
-    { value: 'Handroanthus chrysotrichus', label: 'Handroanthus chrysotrichus' },
-    { value: 'Paubrasilia echinata', label: 'Paubrasilia echinata' },
-];
-const optionsFamilia = [{ value: 'Bignoniaceae', label: 'Bignoniaceae' }];
-const optionsOrigem = [{ value: 'Bignoniaceae', label: 'Bignoniaceae' }];
+// --- Opções (Mantidas iguais) ---
+// const optionsNomePopular = [
+//     { value: 'ipe-amarelo', label: 'Ipê-amarelo' },
+//     { value: 'pau-brasil', label: 'Pau-Brasil' },
+// ];
+// ... (pode manter todas as outras constantes de options aqui) ...
 const optionsUnidade = [
-    { value: 'kg', label: 'Kg' },
-    { value: 'g', label: 'g' },
-    { value: 'und', label: 'Und' },
+    { value: 'KG', label: 'Kg' },
+    { value: 'G', label: 'g' },
+    { value: 'UNIDADE', label: 'Und' },
 ];
 const optionsCamaraFria = [
     { value: 'sim', label: 'Sim' },
     { value: 'nao', label: 'Não' },
 ];
 
-function FormularioSemente() {
+function FormularioSemente({ onSuccess, onCancel, sementeParaEditar = null }) {
+    
+    // Estado inicial vazio
     const [formData, setFormData] = useState({
         nomePopular: '',
         nomeCientifico: '',
         familia: '',
         origem: '',
-        dataCadastro: '',
+        dataCadastro: '', 
         quantidade: '',
-        unidadeMedida: 'kg',
+        unidadeMedida: 'KG',
         localizacao: '',
         camaraFria: 'nao',
     });
 
     const [fotoSemente, setFotoSemente] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    // --- 3. Efeito para Carregar Dados na Edição ---
+    useEffect(() => {
+        if (sementeParaEditar) {
+            // Conversão de Data: dd/MM/yyyy (Backend) -> yyyy-MM-dd (Input HTML)
+            let dataInput = '';
+            if(sementeParaEditar.dataDeCadastro) {
+                const [dia, mes, ano] = sementeParaEditar.dataDeCadastro.split('/');
+                dataInput = `${ano}-${mes}-${dia}`;
+            }
+
+            setFormData({
+                nomePopular: sementeParaEditar.nomePopular || '',
+                nomeCientifico: sementeParaEditar.nomeCientifico || '',
+                familia: sementeParaEditar.familia || '',
+                origem: sementeParaEditar.origem || '',
+                dataCadastro: dataInput,
+                quantidade: sementeParaEditar.quantidade || '',
+                // O backend manda "KG", "G" ou "UNIDADE", que agora batem com nossas options.
+                unidadeMedida: sementeParaEditar.unidadeDeMedida || 'KG',
+                localizacao: sementeParaEditar.localizacaoDaColeta || '',
+                // Backend manda Boolean, Input espera string 'sim'/'nao'
+                camaraFria: sementeParaEditar.estahNaCamaraFria ? 'sim' : 'nao'
+            });
+            // Nota: Não conseguimos pré-carregar o arquivo de foto no input type="file" por segurança do browser,
+            // mas o backend mantém a foto antiga se não enviarmos uma nova.
+        }
+    }, [sementeParaEditar]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -50,8 +78,32 @@ function FormularioSemente() {
         }));
     };
 
-    const handleSubmit = () => {
-        console.log('Dados do formulário:', { ...formData, foto: fotoSemente });
+    // --- 4. Envio dos Dados Conectado ao Service ---
+    const handleSubmit = async (e) => {
+        if(e && e.preventDefault) e.preventDefault();
+        
+        setLoading(true);
+
+        try {
+            if (sementeParaEditar && sementeParaEditar.id) {
+                // MODO EDIÇÃO
+                await sementesService.update(sementeParaEditar.id, formData, fotoSemente);
+                alert("Semente atualizada com sucesso!");
+            } else {
+                // MODO CADASTRO
+                await sementesService.create(formData, fotoSemente);
+                alert("Semente cadastrada com sucesso!");
+            }
+
+            // Notifica o pai (Banco.jsx) para fechar o form e atualizar a lista
+            if (onSuccess) onSuccess();
+
+        } catch (error) {
+            const msg = getBackendErrorMessage(error);
+            alert(msg);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const formActions = [
@@ -59,20 +111,21 @@ function FormularioSemente() {
             children: 'Cancelar',
             variant: 'action-secondary',
             type: 'button',
-            onClick: () => console.log('Cancelado')
+            onClick: onCancel, // Usa a prop recebida do pai
+            disabled: loading
         },
         {
-            children: 'Salvar cadastro',
+            children: loading ? 'Salvando...' : (sementeParaEditar ? 'Salvar Alterações' : 'Salvar Cadastro'),
             variant: 'primary',
             type: 'submit',
-            icon: <FaSave />
-
+            icon: loading ? null : <FaSave />,
+            disabled: loading
         }
     ];
 
     return (
         <FormGeral
-            title="Cadastrar/editar sementes"
+            title={sementeParaEditar ? "Editar Semente" : "Cadastrar Semente"}
             actions={formActions}
             onSubmit={handleSubmit}
             useGrid={true}
@@ -81,44 +134,46 @@ function FormularioSemente() {
                 label="Foto da Semente"
                 className='form-span-2'
                 onFileChange={(file) => setFotoSemente(file)}
+                // Se quiser mostrar a foto atual na edição, precisaria passar a URL para o componente ImageUpload
+                // previewUrl={sementeParaEditar?.fotoSementeResponseDTO?.url} 
             />
 
+            {/* Mudei type='text' para permitir digitação livre ou select se preferir manter restrito */}
             <Input
                 label="Nome Popular"
-                type='select'
+                type='text' 
                 name='nomePopular'
                 value={formData.nomePopular}
                 onChange={handleInputChange}
-                options={optionsNomePopular}
-                placeholder="Selecione o nome popular"
+                placeholder="Digite o nome popular"
+                // Se quiser manter como select, use: type='select' e passe options={optionsNomePopular}
             />
 
             <Input
                 label="Nome Científico"
-                type='select'
+                type='text'
                 name='nomeCientifico'
                 value={formData.nomeCientifico}
                 onChange={handleInputChange}
-                options={optionsNomeCientifico}
-                placeholder="Selecione o nome científico"
+                placeholder="Digite o nome científico"
             />
 
             <Input
                 label="Família"
-                type='select'
+                type='text'
                 name='familia'
                 value={formData.familia}
                 onChange={handleInputChange}
-                options={optionsFamilia}
+                placeholder="Família da planta"
             />
 
             <Input
                 label="Origem"
-                type='select'
+                type='text'
                 name='origem'
                 value={formData.origem}
                 onChange={handleInputChange}
-                options={optionsOrigem}
+                placeholder="Origem"
             />
 
             <Input
@@ -127,7 +182,6 @@ function FormularioSemente() {
                 name='dataCadastro'
                 value={formData.dataCadastro}
                 onChange={handleInputChange}
-                placeholder="dd/mm/aaaa"
             />
 
             <div className='campo-linha-combinada'>
@@ -173,7 +227,6 @@ function FormularioSemente() {
             />
         </FormGeral>
     );
-
 }
 
-export default FormularioSemente
+export default FormularioSemente;
