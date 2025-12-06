@@ -29,10 +29,14 @@ function Banco() {
     const [totalPaginas, setTotalPaginas] = useState(1);
     const [termoBusca, setTermoBusca] = useState('');
 
+        // --- NOVOS ESTADOS PARA ORDENAÇÃO ---
+    const [ordem, setOrdem] = useState('dataDeCadastro'); // Campo padrão inicial
+    const [direcao, setDirecao] = useState('desc');       // Direção padrão inicial
+
     const fetchSementes = useCallback(async () => {
         setLoading(true);
         try {
-            const data = await sementesService.getAll(termoBusca, paginaAtual - 1);
+            const data = await sementesService.getAll(termoBusca, paginaAtual - 1, 5, ordem, direcao);
             setSementes(data.content);
             const total = data.totalPages || data.page?.totalPages || 1;
             setTotalPaginas(total);
@@ -44,7 +48,7 @@ function Banco() {
         } finally {
             setLoading(false);
         }
-    }, [termoBusca, paginaAtual]);
+    }, [termoBusca, paginaAtual, ordem, direcao]);
 
     useEffect(() => {
         if (abaAtiva === 'listar') {
@@ -59,6 +63,20 @@ function Banco() {
 
     const handleTrocaPagina = (novaPagina) => {
         setPaginaAtual(novaPagina);
+    };
+
+    // --- NOVA FUNÇÃO DE ORDENAÇÃO ---
+    const handleOrdenar = (novoCampo) => {
+        if (novoCampo === ordem) {
+            // Se clicou no mesmo campo, inverte a direção (asc <-> desc)
+            setDirecao(direcao === 'asc' ? 'desc' : 'asc');
+        } else {
+            // Se clicou em um campo novo, define ele como atual e reseta para ascendente
+            setOrdem(novoCampo);
+            setDirecao('asc');
+        }
+        // Reseta para a primeira página ao reordenar para evitar confusão visual
+        setPaginaAtual(1);
     };
 
     // --- FUNÇÕES QUE FALTAVAM ---
@@ -126,6 +144,10 @@ function Banco() {
                             onRecarregar={fetchSementes}
                             onEditar={handleEditar}   // <--- Aqui
                             onDeletar={handleDeletar} // <--- Aqui
+
+                            ordemAtual={ordem}
+                            direcaoAtual={direcao}
+                            onOrdenar={handleOrdenar}
                         />
                     ) : (
                         <FormularioSemente 
