@@ -6,7 +6,7 @@ import { sementesService } from '../../services/sementesService' // 1. Importar 
 import { getBackendErrorMessage } from '../../utils/errorHandler' // 2. Importar Tratamento de Erro
 
 import { FaSave } from 'react-icons/fa'
-
+import locationIcon from '../../assets/icons/location-icon.svg'
 
 // --- Opções (Mantidas iguais) ---
 // const optionsNomePopular = [
