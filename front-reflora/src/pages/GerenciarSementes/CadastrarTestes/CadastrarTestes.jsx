@@ -1,29 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 import FormGeral from "../../../components/FormGeral/FormGeral";
-import { useState } from "react";
 import Input from "../../../components/Input/Input";
+// 1. Importar o serviço correto
+import { testeGerminacaoService } from "../../../services/testeGerminacaoService";
 
 const CadastrarTestes = () => {
+  // 2. Estado com chaves em camelCase (compatível com o Service)
   const [formData, setFormData] = useState({
-    Lote: '',
-    NomePopular: '',
-    DataPlantio: '',
-    TipoPlantio: '',
-    CamaraFria: '',
-    OmdSementes: 0,
-    OmdPlantada: 0,
+    lote: '',
+    nomePopular: '',
+    dataTeste: '', // Nome correto para o formulário
+    quantidade: 0,
+    camaraFria: '', // "Sim" ou "Não"
+    // Campos de resultado (opcionais no cadastro, mas mantidos se quiser preencher já)
+    dataGerminacao: '',
+    qntdGerminou: 0,
+    taxaGerminou: ''
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleCancel = (confirmar = true) => {
     const resetForm = () => {
       setFormData({
-        Lote: '',
-        NomePopular: '',
-        DataPlantio: '',
-        TipoPlantio: '',
-        CamaraFria: '',
-        OmdSementes: 0,
-        OmdPlantada: 0,
+        lote: '',
+        nomePopular: '',
+        dataTeste: '',
+        quantidade: 0,
+        camaraFria: '',
+        dataGerminacao: '',
+        qntdGerminou: 0,
+        taxaGerminou: ''
       });
     };
 
@@ -49,10 +56,23 @@ const CadastrarTestes = () => {
     setFormData(prev => ({ ...prev, [field]: prev[field] > 0 ? prev[field] - 1 : 0 }));
   };
 
-  const handleSubmit = (e) => {
-    console.log('Dados do Teste de Germinação:', formData);
-    alert('Cadastro salvo com sucesso!');
-    handleCancel(false);
+  // 3. Integração com o Backend
+  const handleSubmit = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+
+    try {
+      setLoading(true);
+      // O serviço já sabe mapear 'dataTeste' para 'dataPlantio' no DTO do Java
+      await testeGerminacaoService.create(formData);
+      
+      alert('Teste cadastrado com sucesso!');
+      handleCancel(false);
+    } catch (error) {
+      console.error("Erro ao cadastrar teste:", error);
+      alert("Erro ao salvar cadastro.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const actions = [
@@ -61,11 +81,13 @@ const CadastrarTestes = () => {
       variant: 'action-secondary',
       children: 'Cancelar',
       onClick: () => handleCancel(true),
+      disabled: loading
     },
     {
       type: 'submit',
       variant: 'primary',
-      children: 'Salvar Cadastro',
+      children: loading ? 'Salvando...' : 'Salvar Cadastro',
+      disabled: loading
     },
   ];
 
@@ -79,55 +101,50 @@ const CadastrarTestes = () => {
       >
         <Input
           label="Lote"
-          name="Lote"
+          name="lote"
           type="text"
-          value={formData.Lote}
-          onChange={handleChange('Lote')}
+          value={formData.lote}
+          onChange={handleChange('lote')}
           required={true}
           placeholder="A001"
         />
 
         <Input
           label="Nome Popular"
-          name="NomePopular"
+          name="nomePopular"
           type="text"
-          value={formData.NomePopular}
-          onChange={handleChange('NomePopular')}
+          value={formData.nomePopular}
+          onChange={handleChange('nomePopular')}
           required={true}
           placeholder="Ipê"
         />
 
         <Input
-          label="Data do plantio"
-          name="DataPlantio"
+          label="Data do Teste"
+          name="dataTeste"
           type="date"
-          value={formData.DataPlantio}
-          onChange={handleChange('DataPlantio')}
+          value={formData.dataTeste}
+          onChange={handleChange('dataTeste')}
           required={true}
-          placeholder="dd/mm/aaaa"
         />
 
         <Input
-          label="Tipo de plantio"
-          name="TipoPlantio"
-          type="select"
-          value={formData.TipoPlantio}
-          onChange={handleChange('TipoPlantio')}
+          label="Qtd de sementes (kg/g/und)"
+          name="quantidade"
+          type="number"
+          value={formData.quantidade}
+          onChange={handleChange('quantidade')}
+          onIncrement={() => handleIncrement("quantidade")}
+          onDecrement={() => handleDecrement("quantidade")}
           required={true}
-          placeholder="Sementeira/saquinho/chão"
-          options={[
-            { value: 'Sementeira', label: 'Sementeira' },
-            { value: 'Saquinho', label: 'Saquinho' },
-            { value: 'Chão', label: 'Chão' },
-          ]}
         />
 
         <Input
           label="Câmara fria"
-          name="CamaraFria"
+          name="camaraFria"
           type="select"
-          value={formData.CamaraFria}
-          onChange={handleChange('CamaraFria')}
+          value={formData.camaraFria}
+          onChange={handleChange('camaraFria')}
           required={true}
           placeholder="Sim/não"
           options={[
@@ -136,27 +153,17 @@ const CadastrarTestes = () => {
           ]}
         />
 
-        <Input
-          label="Qtd de sementes (kg/g/und)"
-          name="QtdSementes"
-          type="number"
-          value={formData.OmdSementes}
-          onChange={handleChange('QntdSementes')}
-          onIncrement={() => handleIncrement("QtdSementes")}
-          onDecrement={() => handleDecrement("QtdSementes")}
-          required={true}
-        />
+        {/* Campos removidos: TipoPlantio e QtdPlantada (não existem em Teste de Germinação) */}
+        
+        {/* Opcional: Se quiser permitir registrar o resultado já no cadastro */}
+        {/* <Input
+          label="Data Germinação"
+          type="date"
+          value={formData.dataGerminacao}
+          onChange={handleChange('dataGerminacao')}
+        /> 
+        */}
 
-        <Input
-          label="Qtd plantada (und)"
-          name="QtdPlantada"
-          type="number"
-          value={formData.OmdPlantada}
-          onChange={handleChange('QtdPlantada')}
-          onIncrement={() => handleIncrement("QtdPlantada")}
-          onDecrement={() => handleDecrement("QtdPlantada")}
-          required={true}
-        />
       </FormGeral>
     </div>
   );
