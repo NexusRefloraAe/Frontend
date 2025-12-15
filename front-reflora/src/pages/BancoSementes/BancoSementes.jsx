@@ -1,22 +1,29 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import ListaSementes from '../../components/ListaSementes/ListaSementes'
+import FormularioSemente from '../../components/FormularioSemente/FormularioSemente'
+import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus'
+import { sementesService } from '../../services/sementesService'
+import { getBackendErrorMessage } from '../../utils/errorHandler'
 import { FaSeedling, FaList } from 'react-icons/fa'
 import './BancoSementes.css'
+<<<<<<< HEAD
 import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus'
 import FormularioSemente from '../../components/FormularioSemente/FormularioSemente'
 
 const DADOS_SEMENTES_MOCK = [
-    { id: 'A001', dataCadastro: '10/10/2024', nome: 'Ipê-amarelo', qtdAtual: '2000 kg', qtdSaida: 200, finalidade: 'germinacao' },
-    { id: 'A002', dataCadastro: '11/10/2024', nome: 'Quaresmeira', qtdAtual: '1500 kg', qtdSaida: 0, finalidade: 'plantio' },
-    { id: 'B001', dataCadastro: '12/10/2024', nome: 'Pau-Brasil', qtdAtual: '500 kg', qtdSaida: 0, finalidade: 'germinacao' },
-    { id: 'C003', dataCadastro: '13/10/2024', nome: 'Manacá-da-serra', qtdAtual: '800 kg', qtdSaida: 0, finalidade: 'plantio' },
-    { id: 'D004', dataCadastro: '14/10/2024', nome: 'Jatobá', qtdAtual: '1200 kg', qtdSaida: 0, finalidade: 'colheita' },
-    { id: 'E005', dataCadastro: '15/10/2024', nome: 'Canafístula', qtdAtual: '600 kg', qtdSaida: 0, finalidade: 'outro' },
-    { id: 'F006', dataCadastro: '16/10/2024', nome: 'Aroeira', qtdAtual: '700 kg', qtdSaida: 0, finalidade: 'germinacao' },
-    { id: 'G007', dataCadastro: '17/10/2024', nome: 'Copaíba', qtdAtual: '900 kg', qtdSaida: 0, finalidade: 'plantio' },
-    { id: 'H008', dataCadastro: '18/10/2024', nome: 'Barbatimão', qtdAtual: '400 kg', qtdSaida: 0, finalidade: 'colheita' },
-    { id: 'I009', dataCadastro: '19/10/2024', nome: 'Embaúba', qtdAtual: '1100 kg', qtdSaida: 0, finalidade: 'outro' },
+    { id: 'A001', dataCadastro: '10/10/2024', nome: 'Ipê-amarelo', qtdAtual: 2000 , qtdSaida: 200, finalidade: 'germinacao' },
+    { id: 'A002', dataCadastro: '11/10/2024', nome: 'Quaresmeira', qtdAtual: 1500 , qtdSaida: 0, finalidade: 'plantio' },
+    { id: 'B001', dataCadastro: '12/10/2024', nome: 'Pau-Brasil', qtdAtual: 500 , qtdSaida: 0, finalidade: 'germinacao' },
+    { id: 'C003', dataCadastro: '13/10/2024', nome: 'Manacá-da-serra', qtdAtual: 800 , qtdSaida: 0, finalidade: 'plantio' },
+    { id: 'D004', dataCadastro: '14/10/2024', nome: 'Jatobá', qtdAtual: 1200 , qtdSaida: 0, finalidade: 'colheita' },
+    { id: 'E005', dataCadastro: '15/10/2024', nome: 'Canafístula', qtdAtual:600 , qtdSaida: 0, finalidade: 'outro' },
+    { id: 'F006', dataCadastro: '16/10/2024', nome: 'Aroeira', qtdAtual: 700 , qtdSaida: 0, finalidade: 'germinacao' },
+    { id: 'G007', dataCadastro: '17/10/2024', nome: 'Copaíba', qtdAtual: 900 , qtdSaida: 0, finalidade: 'plantio' },
+    { id: 'H008', dataCadastro: '18/10/2024', nome: 'Barbatimão', qtdAtual: 400 , qtdSaida: 0, finalidade: 'colheita' },
+    { id: 'I009', dataCadastro: '19/10/2024', nome: 'Embaúba', qtdAtual: 1100 , qtdSaida: 0, finalidade: 'outro' },
 ];
+=======
+>>>>>>> feat/integrar-front-com-o-back
 
 const menusNavegacao = [
     { id: 'cadastrar', label: 'Cadastrar Semente', icon: <FaSeedling />},
@@ -26,14 +33,114 @@ const menusNavegacao = [
 function Banco() {
 
     const [abaAtiva, setAbaAtiva] = useState('listar');
+    
+    // Estados para dados
     const [sementes, setSementes] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [erro, setErro] = useState('');
+    
+    // Estado para edição (semente sendo editada no momento)
+    const [sementeEditando, setSementeEditando] = useState(null);
+
+    // Estados de Paginação e Busca
+    const [paginaAtual, setPaginaAtual] = useState(1);
+    const [totalPaginas, setTotalPaginas] = useState(1);
+    const [termoBusca, setTermoBusca] = useState('');
+
+        // --- NOVOS ESTADOS PARA ORDENAÇÃO ---
+    const [ordem, setOrdem] = useState('dataDeCadastro'); // Campo padrão inicial
+    const [direcao, setDirecao] = useState('desc');       // Direção padrão inicial
+
+    const fetchSementes = useCallback(async () => {
+        setLoading(true);
+        try {
+            const data = await sementesService.getAll(termoBusca, paginaAtual - 1, 5, ordem, direcao);
+            setSementes(data.content);
+            const total = data.totalPages || data.page?.totalPages || 1;
+            setTotalPaginas(total);
+            setErro('');
+        } catch (error) {
+            console.error("Erro ao buscar sementes:", error);
+            const message = getBackendErrorMessage(error);
+            setErro(message);
+        } finally {
+            setLoading(false);
+        }
+    }, [termoBusca, paginaAtual, ordem, direcao]);
 
     useEffect(() => {
-        setSementes(DADOS_SEMENTES_MOCK);
-    }, []);
+        if (abaAtiva === 'listar') {
+            fetchSementes();
+        }
+    }, [abaAtiva, fetchSementes]);
+
+    const handleBusca = (novoTermo) => {
+        setTermoBusca(novoTermo);
+        setPaginaAtual(1);
+    };
+
+    const handleTrocaPagina = (novaPagina) => {
+        setPaginaAtual(novaPagina);
+    };
+
+    // --- NOVA FUNÇÃO DE ORDENAÇÃO ---
+    const handleOrdenar = (novoCampo) => {
+        if (novoCampo === ordem) {
+            // Se clicou no mesmo campo, inverte a direção (asc <-> desc)
+            setDirecao(direcao === 'asc' ? 'desc' : 'asc');
+        } else {
+            // Se clicou em um campo novo, define ele como atual e reseta para ascendente
+            setOrdem(novoCampo);
+            setDirecao('asc');
+        }
+        // Reseta para a primeira página ao reordenar para evitar confusão visual
+        setPaginaAtual(1);
+    };
+
+    // --- FUNÇÕES QUE FALTAVAM ---
+
+    // 1. Função para preparar a edição
+    const handleEditar = (semente) => {
+        setSementeEditando(semente); // Salva a semente no estado
+        setAbaAtiva('cadastrar');    // Troca para a aba do formulário
+        setErro('');
+    };
+
+    // 2. Função para deletar
+    const handleDeletar = async (id) => {
+        try {
+            await sementesService.delete(id);
+            alert("Semente excluída com sucesso!");
+            if (sementes.length === 1 && paginaAtual > 1) {
+                // Se for o último item e não estivermos na pág 1, voltamos uma página.
+                // Ao mudar o estado 'paginaAtual', o useEffect disparará o fetchSementes automaticamente.
+                setPaginaAtual(paginaAtual - 1);
+            } else {
+                // Caso contrário, apenas recarrega a lista na página atual
+                fetchSementes(); 
+            }
+        } catch (error) {
+            const msg = getBackendErrorMessage(error);
+            alert(msg);
+        }
+    };
+
+    const handleSucessoCadastro = () => {
+        setSementeEditando(null); // Limpa a edição
+        setAbaAtiva('listar');
+        setPaginaAtual(1);
+        fetchSementes();
+    };
+
+    const handleCancelarCadastro = () => {
+        setSementeEditando(null); // Limpa a edição se cancelar
+        setAbaAtiva('listar');
+    };
 
     const handleMenuClick = (menuId) => {
+        if (menuId === 'cadastrar') setSementeEditando(null); // Se clicar na aba, limpa edição
         setAbaAtiva(menuId);
+        setErro('');
     }
 
     return (
@@ -46,10 +153,33 @@ function Banco() {
                         onMenuClick={handleMenuClick} />
                 </div>
                 <main>
+                    {erro && <div className="alert-error" style={{color: 'red', margin: '10px'}}>{erro}</div>}
+                    
                     {abaAtiva === 'listar' ? (
-                        <ListaSementes sementes={sementes} />
+                        <ListaSementes 
+                            sementes={sementes} 
+                            loading={loading}
+                            paginaAtual={paginaAtual}
+                            totalPaginas={totalPaginas}
+                            onPageChange={handleTrocaPagina}
+                            termoBusca={termoBusca}
+                            onSearchChange={handleBusca}
+                            
+                            // PASSANDO AS FUNÇÕES PARA O FILHO
+                            onRecarregar={fetchSementes}
+                            onEditar={handleEditar}   // <--- Aqui
+                            onDeletar={handleDeletar} // <--- Aqui
+
+                            ordemAtual={ordem}
+                            direcaoAtual={direcao}
+                            onOrdenar={handleOrdenar}
+                        />
                     ) : (
-                        <FormularioSemente />
+                        <FormularioSemente 
+                            onSuccess={handleSucessoCadastro}
+                            onCancel={handleCancelarCadastro} // <--- Passando o cancelar
+                            sementeParaEditar={sementeEditando} // <--- Passando o dado para editar
+                        />
                     )}
                 </main>
             </div>

@@ -5,6 +5,8 @@ import AuthForm from '../../components/AuthForm/AuthForm';
 import { FcGoogle } from 'react-icons/fc';
 import olhoaberto from '../../assets/olhoaberto.svg';
 import olhofechado from '../../assets/olhofechado.svg';
+import { authService } from '../../services/authService';
+import { getBackendErrorMessage } from '../../utils/errorHandler';
 
 const Login = () => {
   const navigate = useNavigate(); // INICIALIZAR O HOOK
@@ -14,14 +16,32 @@ const Login = () => {
     password: ''
   });
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (field) => (e) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
+    // Limpa o erro assim que o usuário começa a digitar novamente
+    if (error) setError('');
   };
 
-  const handleSubmit = () => {
-    console.log("Tentativa de login com:", formData);
+  const handleSubmit = async () => {
+    setError(''); // Limpa erros anteriores
+
+    try {
+      // Chama o método login do authService (que conecta com /api/auth/login)
+      await authService.login(formData.username, formData.password);
+      
+      // Se não der erro (cair no catch), o login foi sucesso e o token está salvo
+      // Redireciona para a home
+      navigate('/home');
+    } catch (err) {
+      console.error(err);
+      const mensagem = getBackendErrorMessage(err);
+      // Define a mensagem de erro para aparecer no formulário
+      setError(mensagem);
+    }
   };
+
 
   // ALTERAR A FUNÇÃO PARA NAVEGAR
   const handleGoogleLogin = () => {
@@ -76,7 +96,8 @@ const Login = () => {
     },
     showSeparator: true,
     showForgotPassword: true,
-    onSubmit: handleSubmit
+    onSubmit: handleSubmit,
+    error: error
   };
 
   return (

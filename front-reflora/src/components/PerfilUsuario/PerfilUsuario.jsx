@@ -1,43 +1,118 @@
-import React, { useState, useRef } from 'react'; 
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authService } from '../../services/authService';
+import { usuarioService } from '../../services/usuarioService';
 import FormGeral from '../FormGeral/FormGeral';
-import Input from '../Input/Input';
+import Button from '../Button/Button';
+import Input from '../Input/Input'; 
 import perfilusuarioIcon from '../../assets/perfilusuario.svg';
 import { FaEdit, FaSave } from 'react-icons/fa';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import './PerfilUsuario.css';
+import importarfotoIcon from '../../assets/importarfoto.svg';
+import { getBackendErrorMessage } from '../../utils/errorHandler';
 
 const PerfilUsuario = () => {
+  const navigate = useNavigate();
+
+  const [currentUser, setCurrentUser] = useState(null);
+  const [fotoFile, setFotoFile] = useState(null);
+  const [fotoPreview, setFotoPreview] = useState(null); 
+
   const [userData, setUserData] = useState({
-    nomeCompleto: 'Maria Silva',
-    email: 'maria.silva@exemplo.com',
-    telefone: '(00) 9 0000-0000',
-    dataNascimento: '1990-01-01',
-    genero: 'Feminino',
-    empresa: 'XXXXX',
-    endereco: 'Rua X, Nº 00, Bairro, Cidade/Estado',
-    avatarFile: null, // Estado para guardar o arquivo
+    nomeCompleto: '',
+    email: '',
+    telefone: '',
+    dataNascimento: '',
+    genero: '',
+    empresa: '',
+    endereco: '',
+    fotoUrl: null
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
-  // 2. Estado para controlar a pré-visualização da imagem
-  const [avatarPreview, setAvatarPreview] = useState(perfilusuarioIcon);
-  // 3. Ref para o input de arquivo oculto
-  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = authService.getCurrentUser();
+        
+        if (!user || !user.id) {
+            navigate('/login');
+            return;
+        }
+        setCurrentUser(user);
+
+        const data = await usuarioService.getUsuario(user.id);
+        console.log("Dados do usuário:", data);
+
+        // --- Tratamento de Data ---
+        let dataNascFormatada = '';
+        if (data.dataNascimento) {
+            if(data.dataNascimento.includes('T') || data.dataNascimento.includes(' ')) {
+                dataNascFormatada = data.dataNascimento.substring(0, 10);
+            } else if (data.dataNascimento.includes('/')) {
+                const parts = data.dataNascimento.split('/'); 
+                if(parts.length === 3) {
+                    dataNascFormatada = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                }
+            } else {
+                dataNascFormatada = data.dataNascimento;
+            }
+        }
+
+        // --- CORREÇÃO DA URL DA FOTO ---
+        let rawUrl = data.fotoUsuario?.url || data.fotoUsuarioResponseDTO?.url || data.fotoUrl || null;
+
+        if (rawUrl) {
+            if (rawUrl.includes("reflora-minio")) {
+                rawUrl = rawUrl.replace("reflora-minio", "localhost");
+            } else if (rawUrl.includes("minio")) { 
+                 rawUrl = rawUrl.replace("minio", "localhost");
+            }
+        }
+
+        setUserData({
+            nomeCompleto: data.nomeCompleto || '',
+            email: data.email || '',
+            telefone: data.numeroCelular || '', 
+            dataNascimento: dataNascFormatada,
+            genero: data.genero || '', 
+            empresa: data.empresa || '',
+            endereco: data.endereco || '',
+            fotoUrl: rawUrl 
+        });
+
+      } catch (error) {
+        const mensagem = getBackendErrorMessage(error);
+        console.error("Erro ao carregar perfil", mensagem);
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]);
 
   const handleChange = (field) => (e) => {
     setUserData(prev => ({ ...prev, [field]: e.target.value }));
   };
 
   const handleSave = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+
     setIsLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Dados salvos (incluindo avatar):', userData);
+      await usuarioService.updateUsuario(currentUser.id, userData, fotoFile);
+      
+      alert('Dados salvos com sucesso!');
       setIsEditing(false);
+      setFotoFile(null); 
+      window.location.reload(); 
+
     } catch (error) {
-      console.error('Erro ao salvar:', error);
+      const mensagem = getBackendErrorMessage(error);
+      console.error('Erro ao salvar:', mensagem);
+      alert('Ocorreu um erro ao salvar as alterações.');
     } finally {
       setIsLoading(false);
     }
@@ -45,46 +120,44 @@ const PerfilUsuario = () => {
 
   const handleCancel = () => {
     setIsEditing(false);
-    // Reseta a foto para a original se a edição for cancelada
-    setAvatarPreview(perfilusuarioIcon);
-    setUserData(prev => ({ ...prev, avatarFile: null }));
-    // TODO: Resetar o resto dos dados
+    setFotoFile(null);
+    setFotoPreview(null);
+    window.location.reload();
   };
 
-  const handleDeleteAccount = () => {
-    // Substituir window.confirm por um modal customizado é o ideal
+  const handleDeleteAccount = async () => {
     if (window.confirm('Tem certeza que deseja excluir sua conta? Esta ação é irreversível.')) {
-      console.log('Conta excluída:', userData.email);
+      try {
+        await usuarioService.deleteUsuario(currentUser.id);
+        
+        alert('Conta excluída.');
+        authService.logout(); 
+        window.location.href = '/login'; 
+
+      } catch (error) {
+        const mensagem = getBackendErrorMessage(error);
+        console.error('Erro ao excluir:', mensagem);
+        alert('Erro ao excluir conta.');
+      }
     }
   };
 
-  // 4. Função que lê o arquivo e atualiza o estado
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Guarda o arquivo para upload
-      setUserData(prev => ({ ...prev, avatarFile: file }));
-      
-      // Cria a pré-visualização
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result); // base64 string
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // 5. Função para acionar o clique no input oculto
-  const triggerFileInput = () => {
-    // Só permite o clique se estiver em modo de edição
-    if (isEditing) {
-      fileInputRef.current.click();
-    }
+  const handleTrocarFoto = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        setFotoFile(file); 
+        setFotoPreview(URL.createObjectURL(file)); 
+      }
+    };
+    input.click();
   };
 
   const actionsConfig = isEditing
     ? [
-        // ... (configuração de ações 'isEditing' permanece a mesma)
         {
           type: 'button',
           variant: 'secondary',
@@ -101,7 +174,6 @@ const PerfilUsuario = () => {
         },
       ]
     : [
-        // ... (configuração de ações 'not isEditing' permanece a mesma)
         {
           type: 'button',
           variant: 'primary',
@@ -117,43 +189,53 @@ const PerfilUsuario = () => {
           icon: <RiDeleteBin6Line />,
         },
       ];
+      
+  const imagemExibida = fotoPreview || userData.fotoUrl || perfilusuarioIcon;
 
   return (
     <div className="perfil-usuario">
       
-      {/* 6. Bloco do Avatar ATUALIZADO */}
-      <div className="perfil-usuario__avatar-section">
-        {/* Usamos as classes do 'ImageUpload' como solicitado */}
-        <div className="image-upload-wrapper">
-          <div 
-            className="image-upload-container" 
-            onClick={triggerFileInput} // Aciona o input de arquivo
-            // Muda o cursor apenas se estiver editando
-            style={{ cursor: isEditing ? 'pointer' : 'default' }}
-          >
-            {/* Input de arquivo real, mas oculto */}
-            <input 
-              type="file" 
-              accept="image/*" 
-              onChange={handleFileChange} 
-              ref={fileInputRef} 
-              style={{ display: 'none' }} 
-            />
-            
-            {/* Renderiza a pré-visualização ou o ícone padrão.
-              Usamos classes diferentes para aplicar 'object-fit'
-            */}
-            <img 
-              src={avatarPreview} 
-              alt="Avatar" 
-              className={
-                avatarPreview === perfilusuarioIcon 
-                ? 'image-placeholder-icon' // Classe para o ícone padrão
-                : 'image-preview'          // Classe para a foto do usuário
-              }
-            />
-          </div>
+      {/* --- SEÇÃO DO AVATAR CORRIGIDA --- */}
+      {/* Usamos flex-column para colocar o botão embaixo da imagem */}
+      <div className="perfil-usuario__avatar-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
+        
+        {/* Container da imagem (Circular) */}
+        <div className="perfil-usuario__avatar" 
+          style={{ 
+                width: '150px', 
+                height: '150px', 
+                overflow: 'hidden', 
+                borderRadius: '50%', 
+                border: '2px solid #ccc',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: '#f0f0f0'
+            }}>
+          <img 
+            src={imagemExibida} 
+            alt="Avatar do Usuário" 
+            style={{ objectFit: 'cover', width: '100%', height: '100%' }} 
+            onError={(e) => {
+                e.target.onerror = null; 
+                e.target.src = perfilusuarioIcon;
+            }}
+          />
         </div>
+
+        {/* Botão movido para FORA do círculo da imagem */}
+        {isEditing && (
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Button
+                variant="outline"
+                icon={<img src={importarfotoIcon} alt="Ícone de Câmera" style={{ width: '20px', height: '20px' }} />}
+                onClick={handleTrocarFoto}
+                size="small"
+              >
+                Trocar Foto
+              </Button>
+            </div>
+        )}
       </div>
 
       <FormGeral
@@ -164,11 +246,6 @@ const PerfilUsuario = () => {
         loading={isLoading}
         layout="wide"
       >
-        {/* Os campos <Input> permanecem exatamente os mesmos.
-          ...
-        */}
-
-        {/* Nome Completo (span: 2) */}
         <div className="form-geral__campo--span-2">
           <Input
             label="Nome Completo"
@@ -181,7 +258,6 @@ const PerfilUsuario = () => {
           />
         </div>
 
-        {/* E-mail */}
         <Input
           label="E-mail"
           name="email"
@@ -192,18 +268,16 @@ const PerfilUsuario = () => {
           readOnly={!isEditing || isLoading}
         />
 
-        {/* Telefone */}
         <Input
           label="Telefone"
           name="telefone"
           type="tel"
-          placeholder="(XX) 9 XXXX-XXXX"
+          placeholder="XX9XXXXXXXX"
           value={userData.telefone}
           onChange={handleChange('telefone')}
           readOnly={!isEditing || isLoading}
         />
 
-        {/* Data de Nascimento */}
         <Input
           label="Data de Nascimento"
           name="dataNascimento"
@@ -214,23 +288,21 @@ const PerfilUsuario = () => {
           readOnly={!isEditing || isLoading}
         />
 
-        {/* Gênero */}
         <Input
           label="Gênero"
           name="genero"
           type="select"
-          value={userData.genero}
+          value={userData.genero} 
           onChange={handleChange('genero')}
           readOnly={!isEditing || isLoading}
           options={[
-            { value: 'Feminino', label: 'Feminino' },
-            { value: 'Masculino', label: 'Masculino' },
-            { value: 'Outro', label: 'Outro' },
-            { value: 'Prefiro não informar', label: 'Prefiro não informar' },
+            { value: 'FEMININO', label: 'Feminino' },
+            { value: 'MASCULINO', label: 'Masculino' },
+            { value: 'OUTRO', label: 'Outro' },
+            { value: 'NAO_INFORMAR', label: 'Prefiro não informar' },
           ]}
         />
 
-        {/* Empresa (span: 2) */}
         <div className="form-geral__campo--span-2">
           <Input
             label="Empresa"
@@ -242,7 +314,6 @@ const PerfilUsuario = () => {
           />
         </div>
 
-        {/* Endereço (span: 2) */}
         <div className="form-geral__campo--span-2">
           <Input
             label="Endereço"

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import './ImageUpload.css'
 import cameraIcon from '../../assets/camera-icon.svg'
 
@@ -7,12 +7,22 @@ import cameraIcon from '../../assets/camera-icon.svg'
  * @param {string} props.label - O texto do label (ex: "Upload de Imagem")
  * @param {function(File): void} props.onFileChange = - Função chamada quando o arquivo é selecionado
  * @param {string} props.className - Classe CSS adicional para customização
+ * @param {string} [props.previewUrl] - URL da imagem existente (vinda do banco) para exibição inicial
  */
-
-function ImageUpload({ label, onFileChange, className = '' }) {
-    const [previewUrl, setPreviewUrl] = React.useState(null);
+function ImageUpload({ label, onFileChange, className = '', previewUrl }) {
+    // Renomeei o estado para 'preview' para diferenciar da prop 'previewUrl'
+    const [preview, setPreview] = useState(null);
 
     const fileInputRef = useRef(null);
+
+    // --- NOVO: Efeito para carregar a imagem vinda do banco (Edição) ---
+    useEffect(() => {
+        if (previewUrl) {
+            setPreview(previewUrl);
+        } else {
+            setPreview(null);
+        }
+    }, [previewUrl]);
 
     const handleContainerClick = () => {
         fileInputRef.current.click();
@@ -21,17 +31,21 @@ function ImageUpload({ label, onFileChange, className = '' }) {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            onFileChange(file);
-            setPreviewUrl(URL.createObjectURL(file));
+            if (onFileChange) {
+                onFileChange(file);
+            }
+            // Cria o preview local para o novo arquivo selecionado
+            setPreview(URL.createObjectURL(file));
         }
     };
+
     return (
         <div className={`image-upload-wrapper ${className}`}>
             {label && <label>{label}</label>}
 
             <div className="image-upload-container" onClick={handleContainerClick} title='Clique para selecionar uma imagem'>
-                {previewUrl ? (
-                    <img src={previewUrl} alt="Preview" className="image-preview" />
+                {preview ? (
+                    <img src={preview} alt="Preview" className="image-preview" />
                 ) : (
                     <div className="image-placeholder">
                         <img src={cameraIcon} alt="Camera Icon" />
@@ -49,4 +63,4 @@ function ImageUpload({ label, onFileChange, className = '' }) {
     );
 }
 
-export default ImageUpload
+export default ImageUpload;

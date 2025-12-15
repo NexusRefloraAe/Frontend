@@ -138,8 +138,9 @@ const Historico = () => {
             </div>
 
             {/* Modal de Detalhes (sem mudanças) */}
-            {modalDetalheAberto && canteiroSelecionado && (
+            
                 <ModalDetalheGenerico
+                    isOpen={modalDetalheAberto} 
                     item={canteiroSelecionado}
                     camposDetalhes={[
                         { label: 'Nome:', chave: 'NomeCanteiro' },
@@ -169,7 +170,7 @@ const Historico = () => {
                     mostrarHistorico={true}
                     mostrarExportar={true}
                 />
-            )}
+           
 
             {/* ✅ 2. MODAL DE EDIÇÃO */}
             {modalEdicaoAberto && canteiroSelecionado && (

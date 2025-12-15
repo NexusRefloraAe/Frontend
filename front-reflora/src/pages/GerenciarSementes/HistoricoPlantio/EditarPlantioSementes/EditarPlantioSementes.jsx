@@ -3,24 +3,58 @@ import FormGeral from "../../../../components/FormGeral/FormGeral";
 import Input from "../../../../components/Input/Input";
 
 const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
+  // 1. Estado alinhado com o DTO do Java (nomes exatos)
   const [formData, setFormData] = useState({
     lote: '',
-    nomePopular: '',
-    qntdSementes: 0,
+    nomePopular: '', // Apenas para exibição (não é salvo no update)
+    qtdSemente: 0,   // ✅ Corrigido (era qntdSementes)
     dataPlantio: '',
     tipoPlantio: '',
-    qntdPlantada: 0,
+    quantidadePlantada: 0, // ✅ Corrigido (era qntdPlantada)
   });
+
+  // --- 1. FUNÇÃO DE NORMALIZAÇÃO (O SEGREDO DA INTEGRAÇÃO) ---
+  // Transforma "Chão", "CHÃO", "chão" -> "CHAO"
+  const normalizarEnum = (valor) => {
+    if (!valor) return '';
+    return String(valor)
+      .normalize('NFD')               // Separa acentos
+      .replace(/[\u0300-\u036f]/g, "") // Remove acentos
+      .toUpperCase();                 // Tudo Maiúsculo
+  };
 
   useEffect(() => {
     if (plantio) {
+      const formatarDataInput = (dataStr) => {
+          if(!dataStr) return '';
+          if(dataStr.includes('/')) {
+             const parts = dataStr.split('/');
+             return `${parts[2]}-${parts[1]}-${parts[0]}`;
+          }
+          return dataStr;
+      };
+
+      // --- 2. TRATAMENTO NO CARREGAMENTO ---
+      // Se o back mandar "Chão" (descrição), convertemos para "CHAO" (value do select)
+      // para que o campo já venha selecionado corretamente.
+      let tipoPlantioNormalizado = '';
+      if (plantio.tipoPlantioDescricao) {
+          tipoPlantioNormalizado = normalizarEnum(plantio.tipoPlantioDescricao);
+      } else if (plantio.tipoPlantio) {
+          tipoPlantioNormalizado = normalizarEnum(plantio.tipoPlantio);
+      }
+
       setFormData({
         lote: plantio.lote || '',
-        nomePopular: plantio.nomePopular || '',
-        qntdSementes: plantio.qntdSementes || 0,
-        dataPlantio: plantio.dataPlantio ? plantio.dataPlantio.split('/').reverse().join('-'): '',
-        tipoPlantio: plantio.tipoPlantio || '',
-        qntdPlantada: plantio.qntdPlantada || 0,
+        nomePopular: plantio.nomePopularSemente || plantio.nomePopular || '', 
+        qntdSementes: plantio.qtdSemente || plantio.qntdSementes || 0,
+        dataPlantio: formatarDataInput(plantio.dataPlantio),
+        
+        // Aqui usamos o valor tratado
+        tipoPlantio: tipoPlantioNormalizado, 
+        
+        // Backend envia 'quantidadePlantada'
+        quantidadePlantada: plantio.quantidadePlantada || plantio.qntdPlantada || 0,
       });
     }
   }, [plantio]);
@@ -28,39 +62,31 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
   const handleCancel = (confirmar = true) => {
     if (confirmar) {
       if (window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
-        onCancelar(); // Chama a função do 'Historico.jsx'
+        onCancelar();
       }
     } else {
       onCancelar();
     }
   };
 
-  
   const handleSubmit = () => {
-    // 3. Formata os dados de volta e chama onSalvar
+    // --- 3. TRATAMENTO NO ENVIO ---
+    // Garante que enviamos "CHAO" sem acento para o Java não dar erro 500
     const dadosSalvos = {
-      ...plantio, // Mantém dados originais (como 'id')
-      ...formData, // Sobrescreve com dados do form
-      // Mapeia de volta para os nomes de chave originais (com letra maiúscula)
-      lote: formData.lote,
-      nomePopular: formData.nomePopular,
-      dataPlantio: formData.dataPlantio.split('-').reverse().join('/'),
-      qntdSementes: formData.qntdSementes,
-      tipoPlantio: formData.tipoPlantio,
-      qntdPlantada: formData.qntdPlantada,
-
+      id: plantio.id, 
+      ...formData,
+      tipoPlantio: normalizarEnum(formData.tipoPlantio) 
     };
 
     onSalvar(dadosSalvos);
-    
   };
 
   const handleChange = (field) => (e) => {
-    const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
+    // Para Selects, as vezes o valor vem direto, as vezes via target
+    const value = e.target ? (e.target.type === 'number' ? Number(e.target.value) : e.target.value) : e;
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Handlers do Stepper
   const handleIncrement = (field) => () => {
     setFormData((prev) => ({ ...prev, [field]: prev[field] + 1 }));
   };
@@ -71,52 +97,43 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
     }));
   };
 
-  // 4. Ações do formulário ajustadas para o modal
   const actions = [
     {
       type: 'button',
       variant: 'action-secondary',
       children: 'Cancelar',
-      onClick: () => handleCancel(true), // Apenas fecha o modal
+      onClick: () => handleCancel(true),
     },
     {
       type: 'submit',
       variant: 'primary',
-      children: 'Salvar Edições', // Novo texto
+      children: 'Salvar Edições',
     },
-    
   ];
 
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
+
   return (
-    // 5. Estrutura do Modal
     <div className="modal-overlay" onClick={() => handleCancel(false)}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-
-        {/* Botão de fechar (opcional, mas bom para modais) */}
         <button type="button" className="modal-close-button" onClick={() => handleCancel(true)}>
           &times;
         </button>
 
         <FormGeral
           title="Editar Plantio"
-          // 5. A prop 'fields' foi removida
           actions={actions}
           onSubmit={handleSubmit}
           useGrid={true}
         >
-          {/* 6. Os Inputs agora são passados como 'children' */}
           <Input
             label="Lote"
-            name="Lote"
+            name="lote"
             type="text"
             value={formData.lote}
             onChange={handleChange('lote')}
             required={true}
-            placeholder="A001" // Placeholder é usado pelo Input
-            
+            placeholder="A001"
           />
 
           <Input
@@ -127,57 +144,55 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
             onChange={handleChange('nomePopular')}
             required={true}
             placeholder="Ipê"
-            
           />
 
           <Input
             label="Data"
-            name="DataPlantio"
+            name="dataPlantio"
             type="date"
             value={formData.dataPlantio}
             onChange={handleChange('dataPlantio')}
             required={true}
-            placeholder="xx/xx/xxxx"
           />
+
           <Input
             label="Qtd sementes (kg/g/und)"
-            name="qntdSementes"
+            name="qtdSemente"
             type="number"
-            value={formData.qntdSementes}
-            onChange={handleChange('qntdSementes')}
-            onIncrement={handleIncrement('qntdSementes')}
-            onDecrement={handleDecrement('qntdSementes')}
+            value={formData.qtdSemente} // Nome corrigido
+            onChange={handleChange('qtdSemente')}
+            onIncrement={handleIncrement('qtdSemente')}
+            onDecrement={handleDecrement('qtdSemente')}
             required={true}
-
-
           />
-
 
           <Input
             label="Qtd plantada (und)"
-            name="QtdPlantada"
+            name="quantidadePlantada"
             type="number"
-            value={formData.qntdPlantada}
-            onChange={handleChange('qntdPlantada')} // Para digitação manual
-            onIncrement={handleIncrement("qntdPlantada")}   // Para o botão '+'
-            onDecrement={handleDecrement("qntdPlantada")}   // Para o botão '-'
+            value={formData.quantidadePlantada} // Nome corrigido
+            onChange={handleChange('quantidadePlantada')}
+            onIncrement={handleIncrement("quantidadePlantada")}
+            onDecrement={handleDecrement("quantidadePlantada")}
             required={true}
-
-
           />
 
+          {/* 4. OPÇÕES DO SELECT
+             Os 'values' devem ser IDÊNTICOS às constantes do Enum Java (sem acento, Uppercase).
+             Os 'labels' são o que o usuário vê.
+          */}
           <Input
             label="Tipo de plantio"
-            name="TipoPlantio"
+            name="tipoPlantio"
             type="select"
             value={formData.tipoPlantio}
             onChange={handleChange('tipoPlantio')}
             required={true}
-            placeholder="Sementeira/saquinho/chão"
+            placeholder="Selecione"
             options={[
-              { value: 'Sementeira', label: 'Sementeira' },
-              { value: 'Saquinho', label: 'Saquinho' },
-              { value: 'Chão', label: 'Chão' },
+              { value: 'SEMENTEIRA', label: 'Sementeira' },
+              { value: 'SAQUINHO', label: 'Saquinho' },
+              { value: 'CHAO', label: 'Chão' }, 
             ]}
           />
         </FormGeral>
@@ -185,4 +200,5 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
     </div>
   );
 };
+
 export default EditarPlantioSementes;

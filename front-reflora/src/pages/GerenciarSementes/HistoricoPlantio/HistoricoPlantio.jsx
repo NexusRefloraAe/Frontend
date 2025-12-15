@@ -1,51 +1,52 @@
 import React, { useState, useEffect } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
-import "./HistoricoPlantioStyler.css";
-
-
 import EditarPlantioSementes from "./EditarPlantioSementes/EditarPlantioSementes";
 import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
 import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico";
 import DetalhesPlantio from "./DetalhesPlantio/DetalhesPlantio";
+import { plantioService } from "../../../services/plantioService";
 
 const HistoricoPlantio = () => {
-  const DADOS_SEMENTES_MOCK = [
-    { lote: 'A001', dataPlantio: '10/10/2024', nomePopular: 'Ipê-amarelo', qntdSementes: 2000 , qntdPlantada: 200, tipoPlantio: 'Sementeira' },
-    { lote: 'A002', dataPlantio: '12/10/2024', nomePopular: 'Jacarandá', qntdSementes: 1500 , qntdPlantada: 180, tipoPlantio: 'Saquinho' },
-    { lote: 'A003', dataPlantio: '15/10/2024', nomePopular: 'Pau-brasil', qntdSementes: 800 , qntdPlantada: 120, tipoPlantio: 'Chão' },
-    { lote: 'A004', dataPlantio: '18/10/2024', nomePopular: 'Cedro-rosa', qntdSementes: 2200 , qntdPlantada: 250, tipoPlantio: 'Sementeira' },
-    { lote: 'A005', dataPlantio: '20/10/2024', nomePopular: 'Jatobá', qntdSementes: 1900 , qntdPlantada: 210, tipoPlantio: 'Saquinho' },
-    { lote: 'A006', dataPlantio: '22/10/2024', nomePopular: 'Ipê-roxo', qntdSementes: 1600 , qntdPlantada: 190, tipoPlantio: 'Chão' },
-    { lote: 'A007', dataPlantio: '25/10/2024', nomePopular: 'Angico', qntdSementes: 2400 , qntdPlantada: 260, tipoPlantio: 'Sementeira' },
-    { lote: 'A008', dataPlantio: '28/10/2024', nomePopular: 'Sucupira', qntdSementes: 1300 , qntdPlantada: 175, tipoPlantio: 'Saquinho' },
-    { lote: 'A009', dataPlantio: '30/10/2024', nomePopular: 'Castanheira', qntdSementes: 3000 , qntdPlantada: 300, tipoPlantio: 'Chão' },
-    { lote: 'A010', dataPlantio: '02/11/2024', nomePopular: 'Ipê-branco', qntdSementes: 1700 , qntdPlantada: 195, tipoPlantio: 'Saquinho' },
-    { lote: 'A011', dataPlantio: '05/11/2024', nomePopular: 'Sibipiruna', qntdSementes: 2100 , qntdPlantada: 230, tipoPlantio: 'Sementeira' },
-    { lote: 'A012', dataPlantio: '08/11/2024', nomePopular: 'Pau-ferro', qntdSementes: 1400 , qntdPlantada: 185, tipoPlantio: 'Chão' },
-    { lote: 'A013', dataPlantio: '10/11/2024', nomePopular: 'Jequitibá', qntdSementes: 2600 , qntdPlantada: 280, tipoPlantio: 'Saquinho' },
-    { lote: 'A014', dataPlantio: '12/11/2024', nomePopular: 'Caroba', qntdSementes: 1100 , qntdPlantada: 150, tipoPlantio: 'Sementeira' },
-    { lote: 'A015', dataPlantio: '15/11/2024', nomePopular: 'Embaúba', qntdSementes: 900 , qntdPlantada: 130, tipoPlantio: 'Chão' },
-  ];
-
   const [sementes, setSementes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Estados de paginação
+  const [paginaAtual, setPaginaAtual] = useState(0);
+  const [totalPaginas, setTotalPaginas] = useState(0);
+  const [termoBusca, setTermoBusca] = useState('');
 
+  // Estados dos Modais...
   const [itemSelecionado, setItemSelecionado] = useState(null);
-
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
-
   const [modalDetalheAberto, setModalDetalheAberto] = useState(false);
-
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
 
+  // 2. FUNÇÃO PARA CARREGAR DADOS DO BACKEND
+  const carregarDados = async (pagina = 0, busca = '') => {
+    try {
+      setLoading(true);
+      // Chama o serviço que bate em /movimentacoes/plantioMuda
+      const data = await plantioService.getAll(busca, pagina);
+      
+      // O seu controller retorna um Page (content, totalPages, etc)
+      setSementes(data.content);
+      setTotalPaginas(data.totalPages);
+      setPaginaAtual(data.number); // ou pagina
+      
+    } catch (error) {
+      console.error("Erro ao carregar histórico:", error);
+      alert("Erro ao buscar dados.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-
-
+  // Carrega ao montar
   useEffect(() => {
-    setSementes(DADOS_SEMENTES_MOCK);
+    carregarDados(0, '');
   }, []);
 
-
- // Handlers unificados para abrir os modais
+  // Handlers de Modais (Visualizar, Fechar) mantêm-se iguais...
   const handleVisualizar = (item) => {
     setItemSelecionado(item);
     setModalDetalheAberto(true);
@@ -54,69 +55,83 @@ const HistoricoPlantio = () => {
     setModalDetalheAberto(false);
     setItemSelecionado(null);
   };
-
-
   const handleEditar = (item) => {
     setItemSelecionado(item);
     setModalDetalheAberto(false);
     setModalEdicaoAberto(true);
   };
-
-  const handleSalvarEdicao = (dadosEditados) => {
-    setSementes((prev) => prev.map((item) =>
-      item.id === dadosEditados.id ? dadosEditados : item
-    ));
-    
-    setModalEdicaoAberto(false);
-    setItemSelecionado(null);
-  }
-  const handleCancelarEdicao = () => {
-    setModalEdicaoAberto(false);
-    setItemSelecionado(null);
-  };
-
-
-
   const handleExcluir = (item) => {
     setItemSelecionado(item);
     setModalDetalheAberto(false);
     setModalExclusaoAberto(true);
   };
-  const handleCancelarExclusao = () => {
-    setModalExclusaoAberto(false);
-    setItemSelecionado(null);
-  };
-  const handleConfirmarExclusao = () => {
-    if (plantioExcluindo) {
-      setSementes((prev) => prev.filter((item) =>
-        item.id !== itemSelecionado.id
-      ));
-      
-    }
-    setItemSelecionado(null);
-    setModalExclusaoAberto(false);
+  const handleCancelarEdicao = () => { setModalEdicaoAberto(false); setItemSelecionado(null); };
+  const handleCancelarExclusao = () => { setModalExclusaoAberto(false); setItemSelecionado(null); };
 
+  // 3. ATUALIZAR (Integração com PUT)
+  const handleSalvarEdicao = async (dadosEditados) => {
+    try {
+        await plantioService.update(dadosEditados.id, dadosEditados);
+        alert("Plantio atualizado com sucesso!");
+        
+        setModalEdicaoAberto(false);
+        setItemSelecionado(null);
+        carregarDados(paginaAtual, termoBusca); // Recarrega a tabela
+    } catch (error) {
+        console.error("Erro ao atualizar:", error);
+        alert("Erro ao salvar edição.");
+    }
   }
 
-  // 🧩 Definindo as colunas da tabela
- const colunas = [
-  { key: "lote", label: "Lote" },
-  { key: "nomePopular", label: "Nome popular" },
-  { key: "dataPlantio", label: "Data de plantio" },
-  { key: "qntdSementes", label: "Qtd. Sementes (kg/g/un)" },
-  { key: "qntdPlantada", label: "Qtd. Plantada" },
-  { key: "tipoPlantio", label: "Tipo de Plantio" },
-];
+  // 4. EXCLUIR (Integração com DELETE)
+  const handleConfirmarExclusao = async () => {
+    if (itemSelecionado) {
+      try {
+          await plantioService.delete(itemSelecionado.id);
+          alert("Excluído com sucesso.");
+          
+          setModalExclusaoAberto(false);
+          setItemSelecionado(null);
+          carregarDados(paginaAtual, termoBusca); // Recarrega a tabela
+      } catch (error) {
+          console.error("Erro ao excluir:", error);
+          alert("Erro ao excluir item.");
+      }
+    }
+  }
 
+  // 5. FUNÇÕES DA TABELA (Busca e Paginação)
+  const handleBusca = (novoTermo) => {
+      setTermoBusca(novoTermo);
+      carregarDados(0, novoTermo);
+  }
+
+  const handleMudarPagina = (novaPagina) => {
+      // O componente de paginação geralmente envia index 1, o back espera 0. Ajuste se necessário.
+      carregarDados(novaPagina - 1, termoBusca); 
+  }
+
+  // Colunas mapeadas com os campos que vêm do DTO do Java
+  // (Veja no controller: MovimentacaoSementesHistoricoResponseDTO)
+  const colunas = [
+    { key: "lote", label: "Lote" },
+    { key: "nomePopularSemente", label: "Nome popular" }, // Java: setNomePopularSemente
+    { key: "dataPlantio", label: "Data de plantio" },
+    { key: "qtdSemente", label: "Qtd. Sementes" },      // Java: setQtdSemente
+    { key: "quantidadePlantada", label: "Qtd. Plantada" },
+    { key: "tipoPlantioDescricao", label: "Tipo de Plantio" }, // Java: setTipoPlantioDescricao
+  ];
 
   return (
     <div className="historico-container-banco">
+<<<<<<< HEAD
 
       {/* Renderização dos 3 modais */}
 
       {/* MODAL DE DETALHES (Visualizar) */}
-      {modalDetalheAberto && itemSelecionado && (
+      
         <ModalDetalheGenerico
+          isOpen={modalDetalheAberto}
           item={itemSelecionado} // Passa o item (para pegar a 'item.imagem')
           titulo="Detalhes da Vistoria"
 
@@ -134,40 +149,63 @@ const HistoricoPlantio = () => {
           {/* Passa o componente customizado como 'children' */}
           <DetalhesPlantio item={itemSelecionado} />
         </ModalDetalheGenerico>
-      )}
+   
+=======
+      {/* ... (Modais detalhe/edição/exclusão renderizados aqui) ... */}
+>>>>>>> feat/integrar-front-com-o-back
       
+      {modalDetalheAberto && itemSelecionado && (
+         <ModalDetalheGenerico 
+            item={itemSelecionado} onClose={handleFecharModalDetalhe}
+            onEditar={() => handleEditar(itemSelecionado)}
+            onExcluir={() => handleExcluir(itemSelecionado)}
+            titulo="Detalhes do Plantio" camposDetalhes={[]} 
+            mostrarHistorico={false} mostrarExportar={false} mostrarAcoes={true}
+         >
+            <DetalhesPlantio item={itemSelecionado} />
+         </ModalDetalheGenerico>
+      )}
+
       <EditarPlantioSementes
         isOpen={modalEdicaoAberto}
         onCancelar={handleCancelarEdicao}
         plantio={itemSelecionado}
         onSalvar={handleSalvarEdicao}
-
       />
-      
 
       <ModalExcluir
         isOpen={modalExclusaoAberto}
         onClose={handleCancelarExclusao}
         onConfirm={handleConfirmarExclusao}
-        nomeItem={itemSelecionado?.nomePopular}
+        nomeItem={itemSelecionado?.nomePopularSemente}
         titulo="Excluir Plantio"
-        mensagem={`Você tem certeza que deseja excluir o plantio do lote ${itemSelecionado?.lote}?`}
+        mensagem="Tem certeza?"
         textoConfirmar="Excluir"
         textoCancelar="Cancelar"
       />
 
-
       <div className="historico-content-banco">
         <main>
-          <TabelaComBuscaPaginacao
-            titulo="Histórico de Plantio"
-            dados={sementes}
-            colunas={colunas}
-            chaveBusca="nomePopular"
-            onEditar={handleEditar}
-            onConfirmar={handleVisualizar}
-            onExcluir={handleExcluir}
-          />
+          {loading ? <p>Carregando...</p> : (
+              <TabelaComBuscaPaginacao
+                titulo="Histórico de Plantio"
+                dados={sementes}
+                colunas={colunas}
+                chaveBusca="nomePopularSemente" // Campo para o placeholder da busca
+                
+                // Passando as funções reais
+                onPesquisar={handleBusca}
+                
+                // Configuração da paginação se o componente suportar props externas
+                paginaAtual={paginaAtual + 1} // +1 para visual
+                totalPaginas={totalPaginas}
+                onPaginaChange={handleMudarPagina}
+
+                onEditar={handleEditar}
+                onConfirmar={handleVisualizar}
+                onExcluir={handleExcluir}
+              />
+          )}
         </main>
       </div>
     </div>
