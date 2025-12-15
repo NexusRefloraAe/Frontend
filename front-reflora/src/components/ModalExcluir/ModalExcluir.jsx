@@ -18,8 +18,17 @@ const ModalExcluir = ({
     ? mensagem.replace('xxxxxxx', nomeItem)
     : mensagem;
 
+const handleCancel = (confirmar = true) => {
+    if (confirmar) {
+      if (window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
+        onClose(); // Chama a função do 'Historico.jsx'
+      }
+    } else {
+      onClose();
+    }
+  };
   return (
-    <div className="modal-excluir-overlay" onClick={onClose}>
+    <div className="modal-excluir-overlay" onClick={handleCancel}>
       <div className="modal-excluir-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-excluir-header">
           <h2 className="modal-excluir-titulo">{titulo}</h2>
@@ -32,7 +41,7 @@ const ModalExcluir = ({
         <div className="modal-excluir-actions">
           <Button 
             variant="action-secondary" 
-            onClick={onClose}
+            onClick={handleCancel}
             type="button"
           >
             {textoCancelar}
