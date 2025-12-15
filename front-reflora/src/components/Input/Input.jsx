@@ -13,12 +13,13 @@ const Input = ({
   onIconClick,
   options, 
   readOnly = false,
-  onIncrement, // <-- Prop nova
-  onDecrement, // <-- Prop nova
+  onIncrement, 
+  onDecrement,
+  // 1. Recebe todas as outras propriedades extras aqui (incluindo onBlur)
+  ...rest 
 }) => {
   
   const isSelect = type === 'select';
-  // Verifica se deve renderizar o campo de quantidade (stepper)
   const isStepper = type === 'number' && onIncrement && onDecrement;
 
   return (
@@ -36,10 +37,12 @@ const Input = ({
             required={required}
             readOnly={readOnly}
             className="input-field"
+            // 2. Repassa as props extras (onBlur, disabled, etc.)
+            {...rest} 
           />
           <div className="stepper-controls">
-            <button type="button" onClick={onDecrement}>-</button>
-            <button type="button" onClick={onIncrement}>+</button>
+            <button type="button" onClick={onDecrement} disabled={rest.disabled}>-</button>
+            <button type="button" onClick={onIncrement} disabled={rest.disabled}>+</button>
           </div>
         </div>
 
@@ -51,8 +54,11 @@ const Input = ({
             value={value}
             onChange={onChange}
             required={required}
-            readOnly={readOnly}
+            // readOnly não funciona bem em select, usa-se disabled
+            disabled={readOnly || rest.disabled} 
             className="input-field"
+            // 2. Repassa as props extras
+            {...rest}
           >
             {placeholder && (
               <option value="" disabled>
@@ -80,6 +86,8 @@ const Input = ({
             readOnly={readOnly}
             className="input-field"
             style={{ paddingRight: icon ? '2.5rem' : 'var(--espacamento-sm)' }}
+            // 2. Repassa as props extras (AQUI QUE O onBlur VAI FUNCIONAR)
+            {...rest}
           />
           {icon && (
             <img

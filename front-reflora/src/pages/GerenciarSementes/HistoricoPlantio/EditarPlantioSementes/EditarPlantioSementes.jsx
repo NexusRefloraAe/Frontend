@@ -3,13 +3,14 @@ import FormGeral from "../../../../components/FormGeral/FormGeral";
 import Input from "../../../../components/Input/Input";
 
 const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
+  // 1. Estado alinhado com o DTO do Java (nomes exatos)
   const [formData, setFormData] = useState({
     lote: '',
-    nomePopular: '',
-    qntdSementes: 0,
+    nomePopular: '', // Apenas para exibição (não é salvo no update)
+    qtdSemente: 0,   // ✅ Corrigido (era qntdSementes)
     dataPlantio: '',
     tipoPlantio: '',
-    qntdPlantada: 0,
+    quantidadePlantada: 0, // ✅ Corrigido (era qntdPlantada)
   });
 
   // --- 1. FUNÇÃO DE NORMALIZAÇÃO (O SEGREDO DA INTEGRAÇÃO) ---
@@ -52,7 +53,8 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
         // Aqui usamos o valor tratado
         tipoPlantio: tipoPlantioNormalizado, 
         
-        qntdPlantada: plantio.quantidadePlantada || plantio.qntdPlantada || 0,
+        // Backend envia 'quantidadePlantada'
+        quantidadePlantada: plantio.quantidadePlantada || plantio.qntdPlantada || 0,
       });
     }
   }, [plantio]);
@@ -155,23 +157,23 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
 
           <Input
             label="Qtd sementes (kg/g/und)"
-            name="qntdSementes"
+            name="qtdSemente"
             type="number"
-            value={formData.qntdSementes}
-            onChange={handleChange('qntdSementes')}
-            onIncrement={handleIncrement('qntdSementes')}
-            onDecrement={handleDecrement('qntdSementes')}
+            value={formData.qtdSemente} // Nome corrigido
+            onChange={handleChange('qtdSemente')}
+            onIncrement={handleIncrement('qtdSemente')}
+            onDecrement={handleDecrement('qtdSemente')}
             required={true}
           />
 
           <Input
             label="Qtd plantada (und)"
-            name="qntdPlantada"
+            name="quantidadePlantada"
             type="number"
-            value={formData.qntdPlantada}
-            onChange={handleChange('qntdPlantada')}
-            onIncrement={handleIncrement("qntdPlantada")}
-            onDecrement={handleDecrement("qntdPlantada")}
+            value={formData.quantidadePlantada} // Nome corrigido
+            onChange={handleChange('quantidadePlantada')}
+            onIncrement={handleIncrement("quantidadePlantada")}
+            onDecrement={handleDecrement("quantidadePlantada")}
             required={true}
           />
 
