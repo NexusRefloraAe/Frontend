@@ -1,108 +1,135 @@
 import React, { useState, useEffect } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
 import PainelCard from "../../../components/PainelCard/PainelCard";
-import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio"; 
+import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio";
 import './GerarRelatorio.css';
 
-const GerarRelatorio = () => {
-  const DADOS_RELATORIO_MOCK = [
-    { Lote: 'A001', Nomepopular: 'Ipê-amarelo', Data: '01/01/2025', TipoMovimento: 'Entrada', Quantidade: 350 },
-    { Lote: 'A001', Nomepopular: 'Ipê-amarelo', Data: '01/01/2025', TipoMovimento: 'Saída', Quantidade: 100 },
-    { Lote: 'A001', Nomepopular: 'Ipê-amarelo', Data: '01/01/2025', TipoMovimento: 'Saída', Quantidade: 200 },
-    { Lote: 'A001', Nomepopular: 'Ipê-amarelo', Data: '01/01/2025', TipoMovimento: 'Saída', Quantidade: 50 },
-    { Lote: 'A001', Nomepopular: 'Ipê-amarelo', Data: '01/01/2025', TipoMovimento: 'Entrada', Quantidade: 900 },
-    { Lote: 'A001', Nomepopular: 'Ipê-amarelo', Data: '01/01/2025', TipoMovimento: 'Saída', Quantidade: 400 },
-    { Lote: 'A001', Nomepopular: 'Ipê-amarelo', Data: '01/01/2025', TipoMovimento: 'Saída', Quantidade: 100 },
-    { Lote: 'A001', Nomepopular: 'Ipê-amarelo', Data: '01/01/2025', TipoMovimento: 'Saída', Quantidade: 100 },
-    { Lote: 'A001', Nomepopular: 'Ipê-amarelo', Data: '01/01/2025', TipoMovimento: 'Entrada', Quantidade: 100 },
-  ];
+// 1. Importe o serviço
+import { relatorioService } from "../../../services/relatorioService";
 
-  const [relatorios, setRelatorios] = useState([]);
+// (Opcional) Botão simples para exportação se não tiver componente específico
+const BotaoExportar = ({ label, onClick, cor }) => (
+    <button 
+        onClick={onClick} 
+        style={{ padding: '8px 16px', backgroundColor: cor, color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', marginLeft: '10px' }}
+    >
+        {label}
+    </button>
+);
+
+const GerarRelatorio = () => {
+  // Estados de Dados
+  const [relatorios, setRelatorios] = useState([]); // Lista da tabela
+  const [loading, setLoading] = useState(false);
+  
+  // Estado dos Cards (Totais vindos do Backend)
+  const [totais, setTotais] = useState({
+      totalEntrada: 0,
+      totalSaida: 0,
+      saldoDoPeriodo: 0
+  });
+
+  // Estado de Paginação
+  const [paginaAtual, setPaginaAtual] = useState(0);
+  const [totalPaginas, setTotalPaginas] = useState(0);
+
   const [filtros, setFiltros] = useState({
     nomePopular: '',
     dataInicio: '',
     dataFim: ''
   });
 
-  // Dados para os cards de resumo
-  const painelItems = [
-    { 
-      id: 1, 
-      titulo: 'Total Entrada (kg)', 
-      valor: '1.000',
-      className: 'card-entrada'
-    },
-    { 
-      id: 2, 
-      titulo: 'Total Saída (und)', 
-      valor: '500',
-      className: 'card-saida'
-    },
-    { 
-      id: 3, 
-      titulo: 'Total Atual (kg)', 
-      valor: '10.000',
-      className: 'card-atual'
-    },
-  ];
+  // 2. Função principal que busca dados na API
+  const carregarDados = async (pagina = 0) => {
+    try {
+        setLoading(true);
+        // Chama o serviço passando os filtros atuais e a página
+        const data = await relatorioService.getPainel(filtros, pagina);
 
+        // Atualiza Cards
+        setTotais({
+            totalEntrada: data.totalEntrada,
+            totalSaida: data.totalSaida,
+            saldoDoPeriodo: data.saldoDoPeriodo
+        });
+
+        // Atualiza Tabela (O backend retorna um Page no campo 'pageTabela' conforme seu Controller)
+        // Verifique no controller: return new PainelMovimentacoesDTO(..., pageTabela)
+        setRelatorios(data.pageTabela.content);
+        setTotalPaginas(data.pageTabela.totalPages);
+        setPaginaAtual(data.pageTabela.number);
+
+    } catch (error) {
+        console.error("Erro ao carregar relatório:", error);
+        alert("Erro ao buscar dados do relatório.");
+    } finally {
+        setLoading(false);
+    }
+  };
+
+  // Carrega na montagem inicial
   useEffect(() => {
-    setRelatorios(DADOS_RELATORIO_MOCK);
+    carregarDados(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ✅ Nova função: genérica, recebe name + value
   const handleFiltroChange = (name, value) => {
     setFiltros(prev => ({ ...prev, [name]: value }));
   };
 
-  // ✅ Nova função: sem evento — chamada via form ou botão
+  // Botão "Pesquisar" do Filtro
   const handleGerarRelatorio = () => {
-    const { nomePopular, dataInicio, dataFim } = filtros;
-
-    const dadosFiltrados = DADOS_RELATORIO_MOCK.filter(item => {
-      // ✅ Filtro por nome popular (case-insensitive)
-      const matchesNome = !nomePopular || 
-        item.Nomepopular.toLowerCase().includes(nomePopular.toLowerCase());
-
-      // ✅ Filtro por data
-      let matchesData = true;
-
-      if (dataInicio || dataFim) {
-        // Converter "DD/MM/YYYY" → Date (ex: "01/01/2025" → new Date("2025-01-01"))
-        const [day, month, year] = item.Data.split('/');
-        const itemDate = new Date(`${year}-${month}-${day}`);
-
-        const startDate = dataInicio ? new Date(dataInicio) : null;
-        const endDate = dataFim ? new Date(dataFim) : null;
-
-        // Garantir que as datas estejam válidas
-        if (startDate && (isNaN(itemDate) || itemDate < startDate)) {
-          matchesData = false;
-        }
-        if (endDate && (isNaN(itemDate) || itemDate > endDate)) {
-          matchesData = false;
-        }
-      }
-
-      return matchesNome && matchesData;
-    });
-
-    setRelatorios(dadosFiltrados);
+    // Volta para página 0 ao filtrar
+    carregarDados(0);
   };
 
+  // Botões de Exportação
+  const handleExportarPDF = async () => {
+      try { await relatorioService.exportarPdf(filtros); } 
+      catch (e) { alert("Erro ao baixar PDF"); }
+  };
+
+  const handleExportarCSV = async () => {
+      try { await relatorioService.exportarCsv(filtros); } 
+      catch (e) { alert("Erro ao baixar CSV"); }
+  };
+
+  // Cards Dinâmicos baseados no Estado 'totais'
+  const painelItems = [
+    { 
+      id: 1, 
+      titulo: 'Total Entrada', // (Unidade vem do dado ou fixa se for padrão)
+      valor: totais.totalEntrada, // Usa o estado
+      className: 'card-entrada'
+    },
+    { 
+      id: 2, 
+      titulo: 'Total Saída', 
+      valor: totais.totalSaida, // Usa o estado
+      className: 'card-saida'
+    },
+    { 
+      id: 3, 
+      titulo: 'Saldo do Período', 
+      valor: totais.saldoDoPeriodo, // Usa o estado
+      className: 'card-atual'
+    },
+  ];
+
+  // 3. Colunas: Chaves devem ser iguais ao DTO do Java (RegistroMovimentacaoResponseDTO)
+  // Campos: lote, nomePopular, data, tipoMovimento, quantidade
   const colunas = [
-    { key: "Lote", label: "Lote" },
-    { key: "Nomepopular", label: "Nome Popular" },
-    { key: "Data", label: "Data" },
-    { key: "TipoMovimento", label: "Tipo de Movimento" },
-    { key: "Quantidade", label: "Quantidade" },
+    { key: "lote", label: "Lote" },
+    { key: "nomePopular", label: "Nome Popular" },
+    { key: "data", label: "Data" }, // Backend envia Array [ano, mes, dia] ou String ISO dependendo do Jackson
+    { key: "tipoMovimento", label: "Tipo" },
+    { key: "quantidade", label: "Quantidade" },
   ];
 
   return (
     <div className="gerar-relatorio-container">
       <div className="gerar-relatorio-content">
         
-        {/* Seção de Filtros — agora com componente genérico */}
         <section className="filtros-section">
           <h1>Gerar Relatório</h1>
           <FiltrosRelatorio
@@ -110,32 +137,43 @@ const GerarRelatorio = () => {
             onFiltroChange={handleFiltroChange}
             onPesquisar={handleGerarRelatorio}
           />
+          {/* Adicione botões de exportar aqui ou no componente de filtros */}
+          <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
+             <BotaoExportar label="Baixar PDF" onClick={handleExportarPDF} cor="#d32f2f" />
+             <BotaoExportar label="Baixar CSV" onClick={handleExportarCSV} cor="#1976d2" />
+          </div>
         </section>
 
-        {/* Seção de Cards de Resumo */}
         <section className="cards-section">
           <div className="cards-container">
             {painelItems.map(item => (
               <PainelCard 
                 key={item.id}
                 titulo={item.titulo} 
-                valor={item.valor}
+                valor={item.valor} // Agora passa número real
                 className={item.className}
               />
             ))}
           </div>
         </section>
 
-        {/* Seção da Tabela */}
         <section className="tabela-section">
-          <TabelaComBuscaPaginacao
-            titulo="Movimentações da Semente"
-            dados={relatorios}
-            colunas={colunas}
-            chaveBusca="Nomepopular"
-            habilitarBusca={false}
-            mostrarAcoes={false}
-          />
+          {loading ? <p>Carregando dados...</p> : (
+              <TabelaComBuscaPaginacao
+                titulo="Movimentações da Semente"
+                dados={relatorios}
+                colunas={colunas}
+                
+                // Desabilita busca interna do componente, pois já temos o FiltroRelatorio externo
+                habilitarBusca={false} 
+                mostrarAcoes={false}
+                
+                // Configuração de Paginação Real
+                paginaAtual={paginaAtual + 1}
+                totalPaginas={totalPaginas}
+                onPaginaChange={(p) => carregarDados(p - 1)}
+              />
+          )}
         </section>
       </div>
     </div>
