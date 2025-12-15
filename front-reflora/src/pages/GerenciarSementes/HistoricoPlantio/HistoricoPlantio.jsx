@@ -124,35 +124,7 @@ const HistoricoPlantio = () => {
 
   return (
     <div className="historico-container-banco">
-<<<<<<< HEAD
-
-      {/* Renderização dos 3 modais */}
-
-      {/* MODAL DE DETALHES (Visualizar) */}
-      
-        <ModalDetalheGenerico
-          isOpen={modalDetalheAberto}
-          item={itemSelecionado} // Passa o item (para pegar a 'item.imagem')
-          titulo="Detalhes da Vistoria"
-
-          camposDetalhes={[]} // Deixamos vazio para usar o 'children'
-
-          onClose={handleFecharModalDetalhe}
-          onEditar={() => handleEditar(itemSelecionado)}
-          onExcluir={() => handleExcluir(itemSelecionado)}
-
-          // Configurado como na imagem
-          mostrarHistorico={false}
-          mostrarExportar={false}
-          mostrarAcoes={true}
-        >
-          {/* Passa o componente customizado como 'children' */}
-          <DetalhesPlantio item={itemSelecionado} />
-        </ModalDetalheGenerico>
-   
-=======
       {/* ... (Modais detalhe/edição/exclusão renderizados aqui) ... */}
->>>>>>> feat/integrar-front-com-o-back
       
       {modalDetalheAberto && itemSelecionado && (
          <ModalDetalheGenerico 

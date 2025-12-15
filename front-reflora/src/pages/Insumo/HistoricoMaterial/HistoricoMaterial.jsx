@@ -136,10 +136,7 @@ const HistoricoMaterial = () => {
     { key: "ResponsavelRecebe", label: "Responsável por Receber" },
   ];
 
-<<<<<<< HEAD
-=======
 
->>>>>>> feat/integrar-front-com-o-back
 
   return (
     <div className="historico-material-container">
@@ -198,17 +195,9 @@ const HistoricoMaterial = () => {
           mostrarExportar={false}
           mostrarAcoes={true}
         >
-<<<<<<< HEAD
-          {/* Poderia adicionar filhos customizados aqui, mas 'camposDetalhes' já resolve */}
-        <DetalhesMaterial item={itemSelecionado} />
-        </ModalDetalheGenerico>
-    
-
-=======
           <DetalhesMaterial item={itemSelecionado} />
         </ModalDetalheGenerico>
      
->>>>>>> feat/integrar-front-com-o-back
       {/* MODAL DE EDIÇÃO */}
       <EditarMaterial
         isOpen={modalEdicaoAberto}

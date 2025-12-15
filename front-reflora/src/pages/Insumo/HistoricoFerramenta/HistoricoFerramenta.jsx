@@ -34,7 +34,7 @@ const HistoricoFerramenta = () => {
     const [modalDetalheAberto, setModalDetalheAberto] = useState(false);
     const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
     const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
-
+    
     useEffect(() => {
         setFerramentas(DADOS_HISTORICO_FERRAMENTA_MOCK);
     }, []);
@@ -56,7 +56,7 @@ const HistoricoFerramenta = () => {
                 const itemDate = new Date(`${year}-${month}-${day}`);
                 const startDate = dataInicio ? new Date(dataInicio) : null;
                 const endDate = dataFim ? new Date(dataFim) : null;
-
+                
                 if (endDate) endDate.setDate(endDate.getDate() + 1); // Inclui o dia final
 
                 if (startDate && (isNaN(itemDate) || itemDate < startDate)) matchesData = false;
@@ -154,7 +154,7 @@ const HistoricoFerramenta = () => {
                     ]}
                 />
             </div>
-
+            
             <div className="tabela-wrapper">
                 <TabelaComBuscaPaginacao
                     titulo="Histórico de Movimentação de Ferramentas"
@@ -173,13 +173,8 @@ const HistoricoFerramenta = () => {
             {/* Renderização dos 3 modais */}
 
             {/* MODAL DE DETALHES (Visualizar) - (ADICIONADO) */}
-<<<<<<< HEAD
-
-            <ModalDetalheGenerico
-=======
            
                 <ModalDetalheGenerico
->>>>>>> feat/integrar-front-com-o-back
                 isOpen={modalDetalheAberto}
                 item={itemSelecionado}
                 titulo="Detalhes da Movimentação"
@@ -193,11 +188,7 @@ const HistoricoFerramenta = () => {
             >
                 < DetalhesFerramenta item={itemSelecionado} />
             </ModalDetalheGenerico>
-<<<<<<< HEAD
-
-=======
            
->>>>>>> feat/integrar-front-com-o-back
 
             {/* MODAL DE EDIÇÃO DE FERRAMENTA */}
             <EditarFerramenta
@@ -205,7 +196,7 @@ const HistoricoFerramenta = () => {
                 onClose={handleCancelarEdicao}
                 onSalvar={handleSalvarEdicao}
                 // Prop padronizada para 'itemParaEditar'
-                itemParaEditar={itemSelecionado}
+                itemParaEditar={itemSelecionado} 
             />
 
             {/* MODAL DE EXCLUSÃO */}

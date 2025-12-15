@@ -3,8 +3,8 @@ import './ModalDetalheSemente.css'
 import Paginacao from '../Paginacao/Paginacao'
 import TabelaHistorico from '../TabelaHistorico/TabelaHistorico'
 import ModalExcluir from '../ModalExcluir/ModalExcluir'
-import EditarSementes from './EditarSementes/EditarSementes'
-//Icons
+import { sementesService } from '../../services/sementesService'
+
 import closeIcon from '../../assets/close.svg'
 import editIcon from '../../assets/edit.svg'
 import deleteIcon from '../../assets/delete.svg'
@@ -47,9 +47,34 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
     const [totalPaginas, setTotalPaginas] = useState(1);
     
     const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
-    const [modalEditarAberto, setModalEditarAberto] = useState(false);
+    const [loading, setLoading] = useState(true);
 
+    // Função auxiliar para evitar Invalid Date se a string for dd/MM/yyyy
+    const formatarData = (dataString) => {
+        if (!dataString) return '-';
+        // Se já vier formatado (ex: 09/07/2024), retornamos direto
+        if (dataString.includes('/')) return dataString;
+        // Se for ISO ou array, tenta converter
+        try {
+            return new Date(dataString).toLocaleDateString('pt-BR');
+        } catch (e) {
+            return dataString;
+        }
+    };
 
+    // Função auxiliar para ler totalPages independente da estrutura (nested ou flat)
+    const obterTotalPaginas = (objetoLista) => {
+        if (!objetoLista) return 0;
+        // Caso 1: Estrutura aninhada (ex: entradas.page.totalPages) - Conforme seu JSON
+        if (objetoLista.page && typeof objetoLista.page.totalPages === 'number') {
+            return objetoLista.page.totalPages;
+        }
+        // Caso 2: Estrutura plana (ex: entradas.totalPages) - Padrão Spring simples
+        if (typeof objetoLista.totalPages === 'number') {
+            return objetoLista.totalPages;
+        }
+        return 0;
+    };
 
     useEffect(() => {
         const carregarDados = async () => {
@@ -118,36 +143,20 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
         ...historicoSaida.map(item => ({ ...item, tipo: 'Saída' })),
     ];
 
-    const handleFecharModalExcluir = () => {
-        setModalExcluirAberto(false);
-    };
-    const handleFecharModalEditar = () => {
-        setModalEditarAberto(false);
-        semente(null);
-    };
-
     const handleConfirmarExclusao = () => {
         if (onDeletar && sementeResumo.id) {
             onDeletar(sementeResumo.id); // Chama a função do Pai (Banco.jsx)
         }
         setModalExcluirAberto(false);
-        onClose();
+        onClose(); // Fecha o modal de detalhes também
     };
     const handleSalvarEdicao = (dadosEditados) => {
         console.log("Semente editada:", dadosEditados);
         setModalEditarAberto(false);
     };
 
-    const ITENS_POR_PAGINA = 2;
-
-    const totalItens = Math.max(historicoEntrada.length, historicoSaida.length);
-    const totalPaginas = Math.ceil(totalItens / ITENS_POR_PAGINA);
-
-    const indiceUltimo = paginaHistorico * ITENS_POR_PAGINA;
-    const indicePrimeiro = indiceUltimo - ITENS_POR_PAGINA;
-
-    const entradasPagina = historicoEntrada.slice(indicePrimeiro, indiceUltimo);
-    const saidasPagina = historicoSaida.slice(indicePrimeiro, indiceUltimo);
+    // Se ainda está carregando ou falhou, usa o resumo da lista para exibir o básico
+    const dados = sementeDetalhada || sementeResumo;
 
     return (
         <>
@@ -159,30 +168,49 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
 
                     <h2>Detalhes da Semente</h2>
 
-                    <div className="detalhe-container">
-                        <div className="detalhe-imagens">
-                            <img src={semente.imagem} alt={semente.nome} />
+                    {loading && !sementeDetalhada ? (
+                        <p style={{padding: '20px', textAlign: 'center'}}>Carregando detalhes...</p>
+                    ) : (
+                        <div className="detalhe-container">
+                            <div className="detalhe-imagens">
+                                {dados.fotoUrl ? (
+                                    <img src={dados.fotoUrl} alt={dados.nomePopular} />
+                                ) : (
+                                    <div className="placeholder-foto" style={{
+                                        width: '100%', height: '200px', background: '#eee', 
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        color: '#888', borderRadius: '8px'
+                                    }}>Sem Foto</div>
+                                )}
+                            </div>
+                            
+                            {/* Exibição dos dados do Back-end */}
+                            <div className="detalhe-info">
+                                <p><strong>Lote:</strong> {dados.lote}</p>
+                                <p><strong>Data do Cadastro:</strong> {dados.dataDeCadastro}</p>
+                                <p><strong>Nome Popular:</strong> {dados.nomePopular}</p>
+                                <p><strong>Nome Científico:</strong> {dados.nomeCientifico || '-'}</p>
+                                <p><strong>Família:</strong> {dados.familia || '-'}</p>
+                                <p><strong>Origem:</strong> {dados.origem || '-'}</p>
+                                <p><strong>Quantidade Atual:</strong> {dados.quantidade} {dados.unidadeDeMedida}</p>
+                                <p><strong>Armazenamento:</strong> {dados.estahNaCamaraFria ? 'Câmara Fria' : 'Armazenamento Comum'}</p>
+                                <p><strong>Localização:</strong> {dados.localizacaoDaColeta || '-'}</p>
+                            </div>
+                            
+                            <div className="detalhe-acoes">
+                                <button onClick={() => setModalExcluirAberto(true)} title="Excluir">
+                                    <img src={deleteIcon} alt="Deletar" />
+                                </button>
+                                <button onClick={() => {
+                                    // Passa os dados completos para edição
+                                    onEditar(sementeDetalhada || sementeResumo);
+                                    onClose(); // Fecha modal para ver o formulário
+                                }} title="Editar">
+                                    <img src={editIcon} alt="Editar" />
+                                </button>
+                            </div>
                         </div>
-                        <div className="detalhe-info">
-                            <p><strong>Lote:</strong>{semente.id}</p>
-                            <p><strong>Data do Cadastro:</strong>{semente.dataCadastro}</p>
-                            <p><strong>Nome Popular:</strong>{semente.nome}</p>
-                            <p><strong>Nome Científico:</strong>{semente.nomeCientifico}</p>
-                            <p><strong>Família:</strong>{semente.familia}</p>
-                            <p><strong>Origem:</strong>{semente.origem}</p>
-                            <p><strong>Quantidade Atual:</strong>{semente.qtdAtual}</p>
-                            <p><strong>Local de armazenamento:</strong>Câmara fria</p>
-                            <p><strong>Localização de Coleta:</strong>Araruna (-6.558, -35.742)</p>
-                        </div>
-                        <div className="detalhe-acoes">
-                            <button onClick={() => setModalExcluirAberto(true)}>
-                                <img src={deleteIcon} alt="Deletar" />
-                            </button>
-                            <button onClick={() => setModalEditarAberto(true)}>
-                                <img src={editIcon} alt="Editar" />
-                            </button>
-                        </div>
-                    </div>
+                    )}
 
                     <div className="historico-container-modal">
                         <h3>Histórico de Movimentação</h3>

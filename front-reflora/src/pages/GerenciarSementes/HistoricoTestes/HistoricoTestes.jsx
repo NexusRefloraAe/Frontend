@@ -161,23 +161,11 @@ const HistoricoTestes = () => {
 
       {/* Renderização dos 3 modais */}
 
-<<<<<<< HEAD
-      {/* MODAL DE DETALHES (Visualizar) */}
-      
-        <ModalDetalheGenerico
-          isOpen={modalDetalheAberto}
-          item={itemSelecionado} // Passa o item (para pegar a 'item.imagem')
-          titulo="Detalhes da Vistoria"
-
-          camposDetalhes={[]} // Deixamos vazio para usar o 'children'
-
-=======
       {modalDetalheAberto && itemSelecionado && (
         <ModalDetalheGenerico
           item={itemSelecionado}
           titulo="Detalhes do Teste"
           camposDetalhes={[]} 
->>>>>>> feat/integrar-front-com-o-back
           onClose={handleFecharModalDetalhe}
           onEditar={() => handleEditar(itemSelecionado)}
           onExcluir={() => handleExcluirTeste(itemSelecionado)}
@@ -187,7 +175,8 @@ const HistoricoTestes = () => {
         >
           <DetalhesTestes item={itemSelecionado} />
         </ModalDetalheGenerico>
-    
+      )}
+
       <EditarTeste
         isOpen={modalEdicaoAberto}
         onCancelar={handleCancelarEdicao}
