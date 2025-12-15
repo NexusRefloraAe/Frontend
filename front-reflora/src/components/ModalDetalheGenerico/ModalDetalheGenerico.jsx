@@ -28,6 +28,7 @@ import deleteIcon from '../../assets/delete.svg'
  * @param {ReactNode} props.children - Conteúdo adicional personalizado
  */
 function ModalDetalheGenerico({
+    isOpen = false,
     item = {},
     titulo = 'Detalhes',
     camposDetalhes = [],
@@ -46,6 +47,7 @@ function ModalDetalheGenerico({
     mostrarExportar = true,
     children
 }) {
+    if (!isOpen || !item) return null;
     const [paginaHistorico, setPaginaHistorico] = useState(1);
     const [historicoEntrada, setHistoricoEntrada] = useState(dadosEntrada);
     const [historicoSaida, setHistoricoSaida] = useState(dadosSaida);

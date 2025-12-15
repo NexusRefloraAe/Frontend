@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Cria a instância do Axios
 const api = axios.create({
-  baseURL: 'http://localhost:8087/api', 
+  baseURL: 'https://disciplinary-nanon-123silvio456-81c7b556.koyeb.app/api', 
   withCredentials: true, // IMPORTANTE: Permite enviar/receber Cookies (HttpOnly)
   // CORREÇÃO: Removemos o cabeçalho 'Content-Type': 'application/json' fixo.
   // O Axios é inteligente o suficiente para:

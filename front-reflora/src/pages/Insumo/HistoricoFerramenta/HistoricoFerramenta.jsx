@@ -6,7 +6,7 @@ import './HistoricoFerramenta.css';
 import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico"; // 👈 Importado
 import EditarFerramenta from "../EditarFerramenta/EditarFerramenta";
 import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
-
+import DetalhesFerramenta from "./DetalhesFerramenta/DetalhesFerramenta";
 const HistoricoFerramenta = () => {
     const DADOS_HISTORICO_FERRAMENTA_MOCK = [
         // 👇 IDs adicionados
@@ -133,16 +133,7 @@ const HistoricoFerramenta = () => {
         { key: "ResponsavelRecebe", label: "Responsável por Receber" },
     ];
 
-    // Define os campos para o ModalDetalheGenerico
-    const camposDetalhes = [
-        { label: "Nome do Insumo", key: "NomeInsumo" },
-        { label: "Data", key: "Data" },
-        { label: "Status", key: "Status" },
-        { label: "Quantidade", key: "Quantidade" },
-        { label: "Unidade de Medida", key: "UnidadeMedida" },
-        { label: "Resp. Entrega", key: "ResponsavelEntrega" },
-        { label: "Resp. Recebimento", key: "ResponsavelRecebe" },
-    ];
+    
 
     return (
         <div className="historico-ferramenta-container">
@@ -182,19 +173,22 @@ const HistoricoFerramenta = () => {
             {/* Renderização dos 3 modais */}
 
             {/* MODAL DE DETALHES (Visualizar) - (ADICIONADO) */}
-            {modalDetalheAberto && itemSelecionado && (
+           
                 <ModalDetalheGenerico
-                    item={itemSelecionado} 
-                    titulo="Detalhes da Movimentação"
-                    camposDetalhes={camposDetalhes} 
-                    onClose={handleFecharModalDetalhe}
-                    onEditar={() => handleEditar(itemSelecionado)}
-                    onExcluir={() => handleExcluir(itemSelecionado)}
-                    mostrarHistorico={false}
-                    mostrarExportar={false}
-                    mostrarAcoes={true}
-                />
-            )}
+                isOpen={modalDetalheAberto}
+                item={itemSelecionado}
+                titulo="Detalhes da Movimentação"
+                camposDetalhes={[]}
+                onClose={handleFecharModalDetalhe}
+                onEditar={() => handleEditar(itemSelecionado)}
+                onExcluir={() => handleExcluir(itemSelecionado)}
+                mostrarHistorico={false}
+                mostrarExportar={false}
+                mostrarAcoes={true}
+            >
+                < DetalhesFerramenta item={itemSelecionado} />
+            </ModalDetalheGenerico>
+           
 
             {/* MODAL DE EDIÇÃO DE FERRAMENTA */}
             <EditarFerramenta
