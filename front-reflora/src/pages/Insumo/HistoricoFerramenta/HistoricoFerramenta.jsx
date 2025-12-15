@@ -173,8 +173,13 @@ const HistoricoFerramenta = () => {
             {/* Renderização dos 3 modais */}
 
             {/* MODAL DE DETALHES (Visualizar) - (ADICIONADO) */}
+<<<<<<< HEAD
 
             <ModalDetalheGenerico
+=======
+           
+                <ModalDetalheGenerico
+>>>>>>> feat/integrar-front-com-o-back
                 isOpen={modalDetalheAberto}
                 item={itemSelecionado}
                 titulo="Detalhes da Movimentação"
@@ -188,7 +193,11 @@ const HistoricoFerramenta = () => {
             >
                 < DetalhesFerramenta item={itemSelecionado} />
             </ModalDetalheGenerico>
+<<<<<<< HEAD
 
+=======
+           
+>>>>>>> feat/integrar-front-com-o-back
 
             {/* MODAL DE EDIÇÃO DE FERRAMENTA */}
             <EditarFerramenta

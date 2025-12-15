@@ -130,9 +130,7 @@ const HistoricoPlantio = () => {
 
       {/* MODAL DE DETALHES (Visualizar) */}
       
-      
         <ModalDetalheGenerico
-          isOpen={modalDetalheAberto}
           isOpen={modalDetalheAberto}
           item={itemSelecionado} // Passa o item (para pegar a 'item.imagem')
           titulo="Detalhes da Vistoria"
