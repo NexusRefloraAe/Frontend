@@ -1,24 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FormGeral from "../../../components/FormGeral/FormGeral";
 import Input from "../../../components/Input/Input";
-// 1. Importar o serviço correto
 import { testeGerminacaoService } from "../../../services/testeGerminacaoService";
 
 const CadastrarTestes = () => {
-  // 2. Estado com chaves em camelCase (compatível com o Service)
   const [formData, setFormData] = useState({
     lote: '',
     nomePopular: '',
-    dataTeste: '', // Nome correto para o formulário
+    dataTeste: '',
     quantidade: 0,
-    camaraFria: '', // "Sim" ou "Não"
-    // Campos de resultado (opcionais no cadastro, mas mantidos se quiser preencher já)
+    camaraFria: '',
     dataGerminacao: '',
     qntdGerminou: 0,
-    taxaGerminou: ''
+    taxaGerminou: '' // Campo calculado
   });
 
   const [loading, setLoading] = useState(false);
+
+  // --- NOVO: Efeito para calcular a Taxa automaticamente ---
+  useEffect(() => {
+    const total = Number(formData.quantidade);
+    const germinou = Number(formData.qntdGerminou);
+
+    if (total > 0 && germinou >= 0) {
+      // Calcula: (Germinou / Total) * 100
+      const taxa = ((germinou / total) * 100).toFixed(2);
+      
+      // Atualiza o estado apenas se o valor mudou para evitar loop
+      setFormData(prev => {
+        if (prev.taxaGerminou === taxa) return prev;
+        return { ...prev, taxaGerminou: taxa };
+      });
+    } else {
+      setFormData(prev => ({ ...prev, taxaGerminou: '' }));
+    }
+  }, [formData.quantidade, formData.qntdGerminou]);
+  // ---------------------------------------------------------
 
   const handleCancel = (confirmar = true) => {
     const resetForm = () => {
@@ -56,15 +73,12 @@ const CadastrarTestes = () => {
     setFormData(prev => ({ ...prev, [field]: prev[field] > 0 ? prev[field] - 1 : 0 }));
   };
 
-  // 3. Integração com o Backend
   const handleSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
 
     try {
       setLoading(true);
-      // O serviço já sabe mapear 'dataTeste' para 'dataPlantio' no DTO do Java
       await testeGerminacaoService.create(formData);
-      
       alert('Teste cadastrado com sucesso!');
       handleCancel(false);
     } catch (error) {
@@ -129,7 +143,7 @@ const CadastrarTestes = () => {
         />
 
         <Input
-          label="Qtd de sementes (kg/g/und)"
+          label="Qtd de sementes (Total)"
           name="quantidade"
           type="number"
           value={formData.quantidade}
@@ -153,16 +167,36 @@ const CadastrarTestes = () => {
           ]}
         />
 
-        {/* Campos removidos: TipoPlantio e QtdPlantada (não existem em Teste de Germinação) */}
-        
-        {/* Opcional: Se quiser permitir registrar o resultado já no cadastro */}
-        {/* <Input
+        <Input
           label="Data Germinação"
+          name="dataGerminacao"
           type="date"
           value={formData.dataGerminacao}
           onChange={handleChange('dataGerminacao')}
-        /> 
-        */}
+          required={false} 
+        />
+
+        <Input
+          label="Qtd Germinou (und)"
+          name="qntdGerminou"
+          type="number"
+          value={formData.qntdGerminou}
+          onChange={handleChange('qntdGerminou')}
+          onIncrement={() => handleIncrement("qntdGerminou")}
+          onDecrement={() => handleDecrement("qntdGerminou")}
+          required={false} 
+        />
+
+        {/* --- NOVO CAMPO ADICIONADO --- */}
+        <Input
+          label="Taxa Germinação (%)"
+          name="taxaGerminou"
+          type="text"
+          value={formData.taxaGerminou ? `${formData.taxaGerminou}%` : ''} 
+          onChange={() => {}} // Sem onChange pois é apenas leitura
+          disabled={true}     // Desabilita edição manual
+          placeholder="Calculado automaticamente..."
+        />
 
       </FormGeral>
     </div>

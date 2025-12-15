@@ -14,33 +14,46 @@ const EditarTeste = ({ isOpen, onSalvar, onCancelar, teste }) => {
         taxaGerminou: '',
     });
 
+    // 1. CÁLCULO AUTOMÁTICO DA TAXA
+    // Observa mudanças na quantidade ou no que germinou
+    useEffect(() => {
+        const total = Number(formData.quantidade);
+        const germinou = Number(formData.qntdGerminou);
+
+        if (total > 0 && germinou >= 0) {
+            const taxa = ((germinou / total) * 100).toFixed(2);
+            
+            // Só atualiza se o valor for diferente para evitar loops
+            setFormData(prev => {
+                if (prev.taxaGerminou === taxa) return prev;
+                return { ...prev, taxaGerminou: taxa };
+            });
+        } else {
+            // Se os valores forem inválidos, limpa a taxa
+            setFormData(prev => ({ ...prev, taxaGerminou: '' }));
+        }
+    }, [formData.quantidade, formData.qntdGerminou]);
+
+    // 2. CARREGAR DADOS DO BACKEND
     useEffect(() => {
         if (teste) {
-            // Função auxiliar para datas
-            // O backend manda dataPlantio como 'yyyy-MM-dd' (padrão LocalDate)
-            // Mas manda dataGerminacao como 'dd/MM/yyyy' (formatado no Controller)
-            const formatarDataParaInput = (dataStr) => {
-                if (!dataStr || dataStr === '-' || dataStr === null) return '';
-                
-                // Se vier como dd/MM/yyyy, converte para yyyy-MM-dd (HTML Input)
-                if (dataStr.includes('/')) {
-                    const [dia, mes, ano] = dataStr.split('/');
-                    return `${ano}-${mes}-${dia}`;
-                }
-                // Se já vier como yyyy-MM-dd, retorna igual
-                return dataStr;
+            // Helper para garantir que a data vá para o input (yyyy-MM-dd)
+            const converterDataInput = (dataStr) => {
+                if (!dataStr || dataStr === '-' || !dataStr.includes('/')) return '';
+                const [dia, mes, ano] = dataStr.split('/');
+                return `${ano}-${mes}-${dia}`;
             };
 
             setFormData({
                 lote: teste.lote || '',
-                // ✅ Mapeia as chaves que vêm da Tabela (DTO do Java)
-                nomePopular: teste.nomePopularSemente || '', 
-                dataTeste: teste.dataPlantio || '', // Backend usa 'dataPlantio' como data genérica
+                nomePopular: teste.nomePopularSemente || '', // Chave do Backend
+                dataTeste: converterDataInput(teste.dataPlantio), // Chave do Backend
                 quantidade: teste.qtdSemente || 0,
-                camaraFria: teste.estahNaCamaraFria || 'Não', // Já vem "Sim" ou "Não"
-                dataGerminacao: formatarDataParaInput(teste.dataGerminacao),
-                qntdGerminou: teste.qtdGerminou || 0,
-                taxaGerminou: teste.taxaGerminacao || '',
+                camaraFria: teste.estahNaCamaraFria || 'Não',
+                dataGerminacao: converterDataInput(teste.dataGerminacao),
+                qntdGerminou: teste.qtdGerminou || 0, // Chave do Backend
+                // Remove o % se vier do backend para não quebrar o cálculo
+                taxaGerminou: teste.taxaGerminacao ? String(teste.taxaGerminacao).replace('%', '') : '',
             });
         }
     }, [teste]);
@@ -48,20 +61,20 @@ const EditarTeste = ({ isOpen, onSalvar, onCancelar, teste }) => {
     const handleCancel = (confirmar = true) => {
         if (confirmar) {
             if (window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
-                onCancelar(); 
+                onCancelar();
             }
         } else {
             onCancelar();
         }
     };
 
+    // 3. SUBMIT LIMPO (O Segredo do PUT)
     const handleSubmit = () => {
-        // ✅ Simplificado! 
-        // Não precisamos formatar datas aqui. O 'testeGerminacaoService.update' 
-        // fará a conversão para o formato que o Java espera.
+        // Enviamos o ID e os dados do Form sem formatar.
+        // O Service fará a conversão para o DTO do Java.
         const dadosParaSalvar = {
-            id: teste.id, // Mantém o ID original para a rota PUT
-            ...formData   // Envia os dados do formulário
+            id: teste.id, 
+            ...formData 
         };
         onSalvar(dadosParaSalvar);
     };
@@ -95,9 +108,7 @@ const EditarTeste = ({ isOpen, onSalvar, onCancelar, teste }) => {
         },
     ];
 
-    if (!isOpen) {
-        return null;
-    }
+    if (!isOpen) return null;
 
     return (
         <div className="modal-overlay" onClick={() => handleCancel(false)}>
@@ -136,7 +147,7 @@ const EditarTeste = ({ isOpen, onSalvar, onCancelar, teste }) => {
                     />
                     <Input
                         label="Quantidade"
-                        type="number" // Mudei para number para funcionar com o state
+                        type="number"
                         value={formData.quantidade}
                         onChange={handleChange('quantidade')}
                         onIncrement={handleIncrement('quantidade')}
@@ -145,7 +156,7 @@ const EditarTeste = ({ isOpen, onSalvar, onCancelar, teste }) => {
                     />
                     <Input
                         label="Câmara Fria"
-                        type="select" // Select é melhor aqui
+                        type="select"
                         value={formData.camaraFria}
                         onChange={handleChange('camaraFria')}
                         required={true}
@@ -170,12 +181,14 @@ const EditarTeste = ({ isOpen, onSalvar, onCancelar, teste }) => {
                         onDecrement={handleDecrement('qntdGerminou')}
                         required={false}
                     />
+                    {/* Campo Calculado (Read Only) */}
                     <Input
                         label="Taxa Germinou %"
                         type="text"
-                        value={formData.taxaGerminou}
-                        onChange={handleChange('taxaGerminou')}
-                        required={false}
+                        value={formData.taxaGerminou ? `${formData.taxaGerminou}%` : ''}
+                        onChange={() => {}} 
+                        disabled={true}
+                        placeholder="Calculado..."
                     />
                 </FormGeral>
             </div>

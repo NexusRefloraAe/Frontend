@@ -22,15 +22,37 @@ const HistoricoTestes = () => {
   const [modalDetalheAberto, setModalDetalheAberto] = useState(false);
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
 
-  // 2. Carregar dados da API
+  // 2. Carregar dados da API e CALCULAR A TAXA se necessário
   const carregarDados = async (pagina = 0, busca = '') => {
     try {
       setLoading(true);
-      // Chama o endpoint /movimentacoes/testeGerminacao
       const data = await testeGerminacaoService.getAll(busca, pagina);
       
-      // Ajuste conforme o retorno do Page do Spring
-      setSementes(data.content || []); 
+      const listaVindaDoBack = data.content || [];
+
+      // --- LÓGICA DE CORREÇÃO/CÁLCULO NO FRONT ---
+      const listaProcessada = listaVindaDoBack.map(item => {
+          let taxa = item.taxaGerminacao;
+          const total = item.qtdSemente;
+          const germinou = item.qtdGerminou;
+
+          // Se o backend não mandou a taxa, mas temos os números, calculamos agora:
+          if ((!taxa || taxa === '-' || taxa === null) && total > 0 && germinou != null) {
+              const valorCalculado = (germinou / total) * 100;
+              // Formata para 2 casas decimais (ex: "15.50")
+              taxa = valorCalculado.toFixed(2);
+          }
+
+          // Adiciona o símbolo % se não tiver e se for um valor válido
+          if (taxa && taxa !== '-' && !String(taxa).includes('%')) {
+              taxa = `${taxa}%`;
+          }
+
+          return { ...item, taxaGerminacao: taxa || '-' };
+      });
+      // ---------------------------------------------
+
+      setSementes(listaProcessada);
       setTotalPaginas(data.totalPages || 0);
       setPaginaAtual(data.number || 0);
 
@@ -82,13 +104,12 @@ const HistoricoTestes = () => {
   // 3. Salvar Edição (PUT)
   const handleSalvarEdicao = async (dadosEditados) => {
     try {
-      // O id vem no objeto da linha
       await testeGerminacaoService.update(dadosEditados.id, dadosEditados);
       alert("Teste atualizado com sucesso!");
       
       setModalEdicaoAberto(false);
       setItemSelecionado(null);
-      carregarDados(paginaAtual, termoBusca); // Atualiza a tabela
+      carregarDados(paginaAtual, termoBusca); 
     } catch (error) {
       console.error("Erro ao atualizar:", error);
       alert("Erro ao salvar a edição.");
@@ -104,7 +125,7 @@ const HistoricoTestes = () => {
         
         setModalExclusaoAberto(false);
         setItemSelecionado(null);
-        carregarDados(paginaAtual, termoBusca); // Atualiza a tabela
+        carregarDados(paginaAtual, termoBusca); 
       } catch (error) {
         console.error("Erro ao excluir:", error);
         alert("Erro ao excluir o teste.");
@@ -123,17 +144,16 @@ const HistoricoTestes = () => {
     carregarDados(novaPagina - 1, termoBusca);
   };
 
-  // 🧩 COLUNAS MAPEADAS PARA O DTO DO JAVA
-  // Baseado no MovimentacaoSementeController.java -> convertToHistoricoDto
+  // 🧩 COLUNAS MAPEADAS
   const colunas = [
     { key: "lote", label: "Lote" },
-    { key: "nomePopularSemente", label: "Nome popular" }, // Backend envia 'nomePopularSemente'
-    { key: "dataPlantio", label: "Data do Teste" },      // Backend usa 'dataPlantio' para a data do registro
-    { key: "qtdSemente", label: "Quantidade" },          // Backend envia 'qtdSemente'
-    { key: "estahNaCamaraFria", label: "Câmara Fria" }, // Backend envia 'estahNaCamaraFria' ("Sim"/"Não")
+    { key: "nomePopularSemente", label: "Nome popular" }, 
+    { key: "dataPlantio", label: "Data do Teste" },      
+    { key: "qtdSemente", label: "Quantidade" },          
+    { key: "estahNaCamaraFria", label: "Câmara Fria" }, 
     { key: "dataGerminacao", label: "Data Germinação" },
-    { key: "qtdGerminou", label: "Qntd Germinou(und)" }, // Verifique se o DTO usa 'qtd' ou 'quantidade'
-    { key: "taxaGerminacao", label: "Taxa Germinou %" }, // Backend envia 'taxaGerminacao'
+    { key: "qtdGerminou", label: "Qtd Germinou(und)" },
+    { key: "taxaGerminacao", label: "Taxa Germinou %" }, // Agora virá preenchido pelo cálculo do front
   ];
 
   return (
@@ -168,7 +188,7 @@ const HistoricoTestes = () => {
         isOpen={modalExclusaoAberto}
         onClose={handleCancelarExclusao}
         onConfirm={handleConfirmarExclusao}
-        nomeItem={itemSelecionado?.nomePopularSemente} // Ajustado para a chave correta
+        nomeItem={itemSelecionado?.nomePopularSemente} 
         titulo="Excluir Teste"
         mensagem={`Você tem certeza que deseja excluir o teste do lote ${itemSelecionado?.lote}?`}
         textoConfirmar="Excluir"
@@ -182,7 +202,7 @@ const HistoricoTestes = () => {
               titulo="Histórico de Teste de Germinação"
               dados={sementes}
               colunas={colunas}
-              chaveBusca="nomePopularSemente" // Placeholder da busca
+              chaveBusca="nomePopularSemente" 
               
               onPesquisar={handleBusca}
               

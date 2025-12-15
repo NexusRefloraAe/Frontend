@@ -1,7 +1,7 @@
 import api from './api';
 
 export const plantioService = {
-  // ✅ Listar: O controller tem um endpoint específico para listar PlantioMuda
+  // GET: Listar Plantios
   getAll: async (termoBusca = '', pagina = 0, itensPorPagina = 5) => {
     const params = {
       searchTerm: termoBusca,
@@ -9,58 +9,60 @@ export const plantioService = {
       size: itensPorPagina,
       sort: 'dataPlantio,desc'
     };
-    // Chama a rota específica do seu controller
     const response = await api.get('/movimentacoes/plantioMuda', { params });
-    return response.data; // Retorna Page<MovimentacaoSementesHistoricoResponseDTO>
+    return response.data;
   },
 
-  // ✅ Criar: O controller usa POST /movimentacoes para tudo
+  // POST: Criar Plantio
   create: async (formData) => {
-    // Tratamento de Data (yyyy-MM-dd -> dd/MM/yyyy)
-    let dataFormatada = formData.dataPlantio;
-    if (formData.dataPlantio && formData.dataPlantio.includes('-')) {
-       const parts = formData.dataPlantio.split('-');
-       dataFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
-    }
-
     const plantioDTO = {
-      // IMPORTANTE: O Java usa @JsonTypeInfo? Se sim, precisa de um campo "type".
-      // Se não, ele tenta adivinhar pelos campos. Vou enviar os campos mapeados:
+      // 1. Campo Discriminador (Obrigatório pelo @JsonTypeInfo do Java)
+      tipo_movimentacao: 'muda', 
       
-      tipoMovimentacao: "PLANTIO_MUDA", // Dica para o Java saber qual DTO instanciar (se configurado)
-      loteSemente: formData.lote,       // Backend espera loteSemente
-      dataPlantio: dataFormatada,
-      qtdSemente: Number(formData.qntdSementes),
+      // 2. Campos da Classe Pai (MovimentacaoSementesRequestDTO)
+      finalidade: 'PLANTIO', 
+      loteSemente: formData.lote,
+      dataPlantio: formatarDataParaJava(formData.dataPlantio),
+      tipoPlantio: formData.tipoPlantio ? formData.tipoPlantio.toUpperCase() : null,
       quantidadePlantada: Number(formData.qntdPlantada),
-      tipoPlantio: formData.tipoPlantio ? formData.tipoPlantio.toUpperCase() : null // SEMENTEIRA, SAQUINHO...
+
+      // 3. Campo Específico (PlantioMudaRequestDTO)
+      qtdSemente: Number(formData.qntdSementes)
     };
 
     const response = await api.post('/movimentacoes', plantioDTO);
     return response.data;
   },
 
-  // ✅ Atualizar: PUT /movimentacoes/{id}
+  // PUT: Atualizar Plantio
   update: async (id, formData) => {
-    let dataFormatada = formData.dataPlantio;
-    if (formData.dataPlantio && formData.dataPlantio.includes('-')) {
-       const parts = formData.dataPlantio.split('-');
-       dataFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
-    }
-
     const plantioDTO = {
+      tipo_movimentacao: 'muda',
+      finalidade: 'PLANTIO',
       loteSemente: formData.lote,
-      dataPlantio: dataFormatada,
-      qtdSemente: Number(formData.qntdSementes),
+      dataPlantio: formatarDataParaJava(formData.dataPlantio),
+      tipoPlantio: formData.tipoPlantio ? formData.tipoPlantio.toUpperCase() : null,
       quantidadePlantada: Number(formData.qntdPlantada),
-      tipoPlantio: formData.tipoPlantio ? formData.tipoPlantio.toUpperCase() : null
+      qtdSemente: Number(formData.qntdSementes)
     };
 
     const response = await api.put(`/movimentacoes/${id}`, plantioDTO);
     return response.data;
   },
 
-  // ✅ Excluir: DELETE /movimentacoes/{id}
   delete: async (id) => {
     await api.delete(`/movimentacoes/${id}`);
   }
+};
+
+// Auxiliar: yyyy-MM-dd -> dd/MM/yyyy (Se o seu backend exigir formatação manual)
+// Observação: Se seu DTO usa LocalDate padrão, o Axios pode enviar yyyy-MM-dd. 
+// Mas seu código anterior sugere que você formata. Mantive a formatação por segurança.
+const formatarDataParaJava = (dataStr) => {
+    if (!dataStr) return null;
+    if (dataStr.includes('-')) {
+       const parts = dataStr.split('-');
+       return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return dataStr;
 };
