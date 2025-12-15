@@ -3,44 +3,58 @@ import FormGeral from "../../../../components/FormGeral/FormGeral";
 import Input from "../../../../components/Input/Input";
 
 const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
+  // 1. Estado alinhado com o DTO do Java (nomes exatos)
   const [formData, setFormData] = useState({
     lote: '',
-    nomePopular: '',
-    qntdSementes: 0,
+    nomePopular: '', // Apenas para exibição (não é salvo no update)
+    qtdSemente: 0,   // ✅ Corrigido (era qntdSementes)
     dataPlantio: '',
     tipoPlantio: '',
-    qntdPlantada: 0,
+    quantidadePlantada: 0, // ✅ Corrigido (era qntdPlantada)
   });
 
   useEffect(() => {
     if (plantio) {
-      // 1. Função auxiliar para garantir que a data vá para o input (yyyy-MM-dd)
+      // Função auxiliar: dd/MM/yyyy (Back) -> yyyy-MM-dd (Input)
       const formatarDataInput = (dataStr) => {
-          if(!dataStr) return '';
-          // Se vier dd/MM/yyyy do front antigo, converte. Se vier yyyy-MM-dd do back, mantém.
-          if(dataStr.includes('/')) {
+          if (!dataStr) return '';
+          if (dataStr.includes('/')) {
              const parts = dataStr.split('/');
              return `${parts[2]}-${parts[1]}-${parts[0]}`;
           }
           return dataStr;
       };
 
-      // 2. Mapeamento correto: Backend DTO -> Form State
+      // Função para converter "Sementeira" -> "SEMENTEIRA"
+      const converterTipoPlantio = (valor) => {
+          if (!valor) return '';
+          // Se já for maiúsculo (SEMENTEIRA), retorna. Se for descritivo (Sementeira), converte.
+          const mapa = {
+              'Sementeira': 'SEMENTEIRA',
+              'Saquinho': 'SAQUINHO',
+              'Chão': 'CHAO',
+              'Chao': 'CHAO'
+          };
+          return mapa[valor] || valor.toUpperCase();
+      };
+
+      // 2. Mapeamento Backend -> State
       setFormData({
         lote: plantio.lote || '',
         
         // Backend envia 'nomePopularSemente' na listagem
         nomePopular: plantio.nomePopularSemente || plantio.nomePopular || '', 
         
-        // Backend envia 'qtdSemente' na listagem
-        qntdSementes: plantio.qtdSemente || plantio.qntdSementes || 0,
+        // Backend envia 'qtdSemente'
+        qtdSemente: plantio.qtdSemente || plantio.qntdSementes || 0,
         
         dataPlantio: formatarDataInput(plantio.dataPlantio),
         
-        // Backend envia 'tipoPlantioDescricao' ou 'tipoPlantio'
-        tipoPlantio: plantio.tipoPlantioDescricao || plantio.tipoPlantio || '', 
+        // Converte a descrição que vem da tabela para o ENUM que o select espera
+        tipoPlantio: converterTipoPlantio(plantio.tipoPlantioDescricao || plantio.tipoPlantio),
         
-        qntdPlantada: plantio.quantidadePlantada || plantio.qntdPlantada || 0,
+        // Backend envia 'quantidadePlantada'
+        quantidadePlantada: plantio.quantidadePlantada || plantio.qntdPlantada || 0,
       });
     }
   }, [plantio]);
@@ -56,11 +70,10 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
   };
 
   const handleSubmit = () => {
-    // 3. Simplificação: Apenas envia o objeto. 
-    // O plantioService.update vai cuidar de formatar a data e renomear os campos para o Java.
+    // 3. Envio Limpo (O Service cuidará da formatação de data)
     const dadosSalvos = {
-      id: plantio.id, // Mantém o ID original
-      ...formData,    // Envia os dados editados
+      id: plantio.id, // ID original
+      ...formData,    // Dados com chaves corretas (qtdSemente, quantidadePlantada)
     };
 
     onSalvar(dadosSalvos);
@@ -144,23 +157,23 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
 
           <Input
             label="Qtd sementes (kg/g/und)"
-            name="qntdSementes"
+            name="qtdSemente"
             type="number"
-            value={formData.qntdSementes}
-            onChange={handleChange('qntdSementes')}
-            onIncrement={handleIncrement('qntdSementes')}
-            onDecrement={handleDecrement('qntdSementes')}
+            value={formData.qtdSemente} // Nome corrigido
+            onChange={handleChange('qtdSemente')}
+            onIncrement={handleIncrement('qtdSemente')}
+            onDecrement={handleDecrement('qtdSemente')}
             required={true}
           />
 
           <Input
             label="Qtd plantada (und)"
-            name="qntdPlantada"
+            name="quantidadePlantada"
             type="number"
-            value={formData.qntdPlantada}
-            onChange={handleChange('qntdPlantada')}
-            onIncrement={handleIncrement("qntdPlantada")}
-            onDecrement={handleDecrement("qntdPlantada")}
+            value={formData.quantidadePlantada} // Nome corrigido
+            onChange={handleChange('quantidadePlantada')}
+            onIncrement={handleIncrement("quantidadePlantada")}
+            onDecrement={handleDecrement("quantidadePlantada")}
             required={true}
           />
 
