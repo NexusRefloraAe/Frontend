@@ -127,7 +127,7 @@ const Cadastro = () => {
         value: formData.confirmarSenha,
         onChange: handleChange('confirmarSenha'),
         required: true,
-        icon: mostrarConfirmarSenha ? olhofechado : olhoaberto,
+        icon: mostrarConfirmarSenha ? olhoaberto : olhofechado,
         onIconClick: () => setMostrarConfirmarSenha(!mostrarConfirmarSenha)
       }
     ],
