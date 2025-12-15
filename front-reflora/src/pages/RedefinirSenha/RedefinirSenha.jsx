@@ -49,7 +49,7 @@ const RedefinirSenha = () => {
       // Regex simples para identificar se é email ou telefone
       const isEmail = /\S+@\S+\.\S+/.test(valor);
       // Regex flexível para telefone (aceita com ou sem máscara)
-      const looksLikePhone = /^[\d\(\)\-\s]+$/.test(valor);
+      const looksLikePhone = /^\d{2}9\d{8}$/.test(valor);
 
       if (isEmail) {
         payload.email = valor;

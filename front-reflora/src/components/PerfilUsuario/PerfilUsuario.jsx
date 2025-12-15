@@ -272,7 +272,7 @@ const PerfilUsuario = () => {
           label="Telefone"
           name="telefone"
           type="tel"
-          placeholder="(XX) 9 XXXX-XXXX"
+          placeholder="XX9XXXXXXXX"
           value={userData.telefone}
           onChange={handleChange('telefone')}
           readOnly={!isEditing || isLoading}

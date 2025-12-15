@@ -97,9 +97,9 @@ function Listasementes({
                           </tr>
                         </thead>
                         <tbody>
-                            {sementes.map((semente) => (
+                            {sementes.map((semente, index) => (
                                 <LinhaSemente 
-                                    key={semente.id} 
+                                    key={`${semente.id}-${index}`} 
                                     semente={semente} 
                                     onVerDetalhes={handleVerDetalhes}
                                     // Repassamos as funções para a linha também (para os botões da tabela)

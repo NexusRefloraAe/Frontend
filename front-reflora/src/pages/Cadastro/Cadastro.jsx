@@ -72,7 +72,7 @@ const Cadastro = () => {
       {
         label: "Número de celular",
         name: "celular",
-        placeholder: "(xx) 9 xxxx-xxxx",
+        placeholder: "xx9xxxxxxxx",
         value: formData.celular,
         onChange: handleChange('celular'),
         required: true
