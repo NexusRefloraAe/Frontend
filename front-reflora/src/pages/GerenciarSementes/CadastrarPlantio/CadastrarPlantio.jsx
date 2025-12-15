@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import FormGeral from "../../../components/FormGeral/FormGeral";
 import Input from "../../../components/Input/Input";
+// Importação do serviço
 import { plantioService } from "../../../services/plantioService";
 
 const CadastrarPlantio = () => {
 
-  // 1. Estado inicial (chaves em camelCase)
+  // 1. Estado inicial padronizado (camelCase)
   const [formData, setFormData] = useState({
     lote: '',
     nomePopular: '',
@@ -15,8 +16,9 @@ const CadastrarPlantio = () => {
     qntdPlantada: 0,
   });
 
-  const [loading, setLoading] = useState(false); // Adicionei estado de carregamento
+  const [loading, setLoading] = useState(false);
 
+  // 2. Funções de Manipulação do Formulário
   const handleCancel = (confirmar = true) => {
     const resetForm = () => {
       setFormData({
@@ -39,39 +41,47 @@ const CadastrarPlantio = () => {
   };
 
   const handleChange = (field) => (e) => {
+    // Garante que campos numéricos sejam salvos como Number
     const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleIncrement = (field) => {
-    setFormData(prev => ({ ...prev, [field]: prev[field] + 1 }));
+    setFormData((prev) => ({ ...prev, [field]: prev[field] + 1 }));
   };
 
   const handleDecrement = (field) => {
-    setFormData(prev => ({ ...prev, [field]: prev[field] > 0 ? prev[field] - 1 : 0 }));
+    setFormData((prev) => ({
+      ...prev,
+      [field]: prev[field] > 0 ? prev[field] - 1 : 0
+    }));
   };
 
-  // 2. Integração com o Back-End
+  // 3. Envio para o Backend via Service
   const handleSubmit = async (e) => {
-    // FormGeral previne o default, mas é bom garantir
-    if(e && e.preventDefault) e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
 
     try {
-      setLoading(true); // Bloqueia o botão
+      setLoading(true);
       
-      // O 'formData' aqui já tem as chaves corretas (lote, nomePopular...)
-      // que o plantioService.create espera para montar o DTO.
-      await plantioService.create(formData); 
+      // Chama o serviço que formata os dados e envia para /api/movimentacoes
+      await plantioService.create(formData);
       
       alert("Plantio cadastrado com sucesso!");
-      handleCancel(false); // Reseta o formulário
+      handleCancel(false); // Reseta o form sem perguntar
     } catch (error) {
-      console.error("Erro ao cadastrar:", error);
-      alert("Erro ao cadastrar plantio. Verifique os dados.");
+      console.error("Erro ao cadastrar plantio:", error);
+      
+      // Tratamento básico de erro para feedback visual
+      if (error.response && error.response.data && error.response.data.message) {
+         alert(`Erro: ${error.response.data.message}`);
+      } else {
+         alert("Erro ao cadastrar plantio. Verifique se o Lote existe no Banco de Sementes.");
+      }
     } finally {
-      setLoading(false); // Libera o botão
+      setLoading(false);
     }
-  }
+  };
 
   const actions = [
     {
@@ -79,34 +89,30 @@ const CadastrarPlantio = () => {
       variant: 'action-secondary',
       children: 'Cancelar',
       onClick: () => handleCancel(true),
-      disabled: loading // Desabilita se estiver carregando
+      disabled: loading,
     },
     {
       type: 'submit',
       variant: 'primary',
       children: loading ? 'Salvando...' : 'Salvar Cadastro',
-      disabled: loading
+      disabled: loading,
     },
   ];
 
   return (
     <div className="">
       <FormGeral
-        title="Cadastro/Editar Plantio"
+        title="Cadastro Plantio"
         actions={actions}
         onSubmit={handleSubmit}
         useGrid={true}
       >
-        {/* CORREÇÃO IMPORTANTE ABAIXO: 
-            Usei 'lote' (minúsculo) em vez de 'Lote' para bater com o useState 
-        */}
-        
         <Input
           label="Lote"
           name="lote"
           type="text"
-          value={formData.lote} // <-- Corrigido
-          onChange={handleChange('lote')} // <-- Corrigido
+          value={formData.lote}
+          onChange={handleChange('lote')}
           required={true}
           placeholder="A001"
         />
@@ -115,27 +121,27 @@ const CadastrarPlantio = () => {
           label="Nome Popular"
           name="nomePopular"
           type="text"
-          value={formData.nomePopular} // <-- Corrigido
-          onChange={handleChange('nomePopular')} // <-- Corrigido
+          value={formData.nomePopular}
+          onChange={handleChange('nomePopular')}
           required={true}
           placeholder="Ipê"
         />
-        
+
         <Input
           label="Data"
           name="dataPlantio"
           type="date"
-          value={formData.dataPlantio} // <-- Corrigido
-          onChange={handleChange('dataPlantio')} // <-- Corrigido
+          value={formData.dataPlantio}
+          onChange={handleChange('dataPlantio')}
           required={true}
         />
-        
+
         <Input
           label="Qtd sementes (kg/g/und)"
           name="qntdSementes"
           type="number"
-          value={formData.qntdSementes} // <-- Corrigido
-          onChange={handleChange('qntdSementes')} 
+          value={formData.qntdSementes}
+          onChange={handleChange('qntdSementes')}
           onIncrement={() => handleIncrement("qntdSementes")}
           onDecrement={() => handleDecrement("qntdSementes")}
           required={true}
@@ -145,7 +151,7 @@ const CadastrarPlantio = () => {
           label="Qtd plantada (und)"
           name="qntdPlantada"
           type="number"
-          value={formData.qntdPlantada} // <-- Corrigido
+          value={formData.qntdPlantada}
           onChange={handleChange('qntdPlantada')}
           onIncrement={() => handleIncrement("qntdPlantada")}
           onDecrement={() => handleDecrement("qntdPlantada")}
@@ -156,12 +162,12 @@ const CadastrarPlantio = () => {
           label="Tipo de plantio"
           name="tipoPlantio"
           type="select"
-          value={formData.tipoPlantio} // <-- Corrigido
+          value={formData.tipoPlantio}
           onChange={handleChange('tipoPlantio')}
           required={true}
           placeholder="Selecione..."
           options={[
-            // DICA: Se o backend espera 'SEMENTEIRA' (Maiúsculo), é melhor já enviar assim no value
+            // Valores em Maiúsculo para bater com o Enum do Java (TipoPlantio.java)
             { value: 'SEMENTEIRA', label: 'Sementeira' },
             { value: 'SAQUINHO', label: 'Saquinho' },
             { value: 'CHAO', label: 'Chão' },
