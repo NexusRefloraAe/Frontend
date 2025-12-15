@@ -15,6 +15,7 @@ const CadastrarPlantio = () => {
 
   const [loading, setLoading] = useState(false);
   const [sugestoes, setSugestoes] = useState([]); // Lista de lotes encontrados
+  const [estoqueAtual, setEstoqueAtual] = useState(null);
 
   // --- Lógica do Autocomplete ---
   const handleLoteChange = async (e) => {
@@ -36,24 +37,22 @@ const CadastrarPlantio = () => {
     }
   };
 
+  const handleBlurLote = () => {
+    setTimeout(() => setSugestoes([]), 200);
+  };
+
   // Quando o usuário clica em uma opção da lista
   const selecionarSugestao = (semente) => {
-    // Extrai apenas o número da string "100 KG" ou "500 und"
-    const estoque = parseInt(semente.quantidadeAtualFormatada) || 0;
+  
+    setEstoqueAtual(semente.quantidadeAtualFormatada);
 
     setFormData(prev => ({
       ...prev,
       lote: semente.lote,
       nomePopular: semente.nomePopular,
-      qtdSemente: estoque // Preenche com o estoque atual
     }));
 
     setSugestoes([]); // Esconde a lista
-  };
-
-  // Garante que a lista suma se clicar fora (delay pequeno para permitir o clique)
-  const handleBlurLote = () => {
-    setTimeout(() => setSugestoes([]), 200);
   };
   // ------------------------------
 
@@ -62,6 +61,7 @@ const CadastrarPlantio = () => {
     if (confirmar && !window.confirm('Deseja cancelar?')) return;
     resetForm();
     setSugestoes([]);
+    setEstoqueAtual(null)
   };
 
   const handleChange = (field) => (e) => {
@@ -132,20 +132,25 @@ const CadastrarPlantio = () => {
                 }}>
                     {sugestoes.map((s) => (
                         <li 
-                            key={s.id}
+                            key={s.id || s.lote}
                             onClick={() => selecionarSugestao(s)}
                             style={{
                                 padding: '10px',
                                 cursor: 'pointer',
                                 borderBottom: '1px solid #eee',
                                 display: 'flex',
-                                justifyContent: 'space-between'
+                                justifyContent: 'space-between',
+                                alignItems: 'center'
                             }}
                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
                         >
-                            <strong>{s.lote}</strong>
-                            <span style={{ color: '#666' }}>{s.nomePopular}</span>
+                            <div>
+                                <strong>{s.lote}</strong> - {s.nomePopular}
+                            </div>
+                            <span style={{ fontSize: '0.85em', color: '#666', backgroundColor: '#eef', padding: '2px 6px', borderRadius: '4px' }}>
+                                Estoque Atual: {s.quantidadeAtualFormatada}
+                            </span>
                         </li>
                     ))}
                 </ul>
@@ -172,20 +177,41 @@ const CadastrarPlantio = () => {
           required={true}
         />
 
-        <Input
-          label="Quantidade de sementes no estoque (kg/g/und)"
-          name="qtdSemente"
-          type="number"
-          value={formData.qtdSemente}
-          onChange={handleChange('qtdSemente')}
-          required={true}
-          disabled={true}
-        />
+        {/* 5. MUDANÇA: Layout Flex para Quantidade + Texto Disponível */}
+        {/* Substituímos o antigo input 'qtdSemente' que confundia, 
+            e colocamos o texto informativo ao lado da quantidade que será gasta */}
+        
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
+            <div style={{ flex: 1 }}>
+                <Input
+                  label="Quantidade a ser plantada (kg/g/und)"
+                  name="quantidadePlantada"
+                  type="number"
+                  value={formData.qtdSemente}
+                  onChange={handleChange('qtdSemente')}
+                  onIncrement={() => handleIncrement("qtdSemente")}
+                  onDecrement={() => handleDecrement("qtdSemente")}
+                  required={true}
+                  placeholder="0" // Placeholder funciona agora
+                />
+            </div>
+
+            {estoqueAtual && (
+                <small style={{ 
+                    color: '#666', 
+                    whiteSpace: 'nowrap', 
+                    marginTop: '15px' 
+                }}>
+                    Disponível: <strong>{estoqueAtual}</strong>
+                </small>
+            )}
+        </div>
 
         <Input
           label="Quantidade a ser plantada (kg/g/und)"
           name="quantidadePlantada"
           type="number"
+          value={formData.quantidadePlantada}
           onChange={handleChange('quantidadePlantada')}
           onIncrement={() => handleIncrement("quantidadePlantada")}
           onDecrement={() => handleDecrement("quantidadePlantada")}
