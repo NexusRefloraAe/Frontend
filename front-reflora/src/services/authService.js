@@ -55,7 +55,7 @@ export const authService = {
     const payload = { password };
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const numericOnly = identifier.replace(/\D/g, '');
-    const isPhone = /^[\d\(\)\-\s]+$/.test(identifier) && numericOnly.length >= 10;
+    const isPhone = /^\d{2}9\d{8}$/.test(identifier) && numericOnly.length >= 10;
 
     if (emailRegex.test(identifier)) {
       payload.email = identifier;
