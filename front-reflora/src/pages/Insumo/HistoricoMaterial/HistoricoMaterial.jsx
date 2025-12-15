@@ -137,9 +137,12 @@ const HistoricoMaterial = () => {
   ];
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> feat/integrar-front-com-o-back
+=======
+>>>>>>> 2feb3eb4684c7857f351a45578d2be49a68a1cb1
 
   return (
     <div className="historico-material-container">
