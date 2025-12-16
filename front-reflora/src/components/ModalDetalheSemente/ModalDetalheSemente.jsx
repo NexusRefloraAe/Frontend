@@ -150,6 +150,10 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
         setModalExcluirAberto(false);
         onClose(); // Fecha o modal de detalhes também
     };
+    const handleSalvarEdicao = (dadosEditados) => {
+        console.log("Semente editada:", dadosEditados);
+        setModalEditarAberto(false);
+    };
 
     // Se ainda está carregando ou falhou, usa o resumo da lista para exibir o básico
     const dados = sementeDetalhada || sementeResumo;
@@ -256,6 +260,12 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
                 textoConfirmar="Excluir"
                 textoCancelar="Cancelar"
             />
+            <EditarSementes
+                isOpen={modalEditarAberto}
+                semente={semente}
+                onCancelar={handleFecharModalEditar}
+                onSalvar={handleSalvarEdicao}
+                />
         </>
     )
 }

@@ -330,8 +330,9 @@ const Historico = () => {
       {/* Renderização dos 3 modais */}
 
       {/* MODAL DE DETALHES (Visualizar) */}
-      {modalDetalheAberto && itemSelecionado && (
+     
         <ModalDetalheGenerico
+          isOpen={modalDetalheAberto}
           item={itemSelecionado} // Passa o item (para pegar a 'item.imagem')
           titulo="Detalhes da Vistoria"
 
@@ -349,7 +350,7 @@ const Historico = () => {
           {/* Passa o componente customizado como 'children' */}
           <DetalheVistoria item={itemSelecionado} />
         </ModalDetalheGenerico>
-      )}
+      
 
       {/* MODAL DE EDIÇÃO */}
       <EditarVistoria

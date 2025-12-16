@@ -5,7 +5,7 @@ import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelato
 import './GerarRelatorio.css';
 
 // 1. Importe o serviço
-import { relatorioService } from "../../../services/relatorioService";
+import { relatorioMovimentacaoSementeService } from "../../../services/relatorioMovimentacaoSementeService";
 
 // (Opcional) Botão simples para exportação se não tiver componente específico
 const BotaoExportar = ({ label, onClick, cor }) => (
@@ -43,18 +43,16 @@ const GerarRelatorio = () => {
   const carregarDados = async (pagina = 0) => {
     try {
         setLoading(true);
-        // Chama o serviço passando os filtros atuais e a página
-        const data = await relatorioService.getPainel(filtros, pagina);
+        
+        // Chama o método getPainel do seu novo service
+        const data = await relatorioMovimentacaoSementeService.getPainel(filtros, pagina);
 
-        // Atualiza Cards
         setTotais({
             totalEntrada: data.totalEntrada,
             totalSaida: data.totalSaida,
             saldoDoPeriodo: data.saldoDoPeriodo
         });
 
-        // Atualiza Tabela (O backend retorna um Page no campo 'pageTabela' conforme seu Controller)
-        // Verifique no controller: return new PainelMovimentacoesDTO(..., pageTabela)
         setRelatorios(data.pageTabela.content);
         setTotalPaginas(data.pageTabela.totalPages);
         setPaginaAtual(data.pageTabela.number);
@@ -84,34 +82,41 @@ const GerarRelatorio = () => {
   };
 
   // Botões de Exportação
+  // --- 3. USANDO O NOVO SERVICE NOS BOTÕES DE EXPORTAÇÃO ---
   const handleExportarPDF = async () => {
-      try { await relatorioService.exportarPdf(filtros); } 
-      catch (e) { alert("Erro ao baixar PDF"); }
+      try { 
+        await relatorioMovimentacaoSementeService.exportarPdf(filtros); 
+      } catch (e) { 
+        alert("Erro ao baixar PDF"); 
+      }
   };
 
   const handleExportarCSV = async () => {
-      try { await relatorioService.exportarCsv(filtros); } 
-      catch (e) { alert("Erro ao baixar CSV"); }
+      try { 
+        await relatorioMovimentacaoSementeService.exportarCsv(filtros); 
+      } catch (e) { 
+        alert("Erro ao baixar CSV"); 
+      }
   };
 
   // Cards Dinâmicos baseados no Estado 'totais'
   const painelItems = [
     { 
       id: 1, 
-      titulo: 'Total Entrada', // (Unidade vem do dado ou fixa se for padrão)
-      valor: totais.totalEntrada, // Usa o estado
+      titulo: 'Total Entrada', 
+      valor: totais.totalEntrada, 
       className: 'card-entrada'
     },
     { 
       id: 2, 
       titulo: 'Total Saída', 
-      valor: totais.totalSaida, // Usa o estado
+      valor: totais.totalSaida, 
       className: 'card-saida'
     },
     { 
       id: 3, 
       titulo: 'Saldo do Período', 
-      valor: totais.saldoDoPeriodo, // Usa o estado
+      valor: totais.saldoDoPeriodo, 
       className: 'card-atual'
     },
   ];
@@ -121,7 +126,21 @@ const GerarRelatorio = () => {
   const colunas = [
     { key: "lote", label: "Lote" },
     { key: "nomePopular", label: "Nome Popular" },
-    { key: "data", label: "Data" }, // Backend envia Array [ano, mes, dia] ou String ISO dependendo do Jackson
+    { 
+        key: "data", 
+        label: "Data",
+        // Renderiza a data formatada (DD/MM/AAAA) se vier como string ISO
+        render: (item) => {
+            if (!item.data) return '-';
+            // Se vier array [2024, 12, 25], precisa tratar diferente.
+            // Se vier string "2024-12-25", fazemos split:
+            if (typeof item.data === 'string') {
+                const partes = item.data.split('-');
+                if (partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+            return item.data;
+        }
+    },
     { key: "tipoMovimento", label: "Tipo" },
     { key: "quantidade", label: "Quantidade" },
   ];
