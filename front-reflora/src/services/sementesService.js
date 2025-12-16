@@ -119,5 +119,18 @@ export const sementesService = {
     const params = { page: pagina, size: itensPorPagina, sort: 'data,desc' };
     const response = await api.get(`/sementes/${id}/historico-detalhado`, { params });
     return response.data; // Retorna { entradas: Page, saidas: Page }
-  }
+  },
+
+  exportarRelatorioPdf: async (termoBusca) => {
+        const url = `/bancoSementes/export/pdf${termoBusca ? `?searchTerm=${termoBusca}` : ''}`;
+        
+        return api.get(url, {
+            responseType: 'blob' // CRUCIAL: Para baixar arquivos binários
+        });
+    },
+
+    exportarRelatorioCsv: async (termoBusca) => {
+        const url = `/bancoSementes/export/csv${termoBusca ? `?searchTerm=${termoBusca}` : ''}`;
+        return api.get(url, { responseType: 'blob' });
+    }
 };
