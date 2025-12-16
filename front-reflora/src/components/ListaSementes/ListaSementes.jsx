@@ -5,6 +5,7 @@ import ModalDetalheSemente from "../ModalDetalheSemente/ModalDetalheSemente"
 import ExportButton from "../ExportButton/ExportButton"
 import search from '../../assets/search.svg'
 import arrows from '../../assets/arrows-up-down.svg'
+import { sementesService } from "../../services/sementesService"
 
 function Listasementes({ 
     sementes, 
@@ -38,6 +39,45 @@ function Listasementes({
 
     const handleFecharDetalhes = () => {
         setSementeSelecionada(null);
+    };
+
+    const handleDownloadPDFBackend = async () => {
+        try {
+            // 1. Chama o serviço
+            const response = await sementesService.exportarRelatorioPdf(termoBusca);
+
+            // 2. Extrai o nome do arquivo do Header
+            const disposition = response.headers['content-disposition'];
+            let fileName = 'relatorio_sementes.pdf'; // Nome padrão caso falhe
+
+            if (disposition && disposition.includes('attachment')) {
+                // Regex para pegar o texto dentro de filename="texto" ou filename=texto
+                const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                const matches = filenameRegex.exec(disposition);
+                
+                if (matches != null && matches[1]) { 
+                    // Remove aspas extras se existirem
+                    fileName = matches[1].replace(/['"]/g, '');
+                }
+            }
+
+            // 3. Cria o Blob e faz o download
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', fileName); // Usa o nome que veio do Java
+            
+            document.body.appendChild(link);
+            link.click();
+            
+            // 4. Limpeza
+            link.remove();
+            window.URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error("Erro ao baixar PDF:", error);
+            alert("Erro ao gerar o relatório PDF.");
+        }
     };
 
     const renderSeta = (campo) => {
@@ -117,7 +157,12 @@ function Listasementes({
                         totalPaginas={totalPaginas} 
                         onPaginaChange={onPageChange} 
                     />
-                    <ExportButton data={sementes} columns={colunasparaExportar} fileName="sementes_exportadas" />
+                    <ExportButton 
+                        data={sementes} 
+                        columns={colunasparaExportar} 
+                        fileName="sementes_exportadas" 
+                        onExportPDF={handleDownloadPDFBackend}
+                    />
                 </div>
             </section>
 
