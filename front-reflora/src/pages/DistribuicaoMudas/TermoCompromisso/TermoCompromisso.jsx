@@ -8,7 +8,7 @@ const TermoCompromisso = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // Fallback de dados para teste (caso acesse direto)
+    // Fallback de dados para teste
     const fallbackState = {
         dadosRevisao: {
             instituicao: 'SEMAS',
@@ -16,8 +16,8 @@ const TermoCompromisso = () => {
             estadoSede: 'PB',
             cidadeDistribuicao: 'BAÍA DA TRAIÇÃO',
             estadoDistribuicao: 'PB',
-            responsavelDistribuicao: 'MARCELO',      // Quem entrega (AFINK)
-            responsavelRecebimento: 'THAIGO FARIAS'  // Quem recebe (Instituição)
+            responsavelDistribuicao: 'MARCELO',      
+            responsavelRecebimento: 'THAIGO FARIAS'  
         },
         mudas: [],
         totalMudas: 0
@@ -35,22 +35,19 @@ const TermoCompromisso = () => {
     const mudasPaginaAtual = listaMudasCompleta.slice(indicePrimeiroItem, indiceUltimoItem);
     const linhasVaziasCount = Math.max(0, ITENS_POR_PAGINA - mudasPaginaAtual.length);
     const linhasVazias = Array(linhasVaziasCount).fill(null);
-    // ---------------------------
 
     // --- FORMATAÇÃO DOS DADOS ---
     const instituicao = dadosRevisao.instituicao || '_______';
     const total = totalMudas || 0;
+    const respDistribuicao = dadosRevisao.responsavelDistribuicao || '_______';
+    const respRecebimento = dadosRevisao.responsavelRecebimento || '_______';
 
-    // Definição clara de quem entrega e quem recebe
-    const respDistribuicao = dadosRevisao.responsavelDistribuicao || '_______'; // Representante AFINK
-    const respRecebimento = dadosRevisao.responsavelRecebimento || '_______';   // Representante Instituição
-
-    // Formata Cidade / UF Sede (Onde fica a instituição)
+    // Formata Cidade / UF Sede (Agora atribuído à AFINK)
     const cidadeSede = dadosRevisao.cidadeSede;
     const ufSede = dadosRevisao.estadoSede;
     const textoSede = (cidadeSede && ufSede) ? `${cidadeSede} - ${ufSede}` : (cidadeSede || '_______');
 
-    // Formata Cidade / UF Distribuição (Onde as mudas vão)
+    // Formata Cidade / UF Distribuição (Atribuído à Instituição/Plantio)
     const cidadeDist = dadosRevisao.cidadeDistribuicao;
     const ufDist = dadosRevisao.estadoDistribuicao;
     const textoDist = (cidadeDist && ufDist) ? `${cidadeDist} - ${ufDist}` : (cidadeDist || '_______');
@@ -63,17 +60,15 @@ const TermoCompromisso = () => {
             <div className="termo-compromisso__documento">
                 <h2>TERMO DE COMPROMISSO E RESPONSABILIDADE</h2>
 
-                {/* TEXTO ATUALIZADO E MAIS PROFISSIONAL */}
                 <p className="termo-compromisso__texto">
-                    Pelo presente instrumento, a <strong>AFINK</strong>, neste ato representada pelo(a) Sr(a). <strong>{respDistribuicao}</strong>, 
-                    formaliza a doação e entrega de <strong>{total}</strong> mudas para a instituição <strong>{instituicao}</strong> 
-                    (sediada em <strong>{textoSede}</strong>).
+                    Este documento oficializa a entrega de <strong>{total}</strong> mudas realizada pela <strong>AFINK</strong>, 
+                    sediada em <strong>{textoSede}</strong> e representada neste ato pelo(a) Sr(a). <strong>{respDistribuicao}</strong>.
                     <br/><br/>
-                    A entrega é recebida pelo(a) Sr(a). <strong>{respRecebimento}</strong>, responsável designado(a) pela instituição beneficiária. 
-                    As mudas destinam-se ao plantio/distribuição no município de <strong>{textoDist}</strong>. 
+                    A doação é destinada à instituição <strong>{instituicao}</strong> e recebida pelo(a) Sr(a). <strong>{respRecebimento}</strong>, 
+                    que destinará os exemplares para ações de plantio e distribuição no município de <strong>{textoDist}</strong>.
                     <br/><br/>
-                    A partir desta data, a referida instituição assume a inteira responsabilidade pela guarda, 
-                    manutenção e direção de todos os serviços de cuidados com as espécies abaixo relacionadas:
+                    Ao aceitar esta doação, a instituição beneficiária compromete-se a assumir a gestão e o cuidado integral das 
+                    espécies abaixo relacionadas, assegurando sua preservação:
                 </p>
 
                 <table className="termo-compromisso__tabela">
@@ -109,15 +104,17 @@ const TermoCompromisso = () => {
                     </div>
                 )}
 
-                {/* AREA DE ASSINATURAS (Sugestão Visual para Termo) */}
-                <div className="assinaturas-container" style={{ marginTop: '50px', display: 'flex', justifyContent: 'space-between', gap: '20px' }}>
-                     <div style={{ textAlign: 'center', flex: 1, borderTop: '1px solid #333', paddingTop: '10px' }}>
-                        <small>Responsável AFINK</small><br/>
-                        <strong>{respDistribuicao}</strong>
+                {/* Área de Assinaturas */}
+                <div className="assinaturas-container" style={{ marginTop: '60px', display: 'flex', justifyContent: 'space-between', gap: '40px' }}>
+                     <div style={{ textAlign: 'center', flex: 1 }}>
+                        <div style={{ borderTop: '1px solid #333', margin: '0 20px', paddingTop: '10px' }}></div>
+                        <strong>{respDistribuicao}</strong><br/>
+                        <small>Responsável AFINK</small> {/* REMOVIDO ({textoSede}) DAQUI */}
                      </div>
-                     <div style={{ textAlign: 'center', flex: 1, borderTop: '1px solid #333', paddingTop: '10px' }}>
-                        <small>Responsável Recebimento</small><br/>
-                        <strong>{respRecebimento}</strong>
+                     <div style={{ textAlign: 'center', flex: 1 }}>
+                        <div style={{ borderTop: '1px solid #333', margin: '0 20px', paddingTop: '10px' }}></div>
+                        <strong>{respRecebimento}</strong><br/>
+                        <small>Responsável {instituicao}</small>
                      </div>
                 </div>
 
