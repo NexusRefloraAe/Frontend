@@ -111,6 +111,50 @@ const HistoricoPlantio = () => {
       carregarDados(novaPagina - 1, termoBusca); 
   }
 
+  const realizarDownload = (response, defaultName) => {
+      const disposition = response.headers['content-disposition'];
+      let fileName = defaultName;
+
+      if (disposition) {
+          const filenameRegex = /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
+          const matches = filenameRegex.exec(disposition);
+          if (matches && matches[1]) { 
+              fileName = matches[1].replace(/['"]/g, '');
+              fileName = decodeURIComponent(fileName); 
+          }
+      }
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+  };
+
+  const handleExportPDF = async () => {
+      try {
+          // Passa o termoBusca atual para filtrar o relatório igual à tabela
+          const response = await plantioService.exportarPdf(termoBusca);
+          realizarDownload(response, 'relatorio_plantio.pdf');
+      } catch (error) {
+          console.error("Erro export PDF:", error);
+          alert("Erro ao gerar PDF.");
+      }
+  };
+
+  const handleExportCSV = async () => {
+      try {
+          const response = await plantioService.exportarCsv(termoBusca);
+          realizarDownload(response, 'relatorio_plantio.csv');
+      } catch (error) {
+          console.error("Erro export CSV:", error);
+          alert("Erro ao gerar CSV.");
+      }
+  };
+
   // Colunas mapeadas com os campos que vêm do DTO do Java
   // (Veja no controller: MovimentacaoSementesHistoricoResponseDTO)
   const colunas = [
@@ -173,9 +217,14 @@ const HistoricoPlantio = () => {
                 totalPaginas={totalPaginas}
                 onPaginaChange={handleMudarPagina}
 
+                modoBusca="manual"
+
                 onEditar={handleEditar}
                 onConfirmar={handleVisualizar}
                 onExcluir={handleExcluir}
+
+                onExportPDF={handleExportPDF}
+                onExportCSV={handleExportCSV}
               />
           )}
         </main>

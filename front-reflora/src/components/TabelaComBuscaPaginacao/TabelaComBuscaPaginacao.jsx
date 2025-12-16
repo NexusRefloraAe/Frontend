@@ -17,21 +17,24 @@ function TabelaComBuscaPaginacao({
   itensPorPagina = 7,
   habilitarBusca = true,
   modoBusca = "auto", 
+  onExportPDF, 
+  onExportCSV,
+  onPesquisar
 }) {
   const [termoBusca, setTermoBusca] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
-  // 🔹 Controla o tempo de busca (simulando atraso real)
   useEffect(() => {
     if (modoBusca === "auto") {
-      setIsLoading(true);
-      const timeout = setTimeout(() => setIsLoading(false), 400);
+      const timeout = setTimeout(() => {
+      }, 500);
+
       return () => clearTimeout(timeout);
     }
-  }, [termoBusca]);
+    // IMPORTANTE: Mantenha as dependências limpas
+  }, [termoBusca, modoBusca]);
 
-  // 🔹 Filtragem de dados
   const dadosFiltrados = habilitarBusca
     ? dados.filter((item) =>
         item[chaveBusca]?.toLowerCase().includes(termoBusca.toLowerCase())
@@ -44,14 +47,35 @@ function TabelaComBuscaPaginacao({
   const totalPaginas = Math.ceil(dadosFiltrados.length / itensPorPagina);
   const temAcoes = onEditar || onConfirmar || onExcluir;
 
-  const handleSearchManual = (valor) => {
+  // --- CORREÇÃO AQUI ---
+const handleSearchManual = (valor) => {
+
     setIsLoading(true);
+
     setTimeout(() => {
-      setTermoBusca(valor);
+
+      setTermoBusca(valor); // Atualiza visualmente a tabela local
+
       setPaginaAtual(1);
+
       setIsLoading(false);
+
+
+
+      // <--- 2. ADICIONE ISTO AQUI
+
+      // Avisa o componente Pai (HistoricoPlantio) que o termo mudou
+
+      if (onPesquisar) {
+
+        onPesquisar(valor);
+
+      }
+
     }, 500);
+
   };
+  // ---------------------
 
   return (
     <section className="historico-container-banco">
@@ -123,6 +147,8 @@ function TabelaComBuscaPaginacao({
           data={dadosFiltrados}
           columns={colunas}
           fileName={titulo || "relatorio"}
+          onExportPDF={onExportPDF} 
+          onExportCSV={onExportCSV}
         />
       </div>
     </section>

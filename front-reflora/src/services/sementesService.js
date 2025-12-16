@@ -132,5 +132,17 @@ export const sementesService = {
     exportarRelatorioCsv: async (termoBusca) => {
         const url = `/bancoSementes/export/csv${termoBusca ? `?searchTerm=${termoBusca}` : ''}`;
         return api.get(url, { responseType: 'blob' });
+    },
+
+    exportarHistoricoPdf: (id) => {
+        return api.get(`/bancoSementes/${id}/historico/export/pdf`, {
+            responseType: 'blob' // Importante para arquivo binário
+        });
+    },
+
+    exportarHistoricoCsv: (id) => {
+        return api.get(`/bancoSementes/${id}/historico/export/csv`, {
+            responseType: 'blob'
+        });
     }
 };

@@ -13,7 +13,8 @@ const ExportButton = ({
   onClick,
   disabled = false,
   selecionadosCount = 0,
-  onExportPDF // <--- NOVA PROP (Função opcional)
+  onExportPDF, // <--- NOVA PROP (Função opcional)
+  onExportCSV
 }) => {
     const [menuAberto, setMenuAberto] = useState(false);
     const menuRef = useRef(null);
@@ -22,6 +23,13 @@ const ExportButton = ({
         label: col.label,
         key: col.key,
     }));
+
+    const handleExportarCSV = () => {
+        if (onExportCSV) {
+            onExportCSV();
+            setMenuAberto(false);
+        }
+    };
 
     const handleExportarPDF = () => {
         // 1. Se foi passada uma função para baixar do servidor, usa ela
@@ -88,14 +96,23 @@ const ExportButton = ({
                     {/* Alterado para chamar o handleExportarPDF */}
                     <button onClick={handleExportarPDF}>Exportar PDF</button>
 
-                    <CSVLink
-                        data={data}
-                        headers={headers}
-                        filename={`${fileName}.csv`}
-                        className="csv-link"
-                    >
-                        Exportar CSV
-                    </CSVLink>
+                    {/* LÓGICA CONDICIONAL PARA O CSV */}
+                    {onExportCSV ? (
+                        // Opção 1: CSV via Backend (Botão comum)
+                        <button onClick={handleExportarCSV}>
+                            Exportar CSV
+                        </button>
+                    ) : (
+                        // Opção 2: CSV via React (Client-side) - Mantém compatibilidade
+                        <CSVLink
+                            data={data}
+                            headers={headers}
+                            filename={`${fileName}.csv`}
+                            className="csv-link"
+                        >
+                            Exportar CSV
+                        </CSVLink>
+                    )}
                 </div>
             )}
         </div>

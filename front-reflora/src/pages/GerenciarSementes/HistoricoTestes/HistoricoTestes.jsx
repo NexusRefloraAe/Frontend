@@ -144,6 +144,50 @@ const HistoricoTestes = () => {
     carregarDados(novaPagina - 1, termoBusca);
   };
 
+  // --- NOVA LÓGICA DE DOWNLOAD (Igual ao HistoricoPlantio) ---
+  const realizarDownload = (response, defaultName) => {
+      const disposition = response.headers['content-disposition'];
+      let fileName = defaultName;
+
+      if (disposition) {
+          const filenameRegex = /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
+          const matches = filenameRegex.exec(disposition);
+          if (matches && matches[1]) { 
+              fileName = matches[1].replace(/['"]/g, '');
+              fileName = decodeURIComponent(fileName); 
+          }
+      }
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+  };
+
+  const handleExportPDF = async () => {
+      try {
+          const response = await testeGerminacaoService.exportarPdf(termoBusca);
+          realizarDownload(response, 'relatorio_germinacao.pdf');
+      } catch (error) {
+          console.error("Erro export PDF:", error);
+          alert("Erro ao gerar PDF.");
+      }
+  };
+
+  const handleExportCSV = async () => {
+      try {
+          const response = await testeGerminacaoService.exportarCsv(termoBusca);
+          realizarDownload(response, 'relatorio_germinacao.csv');
+      } catch (error) {
+          console.error("Erro export CSV:", error);
+          alert("Erro ao gerar CSV.");
+      }
+  };
+
   // 🧩 COLUNAS MAPEADAS
   const colunas = [
     { key: "lote", label: "Lote" },
@@ -205,6 +249,7 @@ const HistoricoTestes = () => {
               chaveBusca="nomePopularSemente" 
               
               onPesquisar={handleBusca}
+              modoBusca="manual"
               
               paginaAtual={paginaAtual + 1}
               totalPaginas={totalPaginas}
@@ -213,6 +258,9 @@ const HistoricoTestes = () => {
               onEditar={handleEditar}
               onConfirmar={handleVisualizar}
               onExcluir={handleExcluirTeste}
+
+              onExportPDF={handleExportPDF}
+              onExportCSV={handleExportCSV}
             />
           )}
         </main>

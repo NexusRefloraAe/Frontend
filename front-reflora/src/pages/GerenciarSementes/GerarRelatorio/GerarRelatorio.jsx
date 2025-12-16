@@ -81,11 +81,34 @@ const GerarRelatorio = () => {
     carregarDados(0);
   };
 
-  // Botões de Exportação
-  // --- 3. USANDO O NOVO SERVICE NOS BOTÕES DE EXPORTAÇÃO ---
+  const realizarDownload = (response, defaultName) => {
+      const disposition = response.headers['content-disposition'];
+      let fileName = defaultName;
+
+      if (disposition) {
+          const filenameRegex = /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
+          const matches = filenameRegex.exec(disposition);
+          if (matches && matches[1]) { 
+              fileName = matches[1].replace(/['"]/g, '');
+              fileName = decodeURIComponent(fileName); 
+          }
+      }
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+  };
+
   const handleExportarPDF = async () => {
       try { 
-        await relatorioMovimentacaoSementeService.exportarPdf(filtros); 
+        // Passa os filtros atuais para o backend gerar o PDF filtrado
+        const response = await relatorioMovimentacaoSementeService.exportarPdf(filtros); 
+        realizarDownload(response, 'relatorio_movimentacao.pdf');
       } catch (e) { 
         alert("Erro ao baixar PDF"); 
       }
@@ -93,7 +116,8 @@ const GerarRelatorio = () => {
 
   const handleExportarCSV = async () => {
       try { 
-        await relatorioMovimentacaoSementeService.exportarCsv(filtros); 
+        const response = await relatorioMovimentacaoSementeService.exportarCsv(filtros); 
+        realizarDownload(response, 'relatorio_movimentacao.csv');
       } catch (e) { 
         alert("Erro ao baixar CSV"); 
       }
@@ -156,11 +180,11 @@ const GerarRelatorio = () => {
             onFiltroChange={handleFiltroChange}
             onPesquisar={handleGerarRelatorio}
           />
-          {/* Adicione botões de exportar aqui ou no componente de filtros */}
+          {/* Adicione botões de exportar aqui ou no componente de filtros
           <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
              <BotaoExportar label="Baixar PDF" onClick={handleExportarPDF} cor="#d32f2f" />
              <BotaoExportar label="Baixar CSV" onClick={handleExportarCSV} cor="#1976d2" />
-          </div>
+          </div> */}
         </section>
 
         <section className="cards-section">
@@ -191,6 +215,9 @@ const GerarRelatorio = () => {
                 paginaAtual={paginaAtual + 1}
                 totalPaginas={totalPaginas}
                 onPaginaChange={(p) => carregarDados(p - 1)}
+
+                onExportPDF={handleExportarPDF}
+                onExportCSV={handleExportarCSV}
               />
           )}
         </section>

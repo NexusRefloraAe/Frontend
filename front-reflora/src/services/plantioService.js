@@ -117,5 +117,16 @@ export const plantioService = {
   // DELETE: Excluir Plantio
   delete: async (id) => {
     await api.delete(`/movimentacoes/${id}`);
+  },
+
+  exportarPdf: (termoBusca) => {
+    // URL baseada no seu controller: /movimentacoes/plantioMuda/export/pdf
+    const url = `/movimentacoes/plantioMuda/export/pdf${termoBusca ? `?searchTerm=${termoBusca}` : ''}`;
+    return api.get(url, { responseType: 'blob' });
+  },
+
+  exportarCsv: (termoBusca) => {
+    const url = `/movimentacoes/plantioMuda/export/csv${termoBusca ? `?searchTerm=${termoBusca}` : ''}`;
+    return api.get(url, { responseType: 'blob' });
   }
 };

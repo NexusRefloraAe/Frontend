@@ -67,6 +67,17 @@ export const testeGerminacaoService = {
 
   delete: async (id) => {
     await api.delete(`/movimentacoes/${id}`);
+  },
+
+  exportarPdf: (termoBusca) => {
+    // URL baseada no seu controller: /movimentacoes/testeGerminacao/export/pdf
+    const url = `/movimentacoes/testeGerminacao/export/pdf${termoBusca ? `?searchTerm=${termoBusca}` : ''}`;
+    return api.get(url, { responseType: 'blob' });
+  },
+
+  exportarCsv: (termoBusca) => {
+    const url = `/movimentacoes/testeGerminacao/export/csv${termoBusca ? `?searchTerm=${termoBusca}` : ''}`;
+    return api.get(url, { responseType: 'blob' });
   }
 };
 

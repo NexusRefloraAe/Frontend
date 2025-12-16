@@ -155,6 +155,54 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
     // Se ainda está carregando ou falhou, usa o resumo da lista para exibir o básico
     const dados = sementeDetalhada || sementeResumo;
 
+    // --- FUNÇÃO GENÉRICA DE DOWNLOAD (Evita repetir código) ---
+    const baixarArquivo = (response, defaultName) => {
+        const disposition = response.headers['content-disposition'];
+        let fileName = defaultName;
+
+        if (disposition) {
+            const filenameRegex = /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
+            const matches = filenameRegex.exec(disposition);
+            if (matches && matches[1]) { 
+                fileName = matches[1].replace(/['"]/g, '');
+                fileName = decodeURIComponent(fileName); 
+            }
+        }
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', fileName);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+    };
+
+    // --- HANDLER PARA PDF ---
+    const handleDownloadHistoricoPDF = async () => {
+        try {
+            const id = sementeResumo.id;
+            const response = await sementesService.exportarHistoricoPdf(id);
+            baixarArquivo(response, `historico_${id}.pdf`);
+        } catch (error) {
+            console.error("Erro ao baixar PDF do histórico:", error);
+            alert("Erro ao gerar o PDF do histórico.");
+        }
+    };
+
+    // --- HANDLER PARA CSV ---
+    const handleDownloadHistoricoCSV = async () => {
+        try {
+            const id = sementeResumo.id;
+            const response = await sementesService.exportarHistoricoCsv(id);
+            baixarArquivo(response, `historico_${id}.csv`);
+        } catch (error) {
+            console.error("Erro ao baixar CSV do histórico:", error);
+            alert("Erro ao gerar o CSV do histórico.");
+        }
+    };
+
     return (
         <>
             <div className='modal-overlay' onClick={onClose}>
@@ -240,7 +288,13 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
                                 totalPaginas={totalPaginas}
                                 onPaginaChange={setPaginaHistorico}
                             />
-                            <ExportButton data={dadosParaExportar} columns={colunasparaExportar} fileName={`historico_movimentacao_${sementeResumo.id}`} />
+                            <ExportButton 
+                                data={dadosParaExportar} 
+                                columns={colunasparaExportar} 
+                                fileName={`historico_movimentacao_${sementeResumo.id}`}
+                                onExportPDF={handleDownloadHistoricoPDF}
+                                onExportCSV={handleDownloadHistoricoCSV}
+                            />
                         </div>
                     </div>
                 </div>

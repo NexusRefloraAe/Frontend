@@ -80,6 +80,41 @@ function Listasementes({
         }
     };
 
+    // --- NOVA FUNÇÃO CSV ---
+    const handleDownloadCSVBackend = async () => {
+        try {
+            // 1. Chama o serviço de CSV
+            const response = await sementesService.exportarRelatorioCsv(termoBusca);
+
+            // 2. Extrai nome do arquivo (Mesma lógica do PDF)
+            const disposition = response.headers['content-disposition'];
+            let fileName = 'relatorio_sementes.csv'; // Fallback
+
+            if (disposition) {
+                const filenameRegex = /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
+                const matches = filenameRegex.exec(disposition);
+                if (matches && matches[1]) { 
+                    fileName = matches[1].replace(/['"]/g, '');
+                    fileName = decodeURIComponent(fileName); 
+                }
+            }
+
+            // 3. Download
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error("Erro ao baixar CSV:", error);
+            alert("Erro ao gerar o relatório CSV.");
+        }
+    };
+
     const renderSeta = (campo) => {
         // Se a coluna não for a que está sendo ordenada atualmente, mostra a imagem padrão (neutra)
         if (ordemAtual !== campo) {
@@ -162,6 +197,7 @@ function Listasementes({
                         columns={colunasparaExportar} 
                         fileName="sementes_exportadas" 
                         onExportPDF={handleDownloadPDFBackend}
+                        onExportCSV={handleDownloadCSVBackend}
                     />
                 </div>
             </section>
