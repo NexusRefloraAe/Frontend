@@ -1,195 +1,199 @@
+/* --- CONTAINER PRINCIPAL (Fundo da Tela) --- */
 .termo-compromisso {
     width: 100%;
-    padding: var(--espacamento-lg);
+    padding: 40px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    background-color: #f4f4f4; /* Fundo levemente cinza para destacar o papel */
 }
 
+/* --- O "PAPEL" (DOCUMENTO) --- */
 .termo-compromisso__documento {
     width: 100%;
-    max-width: 800px; /* Largura boa para um documento */
-    background-color: var(--cor-fundo-branco);
-    padding: var(--espacamento-xl);
-    border-radius: var(--raio-borda-md);
-    box-shadow: 0 4px 12px var(--cor-sombra);
-    /* margin-bottom foi REMOVIDO daqui */
+    max-width: 850px; /* Largura padrão A4 aproximada */
+    background-color: white;
+    padding: 60px; /* Margem interna generosa como um documento real */
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
 }
 
+/* Título do Documento */
 .termo-compromisso__documento h2 {
     text-align: center;
-    margin-bottom: var(--espacamento-lg);
-    font-size: var(--tamanho-fonte-lg);
+    margin-bottom: 40px;
+    font-size: 24px;
     font-weight: 700;
-    color: var(--cor-texto-primario);
+    color: #333;
+    text-decoration: underline; /* Padrão de documentos oficiais */
+    text-transform: uppercase;
 }
 
+/* Texto do Contrato */
 .termo-compromisso__texto {
-    margin-bottom: var(--espacamento-lg);
-    font-size: var(--tamanho-fonte-sm);
-    line-height: 1.7;
-    color: var(--cor-texto-primario);
+    margin-bottom: 30px;
+    font-size: 16px;
+    line-height: 1.8; /* Espaçamento bom para leitura */
+    color: #333;
+    text-align: justify; /* Texto justificado fica mais formal */
 }
 
 .termo-compromisso__texto strong {
     font-weight: 700;
 }
 
+/* --- TABELA DE MUDAS (Estilo Banco de Sementes) --- */
 .termo-compromisso__tabela {
-    width: 70%; 
-    margin-left: auto;  
-    margin-right: auto;
-    border-collapse: collapse;
-    margin-bottom: var(--espacamento-lg);
-    border-radius: var(--raio-borda-xs);
-    overflow: hidden; 
+    width: 100%; 
+    border-collapse: separate; /* Necessário para border-radius funcionar */
+    border-spacing: 0;
+    margin-bottom: 30px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px; /* Cantos arredondados na tabela */
+    overflow: hidden;
 }
 
 .termo-compromisso__tabela th,
 .termo-compromisso__tabela td {
-    padding: var(--espacamento-md);
-    text-align: left;
-    border-bottom: 1px solid var(--cor-borda-cinza);
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
 }
 
+/* Cabeçalho Verde Transparente */
 .termo-compromisso__tabela th {
-    background-color: var(--cor-verde-primario);
-    color: var(--cor-texto-branco);
+    background-color: #25702480; /* Verde com transparência */
+    color: white;
     font-weight: 600;
-    font-size: var(--tamanho-fonte-sm);
+    font-size: 16px;
+    text-transform: uppercase;
 }
 
+/* Zebra nas linhas */
 .termo-compromisso__tabela tbody tr:nth-child(even) {
-    background-color: var(--cor-fundo-cinza);
+    background-color: #f9f9f9;
 }
 
+/* Remove borda da última linha */
 .termo-compromisso__tabela tbody tr:last-child td {
     border-bottom: none;
 }
 
+/* --- PAGINAÇÃO --- */
 .termo-compromisso__paginacao {
     display: flex;
     justify-content: center;
-    margin-top: var(--espacamento-lg);
+    margin-top: 10px;
+    margin-bottom: 20px;
 }
 
+/* --- ÁREA DOS BOTÕES (ACTIONS) --- */
 .termo-compromisso__actions {
     display: flex;
-    justify-content: center;
-    gap: var(--espacamento-md);
+    justify-content: center; /* Centraliza os botões */
+    gap: 20px; /* Espaço entre eles */
     width: 100%;
-    flex-wrap: wrap; 
-    margin-top: var(--espacamento-xl); 
-
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #eee; /* Linha sutil separando o termo dos botões */
 }
 
+/* Estilo Base do Botão */
 .termo-compromisso__button {
-    padding: var(--espacamento-md) var(--espacamento-lg);
-    font-size: var(--tamanho-fonte-sm);
-    font-weight: 600;
-    text-transform: uppercase;
-    color: var(--cor-texto-branco);
+    /* Layout Flex para o ícone e texto */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    
+    /* Tamanho */
+    padding: 12px 30px;
+    min-width: 160px;
+    
+    /* Visual */
+    border-radius: 10px; /* Arredondado padrão do sistema */
     border: none;
-    border-radius: var(--raio-borda-sm);
     cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 1px 3px var(--cor-sombra);
-    flex-grow: 1; 
-    max-width: 250px; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+    
+    /* Tipografia */
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase; /* Opcional: deixa mais imponente */
 }
 
+/* Efeito de Hover Geral */
 .termo-compromisso__button:hover {
-    box-shadow: 0 2px 5px var(--cor-sombra-forte);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
+/* Botão Exportar (VERDE) */
 .termo-compromisso__button--primary {
-    background-color: var(--cor-verde-primario);
+    background-color: #257024;
 }
-
 .termo-compromisso__button--primary:hover {
-    background-color: var(--cor-verde-escuro);
+    background-color: #1e5c1d;
 }
 
+/* Botão Editar (CINZA) */
 .termo-compromisso__button--secondary {
-    background-color: var(--cor-primaria);
+    background-color: #66605F;
 }
-
 .termo-compromisso__button--secondary:hover {
-    background-color: var(--cor-primaria-escura);
+    background-color: #4a4645;
 }
 
-/* ESTILOS DE IMPRESSÃO (ESSENCIAL PARA "EXPORTAR") */
+/* --- MODO DE IMPRESSÃO (CTRL+P ou Exportar) --- */
 @media print {
-
-    /* Remove TODOS os elementos externos da aplicação */
+    /* Esconde tudo que não é o termo */
     body * {
         visibility: hidden !important;
     }
 
-    /* Exibe SOMENTE o termo */
+    /* Mostra só o container do documento e seus filhos */
     .termo-compromisso,
-    .termo-compromisso * {
+    .termo-compromisso__documento,
+    .termo-compromisso__documento * {
         visibility: visible !important;
     }
 
-    /* Remove botões e paginação */
+    /* Esconde os botões e a paginação na hora de imprimir */
     .termo-compromisso__actions,
     .termo-compromisso__paginacao {
         display: none !important;
-        visibility: hidden !important;
     }
 
-    /* Prepara o layout do termo para impressão */
+    /* Ajusta o layout para preencher a folha A4 */
     .termo-compromisso {
         position: absolute !important;
         top: 0 !important;
         left: 0 !important;
         width: 100% !important;
-        padding: 0 !important;
+        height: auto !important;
         margin: 0 !important;
-        background: #fff !important;
+        padding: 0 !important;
+        background: white !important;
     }
 
     .termo-compromisso__documento {
         box-shadow: none !important;
-        border-radius: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
-        max-width: none !important;
+        border: none !important;
         margin: 0 !important;
-        background: #fff !important;
+        padding: 20px !important; /* Margem da folha */
+        max-width: 100% !important;
     }
-
-    /* Tabela centralizada */
-    .termo-compromisso__tabela {
-        width: 80% !important;
-        margin: 20px auto !important;
-        border-collapse: collapse !important;
-    }
-
-    /* Texto sempre preto */
-    .termo-compromisso__documento * {
-        color: #000 !important;
-    }
-
-    /* Cabeçalho da tabela */
+    
+    /* Garante que as cores de fundo (tabela verde) saiam na impressão */
     .termo-compromisso__tabela th {
-        background-color: #e5e5e5 !important;
-        color: #000 !important;
-        border: 1px solid #333 !important;
-    }
-
-    /* Bordas em tudo */
-    .termo-compromisso__tabela td,
-    .termo-compromisso__tabela th {
-        border: 1px solid #333 !important;
-        padding: 6px !important;
-    }
-
-    /* Remove zebra */
-    .termo-compromisso__tabela tbody tr:nth-child(even),
-    .termo-compromisso__tabela tbody tr:nth-child(odd) {
-        background: #fff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        background-color: #25702480 !important;
+        color: black !important; /* Melhora contraste na impressão p/b */
     }
 }

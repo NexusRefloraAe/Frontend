@@ -1,0 +1,67 @@
+/* Container geral */
+.distribuicaomudas-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    /* Removemos paddings extras para alinhar com o padrão do banco */
+}
+
+/* Área da navegação (onde fica o botão) */
+.distribuicaomudas-nav {
+    display: flex;
+    gap: 10px;          /* Espaço entre botões (caso adicione mais no futuro) */
+    padding: 20px 10px; /* Padding igual ao .bottons-banco ul */
+    justify-content: flex-start; /* Alinha à esquerda */
+}
+
+/* --- ESTILO DO BOTÃO PADRÃO BANCO DE SEMENTES --- */
+
+/* Forçamos o estilo no botão gerado pelo componente BotaoSubmenus */
+.distribuicaomudas-nav button {
+    /* Cores e Fundo (Igual ao .botton-active ou hover do banco) */
+    background-color: #257024 !important; /* Verde Sólido */
+    color: white !important;
+    border: none !important;
+
+    /* Geometria (Igual ao .bottons-banco button) */
+    padding: 10px 20px !important; /* Ajustado levemente para caber o ícone bem */
+    border-radius: 10px !important;
+    
+    /* Tipografia (Igual ao .bottons-banco button) */
+    font-weight: bold !important;
+    font-size: 18px !important;
+    
+    /* Layout Flex para alinhar Ícone e Texto */
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important; /* Espaço entre o ícone e o texto */
+    
+    cursor: pointer !important;
+    transition: background-color 0.3s;
+    
+    /* Garante que o botão não estique a tela toda */
+    width: auto !important;
+    max-width: fit-content !important;
+}
+
+/* Efeito Hover (Igual ao .bottons-banco button:hover) */
+.distribuicaomudas-nav button:hover {
+    background-color: #1e5c1d !important; /* Um verde um pouco mais escuro */
+    transform: translateY(-1px);
+}
+
+/* --- ESTILO DO CONTEÚDO INTERNO (Para garantir alinhamento do ícone) --- */
+.menu-item-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* --- ÁREA DE CONTEÚDO --- */
+.distribuicaomudas-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    /* Se necessário, adicione padding aqui, mas o componente filho já tem o card branco */
+}
