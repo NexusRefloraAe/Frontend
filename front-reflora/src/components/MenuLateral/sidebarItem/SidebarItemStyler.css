@@ -1,47 +1,115 @@
+/* SidebarItemStyler.css - CONTROLE TOTAL DAS CORES */
 .sidebar-item {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-  background: none;
+  padding: 12px 20px;
+  margin: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: transparent;
   border: none;
   outline: none;
-  color: white;
-  font-size: 17px;
-  font-family: inherit;
-  cursor: pointer;
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 20px;
-  transition: background-color .2s ease;
+  width: calc(100% - 30px);
   text-align: left;
+  font-family: inherit;
+  font-size: inherit;
+
+  /* CORES PADRÃO - BRANCO */
+  color: white !important;
+  fill: white !important;
+  stroke: white !important;
 }
 
-.sidebar-item svg {
-  margin: 0 20px 0 10px;
-  width: 22px;
-  height: 22px;
-}
-
-/* Hover padrão */
-.sidebar-item:hover {
-  background-color: #1c8a1a;
-}
-
-/* Hover específico para logout */
-.sidebar-item.logout:hover {
-  background-color: #8b0000;
-}
-
-/* Foco visível para acessibilidade */
+/* Remove qualquer estilo de link */
+.sidebar-item,
+.sidebar-item:link,
+.sidebar-item:visited,
+.sidebar-item:hover,
+.sidebar-item:active,
 .sidebar-item:focus {
-  outline: 2px solid var(--cor-borda-foco, #42a5f5);
-  outline-offset: 2px;
+  color: white !important;
+  text-decoration: none !important;
 }
 
-/* Responsividade */
-@media (max-width: 1024px) {
+/* Ícone - SEMPRE controlado por nós */
+.sidebar-icon {
+  font-size: 22px;
+  min-width: 22px;
+  margin-right: 15px;
+
+  /* Força cor branca */
+  color: white !important;
+  fill: white !important;
+  stroke: white !important;
+}
+
+/* Texto - SEMPRE controlado por nós */
+.sidebar-text {
+  font-size: 18px;
+  font-weight: 500;
+
+  /* Força cor branca */
+  color: white !important;
+}
+
+/* ============ ESTADO SELECIONADO ============ */
+.sidebar-item.selected {
+  background-color: white !important;
+  color: var(--cor-verde-primario) !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+}
+
+/* Ícone quando selecionado */
+.sidebar-item.selected .sidebar-icon {
+  color: var(--cor-verde-primario) !important;
+  fill: var(--cor-verde-primario) !important;
+  stroke: var(--cor-verde-primario) !important;
+}
+
+/* Texto quando selecionado */
+.sidebar-item.selected .sidebar-text {
+  color: var(--cor-verde-primario) !important;
+}
+
+/* ============ HOVER ============ */
+.sidebar-item:hover:not(.selected):not(.logout) {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Hover para logout */
+.sidebar-item.logout:hover {
+  background-color: rgba(220, 53, 69, 0.2) !important;
+}
+
+/* ============ RESPONSIVIDADE ============ */
+@media (max-width: 1366px) {
   .sidebar-item {
-    font-size: 15px;
+    padding: 10px 15px;
+    margin: 6px 10px;
+    width: calc(100% - 20px);
+  }
+
+  .sidebar-text {
+    font-size: 16px;
+  }
+
+  .sidebar-icon {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar-item {
+    padding: 12px;
+  }
+
+  .sidebar-text {
+    font-size: 16px;
+  }
+
+  .sidebar-icon {
+    font-size: 20px;
   }
 }

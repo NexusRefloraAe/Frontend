@@ -1,5 +1,5 @@
 import React from "react";
-import { FaSeedling, FaLeaf, FaClipboardList, FaCheckCircle, FaFileAlt } from "react-icons/fa";
+import { FaSeedling, FaLeaf, FaCheckCircle, FaFileAlt } from "react-icons/fa";
 import TabsLayout from "../../components/TabsLayout/TabsLayout";
 import CadastrarCanteiro from "./CadastrarCanteiro/CadastrarCanteiro";
 import CadastrarPlantioCanteiro from "./CadastrarPlantioCanteiro/CadastrarPlantioCanteiro";
@@ -8,8 +8,8 @@ import Historico from "./Historico/Historico";
 import HistoricoInspecao from "./HistoricoInspecao/HistoricoInspecao";
 import RelatorioCanteiro from "./RelatorioCanteiro/RelatorioCanteiro";
 
-const GerenciarCanteirosLayout = () => {
 
+const GerenciarCanteirosLayout = () => {
   const tabs = [
     {
       id: "cadastrar-canteiro",
@@ -23,7 +23,6 @@ const GerenciarCanteirosLayout = () => {
       icon: <FaLeaf />,
       page: <CadastrarPlantioCanteiro />,
     },
-    
     {
       id: "cadastrar-inspecao-mudas",
       label: "Cadastrar Inspeção",
@@ -50,7 +49,16 @@ const GerenciarCanteirosLayout = () => {
     },
   ];
 
-  return <TabsLayout tabs={tabs} defaultTabId="cadastrar-canteiro" />;
+  return (
+    <div className="gerenciar-canteiros-container">
+      <TabsLayout 
+        tabs={tabs} 
+        defaultTabId="cadastrar-canteiro" 
+        containerClassName="tabs-container"
+        contentClassName="tab-content-container"
+      />
+    </div>
+  );
 };
 
 export default GerenciarCanteirosLayout;

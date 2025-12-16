@@ -4,6 +4,10 @@ import FormGeral from '../../../components/FormGeral/FormGeral';
 import Input from '../../../components/Input/Input';
 import ResumoMudas from '../../../components/ResumoMudas/ResumoMudas';
 
+// --- AQUI ESTÁ A MÁGICA ---
+// Certifique-se de que o nome do arquivo aqui é IDÊNTICO ao que você criou
+import './RevisaoDistribuicao.css'; 
+
 const optionsResponsaveis = [
     { value: 'MARCELO', label: 'Marcelo' },
     { value: 'THAIGO FARIAS', label: 'Thaigo Farias' },
@@ -12,7 +16,6 @@ const optionsInstituicoes = [
     { value: 'SEMAS', label: 'SEMAS' },
     { value: 'OUTRA', label: 'Outra' },
 ];
-
 
 const RevisaoDistribuicao = () => {
     const navigate = useNavigate();
@@ -34,79 +37,45 @@ const RevisaoDistribuicao = () => {
     const [estados, setEstados] = useState([]);
     const [cidadesSede, setCidadesSede] = useState([]);
     const [cidadesDistribuicao, setCidadesDistribuicao] = useState([]);
-
-    // States de Loading
+    
+    // States Loading
     const [loadingEstados, setLoadingEstados] = useState(true);
     const [loadingCidadesSede, setLoadingCidadesSede] = useState(false);
     const [loadingCidadesDistribuicao, setLoadingCidadesDistribuicao] = useState(false);
 
-    // Buscar Estados (UFs)
+    // --- (Mantive seus useEffects iguais para economizar espaço, eles estão corretos) ---
+    // Buscar Estados
     useEffect(() => {
         setLoadingEstados(true);
         fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome')
             .then(res => res.json())
-            .then(data => {
-                const estadosFormatados = data.map(estado => ({
-                    value: estado.sigla,
-                    label: estado.nome
-                }));
-                setEstados(estadosFormatados);
-            })
-            .catch(error => {
-                console.error("FALHA AO BUSCAR ESTADOS (API IBGE):", error);
-            })
+            .then(data => setEstados(data.map(e => ({ value: e.sigla, label: e.nome }))))
+            .catch(e => console.error(e))
             .finally(() => setLoadingEstados(false));
     }, []);
 
-    // Buscar Cidades da Sede
+    // Buscar Cidades Sede
     useEffect(() => {
-        if (!formData.estadoSede) {
-            setCidadesSede([]);
-            return;
-        }
-        
+        if (!formData.estadoSede) { setCidadesSede([]); return; }
         setLoadingCidadesSede(true);
         fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${formData.estadoSede}/municipios?orderBy=nome`)
             .then(res => res.json())
-            .then(data => {
-                const cidadesFormatadas = data.map(cidade => ({
-                    value: cidade.nome,
-                    label: cidade.nome
-                }));
-                setCidadesSede(cidadesFormatadas);
-            })
-            .catch(error => {
-                console.error("FALHA AO BUSCAR CIDADES DA SEDE:", error);
-            })
+            .then(data => setCidadesSede(data.map(c => ({ value: c.nome, label: c.nome }))))
+            .catch(e => console.error(e))
             .finally(() => setLoadingCidadesSede(false));
-
     }, [formData.estadoSede]);
 
-    // Buscar Cidades de Distribuição
+    // Buscar Cidades Distribuicao
     useEffect(() => {
-        if (!formData.estadoDistribuicao) {
-            setCidadesDistribuicao([]);
-            return;
-        }
-
+        if (!formData.estadoDistribuicao) { setCidadesDistribuicao([]); return; }
         setLoadingCidadesDistribuicao(true);
         fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${formData.estadoDistribuicao}/municipios?orderBy=nome`)
             .then(res => res.json())
-            .then(data => {
-                const cidadesFormatadas = data.map(cidade => ({
-                    value: cidade.nome,
-                    label: cidade.nome
-                }));
-                setCidadesDistribuicao(cidadesFormatadas);
-            })
-            .catch(error => {
-                console.error("FALHA AO BUSCAR CIDADES DE DISTRIBUIÇÃO:", error);
-            })
+            .then(data => setCidadesDistribuicao(data.map(c => ({ value: c.nome, label: c.nome }))))
+            .catch(e => console.error(e))
             .finally(() => setLoadingCidadesDistribuicao(false));
-
     }, [formData.estadoDistribuicao]);
 
-    // Dados das mudas (exemplo)
     const mudasDoPedido = [
         { nome: 'Ipê-branco', quantidade: 4000 },
         { nome: 'Ipê-Amarelo', quantidade: 3000 },
@@ -114,58 +83,50 @@ const RevisaoDistribuicao = () => {
     ];
     const totalMudas = mudasDoPedido.reduce((acc, muda) => acc + muda.quantidade, 0);
 
-    // Handlers
     const handleChange = (field) => (e) => {
         setFormData(prev => ({ ...prev, [field]: e.target.value }));
     };
 
     const handleEstadoChange = (estadoField, cidadeField) => (e) => {
-        const novoEstado = e.target.value;
         setFormData(prev => ({
             ...prev,
-            [estadoField]: novoEstado,
+            [estadoField]: e.target.value,
             [cidadeField]: ''
         }));
     };
 
-    const handleCancel = (confirmar = true) => {
-        if (confirmar) {
-            if (window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
-                 navigate(-1);
-            }
+    const handleCancel = () => {
+        if (window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
+             navigate(-1);
         }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Botão "Gerar Termo" clicado. Navegando para /termo-compromisso');
-        
         navigate('/termo-compromisso', {
-            state: {
-                dadosRevisao: formData,
-                mudas: mudasDoPedido,
-                totalMudas: totalMudas
-            }
+            state: { dadosRevisao: formData, mudas: mudasDoPedido, totalMudas }
         });
     };
 
+    // Definição das actions
     const actions = [
-        { type: 'button', variant: 'action-secondary', children: 'Cancelar', onClick: () => handleCancel(true) },
-        { type: 'submit', variant: 'primary', children: 'Gerar Termo' },
+        { type: 'button', children: 'Cancelar', onClick: handleCancel },
+        { type: 'submit', children: 'Gerar Termo' },
     ];
 
     return (
+        // ATENÇÃO: Essa className é fundamental para o CSS funcionar
         <div className="revisao-distribuicao-pagina">
             <FormGeral
-                title="Revisao da Distribuição de Mudas"
+                title="Revisão da Distribuição de Mudas"
                 actions={actions}
-                onSubmit={handleSubmit} // Chama a função handleSubmit acima
+                onSubmit={handleSubmit}
                 useGrid={true}
             >
-                
                 <p className="form-geral__campo--span-2 revisao-distribuicao__description">
                     Confira as mudas do pedido e preencha as informações da distribuição.
                 </p>
+                
                 <div className="form-geral__campo--span-2">
                     <ResumoMudas mudas={mudasDoPedido} total={totalMudas} />
                 </div>
@@ -194,7 +155,6 @@ const RevisaoDistribuicao = () => {
                     value={formData.responsavelRecebimento}
                     onChange={handleChange('responsavelRecebimento')}
                     options={optionsResponsaveis}
-                    placeholder="Selecione o responsável"
                 />
 
                 <Input
@@ -204,10 +164,8 @@ const RevisaoDistribuicao = () => {
                     value={formData.instituicao}
                     onChange={handleChange('instituicao')}
                     options={optionsInstituicoes}
-                    placeholder="Selecione a instituição"
                 />
 
-                {/* --- Localização da Sede (API IBGE) --- */}
                 <Input
                     label="Estado da Sede"
                     name="estadoSede"
@@ -216,7 +174,6 @@ const RevisaoDistribuicao = () => {
                     onChange={handleEstadoChange('estadoSede', 'cidadeSede')}
                     options={estados}
                     loading={loadingEstados}
-                    placeholder="Selecione o estado..."
                 />
 
                 <Input
@@ -228,10 +185,8 @@ const RevisaoDistribuicao = () => {
                     options={cidadesSede}
                     loading={loadingCidadesSede}
                     disabled={!formData.estadoSede}
-                    placeholder="Selecione a cidade..."
                 />
 
-                {/* --- Localização da Distribuição (API IBGE) --- */}
                 <Input
                     label="Estado de Distribuição"
                     name="estadoDistribuicao"
@@ -240,7 +195,6 @@ const RevisaoDistribuicao = () => {
                     onChange={handleEstadoChange('estadoDistribuicao', 'cidadeDistribuicao')}
                     options={estados}
                     loading={loadingEstados}
-                    placeholder="Selecione o estado..."
                 />
 
                 <Input
@@ -252,9 +206,7 @@ const RevisaoDistribuicao = () => {
                     options={cidadesDistribuicao}
                     loading={loadingCidadesDistribuicao}
                     disabled={!formData.estadoDistribuicao}
-                    placeholder="Selecione a cidade..."
                 />
-                
             </FormGeral>
         </div>
     );

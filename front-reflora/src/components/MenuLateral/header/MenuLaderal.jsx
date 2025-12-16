@@ -3,36 +3,37 @@ import { FaBars } from "react-icons/fa";
 import Sidebar from "../sidebar/Sidebar";
 import "./MenuLaderal.css";
 
-const MenuLaderal = () => {
-  const [sidebar, setSidebar] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+const MenuLaderal = ({ isSidebarOpen, onToggleSidebar, onCloseSidebar, isMobile }) => {
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  // Atualiza o estado ao redimensionar a tela
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 1024);
+      setWindowWidth(window.innerWidth);
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const toggleSidebar = () => setSidebar(!sidebar);
-
   return (
-    <div className="Container">
-      {/* Exibe o botão de abrir apenas no mobile */}
-      {isMobile && (
-        <div className="MenuToggle" onClick={toggleSidebar}>
-          <FaBars />
-        </div>
-      )}
-
-      {/* No desktop, sidebar sempre aberta */}
+    <>
+      {/* No desktop: sidebar sempre visível e fixa */}
       {!isMobile && <Sidebar fixed />}
 
-      {/* No mobile, abre/fecha com o botão */}
-      {isMobile && sidebar && <Sidebar active={setSidebar} />}
-    </div>
+      {/* No mobile: sidebar toggle */}
+      {isMobile && (
+        <>
+          {/* Botão para abrir sidebar no mobile */}
+          <div className="Container">
+            <div className="MenuToggle" onClick={onToggleSidebar}>
+              <FaBars />
+            </div>
+          </div>
+
+          {/* Sidebar overlay no mobile */}
+          {isSidebarOpen && <Sidebar active={onCloseSidebar} />}
+        </>
+      )}
+    </>
   );
 };
 
