@@ -46,6 +46,7 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
     const [historicoSaida, setHistoricoSaida] = useState([]);
     const [totalPaginas, setTotalPaginas] = useState(1);
     
+    // Estado do Modal de Exclusão (Apenas exclusão fica aqui)
     const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
     const [loading, setLoading] = useState(true);
 
@@ -149,10 +150,6 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
         }
         setModalExcluirAberto(false);
         onClose(); // Fecha o modal de detalhes também
-    };
-    const handleSalvarEdicao = (dadosEditados) => {
-        console.log("Semente editada:", dadosEditados);
-        setModalEditarAberto(false);
     };
 
     // Se ainda está carregando ou falhou, usa o resumo da lista para exibir o básico
@@ -260,12 +257,6 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
                 textoConfirmar="Excluir"
                 textoCancelar="Cancelar"
             />
-            <EditarSementes
-                isOpen={modalEditarAberto}
-                semente={semente}
-                onCancelar={handleFecharModalEditar}
-                onSalvar={handleSalvarEdicao}
-                />
         </>
     )
 }
