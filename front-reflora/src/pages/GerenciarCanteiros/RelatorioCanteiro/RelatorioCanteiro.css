@@ -1,24 +1,32 @@
+/* RelatorioCanteiro.css - RESPONSIVO E COMPATÍVEL */
+
 .relatorio-canteiro-container {
   width: 100%;
-  padding: 1rem;
-  background-color: #f8fafc;
-  min-height: 100vh;
+  padding: 0; /* Remove padding pois o container pai já tem */
+  background-color: transparent; /* Usa fundo do container pai */
+  min-height: auto; /* Altura controlada pelo container pai */
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Ocupa toda altura disponível */
 }
 
 .relatorio-canteiro-content {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 20px;
+  height: 100%;
+  overflow-y: auto; /* Scroll interno se necessário */
 }
 
 /* Seção de Filtros */
 .filtros-section {
   background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0; /* Não encolhe */
 }
 
 .filtros-section h1 {
@@ -30,23 +38,24 @@
 
 /* Seção de Cards */
 .cards-section {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  flex-shrink: 0;
 }
 
 .cards-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+  gap: 20px;
 }
 
-/* CARDS COM BORDA COMPLETA */
+/* CARDS RESPONSIVOS */
 .cards-container .card {
   height: 140px;
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: 8px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -54,13 +63,13 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   background: white;
   text-align: center;
-  position: relative;
+  border: 3px solid;
 }
 
 .cards-container .card .card-titulo {
   font-size: 1rem;
   font-weight: 500;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 10px 0;
   color: #6b7280;
   line-height: 1.4;
 }
@@ -74,67 +83,70 @@
 }
 
 .cards-container .card.card-entrada {
-  border: 3px solid #10B981;
+  border-color: #10B981;
 }
 
 .cards-container .card.card-saida {
-  border: 3px solid #EF4444;
+  border-color: #EF4444;
 }
 
 .cards-container .card.card-atual {
-  border: 3px solid #3B82F6;
+  border-color: #3B82F6;
 }
 
-/* Seção da Tabela */
+/* Seção da Tabela - Ocupa espaço restante */
 .tabela-section {
   background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1; /* Ocupa espaço restante */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Para a tabela interna controlar o scroll */
+}
+
+/* Container da tabela dentro da seção */
+.tabela-section > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Botão Exportar */
 .btn-exportar {
-  background-color: #3B82F6;
+  background-color: #2e7d32; /* Verde do sistema */
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s;
+  font-size: 14px;
 }
 
 .btn-exportar:hover {
-  background-color: #2563EB;
+  background-color: #1c5a1a;
 }
 
-/* Responsividade */
+/* ============ RESPONSIVIDADE ============ */
+
+/* TABLET (769px - 1024px) */
 @media (max-width: 1024px) {
   .cards-container {
     grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .relatorio-canteiro-container {
-    padding: 0.5rem;
-  }
-  
-  .cards-container {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 15px;
   }
   
   .filtros-section,
-  .cards-section,
   .tabela-section {
-    padding: 1rem;
+    padding: 15px;
   }
   
   .cards-container .card {
     height: 120px;
-    padding: 1.25rem;
+    padding: 15px;
   }
   
   .cards-container .card .card-valor {
@@ -142,14 +154,28 @@
   }
 }
 
-@media (max-width: 480px) {
-  .relatorio-canteiro-container {
-    padding: 0.25rem;
+/* MOBILE (até 768px) */
+@media (max-width: 768px) {
+  .relatorio-canteiro-content {
+    gap: 15px;
+  }
+  
+  .cards-container {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .filtros-section {
+    padding: 15px;
+  }
+  
+  .tabela-section {
+    padding: 15px;
   }
   
   .cards-container .card {
-    height: 110px;
-    padding: 1rem;
+    height: 100px;
+    padding: 15px;
   }
   
   .cards-container .card .card-valor {
@@ -158,5 +184,44 @@
   
   .cards-container .card .card-titulo {
     font-size: 0.9rem;
+    margin-bottom: 5px;
+  }
+  
+  .filtros-section h1 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+}
+
+/* MOBILE PEQUENO (até 480px) */
+@media (max-width: 480px) {
+  .filtros-section,
+  .tabela-section {
+    padding: 10px;
+  }
+  
+  .cards-container .card {
+    height: 90px;
+    padding: 12px;
+  }
+  
+  .cards-container .card .card-valor {
+    font-size: 1.5rem;
+  }
+  
+  .cards-container .card .card-titulo {
+    font-size: 0.8rem;
+  }
+  
+  .btn-exportar {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}
+
+/* Para garantir que tabelas internas sejam responsivas */
+@media (max-width: 768px) {
+  .table-responsive-container {
+    margin: 10px 0;
   }
 }

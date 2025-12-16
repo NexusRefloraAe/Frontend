@@ -1,0 +1,56 @@
+/* RevisaoDistribuicao.css */
+
+/* Container principal para garantir escopo */
+.revisao-distribuicao-pagina {
+    width: 100%;
+    height: 100%;
+}
+
+/* FORÇANDO O ESTILO DOS BOTÕES 
+   O seletor abaixo procura qualquer botão dentro da nossa div principal
+*/
+.revisao-distribuicao-pagina button {
+    border: none !important;
+    padding: 10px 20px !important;
+    border-radius: 10px !important;
+    font-weight: bold !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    text-transform: none !important; /* Evita que fique tudo maiúsculo se o tema forçar */
+    transition: background-color 0.3s !important;
+}
+
+/* Botão Principal (Submit/Gerar Termo) - VERDE */
+.revisao-distribuicao-pagina button[type="submit"] {
+    background-color: #257024 !important; /* O verde do Banco de Sementes */
+    color: white !important;
+}
+
+.revisao-distribuicao-pagina button[type="submit"]:hover {
+    background-color: #1e5c1d !important;
+}
+
+/* Botão Secundário (Cancelar) - Padrão cinza ou vermelho */
+.revisao-distribuicao-pagina button[type="button"] {
+    background-color: #66605F !important; /* Cor cinza escura para diferenciar */
+    color: white !important;
+    margin-right: 15px !important; /* Espaço entre os botões */
+}
+
+.revisao-distribuicao-pagina button[type="button"]:hover {
+    background-color: #4a4645 !important;
+}
+
+/* Ajuste de layout para os botões ficarem alinhados à direita (opcional) 
+   Tenta pegar a div que envolve os botões no FormGeral
+*/
+.revisao-distribuicao-pagina form > div:last-of-type {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    padding-top: 20px;
+}

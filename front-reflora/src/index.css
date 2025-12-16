@@ -188,3 +188,164 @@ body {
   border: 2px solid var(--cor-verde-primario);
   transition: background-color 0.3s, border-color 0.3s;
 }
+
+/* ======================================
+  CORREÇÕES PARA SIDEBAR - NÃO AFETA OUTROS COMPONENTES
+  ======================================
+*/
+
+/* 1. RESET PARA SIDEBAR - Força cores específicas */
+.sidebar-container {
+  /* Cores fixas - não usa variáveis do tema */
+  background-color: #2e7d32 !important;
+  color: #ffffff !important;
+}
+
+/* 2. Logo/título da sidebar - sempre branco */
+.sidebar-container .menu-toggle,
+.sidebar-container .menu-toggle span {
+  color: #ffffff !important;
+}
+
+/* 3. Itens do menu - estado normal */
+/* ATENÇÃO: Use a classe correta baseado no seu componente */
+.sidebar-container .ContainerItem, /* Se usar ContainerItem */
+.sidebar-container .ContainerItem .icon,
+.sidebar-container .ContainerItem .text,
+.sidebar-container .sidebar-item, /* Se usar sidebar-item */
+.sidebar-container .sidebar-item .sidebar-icon,
+.sidebar-container .sidebar-item .sidebar-text {
+  color: #ffffff !important;
+  background-color: transparent !important;
+}
+
+/* 4. Itens do menu - estado selecionado */
+.sidebar-container .ContainerItem.selected,
+.sidebar-container .sidebar-item.selected {
+  background-color: #ffffff !important;
+  color: #2e7d32 !important;
+}
+
+.sidebar-container .ContainerItem.selected .icon,
+.sidebar-container .ContainerItem.selected .text,
+.sidebar-container .sidebar-item.selected .sidebar-icon,
+.sidebar-container .sidebar-item.selected .sidebar-text {
+  color: #2e7d32 !important;
+}
+
+/* 5. Hover dos itens */
+.sidebar-container .ContainerItem:hover:not(.selected),
+.sidebar-container .sidebar-item:hover:not(.selected) {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* 6. Sobrescreve tema escuro apenas para sidebar */
+[data-theme="dark"] .sidebar-container,
+[data-theme="dark"] .sidebar-container .menu-toggle,
+[data-theme="dark"] .sidebar-container .menu-toggle span,
+[data-theme="dark"] .sidebar-container .ContainerItem,
+[data-theme="dark"] .sidebar-container .ContainerItem .icon,
+[data-theme="dark"] .sidebar-container .ContainerItem .text,
+[data-theme="dark"] .sidebar-container .sidebar-item,
+[data-theme="dark"] .sidebar-container .sidebar-item .sidebar-icon,
+[data-theme="dark"] .sidebar-container .sidebar-item .sidebar-text {
+  background-color: #2e7d32 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .sidebar-container .ContainerItem.selected,
+[data-theme="dark"] .sidebar-container .sidebar-item.selected {
+  background-color: #ffffff !important;
+  color: #2e7d32 !important;
+}
+
+[data-theme="dark"] .sidebar-container .ContainerItem.selected .icon,
+[data-theme="dark"] .sidebar-container .ContainerItem.selected .text,
+[data-theme="dark"] .sidebar-container .sidebar-item.selected .sidebar-icon,
+[data-theme="dark"] .sidebar-container .sidebar-item.selected .sidebar-text {
+  color: #2e7d32 !important;
+}
+
+/* 7. Mobile - mantém cores fixas */
+@media (max-width: 1024px) {
+  .sidebar-container,
+  .sidebar-container.mobile-active,
+  .sidebar-container:not(.fixed) {
+    background-color: #2e7d32 !important;
+    color: #ffffff !important;
+  }
+  
+  .sidebar-container .ContainerItem.selected,
+  .sidebar-container .sidebar-item.selected {
+    background-color: #ffffff !important;
+    color: #2e7d32 !important;
+  }
+}
+
+/* 8. Remove transições de tema da sidebar */
+.sidebar-container,
+.sidebar-container *,
+.sidebar-container:hover,
+.sidebar-container *:hover {
+  transition: background-color 0s, color 0s !important;
+}
+
+/* CORREÇÃO ESPECÍFICA PARA O TÍTULO DA SIDEBAR */
+.sidebar-container .menu-toggle span {
+  color: #ffffff !important;
+}
+
+/* Sobrescreve tema escuro */
+[data-theme="dark"] .sidebar-container .menu-toggle span {
+  color: #ffffff !important;
+}
+
+/* Mobile */
+@media (max-width: 1024px) {
+  .sidebar-container .menu-toggle span {
+    color: #ffffff !important;
+  }
+}
+/* Adicione no FINAL do seu index.css */
+
+/* SOLUÇÃO NUCLEAR - Força cores para sidebar */
+.sidebar-container .menu-toggle,
+.sidebar-container .menu-toggle span,
+.sidebar-container .menu-toggle:hover,
+.sidebar-container .menu-toggle:focus,
+.sidebar-container .menu-toggle:active,
+.sidebar-container .menu-toggle span:hover,
+.sidebar-container .menu-toggle span:focus,
+.sidebar-container .menu-toggle span:active {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+  stroke: #ffffff !important;
+  background-color: transparent !important;
+  text-decoration: none !important;
+  outline: none !important;
+  border: none !important;
+}
+
+/* Remove todas as transições */
+.sidebar-container .menu-toggle,
+.sidebar-container .menu-toggle span {
+  transition: none !important;
+}
+
+/* Remove qualquer herança */
+.sidebar-container .menu-toggle * {
+  color: inherit !important;
+}
+
+/* Tema escuro */
+[data-theme="dark"] .sidebar-container .menu-toggle,
+[data-theme="dark"] .sidebar-container .menu-toggle span {
+  color: #ffffff !important;
+}
+
+/* Mobile */
+@media (max-width: 1024px) {
+  .sidebar-container .menu-toggle span {
+    color: #ffffff !important;
+  }
+}

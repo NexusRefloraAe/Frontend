@@ -24,7 +24,6 @@ const RelatorioCanteiro = () => {
     dataFim: ''
   });
 
-  // Dados para os cards de resumo (conforme imagem)
   const painelItems = [
     { 
       id: 1, 
@@ -58,11 +57,9 @@ const RelatorioCanteiro = () => {
     const { nomePopular, dataInicio, dataFim } = filtros;
 
     const dadosFiltrados = DADOS_RELATORIO_CANTEIRO_MOCK.filter(item => {
-      // ✅ Filtro por nome popular
       const matchesNome = !nomePopular || 
         (item.NomePopular && item.NomePopular.toLowerCase().includes(nomePopular.toLowerCase()));
 
-      // ✅ Filtro por data (considerando DataEntrada)
       let matchesData = true;
       if ((dataInicio || dataFim) && item.DataEntrada) {
         const parts = item.DataEntrada.split('/');
@@ -86,7 +83,6 @@ const RelatorioCanteiro = () => {
     setRelatorios(dadosFiltrados);
   };
 
-  // Colunas conforme a imagem (Movimentações dos Canteiros)
   const colunas = [
     { key: "Lote", label: "Lote" },
     { key: "NomePopular", label: "Nome Popular" },
@@ -125,7 +121,7 @@ const RelatorioCanteiro = () => {
           </div>
         </section>
 
-        {/* Seção da Tabela */}
+        {/* Seção da Tabela - Ocupa espaço restante */}
         <section className="tabela-section">
           <TabelaComBuscaPaginacao
             titulo="Movimentações dos Canteiros"
@@ -134,8 +130,9 @@ const RelatorioCanteiro = () => {
             chaveBusca="NomePopular"
             habilitarBusca={false}
             mostrarAcoes={false}
+            containerClassName="table-responsive-container" /* Adiciona classe para responsividade */
             footerContent={
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+              <div className="exportar-container">
                 <button 
                   className="btn-exportar"
                   onClick={() => alert('Relatório exportado com sucesso!')}
