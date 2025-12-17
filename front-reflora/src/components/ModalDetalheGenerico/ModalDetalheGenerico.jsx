@@ -59,28 +59,33 @@ function ModalDetalheGenerico({
     ];
 
     const colunasparaExportar = [
-    { label: 'Data', key: 'data' },
-    { label: 'Nome Responsavel', key: 'responsavel' },
-    { label: 'Quantidade', key: 'quantidade' },
-];
+        { label: 'Nome Popular', key: 'nomePopular' }, // A chave deve ser a mesma do objeto de dados
+        { label: 'Data', key: 'data' },
+        { label: 'Quantidade', key: 'quantidade' },
+    ];
 
     useEffect(() => {
         if (onCarregarHistorico) {
-            // Se foi passada uma função para carregar histórico, usa ela
+            // Caso 1: O Modal é responsável por buscar os dados (Função passada via prop)
             const carregarDados = async () => {
-                const dados = await onCarregarHistorico(item.id || item._id);
-                if (dados && dados.entradas) setHistoricoEntrada(dados.entradas);
-                if (dados && dados.saidas) setHistoricoSaida(dados.saidas);
+                try {
+                    const dados = await onCarregarHistorico(item.id || item._id);
+                    if (dados) {
+                        setHistoricoEntrada(dados.entradas || []);
+                        setHistoricoSaida(dados.saidas || []);
+                    }
+                } catch (error) {
+                    console.error("Erro ao carregar histórico no modal:", error);
+                }
             };
             carregarDados();
-        } else if (dadosEntrada.length === 0 && dadosSaida.length === 0) {
-            // Dados padrão apenas se não foram fornecidos dados e não há função de carregamento
-            setHistoricoEntrada([
-                { data: '20/05/2025', quantidade: 300, responsavel: 'Athur' },
-            ]);
-            setHistoricoSaida([
-                { data: '30/05/2025', quantidade: 200, responsavel: 'Athur' },
-            ]);
+        } else {
+            // Caso 2: O Pai já buscou os dados e passou via props (dadosEntrada/dadosSaida)
+            // REMOVIDO: O 'else if' que inseria dados fictícios
+            
+            // Apenas sincroniza o estado local com as props recebidas
+            setHistoricoEntrada(dadosEntrada || []);
+            setHistoricoSaida(dadosSaida || []);
         }
     }, [item.id, item._id, onCarregarHistorico, dadosEntrada, dadosSaida]);
 

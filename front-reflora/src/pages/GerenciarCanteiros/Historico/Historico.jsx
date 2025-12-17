@@ -1,83 +1,171 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import TabelaSelecionar from "../../../components/TabelaSelecionar/TabelaSelecionar";
 import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico";
-// ✅ 1. Importar o componente correto
 import EditarPlantioCanteiro from "../EditarPlantioCanteiro/EditarPlantioCanteiro";
+
+import { canteiroService } from "../../../services/canteiroService";
+import { getBackendErrorMessage } from "../../../utils/errorHandler";
 
 const Historico = () => {
 
-    const DADOS_CANTEIROS_MOCK = [
-
-        { id: 1, NomeCanteiro: 'Canteiro 1', NomePopular: 'Ipê-amarelo', Quantidade: 500, Localizacao: 'Setor A', DataPlantio: '2024-01-15', Responsavel: 'João Silva' },
-
-        { id: 2, NomeCanteiro: 'Canteiro 2', NomePopular: 'Ipê-rosa', Quantidade: 2000, Localizacao: 'Setor B', DataPlantio: '2024-02-20', Responsavel: 'Maria Santos' },
-
-        { id: 3, NomeCanteiro: 'Canteiro 3', NomePopular: 'Ipê-branco', Quantidade: 6000, Localizacao: 'Setor C', DataPlantio: '2024-01-30', Responsavel: 'Pedro Oliveira' },
-
-        { id: 4, NomeCanteiro: 'Canteiro 4', NomePopular: 'Ipê-branco', Quantidade: 6000, Localizacao: 'Setor D', DataPlantio: '2024-03-10', Responsavel: 'Ana Costa' },
-
-        { id: 5, NomeCanteiro: 'Canteiro 5', NomePopular: 'Ipê-branco', Quantidade: 6000, Localizacao: 'Setor E', DataPlantio: '2024-02-28', Responsavel: 'Carlos Lima' },
-
-        { id: 6, NomeCanteiro: 'Canteiro 6', NomePopular: 'Ipê-branco', Quantidade: 6000, Localizacao: 'Setor F', DataPlantio: '2024-03-15', Responsavel: 'Fernanda Silva' },
-
-        { id: 7, NomeCanteiro: 'Canteiro 7', NomePopular: 'Ipê-branco', Quantidade: 6000, Localizacao: 'Setor G', DataPlantio: '2024-01-20', Responsavel: 'Roberto Alves' },
-
-        { id: 8, NomeCanteiro: 'Canteiro 8', NomePopular: 'Ipê-roxo', Quantidade: 3000, Localizacao: 'Setor H', DataPlantio: '2024-02-05', Responsavel: 'Juliana Santos' },
-
-        { id: 9, NomeCanteiro: 'Canteiro 9', NomePopular: 'Ipê-verde', Quantidade: 4000, Localizacao: 'Setor I', DataPlantio: '2024-03-01', Responsavel: 'Paulo Mendes' },
-
-        { id: 10, NomeCanteiro: 'Canteiro 10', NomePopular: 'Ipê-amarelo', Quantidade: 2500, Localizacao: 'Setor J', DataPlantio: '2024-02-15', Responsavel: 'Camila Oliveira' },
-
-    ];
-
+    // --- ESTADOS DE DADOS ---
     const [canteiros, setCanteiros] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [erro, setErro] = useState('');
+
+    // --- ESTADOS DE CONTROLE DE UI ---
     const [modalDetalheAberto, setModalDetalheAberto] = useState(false);
-    const [canteiroSelecionado, setCanteiroSelecionado] = useState(null);
+    const [canteiroSelecionado, setCanteiroSelecionado] = useState(null); 
     const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
 
+    // --- ESTADOS PARA O HISTÓRICO DETALHADO ---
+    const [historicoEntradas, setHistoricoEntradas] = useState([]);
+    const [historicoSaidas, setHistoricoSaidas] = useState([]);
+
+    // --- ESTADOS DE PAGINAÇÃO E BUSCA ---
+    const [paginaAtual, setPaginaAtual] = useState(1);
+    const [totalPaginas, setTotalPaginas] = useState(1);
+    const [termoBusca, setTermoBusca] = useState('');
+    const itensPorPagina = 10; 
+
+    // --- ESTADOS DE ORDENAÇÃO ---
+    const [ordem, setOrdem] = useState('nomeCanteiro'); // Ajustado para o padrão do seu DTO
+    const [direcao, setDirecao] = useState('asc');
+
+    // --- BUSCAR DADOS DO BACKEND ---
+    const fetchCanteiros = useCallback(async () => {
+        setLoading(true);
+        try {
+            const data = await canteiroService.getAll(
+                termoBusca, 
+                paginaAtual - 1, 
+                itensPorPagina, 
+                ordem, 
+                direcao
+            );
+
+            // --- CORREÇÃO DO MAPEAMENTO ---
+            const dadosFormatados = data.content.map(c => ({
+                id: c.id,
+                // Mapeia exatamente os campos que vieram no seu Postman
+                NomeCanteiro: c.nomeCanteiro, 
+                NomePopular: c.nomePopularSemente,
+                Quantidade: c.quantidadePlantada,
+                
+                // Mantém o resto dos dados originais (caso precise na edição)
+                ...c 
+            }));
+
+            setCanteiros(dadosFormatados);
+            const total = data.totalPages || 1;
+            setTotalPaginas(total);
+            setErro('');
+
+        } catch (error) {
+            console.error("Erro ao buscar canteiros:", error);
+            const msg = getBackendErrorMessage(error);
+            setErro(msg);
+        } finally {
+            setLoading(false);
+        }
+    }, [termoBusca, paginaAtual, ordem, direcao]);
+
     useEffect(() => {
-        setCanteiros(DADOS_CANTEIROS_MOCK);
-    }, []);
+        fetchCanteiros();
+    }, [fetchCanteiros]);
 
-    const colunas = [
-        { key: "NomeCanteiro", label: "Nome dos Canteiros" },
-        { key: "NomePopular", label: "Nome Popular" },
-        { key: "Quantidade", label: "Quantidade" },
-    ];
+    // --- MANIPULADORES ---
+    const handleBusca = (novoTermo) => {
+        setTermoBusca(novoTermo);
+        setPaginaAtual(1);
+    };
 
-    const handleDetalheCanteiro = (canteiro) => {
-        setCanteiroSelecionado(canteiro);
-        setModalDetalheAberto(true);
+    const handleTrocaPagina = (novaPagina) => {
+        setPaginaAtual(novaPagina);
+    };
+
+    const handleOrdenar = (chaveColuna) => {
+        // Mapeia o nome da coluna visual para o campo no Java (DTO)
+        let campoBackend = 'nomeCanteiro'; 
+
+        switch(chaveColuna) {
+            case 'NomeCanteiro': campoBackend = 'nomeCanteiro'; break; 
+            case 'NomePopular': campoBackend = 'nomePopularSemente'; break; // Campo do DTO
+            case 'Quantidade': campoBackend = 'quantidadePlantada'; break;
+            default: campoBackend = 'nomeCanteiro';
+        }
+
+        if (campoBackend === ordem) {
+            setDirecao(direcao === 'asc' ? 'desc' : 'asc');
+        } else {
+            setOrdem(campoBackend);
+            setDirecao('asc');
+        }
+        setPaginaAtual(1);
+    };
+
+    // --- AÇÕES DO MODAL ---
+
+    const handleDetalheCanteiro = async (canteiro) => {
+        try {
+            // 1. Busca Detalhes Básicos
+            const detalhes = await canteiroService.getById(canteiro.id);
+            setCanteiroSelecionado(detalhes);
+
+            // 2. Busca Histórico Detalhado
+            const historico = await canteiroService.getHistoricoDetalhado(canteiro.id);
+            
+            const mapHistorico = (lista) => lista.map(item => ({
+                nomePopular: item.nomePopularMuda,
+                data: item.data,
+                quantidade: item.quantidade
+            }));
+
+            if (historico && historico.entradas) {
+                setHistoricoEntradas(mapHistorico(historico.entradas.content));
+            }
+            if (historico && historico.saidas) {
+                setHistoricoSaidas(mapHistorico(historico.saidas.content));
+            }
+
+            setModalDetalheAberto(true);
+        } catch (error) {
+            console.error(error);
+            alert("Erro ao carregar detalhes do canteiro.");
+        }
     };
 
     const handleFecharModalDetalhe = () => {
         setModalDetalheAberto(false);
         setCanteiroSelecionado(null);
+        setHistoricoEntradas([]);
+        setHistoricoSaidas([]);
     };
 
     const handleEditarCanteiro = (canteiro) => {
-        console.log("Abrir edição para:", canteiro);
-        setCanteiroSelecionado(canteiro);
+        // Prepara objeto seguro para edição, evitando undefined
+        const itemSafe = {
+            ...canteiro,
+            // Prioriza os campos que vieram no JSON do Postman
+            nome: canteiro.nomeCanteiro || canteiro.nome || "",
+            quantidade: canteiro.quantidadePlantada || canteiro.quantidade || 0,
+            especie: canteiro.nomePopularSemente || canteiro.especies || ""
+        };
+        setCanteiroSelecionado(itemSafe);
         setModalDetalheAberto(false);
         setModalEdicaoAberto(true);
     };
 
-    const handleExcluirCanteiro = (canteiro) => {
-        setCanteiros(canteiros.filter(c => c.id !== canteiro.id));
-        handleFecharModalDetalhe();
-        alert(`Canteiro ${canteiro.NomeCanteiro} excluído com sucesso!`);
-    };
-
-    const handleExportarCanteiro = (canteiro) => {
-        alert(`Exportando dados do canteiro: ${canteiro.NomeCanteiro}`);
-    };
-
-    const handleSalvarEdicao = (canteiroAtualizado) => {
-        setCanteiros(prev =>
-            prev.map(c => c.id === canteiroAtualizado.id ? canteiroAtualizado : c)
-        );
-        setModalEdicaoAberto(false);
-        setCanteiroSelecionado(null);
+    const handleSalvarEdicao = async (dadosEditados) => {
+        try {
+            await canteiroService.update(dadosEditados.id, dadosEditados);
+            alert("Canteiro atualizado!");
+            fetchCanteiros();
+            setModalEdicaoAberto(false);
+            setCanteiroSelecionado(null);
+        } catch (error) {
+            alert(getBackendErrorMessage(error));
+        }
     };
 
     const handleCancelarEdicao = () => {
@@ -85,69 +173,83 @@ const Historico = () => {
         setCanteiroSelecionado(null);
     };
 
-    const dadosHistoricoEntrada = [
-        { data: '20/05/2025', quantidade: 2000, responsavel: '', tipo: '', nomePopular: 'Ipê-amarelo' },
-        { data: '20/05/2025', quantidade: 1000, responsavel: '', tipo: '', nomePopular: 'Ipê-branco' },
-    ];
-    const dadosHistoricoSaida = [
-        { data: '30/05/2025', quantidade: 1000, responsavel: '', tipo: '', nomePopular: 'Ipê-amarelo' },
-        { data: '30/05/2025', quantidade: 800, responsavel: '', tipo: '', nomePopular: 'Ipê-branco' },
-    ];
+    const handleExcluirCanteiro = async (itemParaExcluir) => {
+        // Se itemParaExcluir for null (pode acontecer dependendo de quem chama), tenta pegar do selecionado
+        const canteiro = itemParaExcluir || canteiroSelecionado;
 
-    const handleSelecionarItens = (itensSelecionados) => {
-        if (itensSelecionados.length === 0) {
-            alert("Nenhum item selecionado!");
+        if (!canteiro || !canteiro.id) {
+            alert("Erro: Não foi possível identificar o canteiro para exclusão.");
             return;
         }
-        const canteirosAtualizados = [...canteiros];
-        itensSelecionados.forEach(({ item, quantidade }) => {
-            const index = canteirosAtualizados.findIndex(c => c.id === item.id);
-            if (index !== -1) {
-                canteirosAtualizados[index].Quantidade = Math.max(
-                    0,
-                    canteirosAtualizados[index].Quantidade - quantidade
-                );
-            }
-        });
-        setCanteiros(canteirosAtualizados);
-        alert(`Saída confirmada para ${itensSelecionados.length} item(ns)!`);
+
+        try {
+            await canteiroService.delete(canteiro.id);
+            alert("Canteiro excluído com sucesso!");
+            fetchCanteiros(); 
+            handleFecharModalDetalhe();
+        } catch (error) {
+            // Usa seu utilitário de erro
+            const msg = getBackendErrorMessage(error);
+            alert(`Erro ao excluir: ${msg}`);
+        }
     };
 
-    const handleQuantidadeChange = (item, quantidade) => {
-        console.log(`Quantidade alterada para ${item.NomeCanteiro}: ${quantidade}`);
-    };
+    const handleExportarCanteiro = (c) => alert("Exportar: " + (c.nomeCanteiro || c.nome));
+    const handleSelecionarItens = () => {}; 
+    const handleQuantidadeChange = () => {};
+
+    // --- DEFINIÇÃO DAS COLUNAS (Chaves batem com o Map do fetch) ---
+    const colunas = [
+        { key: "NomeCanteiro", label: "Nome dos Canteiros" },
+        { key: "NomePopular", label: "Nome Popular" },
+        { key: "Quantidade", label: "Quantidade" },
+    ];
 
     return (
         <div className="historico-page-container">
             <div className="historico-content-wrapper">
+                {erro && <p style={{color: 'red'}}>{erro}</p>}
+                
                 <TabelaSelecionar
-                    // ... (props da tabela)
                     titulo="Histórico de Canteiro"
                     dados={canteiros}
                     colunas={colunas}
-                    chaveBusca="NomePopular"
+                    loading={loading}
+                    
+                    itensPorPagina={itensPorPagina}
+                    paginaAtual={paginaAtual}
+                    totalPaginas={totalPaginas}
+                    onPageChange={handleTrocaPagina}
+                    
+                    termoBusca={termoBusca}
+                    onSearchChange={handleBusca}
+                    habilitarBusca={true}
+                    modoBusca="server"
+
+                    ordemAtual={ordem}
+                    direcaoAtual={direcao}
+                    onOrdenar={handleOrdenar}
+
+                    onDetalheCanteiro={handleDetalheCanteiro}
                     onSelecionar={handleSelecionarItens}
                     onQuantidadeChange={handleQuantidadeChange}
-                    onDetalheCanteiro={handleDetalheCanteiro}
+                    chaveBusca="NomePopular"
                     chaveQuantidade="Quantidade"
-                    textoBotaoConfirmar="Confirmar Saída"
-                    itensPorPagina={7}
-                    habilitarBusca={true}
-                    modoBusca="auto"
                 />
             </div>
 
-            {/* Modal de Detalhes (sem mudanças) */}
-            
+            {/* MODAL DE DETALHES */}
+            {modalDetalheAberto && canteiroSelecionado && (
                 <ModalDetalheGenerico
                     isOpen={modalDetalheAberto} 
                     item={canteiroSelecionado}
                     camposDetalhes={[
-                        { label: 'Nome:', chave: 'NomeCanteiro' },
-                        { label: 'Data de cadastro:', valorPadrao: 'xx/xx/xxxx' },
-                        { label: 'Quantidade atual:', chave: 'Quantidade' },
-                        { label: 'Espaço disponível:', valorPadrao: 700 },
-                        { label: 'Capacidade de armazenamento:', valorPadrao: 1200 },
+                        // Aqui você ajusta conforme o retorno do getById (CanteiroDetailsDTO)
+                        { label: 'Nome:', chave: 'nome' }, 
+                        { label: 'Data de cadastro:', chave: 'dataCriacao' },
+                        { label: 'Quantidade atual:', chave: 'quantidadePlantada' },
+                        { label: 'Espaço disponível', chave: 'espacoDisponivel' },
+                        { label: 'Capacidade de armazenamento:', chave: 'capacidadeMaxima' },
                     ]}
                     colunasEntrada={[
                         { titulo: 'Nome Popular', chave: 'nomePopular' },
@@ -159,8 +261,9 @@ const Historico = () => {
                         { titulo: 'Data', chave: 'data' },
                         { titulo: 'Quantidade', chave: 'quantidade' },
                     ]}
-                    dadosEntrada={dadosHistoricoEntrada}
-                    dadosSaida={dadosHistoricoSaida}
+                    dadosEntrada={historicoEntradas}
+                    dadosSaida={historicoSaidas}
+                    
                     onClose={handleFecharModalDetalhe}
                     onEditar={handleEditarCanteiro}
                     onExcluir={handleExcluirCanteiro}
@@ -168,27 +271,15 @@ const Historico = () => {
                     textoExclusao="o canteiro"
                     mostrarAcoes={true}
                     mostrarHistorico={true}
-                    mostrarExportar={true}
                 />
-           
+            )}
 
-            {/* ✅ 2. MODAL DE EDIÇÃO */}
+            {/* MODAL DE EDIÇÃO */}
             {modalEdicaoAberto && canteiroSelecionado && (
                 <div className="modal-overlay" onClick={handleCancelarEdicao}>
-                    <div
-                        className="modal-content"
-                        onClick={(e) => e.stopPropagation()}
-                        style={{ maxWidth: '700px', width: '95%', padding: '0' }}
-                    >
-                        <button
-                            className="modal-close-button"
-                            onClick={handleCancelarEdicao}
-                            style={{ position: 'absolute', top: '12px', right: '12px', background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', zIndex: 10 }}
-                        >
-                            ✕
-                        </button>
-
-                        {/* ✅ 3. Componente trocado! */}
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{maxWidth: '700px', width: '95%', padding: '0'}}>
+                        <button className="modal-close-button" onClick={handleCancelarEdicao} style={{position: 'absolute', top: '12px', right: '12px', background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', zIndex: 10}}>✕</button>
+                        
                         <EditarPlantioCanteiro
                             itemParaEditar={canteiroSelecionado}
                             onSave={handleSalvarEdicao}
