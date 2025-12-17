@@ -2,6 +2,7 @@
     width: 100%;
     padding: var(--espacamento-md);
     max-width: 100vw;
+   
 }
 
 /* Card principal */
@@ -9,6 +10,12 @@
     max-width: 50rem;
     margin: var(--espacamento-md) auto 0 auto;
     width: 100%;
+     height: calc(87vh - 80px);
+    /* ajuste se tiver header fixo */
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 8px;
+    /* opcional */
 }
 
 .configuracoes-tabs {
@@ -17,6 +24,8 @@
     width: 100%;
     justify-content: center;
     margin-bottom: var(--espacamento-md);
+
+
 }
 
 .configuracoes-tabs .button {
