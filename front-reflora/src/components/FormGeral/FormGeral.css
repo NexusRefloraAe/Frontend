@@ -7,6 +7,7 @@
   border: 1px solid var(--cor-borda-verde, #e0e0e0);
   margin: 0 auto;
   overflow: hidden; 
+  
 }
 
 .form-geral--wide {

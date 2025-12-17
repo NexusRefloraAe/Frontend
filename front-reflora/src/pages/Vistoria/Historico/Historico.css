@@ -4,7 +4,11 @@
   width: 100%;
   padding: 1rem;
   background-color: #f8fafc;
-  min-height: 100vh;
+  
+  height: calc(90vh - 80px); /* ajuste se tiver header fixo */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 8px; /* opcional */
 }
 
 /* Cabeçalho com título e filtros */

@@ -4,7 +4,7 @@ import './BotaoSubmenus.css';
 
 const BotaoSubmenus = ({ menus, activeMenuId, onMenuClick }) => {
     return (
-        <div className="configuracoes-tabs">
+        <div className="configuracoes-tabs" >
             {menus.map((menu) => (
                 <Button
                     key={menu.id}

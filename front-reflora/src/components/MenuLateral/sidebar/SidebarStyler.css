@@ -11,7 +11,10 @@
   z-index: 1000;
   flex-direction: column;
   color: #ffffff; /* COR FIXA - não usa variável */
+  overflow-y: auto;
 }
+.sidebar-container::-webkit-scrollbar { width: 8px; }
+.sidebar-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 6px; }
 
 .sidebar-container.active {
   left: 0;
@@ -50,7 +53,6 @@
 .sidebar-content {
   flex: 1;
   padding: 0 12px;
-  overflow-y: auto;
   margin-top: 10px;
 }
 
@@ -106,7 +108,7 @@
 
 /* LOGOUT HOVER */
 .sidebar-item.logout:hover { /* Mude */
-  background-color: rgba(220, 53, 69, 0.15) !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
 }
 
 /* RESPONSIVIDADE - mantém cores */
@@ -144,5 +146,9 @@
   .menu-toggle span {
     font-size: 20px;
   }
-  
+
+
+  /* Scrollbar WebKit */
+
+
 }

@@ -9,6 +9,7 @@
   height: 110px; /* DIMINUÍDO: de 120px para 110px */
   position: relative;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
 }
 
 .card:hover {

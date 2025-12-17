@@ -7,7 +7,6 @@
   min-height: auto; /* Altura controlada pelo container pai */
   display: flex;
   flex-direction: column;
-  height: 100%; /* Ocupa toda altura disponível */
 }
 
 .relatorio-canteiro-content {
