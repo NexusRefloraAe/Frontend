@@ -144,5 +144,17 @@ export const sementesService = {
         return api.get(`/bancoSementes/${id}/historico/export/csv`, {
             responseType: 'blob'
         });
+    },
+
+    listarNomesPopulares: async () => {
+        try {
+            const response = await api.get('/sementes/select');
+            return response.data; 
+        } catch (error) {
+            // Log para debug do desenvolvedor
+            console.error("Erro no service de sementes:", error);
+            // Repassa o erro original para o componente tratar
+            throw error;
+        }
     }
 };
