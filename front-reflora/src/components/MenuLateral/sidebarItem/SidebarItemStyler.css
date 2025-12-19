@@ -1,4 +1,5 @@
-/* SidebarItemStyler.css - CONTROLE TOTAL DAS CORES */
+/* SidebarItemStyler.css */
+
 .sidebar-item {
   display: flex;
   align-items: center;
@@ -15,13 +16,13 @@
   font-family: inherit;
   font-size: inherit;
 
-  /* CORES PADRÃO - BRANCO */
+  /* CORES PADRÃO */
   color: white !important;
   fill: white !important;
   stroke: white !important;
 }
 
-/* Remove qualquer estilo de link */
+/* Remove estilos de link */
 .sidebar-item,
 .sidebar-item:link,
 .sidebar-item:visited,
@@ -32,28 +33,22 @@
   text-decoration: none !important;
 }
 
-/* Ícone - SEMPRE controlado por nós */
+/* Ícone */
 .sidebar-icon {
   font-size: 22px;
   min-width: 22px;
   margin-right: 15px;
-
-  /* Força cor branca */
   color: white !important;
-  fill: white !important;
-  stroke: white !important;
 }
 
-/* Texto - SEMPRE controlado por nós */
+/* Texto */
 .sidebar-text {
   font-size: 18px;
   font-weight: 500;
-
-  /* Força cor branca */
   color: white !important;
 }
 
-/* ============ ESTADO SELECIONADO ============ */
+/* ESTADO SELECIONADO */
 .sidebar-item.selected {
   background-color: white !important;
   color: var(--cor-verde-primario) !important;
@@ -61,55 +56,53 @@
   font-weight: bold;
 }
 
-/* Ícone quando selecionado */
 .sidebar-item.selected .sidebar-icon {
   color: var(--cor-verde-primario) !important;
-  fill: var(--cor-verde-primario) !important;
-  stroke: var(--cor-verde-primario) !important;
 }
 
-/* Texto quando selecionado */
 .sidebar-item.selected .sidebar-text {
   color: var(--cor-verde-primario) !important;
 }
 
-/* ============ HOVER ============ */
+/* HOVER */
 .sidebar-item:hover:not(.selected):not(.logout) {
   background-color: rgba(255, 255, 255, 0.15) !important;
 }
 
-/* Hover para logout */
 .sidebar-item.logout:hover {
   background-color: rgba(220, 53, 69, 0.2) !important;
 }
 
-/* ============ RESPONSIVIDADE ============ */
-@media (max-width: 1366px) {
+/* ============ RESPONSIVIDADE VERTICAL (O SEGREDO) ============ */
+/* Quando a tela for baixa (ex: laptops), compacta os itens para caberem sem scroll */
+@media (max-height: 850px) {
   .sidebar-item {
-    padding: 10px 15px;
-    margin: 6px 10px;
-    width: calc(100% - 20px);
+    padding: 8px 15px; /* Reduz o "gordo" do botão */
+    margin: 4px 15px;  /* Reduz o espaço entre botões */
   }
 
   .sidebar-text {
-    font-size: 16px;
+    font-size: 15px; /* Diminui levemente a fonte */
   }
 
   .sidebar-icon {
-    font-size: 20px;
+    font-size: 18px; /* Diminui levemente o ícone */
   }
 }
 
-@media (max-width: 768px) {
+/* Para telas MUITO baixas */
+@media (max-height: 600px) {
   .sidebar-item {
-    padding: 12px;
+    padding: 5px 10px;
+    margin: 2px 10px;
   }
+}
 
-  .sidebar-text {
-    font-size: 16px;
-  }
-
-  .sidebar-icon {
-    font-size: 20px;
+/* Mantém responsividade de largura existente */
+@media (max-width: 1366px) {
+  .sidebar-item {
+    width: calc(100% - 20px);
+    margin-left: 10px;
+    margin-right: 10px;
   }
 }
