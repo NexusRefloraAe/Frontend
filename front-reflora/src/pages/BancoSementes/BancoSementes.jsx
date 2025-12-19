@@ -33,13 +33,12 @@ function BancoSementes() {
     const [ordem, setOrdem] = useState('dataDeCadastro'); 
     const [direcao, setDirecao] = useState('desc');      
 
-    // --- NOVOS ESTADOS: IBGE (LOCALIZAÇÃO) ---
+    // Estados IBGE
     const [estados, setEstados] = useState([]);
     const [cidades, setCidades] = useState([]);
-    // Guardamos a UF selecionada aqui para buscar as cidades correspondentes
     const [ufSelecionada, setUfSelecionada] = useState(''); 
 
-    // --- 1. BUSCAR ESTADOS DO IBGE AO INICIAR ---
+    // --- 1. BUSCAR ESTADOS DO IBGE ---
     useEffect(() => {
         const fetchEstados = async () => {
             try {
@@ -53,11 +52,10 @@ function BancoSementes() {
         fetchEstados();
     }, []);
 
-    // --- 2. FUNÇÃO PARA BUSCAR CIDADES QUANDO MUDAR O ESTADO ---
+    // --- 2. BUSCAR CIDADES ---
     const handleEstadoChange = async (uf) => {
         setUfSelecionada(uf);
-        setCidades([]); // Limpa as cidades anteriores
-        
+        setCidades([]); 
         if (uf) {
             try {
                 const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
@@ -69,7 +67,7 @@ function BancoSementes() {
         }
     };
 
-    // --- FETCH SEMENTES (EXISTENTE) ---
+    // --- FETCH SEMENTES ---
     const fetchSementes = useCallback(async () => {
         setLoading(true);
         try {
@@ -93,7 +91,7 @@ function BancoSementes() {
         }
     }, [abaAtiva, fetchSementes]);
 
-    // Handlers existentes
+    // Handlers
     const handleBusca = (novoTermo) => {
         setTermoBusca(novoTermo);
         setPaginaAtual(1);
@@ -115,10 +113,7 @@ function BancoSementes() {
 
     const handleEditar = (semente) => {
         setSementeEditando(semente); 
-        // Se a semente já tem UF, carregamos as cidades dela automaticamente
-        if (semente.uf) {
-            handleEstadoChange(semente.uf);
-        }
+        if (semente.uf) handleEstadoChange(semente.uf);
         setAbaAtiva('cadastrar');    
         setErro('');
     };
@@ -153,7 +148,7 @@ function BancoSementes() {
     const handleMenuClick = (menuId) => {
         if (menuId === 'cadastrar') {
             setSementeEditando(null);
-            setUfSelecionada(''); // Reseta seleção
+            setUfSelecionada('');
             setCidades([]);
         }
         setAbaAtiva(menuId);
@@ -172,33 +167,38 @@ function BancoSementes() {
                 <main>
                     {erro && <div className="alert-error" style={{color: 'red', margin: '10px'}}>{erro}</div>}
                     
+                    {/* AQUI ESTÁ A CORREÇÃO: Usamos classes diferentes para cada aba */}
                     {abaAtiva === 'listar' ? (
-                        <ListaSementes 
-                            sementes={sementes} 
-                            loading={loading}
-                            paginaAtual={paginaAtual}
-                            totalPaginas={totalPaginas}
-                            onPageChange={handleTrocaPagina}
-                            termoBusca={termoBusca}
-                            onSearchChange={handleBusca}
-                            onRecarregar={fetchSementes}
-                            onEditar={handleEditar}   
-                            onDeletar={handleDeletar} 
-                            ordemAtual={ordem}
-                            direcaoAtual={direcao}
-                            onOrdenar={handleOrdenar}
-                        />
+                        // Container para a LISTA (Largura Total)
+                        <div className="content-lista-full">
+                            <ListaSementes 
+                                sementes={sementes} 
+                                loading={loading}
+                                paginaAtual={paginaAtual}
+                                totalPaginas={totalPaginas}
+                                onPageChange={handleTrocaPagina}
+                                termoBusca={termoBusca}
+                                onSearchChange={handleBusca}
+                                onRecarregar={fetchSementes}
+                                onEditar={handleEditar}   
+                                onDeletar={handleDeletar} 
+                                ordemAtual={ordem}
+                                direcaoAtual={direcao}
+                                onOrdenar={handleOrdenar}
+                            />
+                        </div>
                     ) : (
-                        <FormularioSemente 
-                            onSuccess={handleSucessoCadastro}
-                            onCancel={handleCancelarCadastro} 
-                            sementeParaEditar={sementeEditando}
-                            
-                            // --- PASSANDO AS PROPS DO IBGE PARA O FORMULÁRIO ---
-                            listaEstados={estados}
-                            listaCidades={cidades}
-                            onEstadoChange={handleEstadoChange}
-                        />
+                        // Container para o FORMULÁRIO (Largura Controlada e Bonita)
+                        <div className="content-semente-form">
+                            <FormularioSemente 
+                                onSuccess={handleSucessoCadastro}
+                                onCancel={handleCancelarCadastro} 
+                                sementeParaEditar={sementeEditando}
+                                listaEstados={estados}
+                                listaCidades={cidades}
+                                onEstadoChange={handleEstadoChange}
+                            />
+                        </div>
                     )}
                 </main>
             </div>

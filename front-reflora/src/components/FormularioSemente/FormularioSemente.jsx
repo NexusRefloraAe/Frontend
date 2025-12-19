@@ -4,6 +4,8 @@ import ImageUpload from '../ImageUpload/ImageUpload'
 import Input from '../Input/Input'
 import { sementesService } from '../../services/sementesService'
 import { getBackendErrorMessage } from '../../utils/errorHandler'
+// 1. Importa a lista base (oficial)
+import bancoOficial from '../../assets/bancoDeEspecies.json'
 
 import { FaSave } from 'react-icons/fa'
 import locationIcon from '../../assets/locationicon.svg'
@@ -18,38 +20,57 @@ const optionsCamaraFria = [
     { value: 'nao', label: 'Não' },
 ];
 
-// --- ADICIONADO: Props do IBGE recebidas do pai ---
-function FormularioSemente({ 
-    onSuccess, 
-    onCancel, 
-    sementeParaEditar = null, 
-    listaEstados = [],   // Nova prop
-    listaCidades = [],   // Nova prop
-    onEstadoChange       // Nova prop (função)
+function FormularioSemente({
+    onSuccess,
+    onCancel,
+    sementeParaEditar = null,
+    listaEstados = [],
+    listaCidades = [],
+    onEstadoChange
 }) {
-    
+
     const [formData, setFormData] = useState({
         nomePopular: '',
         nomeCientifico: '',
         familia: '',
         origem: '',
-        dataCadastro: '', 
+        dataCadastro: '',
         quantidade: '',
         unidadeMedida: 'KG',
-        // localizacao: '', // Removi o campo texto livre antigo (ou mantenha se quiser concatenar)
-        uf: '',          // Novo campo
-        cidade: '',      // Novo campo
+        uf: '',
+        cidade: '',
         camaraFria: 'nao',
     });
 
     const [fotoSemente, setFotoSemente] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    // --- 3. Efeito para Carregar Dados na Edição ---
+    // ESTADO PARA A LISTA COMBINADA (Oficial + Aprendida)
+    const [listaCompleta, setListaCompleta] = useState([]);
+
+    // --- 1. CARREGAR LISTA AO INICIAR ---
+    useEffect(() => {
+        // Pega o que já tem no arquivo JSON
+        let lista = [...bancoOficial];
+
+        // Verifica se o navegador tem "memória" de sementes novas criadas pelo produtor
+        const especiesAprendidas = localStorage.getItem('minhas_especies_customizadas');
+        if (especiesAprendidas) {
+            const novas = JSON.parse(especiesAprendidas);
+            // Junta as listas
+            lista = [...lista, ...novas];
+        }
+
+        // Ordena alfabeticamente para ficar bonito
+        lista.sort((a, b) => a.popular.localeCompare(b.popular));
+
+        setListaCompleta(lista);
+    }, []);
+
     useEffect(() => {
         if (sementeParaEditar) {
             let dataInput = '';
-            if(sementeParaEditar.dataDeCadastro) {
+            if (sementeParaEditar.dataDeCadastro) {
                 const [dia, mes, ano] = sementeParaEditar.dataDeCadastro.split('/');
                 dataInput = `${ano}-${mes}-${dia}`;
             }
@@ -62,19 +83,13 @@ function FormularioSemente({
                 dataCadastro: dataInput,
                 quantidade: sementeParaEditar.quantidade || '',
                 unidadeMedida: sementeParaEditar.unidadeDeMedida || 'KG',
-                
-                // Mapeando UF e Cidade vindos do backend
-                uf: sementeParaEditar.uf || '', 
+                uf: sementeParaEditar.uf || '',
                 cidade: sementeParaEditar.cidade || '',
-                
                 camaraFria: sementeParaEditar.estahNaCamaraFria ? 'sim' : 'nao'
             });
-            // O componente pai (BancoSementes) já chamou o handleEstadoChange se houver UF, 
-            // então a listaCidades deve chegar preenchida.
         }
     }, [sementeParaEditar]);
 
-    // --- Transformar dados do IBGE para o formato do Select (value/label) ---
     const optionsEstados = listaEstados.map(estado => ({
         value: estado.sigla,
         label: estado.nome
@@ -87,36 +102,71 @@ function FormularioSemente({
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        
-        setFormData(prevData => ({
-            ...prevData,
-            [name]: value
-        }));
+        setFormData(prevData => ({ ...prevData, [name]: value }));
 
-        // --- LÓGICA ESPECIAL PARA UF ---
         if (name === 'uf') {
-            // 1. Limpa a cidade pois mudou o estado
             setFormData(prev => ({ ...prev, cidade: '' }));
-            // 2. Chama a função do pai para buscar as novas cidades na API
-            if (onEstadoChange) {
-                onEstadoChange(value);
+            if (onEstadoChange) onEstadoChange(value);
+        }
+
+        // --- AUTOCOMPLETE USANDO A LISTA COMPLETA ---
+        if (name === 'nomePopular') {
+            const especieEncontrada = listaCompleta.find(item =>
+                item.popular.toLowerCase() === value.toLowerCase()
+            );
+
+            if (especieEncontrada) {
+                setFormData(prev => ({
+                    ...prev,
+                    [name]: especieEncontrada.popular,
+                    nomeCientifico: especieEncontrada.cientifico,
+                    familia: especieEncontrada.familia,
+                    origem: especieEncontrada.origem
+                }));
             }
         }
     };
 
-    // --- 4. Envio dos Dados ---
+    // --- FUNÇÃO PARA "APRENDER" NOVA ESPÉCIE ---
+    const aprenderNovaEspecie = (dados) => {
+        // Verifica se essa espécie já existe na lista atual
+        const jaExiste = listaCompleta.some(item =>
+            item.popular.toLowerCase() === dados.nomePopular.toLowerCase()
+        );
+
+        if (!jaExiste && dados.nomePopular) {
+            const novaEspecie = {
+                popular: dados.nomePopular,
+                cientifico: dados.nomeCientifico,
+                familia: dados.familia,
+                origem: dados.origem
+            };
+
+            // 1. Salva no LocalStorage (Navegador)
+            const salvosAntigos = localStorage.getItem('minhas_especies_customizadas');
+            let arraySalvo = salvosAntigos ? JSON.parse(salvosAntigos) : [];
+            arraySalvo.push(novaEspecie);
+            localStorage.setItem('minhas_especies_customizadas', JSON.stringify(arraySalvo));
+
+            // 2. Atualiza a lista em tempo real na tela
+            setListaCompleta(prev => [...prev, novaEspecie].sort((a, b) => a.popular.localeCompare(b.popular)));
+        }
+    };
+
     const handleSubmit = async (e) => {
-        if(e && e.preventDefault) e.preventDefault();
-        
+        if (e && e.preventDefault) e.preventDefault();
         setLoading(true);
 
         try {
-            // Preparar o payload (objeto que vai pro backend)
-            // Se o backend ainda esperar "localizacaoDaColeta" como string única:
-            // const payload = { ...formData, localizacaoDaColeta: `${formData.cidade} - ${formData.uf}` };
-            
-            // Se o backend já aceita uf e cidade separados:
-            const payload = { ...formData };
+            // --- CORREÇÃO AQUI ---
+            // O backend espera 'localizacaoDaColeta', então criamos esse campo juntando Cidade e UF
+            const payload = {
+                ...formData,
+                localizacaoDaColeta: `${formData.cidade} - ${formData.uf}`
+            };
+
+            // Salva na memória local para o autocomplete aprender
+            aprenderNovaEspecie(formData);
 
             if (sementeParaEditar && sementeParaEditar.id) {
                 await sementesService.update(sementeParaEditar.id, payload, fotoSemente);
@@ -125,9 +175,7 @@ function FormularioSemente({
                 await sementesService.create(payload, fotoSemente);
                 alert("Semente cadastrada com sucesso!");
             }
-
             if (onSuccess) onSuccess();
-
         } catch (error) {
             const msg = getBackendErrorMessage(error);
             alert(msg);
@@ -154,7 +202,6 @@ function FormularioSemente({
     ];
 
     return (
-        
         <FormGeral
             title={sementeParaEditar ? "Editar Semente" : "Cadastrar Semente"}
             actions={formActions}
@@ -167,14 +214,26 @@ function FormularioSemente({
                 onFileChange={(file) => setFotoSemente(file)}
             />
 
-            <Input
-                label="Nome Popular"
-                type='text' 
-                name='nomePopular'
-                value={formData.nomePopular}
-                onChange={handleInputChange}
-                placeholder="Digite o nome popular"
-            />
+            {/* --- CAMPO COM SUGESTÕES ATUALIZADAS --- */}
+            <div>
+                <Input
+                    label="Nome Popular"
+                    type='text'
+                    name='nomePopular'
+                    value={formData.nomePopular}
+                    onChange={handleInputChange}
+                    placeholder="Digite para buscar ou cadastrar nova..."
+                    list="lista-sementes-dinamica"
+                />
+
+                <datalist id="lista-sementes-dinamica">
+                    {listaCompleta.map((especie, index) => (
+                        <option key={index} value={especie.popular}>
+                            {especie.cientifico}
+                        </option>
+                    ))}
+                </datalist>
+            </div>
 
             <Input
                 label="Nome Científico"
@@ -182,7 +241,7 @@ function FormularioSemente({
                 name='nomeCientifico'
                 value={formData.nomeCientifico}
                 onChange={handleInputChange}
-                placeholder="Digite o nome científico"
+                placeholder="Preenchido automaticamente"
             />
 
             <Input
@@ -191,7 +250,7 @@ function FormularioSemente({
                 name='familia'
                 value={formData.familia}
                 onChange={handleInputChange}
-                placeholder="Família da planta"
+                placeholder="Preenchido automaticamente"
             />
 
             <Input
@@ -200,7 +259,7 @@ function FormularioSemente({
                 name='origem'
                 value={formData.origem}
                 onChange={handleInputChange}
-                placeholder="Origem"
+                placeholder="Preenchido automaticamente"
             />
 
             <Input
@@ -234,9 +293,8 @@ function FormularioSemente({
                 </div>
             </div>
 
-            {/* --- NOVOS CAMPOS DE LOCALIZAÇÃO (IBGE) --- */}
             <div className='campo-linha-combinada'>
-                <div style={{ flex: 1 }}> {/* Ajuste de layout simples */}
+                <div style={{ flex: 1 }}>
                     <Input
                         label="Estado (UF)"
                         type='select'
@@ -244,7 +302,7 @@ function FormularioSemente({
                         value={formData.uf}
                         onChange={handleInputChange}
                         options={optionsEstados}
-                        placeholder="Selecione o Estado"
+                        placeholder="UF"
                     />
                 </div>
                 <div style={{ flex: 2 }}>
@@ -255,8 +313,8 @@ function FormularioSemente({
                         value={formData.cidade}
                         onChange={handleInputChange}
                         options={optionsCidades}
-                        placeholder="Selecione a Cidade"
-                        disabled={!formData.uf} // Desabilita se não tiver UF selecionada
+                        placeholder="Cidade"
+                        disabled={!formData.uf}
                         icon={locationIcon}
                     />
                 </div>
@@ -271,7 +329,6 @@ function FormularioSemente({
                 options={optionsCamaraFria}
             />
         </FormGeral>
-        
     );
 }
 

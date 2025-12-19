@@ -4,7 +4,7 @@ import Input from "../../Input/Input";
 
 
 const EditarSementes = ({ isOpen, onSalvar, onCancelar, semente }) => {
-    
+
     // --- Novos Estados para o IBGE ---
     const [estados, setEstados] = useState([]);
     const [cidades, setCidades] = useState([]);
@@ -47,15 +47,15 @@ const EditarSementes = ({ isOpen, onSalvar, onCancelar, semente }) => {
                 nomeCientifico: semente.nomeCientifico || '',
                 familia: semente.familia || '',
                 origem: semente.origem || '',
-                dataCadastro: semente.dataCadastro ? semente.dataCadastro.split('/').reverse().join('-') : 
-                              (semente.dataDeCadastro ? semente.dataDeCadastro.split('/').reverse().join('-') : ''),
+                dataCadastro: semente.dataCadastro ? semente.dataCadastro.split('/').reverse().join('-') :
+                    (semente.dataDeCadastro ? semente.dataDeCadastro.split('/').reverse().join('-') : ''),
                 qtdAtual: semente.qtdAtual || semente.quantidade || '',
                 unidadeMedida: semente.unidadeMedida || semente.unidadeDeMedida || 'kg',
-                
+
                 // Mapeamento dos novos campos
                 uf: semente.uf || '',
                 cidade: semente.cidade || '',
-                
+
                 camaraFria: semente.camaraFria || (semente.estahNaCamaraFria ? 'sim' : 'nao') || 'nao',
             });
         }
@@ -83,7 +83,7 @@ const EditarSementes = ({ isOpen, onSalvar, onCancelar, semente }) => {
     const handleCancel = (confirmar = true) => {
         if (confirmar) {
             if (window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
-                onCancelar(); 
+                onCancelar();
             }
         } else {
             onCancelar();
@@ -92,10 +92,10 @@ const EditarSementes = ({ isOpen, onSalvar, onCancelar, semente }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        
+
         const dadosSalvos = {
-            ...semente, 
-            ...formData, 
+            ...semente,
+            ...formData,
             // Mapeia para o formato esperado pelo serviço/backend
             nomePopular: formData.nome, // Assegurando consistência de nomes
             nome: formData.nome,
@@ -105,11 +105,10 @@ const EditarSementes = ({ isOpen, onSalvar, onCancelar, semente }) => {
             dataCadastro: formData.dataCadastro.split('-').reverse().join('/'),
             qtdAtual: formData.qtdAtual,
             unidadeMedida: formData.unidadeMedida,
-            
-            uf: formData.uf,
-            cidade: formData.cidade,
+
+            localizacaoDaColeta: `${formData.cidade} - ${formData.uf}`,
             // localizacaoDaColeta: `${formData.cidade} - ${formData.uf}`, // Opcional se o back precisar concatenado
-            
+
             camaraFria: formData.camaraFria,
             estahNaCamaraFria: formData.camaraFria === 'sim'
         };
@@ -118,12 +117,12 @@ const EditarSementes = ({ isOpen, onSalvar, onCancelar, semente }) => {
 
     const handleChange = (field) => (e) => {
         const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
-        
+
         setFormData((prev) => {
             const newState = { ...prev, [field]: value };
             // Se mudou UF, limpa a cidade
             if (field === 'uf') {
-                newState.cidade = ''; 
+                newState.cidade = '';
             }
             return newState;
         });
@@ -148,10 +147,10 @@ const EditarSementes = ({ isOpen, onSalvar, onCancelar, semente }) => {
             children: 'Cancelar',
             variant: 'action-secondary',
             type: 'button',
-            onClick: (e) =>{
+            onClick: (e) => {
                 e.preventDefault();
                 handleCancel(true);
-            } 
+            }
         },
         {
             children: 'Salvar alterações',
@@ -241,7 +240,7 @@ const EditarSementes = ({ isOpen, onSalvar, onCancelar, semente }) => {
                         options={optionsEstados}
                         placeholder="Selecione UF"
                     />
-                    
+
                     <Input
                         label="Cidade"
                         name="cidade"
