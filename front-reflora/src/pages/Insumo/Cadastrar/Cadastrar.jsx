@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import FormGeral from '../../../components/FormGeral/FormGeral';
 import Input from '../../../components/Input/Input';
+import insumoService from '../../../services/insumoService';
 import './Cadastrar.css';
 
 const Cadastrar = () => {
@@ -52,30 +53,30 @@ const Cadastrar = () => {
   };
 
   const handleQuantidadeInc = () => {
-    setFormData(prev => ({ 
-      ...prev, 
-      quantidade: Math.max(0, (prev.quantidade || 0) + 1) 
+    setFormData(prev => ({
+      ...prev,
+      quantidade: Math.max(0, (prev.quantidade || 0) + 1)
     }));
   };
 
   const handleQuantidadeDec = () => {
-    setFormData(prev => ({ 
-      ...prev, 
-      quantidade: Math.max(0, (prev.quantidade || 0) - 1) 
+    setFormData(prev => ({
+      ...prev,
+      quantidade: Math.max(0, (prev.quantidade || 0) - 1)
     }));
   };
 
   const handleEstoqueMinimoInc = () => {
-    setFormData(prev => ({ 
-      ...prev, 
-      estoqueMinimo: Math.max(0, (prev.estoqueMinimo || 0) + 1) 
+    setFormData(prev => ({
+      ...prev,
+      estoqueMinimo: Math.max(0, (prev.estoqueMinimo || 0) + 1)
     }));
   };
 
   const handleEstoqueMinimoDec = () => {
-    setFormData(prev => ({ 
-      ...prev, 
-      estoqueMinimo: Math.max(0, (prev.estoqueMinimo || 0) - 1) 
+    setFormData(prev => ({
+      ...prev,
+      estoqueMinimo: Math.max(0, (prev.estoqueMinimo || 0) - 1)
     }));
   };
 
@@ -101,165 +102,183 @@ const Cadastrar = () => {
   };
 
   const getTitulo = () => {
-    return tipoInsumo === 'Ferramenta' ? 'Registrar Ferramenta' : 
-           tipoInsumo === 'Material' ? 'Registrar Material' : 
-           'Cadastrar Insumo';
+    return tipoInsumo === 'Ferramenta' ? 'Registrar Ferramenta' :
+      tipoInsumo === 'Material' ? 'Registrar Material' :
+        'Cadastrar Insumo';
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!tipoInsumo) {
       alert('Por favor, selecione o tipo de insumo.');
       return;
     }
 
-    console.log('Dados do Insumo:', { tipoInsumo, ...formData });
-    alert(`${tipoInsumo} cadastrado com sucesso!`);
-    handleCancel(false);
+    try {
+      // Prepara o objeto exatamente como o DTO do java espera
+      const payload = {
+        tipoInsumo: tipoInsumo.toUpperCase(), // Backend espera 'MATERIAL' ou 'FERRAMENTA'
+        ...formData
+      };
+
+      //Chama o back end
+      await insumoService.cadastrar(payload);
+
+      alert(`${tipoInsumo} cadastrado com sucesso!`);
+      handleCancel(false);
+
+    } catch (error) {
+      console.error('Erro ao cadastrar insumo:', error);
+      alert('Erro ao cadastrar insumo. Verifique os dados e tente novamente.');
+    }
   };
 
-  const actions = [
-    {
-      type: 'button',
-      variant: 'action-secondary',
-      children: 'Cancelar',
-      onClick: () => handleCancel(true),
-    },
-    {
-      type: 'submit',
-      variant: 'primary',
-      children: 'Salvar Registro',
-    },
-  ];
+  console.log('Dados do Insumo:', { tipoInsumo, ...formData });
+  alert(`${tipoInsumo} cadastrado com sucesso!`);
+  handleCancel(false);
+};
 
-  return (
-    <div className="cadastrar-insumo">
-      <FormGeral
-        title={getTitulo()}
-        actions={actions}
-        onSubmit={handleSubmit}
-        useGrid={false}
-      >
-        {/* Seletor de tipo de insumo - ocupa linha inteira */}
-        <div className="input-row">
-          <Input
-            label="Tipo de insumo"
-            name="tipoInsumo"
-            type="select"
-            value={tipoInsumo}
-            onChange={handleTipoInsumoChange}
-            required={true}
-            options={[
-              { value: '', label: 'Selecione o tipo...' },
-              { value: 'Ferramenta', label: 'Ferramenta' },
-              { value: 'Material', label: 'Material' }
-            ]}
-          />
-        </div>
+const actions = [
+  {
+    type: 'button',
+    variant: 'action-secondary',
+    children: 'Cancelar',
+    onClick: () => handleCancel(true),
+  },
+  {
+    type: 'submit',
+    variant: 'primary',
+    children: 'Salvar Registro',
+  },
+];
 
-        {/* Formulário dinâmico baseado no tipo selecionado */}
-        {tipoInsumo && (
-          <>
-            <div className="input-row">
-              <Input
-                label="Nome do insumo"
-                name="nomeInsumo"
-                type="text"
-                value={formData.nomeInsumo}
-                onChange={handleChange('nomeInsumo')}
-                placeholder={tipoInsumo === 'Ferramenta' ? 'Ex: Pá Grande' : 'Ex: Adubo'}
-                required={true}
-              />
-              <Input
-                label="Unidade de medida"
-                name="unidadeMedida"
-                type="select"
-                value={formData.unidadeMedida}
-                onChange={handleChange('unidadeMedida')}
-                required={true}
-                options={getUnidadesMedida()}
-              />
-            </div>
+return (
+  <div className="cadastrar-insumo">
+    <FormGeral
+      title={getTitulo()}
+      actions={actions}
+      onSubmit={handleSubmit}
+      useGrid={false}
+    >
+      {/* Seletor de tipo de insumo - ocupa linha inteira */}
+      <div className="input-row">
+        <Input
+          label="Tipo de insumo"
+          name="tipoInsumo"
+          type="select"
+          value={tipoInsumo}
+          onChange={handleTipoInsumoChange}
+          required={true}
+          options={[
+            { value: '', label: 'Selecione o tipo...' },
+            { value: 'Ferramenta', label: 'Ferramenta' },
+            { value: 'Material', label: 'Material' }
+          ]}
+        />
+      </div>
 
-            <div className="input-row">
+      {/* Formulário dinâmico baseado no tipo selecionado */}
+      {tipoInsumo && (
+        <>
+          <div className="input-row">
+            <Input
+              label="Nome do insumo"
+              name="nomeInsumo"
+              type="text"
+              value={formData.nomeInsumo}
+              onChange={handleChange('nomeInsumo')}
+              placeholder={tipoInsumo === 'Ferramenta' ? 'Ex: Pá Grande' : 'Ex: Adubo'}
+              required={true}
+            />
+            <Input
+              label="Unidade de medida"
+              name="unidadeMedida"
+              type="select"
+              value={formData.unidadeMedida}
+              onChange={handleChange('unidadeMedida')}
+              required={true}
+              options={getUnidadesMedida()}
+            />
+          </div>
+
+          <div className="input-row">
+            <Input
+              label="Quantidade"
+              name="quantidade"
+              type="number"
+              value={formData.quantidade}
+              onChange={handleChange('quantidade')}
+              onIncrement={handleQuantidadeInc}
+              onDecrement={handleQuantidadeDec}
+              placeholder="Ex: 300"
+              required={true}
+              min="0"
+            />
+
+            {tipoInsumo === 'Material' ? (
               <Input
-                label="Quantidade"
-                name="quantidade"
+                label="Estoque Mínimo"
+                name="estoqueMinimo"
                 type="number"
-                value={formData.quantidade}
-                onChange={handleChange('quantidade')}
-                onIncrement={handleQuantidadeInc}
-                onDecrement={handleQuantidadeDec}
-                placeholder="Ex: 300"
+                value={formData.estoqueMinimo}
+                onChange={handleChange('estoqueMinimo')}
+                onIncrement={handleEstoqueMinimoInc}
+                onDecrement={handleEstoqueMinimoDec}
+                placeholder="Ex: 100"
                 required={true}
                 min="0"
               />
-              
-              {tipoInsumo === 'Material' ? (
-                <Input
-                  label="Estoque Mínimo"
-                  name="estoqueMinimo"
-                  type="number"
-                  value={formData.estoqueMinimo}
-                  onChange={handleChange('estoqueMinimo')}
-                  onIncrement={handleEstoqueMinimoInc}
-                  onDecrement={handleEstoqueMinimoDec}
-                  placeholder="Ex: 100"
-                  required={true}
-                  min="0"
-                />
-              ) : (
-                <Input
-                  label="Data de Registro"
-                  name="dataRegistro"
-                  type="date"
-                  value={formData.dataRegistro}
-                  onChange={handleChange('dataRegistro')}
-                  required={true}
-                />
-              )}
-            </div>
-
-            <div className="input-row">
-              {tipoInsumo === 'Material' && (
-                <Input
-                  label="Data de Registro"
-                  name="dataRegistro"
-                  type="date"
-                  value={formData.dataRegistro}
-                  onChange={handleChange('dataRegistro')}
-                  required={true}
-                />
-              )}
-              <div /> {/* Espaço vazio para manter o grid */}
-            </div>
-
-            <div className="input-row">
+            ) : (
               <Input
-                label="Responsável pela Entrega"
-                name="responsavelEntrega"
-                type="text"
-                value={formData.responsavelEntrega}
-                onChange={handleChange('responsavelEntrega')}
-                placeholder="Ex: Arthur dos Santos Pereira"
+                label="Data de Registro"
+                name="dataRegistro"
+                type="date"
+                value={formData.dataRegistro}
+                onChange={handleChange('dataRegistro')}
                 required={true}
               />
+            )}
+          </div>
+
+          <div className="input-row">
+            {tipoInsumo === 'Material' && (
               <Input
-                label="Responsável por Receber"
-                name="responsavelReceber"
-                type="text"
-                value={formData.responsavelReceber}
-                onChange={handleChange('responsavelReceber')}
-                placeholder="Ex: Ramil dos Santos Pereira"
+                label="Data de Registro"
+                name="dataRegistro"
+                type="date"
+                value={formData.dataRegistro}
+                onChange={handleChange('dataRegistro')}
                 required={true}
               />
-            </div>
-          </>
-        )}
-      </FormGeral>
-    </div>
-  );
-};
+            )}
+            <div /> {/* Espaço vazio para manter o grid */}
+          </div>
+
+          <div className="input-row">
+            <Input
+              label="Responsável pela Entrega"
+              name="responsavelEntrega"
+              type="text"
+              value={formData.responsavelEntrega}
+              onChange={handleChange('responsavelEntrega')}
+              placeholder="Ex: Arthur dos Santos Pereira"
+              required={true}
+            />
+            <Input
+              label="Responsável por Receber"
+              name="responsavelReceber"
+              type="text"
+              value={formData.responsavelReceber}
+              onChange={handleChange('responsavelReceber')}
+              placeholder="Ex: Ramil dos Santos Pereira"
+              required={true}
+            />
+          </div>
+        </>
+      )}
+    </FormGeral>
+  </div>
+);
 
 export default Cadastrar;
