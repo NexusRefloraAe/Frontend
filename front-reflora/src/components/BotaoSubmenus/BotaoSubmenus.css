@@ -1,0 +1,85 @@
+/* BotaoSubmenus.css - Estilo Moderno "Chips" */
+
+/* 1. O Container (Layout Flexível) */
+.configuracoes-tabs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px; /* Espaço entre as cápsulas */
+  width: 100%;
+  
+  /* Removida a borda inferior conforme pedido */
+  margin-bottom: 24px;
+  padding: 4px 2px; /* Pequeno respiro para sombras não cortarem */
+}
+
+/* 2. Sobrescrevendo o Button.css para transformar em "Cápsula" */
+.configuracoes-tabs .button {
+  width: auto !important; /* Anula o 100% */
+  flex: 0 0 auto; /* Não estica nem encolhe */
+  padding: 8px 20px;
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
+  transition: all 0.3s ease;
+}
+
+/* 3. Estilo INATIVO (Clean e Minimalista) */
+.button--tab-inactive {
+  background-color: #f1f3f4; /* Cinza bem clarinho de fundo */
+  color: #5f6368;
+  border: 1px solid transparent;
+}
+
+.button--tab-inactive:hover {
+  background-color: #e8eaed; /* Um pouco mais escuro no hover */
+  color: #202124;
+  transform: translateY(-1px); /* Leve efeito de subida */
+}
+
+/* 4. Estilo ATIVO (Destaque Moderno) */
+.button--tab-active {
+  background-color: var(--cor-verde-primario, #198754); /* Fundo preenchido */
+  color: #ffffff; /* Texto branco para contraste */
+  border: 1px solid var(--cor-verde-primario, #198754);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); /* Sombra suave para dar profundidade */
+}
+
+/* 5. Ícones dentro dos botões */
+/* Ajuste caso o ícone fique muito colado no texto */
+.configuracoes-tabs .button svg {
+  margin-right: 6px;
+}
+
+/* ==========================================================
+   RESPONSIVIDADE (A mágica para telas menores)
+   ========================================================== */
+@media (max-width: 768px) {
+  .configuracoes-tabs {
+    /* Habilita o scroll lateral suave */
+    overflow-x: auto;
+    white-space: nowrap;
+    
+    /* Remove a barra de rolagem visualmente mas mantém a função */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+    
+    /* Adiciona um padding nas laterais para o primeiro item não colar na borda da tela */
+    padding-left: 5px;
+    padding-right: 15px;
+    
+    /* Comportamento de toque nativo */
+    -webkit-overflow-scrolling: touch; 
+  }
+
+  /* Esconde a barra no Chrome/Safari */
+  .configuracoes-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Ajuste de tamanho para mobile */
+  .configuracoes-tabs .button {
+    font-size: 0.85rem;
+    padding: 6px 16px;
+  }
+}
