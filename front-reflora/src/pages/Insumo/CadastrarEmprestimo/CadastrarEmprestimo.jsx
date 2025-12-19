@@ -11,32 +11,22 @@ const CadastrarEmprestimo = ({
 }) => {
   const hoje = new Date().toISOString().split('T')[0];
 
-  // Estado inicial — se receber item, está editando
-  const [formData, setFormData] = useState(
-    item ? {
-      nomeInsumo: item.NomeInsumo || '',
-      status: item.Status || '',
-      quantidade: item.Quantidade || '',
-      unidadeMedida: item.UnidadeMedida || 'Unidade',
-      dataRegistro: item.Data || hoje,
-      responsavelEntrega: item.ResponsavelEntrega || '',
-      responsavelReceber: item.ResponsavelRecebe || '',
-    } : {
-      nomeInsumo: '',
-      status: '',
-      quantidade: '',
-      unidadeMedida: 'Unidade',
-      dataRegistro: hoje,
-      responsavelEntrega: '',
-      responsavelReceber: '',
-    }
-  );
+  // Estado inicial — se receber item, preenche os dados
+  const [formData, setFormData] = useState({
+    nomeInsumo: '',
+    status: '',
+    quantidade: '',
+    unidadeMedida: 'Unidade', // Padrão para ferramentas
+    dataRegistro: hoje,
+    responsavelEntrega: '',
+    responsavelReceber: '',
+  });
 
-  // 🔹 Atualiza formData quando item muda
+  // Atualiza formData quando o item de edição muda
   useEffect(() => {
     if (item) {
       setFormData({
-        nomeInsumo: item.NomeInsumo || '',
+        nomeInsumo: item.NomeInsumo || item.nome || '', // Ajuste para pegar 'nome' se vier do DTO
         status: item.Status || '',
         quantidade: item.Quantidade || '',
         unidadeMedida: item.UnidadeMedida || 'Unidade',
@@ -45,13 +35,12 @@ const CadastrarEmprestimo = ({
         responsavelReceber: item.ResponsavelRecebe || '',
       });
     }
-  }, [item]);
+  }, [item, hoje]);
 
   const handleCancel = () => {
     if (onCancelar) {
       onCancelar();
     } else {
-      // Comportamento original
       const confirmar = window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.');
       if (confirmar) {
         resetForm();
@@ -94,35 +83,20 @@ const CadastrarEmprestimo = ({
     e.preventDefault();
 
     // Validação básica
-    if (!formData.nomeInsumo) {
-      alert('Por favor, informe o nome da ferramenta.');
-      return;
-    }
-    if (!formData.status) {
-      alert('Por favor, selecione o status (Emprestado/Devolvido).');
-      return;
-    }
-    if (!formData.quantidade || formData.quantidade <= 0) {
-      alert('Por favor, informe uma quantidade válida.');
-      return;
-    }
-    if (!formData.responsavelEntrega) {
-      alert('Por favor, informe o responsável pela entrega.');
-      return;
-    }
-    if (!formData.responsavelReceber) {
-      alert('Por favor, informe o responsável por receber.');
-      return;
-    }
-
-    console.log('Dados do Empréstimo/Devolução:', formData);
+    if (!formData.nomeInsumo) return alert('Por favor, informe o nome da ferramenta.');
+    if (!formData.status) return alert('Por favor, selecione o status.');
+    if (!formData.quantidade || formData.quantidade <= 0) return alert('Por favor, informe uma quantidade válida.');
+    if (!formData.responsavelEntrega) return alert('Por favor, informe o responsável pela entrega.');
+    if (!formData.responsavelReceber) return alert('Por favor, informe o responsável por receber.');
 
     try {
-      //Montar o objeto para o movimentacaoinsumoRequestDTO
+      // Montar payload para o Backend
+      // Nota: O backend precisa do ID do insumo. Se 'item' for null (novo cadastro manual),
+      // certifique-se de que o backend suporta busca por nome ou ajuste a lógica aqui.
       const payload = {
-        insumoId: item ? item.id : null, // Se estiver editando um item existente
-        nomeInsumo: formData.nomeInsumo, // Se o backend buscar por nome
-        status: formData.status.toUpperCase(), // 'EMPRESTADO' ou 'DEVOLVIDO'
+        insumoId: item ? item.id : null, 
+        nomeInsumo: formData.nomeInsumo,
+        status: formData.status.toUpperCase(), // 'EMPRESTADO', 'DEVOLVIDO', 'ENTRADA'
         quantidade: Number(formData.quantidade),
         dataRegistro: formData.dataRegistro,
         responsavelEntrega: formData.responsavelEntrega,
@@ -134,151 +108,146 @@ const CadastrarEmprestimo = ({
       alert('Movimento registrado com sucesso!');
 
       if (onSalvar) {
-        onSalvar(formData);
+        onSalvar(formData); // Atualiza a tela pai (Tabela)
       } else {
         resetForm();
       }
+
     } catch (error) {
       console.error('Erro ao registrar movimentação:', error);
-      alert('Erro ao registrar movimentação.');
+      alert('Erro ao registrar movimentação. Verifique os dados.');
     }
   };
 
-  // 🔹 Se tiver onSalvar (modal), chama a função
-  if (onSalvar) {
-    onSalvar(formData);
-    alert('Movimento atualizado com sucesso!');
-  } else {
-    // Comportamento original
-    alert('Movimento registrado com sucesso!');
-    resetForm();
-  }
+  // Definição das actions dentro do componente para acessar o handleCancel
+  const actions = [
+    {
+      type: 'button',
+      variant: 'action-secondary',
+      children: 'Cancelar',
+      onClick: handleCancel,
+    },
+    {
+      type: 'submit',
+      variant: 'primary',
+      children: item ? 'Atualizar' : 'Salvar Registro',
+    },
+  ];
+
+  return (
+    <div className="cadastrar-emprestimo">
+      <FormGeral
+        title={item ? "Editar Movimento da Ferramenta" : "Registrar Movimento da Ferramenta"}
+        actions={actions}
+        onSubmit={handleSubmit}
+        useGrid={false}
+      >
+        {/* Tipo de Insumo — fixo, não editável */}
+        <div className="input-row">
+          <Input
+            label="Tipo de insumo"
+            name="tipoInsumo"
+            type="text"
+            value="Ferramenta"
+            readOnly={true}
+            className="input-readonly"
+          />
+        </div>
+
+        {/* Nome do Insumo */}
+        <div className="input-row">
+          <Input
+            label="Nome do Insumo"
+            name="nomeInsumo"
+            type="text"
+            value={formData.nomeInsumo}
+            onChange={handleChange('nomeInsumo')}
+            placeholder="Ex: Pá Grande"
+            required={true}
+            // Se estiver editando, talvez queira bloquear a mudança do nome para garantir consistência do ID
+            readOnly={!!item} 
+            className={item ? "input-readonly" : ""}
+          />
+        </div>
+
+        {/* Status */}
+        <div className="input-row">
+          <Input
+            label="Status"
+            name="status"
+            type="select"
+            value={formData.status}
+            onChange={handleChange('status')}
+            required={true}
+            options={[
+              { value: '', label: 'Selecione o status...' },
+              { value: 'Emprestado', label: 'Emprestado' },
+              { value: 'Devolvido', label: 'Devolvido' },
+              { value: 'Entrada', label: 'Entrada' }, // Adicionado Entrada para consistência com enum
+            ]}
+          />
+        </div>
+
+        {/* Quantidade e Unidade */}
+        <div className="input-row">
+          <Input
+            label="Quantidade"
+            name="quantidade"
+            type="number"
+            value={formData.quantidade}
+            onChange={handleChange('quantidade')}
+            onIncrement={handleQuantidadeInc}
+            onDecrement={handleQuantidadeDec}
+            placeholder="Ex: 10"
+            required={true}
+            min="0"
+          />
+          <Input
+            label="Unidade de Medida"
+            name="unidadeMedida"
+            type="text"
+            value="Unidade"
+            readOnly={true}
+            className="input-readonly"
+          />
+        </div>
+
+        {/* Data de Registro */}
+        <div className="input-row">
+          <Input
+            label="Data de Registro"
+            name="dataRegistro"
+            type="date"
+            value={formData.dataRegistro}
+            onChange={handleChange('dataRegistro')}
+            required={true}
+          />
+        </div>
+
+        {/* Responsáveis */}
+        <div className="input-row">
+          <Input
+            label="Responsável pela Entrega"
+            name="responsavelEntrega"
+            type="text"
+            value={formData.responsavelEntrega}
+            onChange={handleChange('responsavelEntrega')}
+            placeholder="Ex: Arthur dos Santos Pereira"
+            required={true}
+          />
+          <Input
+            label="Responsável por Receber"
+            name="responsavelReceber"
+            type="text"
+            value={formData.responsavelReceber}
+            onChange={handleChange('responsavelReceber')}
+            placeholder="Ex: Ramil dos Santos Pereira"
+            required={true}
+          />
+        </div>
+      </FormGeral>
+    </div>
+  );
 };
-
-const actions = [
-  {
-    type: 'button',
-    variant: 'action-secondary',
-    children: 'Cancelar',
-    onClick: handleCancel,
-  },
-  {
-    type: 'submit',
-    variant: 'primary',
-    children: item ? 'Atualizar' : 'Salvar Registro',
-  },
-];
-
-return (
-  <div className="cadastrar-emprestimo">
-    <FormGeral
-      title={item ? "Editar Movimento da Ferramenta" : "Registrar Movimento da Ferramenta"}
-      actions={actions}
-      onSubmit={handleSubmit}
-      useGrid={false}
-    >
-      {/* Tipo de Insumo — fixo, não editável */}
-      <div className="input-row">
-        <Input
-          label="Tipo de insumo"
-          name="tipoInsumo"
-          type="text"
-          value="Ferramenta"
-          readOnly={true}
-          className="input-readonly"
-        />
-      </div>
-
-      {/* Nome do Insumo */}
-      <div className="input-row">
-        <Input
-          label="Nome do Insumo"
-          name="nomeInsumo"
-          type="text"
-          value={formData.nomeInsumo}
-          onChange={handleChange('nomeInsumo')}
-          placeholder="Ex: Pá Grande"
-          required={true}
-        />
-      </div>
-
-      {/* Status */}
-      <div className="input-row">
-        <Input
-          label="Status"
-          name="status"
-          type="select"
-          value={formData.status}
-          onChange={handleChange('status')}
-          required={true}
-          options={[
-            { value: '', label: 'Selecione o status...' },
-            { value: 'Emprestado', label: 'Emprestado' },
-            { value: 'Devolvido', label: 'Devolvido' },
-            { value: 'Entrada', label: 'Entrada' },
-          ]}
-        />
-      </div>
-
-      {/* Quantidade e Unidade */}
-      <div className="input-row">
-        <Input
-          label="Quantidade"
-          name="quantidade"
-          type="number"
-          value={formData.quantidade}
-          onChange={handleChange('quantidade')}
-          onIncrement={handleQuantidadeInc}
-          onDecrement={handleQuantidadeDec}
-          placeholder="Ex: 10"
-          required={true}
-          min="0"
-        />
-        <Input
-          label="Unidade de Medida"
-          name="unidadeMedida"
-          type="text"
-          value="Unidade"
-          readOnly={true}
-          className="input-readonly"
-        />
-      </div>
-
-      {/* Data de Registro */}
-      <div className="input-row">
-        <Input
-          label="Data de Registro"
-          name="dataRegistro"
-          type="date"
-          value={formData.dataRegistro}
-          onChange={handleChange('dataRegistro')}
-          required={true}
-        />
-      </div>
-
-      {/* Responsáveis */}
-      <div className="input-row">
-        <Input
-          label="Responsável pela Entrega"
-          name="responsavelEntrega"
-          type="text"
-          value={formData.responsavelEntrega}
-          onChange={handleChange('responsavelEntrega')}
-          placeholder="Ex: Arthur dos Santos Pereira"
-          required={true}
-        />
-        <Input
-          label="Responsável por Receber"
-          name="responsavelReceber"
-          type="text"
-          value={formData.responsavelReceber}
-          onChange={handleChange('responsavelReceber')}
-          placeholder="Ex: Ramil dos Santos Pereira"
-          required={true}
-        />
-      </div>
-    </FormGeral>
-  </div>
-);
 
 export default CadastrarEmprestimo;
