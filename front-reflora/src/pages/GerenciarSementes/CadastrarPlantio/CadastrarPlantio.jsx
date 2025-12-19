@@ -208,17 +208,6 @@ const CadastrarPlantio = () => {
         </div>
 
         <Input
-          label="Quantidade a ser plantada (kg/g/und)"
-          name="quantidadePlantada"
-          type="number"
-          value={formData.quantidadePlantada}
-          onChange={handleChange('quantidadePlantada')}
-          onIncrement={() => handleIncrement("quantidadePlantada")}
-          onDecrement={() => handleDecrement("quantidadePlantada")}
-          required={true}
-        />
-
-        <Input
           label="Onde está sendo plantado?"
           name="tipoPlantio"
           type="select"
