@@ -4,6 +4,11 @@ import Input from "../../Input/Input";
 
 
 const EditarSementes = ({ isOpen, onSalvar, onCancelar, semente }) => {
+    
+    // --- Novos Estados para o IBGE ---
+    const [estados, setEstados] = useState([]);
+    const [cidades, setCidades] = useState([]);
+
     const [formData, setFormData] = useState({
         nome: '',
         nomeCientifico: '',
@@ -12,29 +17,73 @@ const EditarSementes = ({ isOpen, onSalvar, onCancelar, semente }) => {
         dataCadastro: '',
         qtdAtual: '',
         unidadeMedida: 'kg',
-        localizacao: '',
+        // localizacao: '', // Removido
+        uf: '',          // Adicionado
+        cidade: '',      // Adicionado
         camaraFria: 'nao',
     });
 
+    // 1. Carregar Estados ao montar
+    useEffect(() => {
+        const fetchEstados = async () => {
+            try {
+                const response = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome');
+                const data = await response.json();
+                setEstados(data);
+            } catch (error) {
+                console.error("Erro ao buscar estados:", error);
+            }
+        };
+        if (isOpen) {
+            fetchEstados();
+        }
+    }, [isOpen]);
+
+    // 2. Carregar dados da semente na edição
     useEffect(() => {
         if (semente) {
             setFormData({
-                nome: semente.nome || '',
+                nome: semente.nome || semente.nomePopular || '',
                 nomeCientifico: semente.nomeCientifico || '',
                 familia: semente.familia || '',
                 origem: semente.origem || '',
-                dataCadastro: semente.dataCadastro ? semente.dataCadastro.split('/').reverse().join('-') : '',
-                qtdAtual: semente.qtdAtual || '',
-                unidadeMedida: semente.unidadeMedida || 'kg',
-                localizacao: semente.localizacao || '',
-                camaraFria: semente.camaraFria || 'nao',
+                dataCadastro: semente.dataCadastro ? semente.dataCadastro.split('/').reverse().join('-') : 
+                              (semente.dataDeCadastro ? semente.dataDeCadastro.split('/').reverse().join('-') : ''),
+                qtdAtual: semente.qtdAtual || semente.quantidade || '',
+                unidadeMedida: semente.unidadeMedida || semente.unidadeDeMedida || 'kg',
+                
+                // Mapeamento dos novos campos
+                uf: semente.uf || '',
+                cidade: semente.cidade || '',
+                
+                camaraFria: semente.camaraFria || (semente.estahNaCamaraFria ? 'sim' : 'nao') || 'nao',
             });
         }
     }, [semente]);
+
+    // 3. Carregar Cidades quando a UF muda (seja pelo usuário ou ao carregar dados iniciais)
+    useEffect(() => {
+        const fetchCidades = async () => {
+            if (formData.uf) {
+                try {
+                    const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${formData.uf}/municipios`);
+                    const data = await response.json();
+                    setCidades(data);
+                } catch (error) {
+                    console.error("Erro ao buscar cidades:", error);
+                }
+            } else {
+                setCidades([]);
+            }
+        };
+        fetchCidades();
+    }, [formData.uf]);
+
+
     const handleCancel = (confirmar = true) => {
         if (confirmar) {
             if (window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
-                onCancelar(); // Chama a função do 'ModalDetalheSemente.jsx'
+                onCancelar(); 
             }
         } else {
             onCancelar();
@@ -43,11 +92,12 @@ const EditarSementes = ({ isOpen, onSalvar, onCancelar, semente }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // 3. Formata os dados de volta e chama onSalvar
+        
         const dadosSalvos = {
-            ...semente, // Mantém dados originais (como 'id')
-            ...formData, // Sobrescreve com dados do form
-            // Mapeia de volta para os nomes de chave originais (com letra maiúscula)
+            ...semente, 
+            ...formData, 
+            // Mapeia para o formato esperado pelo serviço/backend
+            nomePopular: formData.nome, // Assegurando consistência de nomes
             nome: formData.nome,
             nomeCientifico: formData.nomeCientifico,
             familia: formData.familia,
@@ -55,14 +105,28 @@ const EditarSementes = ({ isOpen, onSalvar, onCancelar, semente }) => {
             dataCadastro: formData.dataCadastro.split('-').reverse().join('/'),
             qtdAtual: formData.qtdAtual,
             unidadeMedida: formData.unidadeMedida,
-            localizacao: formData.localizacao,
+            
+            uf: formData.uf,
+            cidade: formData.cidade,
+            // localizacaoDaColeta: `${formData.cidade} - ${formData.uf}`, // Opcional se o back precisar concatenado
+            
             camaraFria: formData.camaraFria,
+            estahNaCamaraFria: formData.camaraFria === 'sim'
         };
         onSalvar(dadosSalvos);
     };
+
     const handleChange = (field) => (e) => {
         const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
-        setFormData((prev) => ({ ...prev, [field]: value }));
+        
+        setFormData((prev) => {
+            const newState = { ...prev, [field]: value };
+            // Se mudou UF, limpa a cidade
+            if (field === 'uf') {
+                newState.cidade = ''; 
+            }
+            return newState;
+        });
     };
 
     const handleIncrement = (field) => () => {
@@ -74,6 +138,10 @@ const EditarSementes = ({ isOpen, onSalvar, onCancelar, semente }) => {
             [field]: Math.max(0, prev[field] - 1),
         }));
     };
+
+    // Opções formatadas para o Select
+    const optionsEstados = estados.map(e => ({ value: e.sigla, label: e.nome }));
+    const optionsCidades = cidades.map(c => ({ value: c.nome, label: c.nome }));
 
     const formActions = [
         {
@@ -98,7 +166,6 @@ const EditarSementes = ({ isOpen, onSalvar, onCancelar, semente }) => {
         <div className="modal-overlay" onClick={() => handleCancel(true)}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
 
-                {/* Botão de fechar (opcional, mas bom para modais) */}
                 <button type="button" className="modal-close-button" onClick={() => handleCancel(true)}>
                     &times;
                 </button>
@@ -147,7 +214,6 @@ const EditarSementes = ({ isOpen, onSalvar, onCancelar, semente }) => {
                         type="number"
                         value={formData.qtdAtual}
                         required={true}
-
                         onChange={handleChange('qtdAtual')}
                         onIncrement={handleIncrement('qtdAtual')}
                         onDecrement={handleDecrement('qtdAtual')}
@@ -159,17 +225,34 @@ const EditarSementes = ({ isOpen, onSalvar, onCancelar, semente }) => {
                         value={formData.unidadeMedida}
                         onChange={handleChange('unidadeMedida')}
                         options={[
-                            { value: 'kg', label: 'kg' },
-                            { value: 'g', label: 'g' },
-                            { value: 'und', label: 'und' },
+                            { value: 'KG', label: 'kg' },
+                            { value: 'G', label: 'g' },
+                            { value: 'UNIDADE', label: 'und' },
                         ]}
                     />
+
+                    {/* --- SUBSTITUIÇÃO DA LOCALIZAÇÃO PELOS SELECTS --- */}
                     <Input
-                        label="Localização"
-                        name="localizacao"
-                        value={formData.localizacao}
-                        onChange={handleChange('localizacao')}
+                        label="Estado (UF)"
+                        name="uf"
+                        type="select"
+                        value={formData.uf}
+                        onChange={handleChange('uf')}
+                        options={optionsEstados}
+                        placeholder="Selecione UF"
                     />
+                    
+                    <Input
+                        label="Cidade"
+                        name="cidade"
+                        type="select"
+                        value={formData.cidade}
+                        onChange={handleChange('cidade')}
+                        options={optionsCidades}
+                        placeholder="Selecione Cidade"
+                        disabled={!formData.uf}
+                    />
+
                     <Input
                         label="Câmara Fria"
                         name="camaraFria"

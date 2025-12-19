@@ -2,18 +2,12 @@ import React, { useState, useEffect } from 'react'
 import FormGeral from '../FormGeral/FormGeral'
 import ImageUpload from '../ImageUpload/ImageUpload'
 import Input from '../Input/Input'
-import { sementesService } from '../../services/sementesService' // 1. Importar Serviço
-import { getBackendErrorMessage } from '../../utils/errorHandler' // 2. Importar Tratamento de Erro
+import { sementesService } from '../../services/sementesService'
+import { getBackendErrorMessage } from '../../utils/errorHandler'
 
 import { FaSave } from 'react-icons/fa'
 import locationIcon from '../../assets/locationicon.svg'
 
-// --- Opções (Mantidas iguais) ---
-// const optionsNomePopular = [
-//     { value: 'ipe-amarelo', label: 'Ipê-amarelo' },
-//     { value: 'pau-brasil', label: 'Pau-Brasil' },
-// ];
-// ... (pode manter todas as outras constantes de options aqui) ...
 const optionsUnidade = [
     { value: 'KG', label: 'Kg' },
     { value: 'G', label: 'g' },
@@ -24,9 +18,16 @@ const optionsCamaraFria = [
     { value: 'nao', label: 'Não' },
 ];
 
-function FormularioSemente({ onSuccess, onCancel, sementeParaEditar = null }) {
+// --- ADICIONADO: Props do IBGE recebidas do pai ---
+function FormularioSemente({ 
+    onSuccess, 
+    onCancel, 
+    sementeParaEditar = null, 
+    listaEstados = [],   // Nova prop
+    listaCidades = [],   // Nova prop
+    onEstadoChange       // Nova prop (função)
+}) {
     
-    // Estado inicial vazio
     const [formData, setFormData] = useState({
         nomePopular: '',
         nomeCientifico: '',
@@ -35,7 +36,9 @@ function FormularioSemente({ onSuccess, onCancel, sementeParaEditar = null }) {
         dataCadastro: '', 
         quantidade: '',
         unidadeMedida: 'KG',
-        localizacao: '',
+        // localizacao: '', // Removi o campo texto livre antigo (ou mantenha se quiser concatenar)
+        uf: '',          // Novo campo
+        cidade: '',      // Novo campo
         camaraFria: 'nao',
     });
 
@@ -45,7 +48,6 @@ function FormularioSemente({ onSuccess, onCancel, sementeParaEditar = null }) {
     // --- 3. Efeito para Carregar Dados na Edição ---
     useEffect(() => {
         if (sementeParaEditar) {
-            // Conversão de Data: dd/MM/yyyy (Backend) -> yyyy-MM-dd (Input HTML)
             let dataInput = '';
             if(sementeParaEditar.dataDeCadastro) {
                 const [dia, mes, ano] = sementeParaEditar.dataDeCadastro.split('/');
@@ -59,43 +61,71 @@ function FormularioSemente({ onSuccess, onCancel, sementeParaEditar = null }) {
                 origem: sementeParaEditar.origem || '',
                 dataCadastro: dataInput,
                 quantidade: sementeParaEditar.quantidade || '',
-                // O backend manda "KG", "G" ou "UNIDADE", que agora batem com nossas options.
                 unidadeMedida: sementeParaEditar.unidadeDeMedida || 'KG',
-                localizacao: sementeParaEditar.localizacaoDaColeta || '',
-                // Backend manda Boolean, Input espera string 'sim'/'nao'
+                
+                // Mapeando UF e Cidade vindos do backend
+                uf: sementeParaEditar.uf || '', 
+                cidade: sementeParaEditar.cidade || '',
+                
                 camaraFria: sementeParaEditar.estahNaCamaraFria ? 'sim' : 'nao'
             });
-            // Nota: Não conseguimos pré-carregar o arquivo de foto no input type="file" por segurança do browser,
-            // mas o backend mantém a foto antiga se não enviarmos uma nova.
+            // O componente pai (BancoSementes) já chamou o handleEstadoChange se houver UF, 
+            // então a listaCidades deve chegar preenchida.
         }
     }, [sementeParaEditar]);
 
+    // --- Transformar dados do IBGE para o formato do Select (value/label) ---
+    const optionsEstados = listaEstados.map(estado => ({
+        value: estado.sigla,
+        label: estado.nome
+    }));
+
+    const optionsCidades = listaCidades.map(cidade => ({
+        value: cidade.nome,
+        label: cidade.nome
+    }));
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        
         setFormData(prevData => ({
             ...prevData,
             [name]: value
         }));
+
+        // --- LÓGICA ESPECIAL PARA UF ---
+        if (name === 'uf') {
+            // 1. Limpa a cidade pois mudou o estado
+            setFormData(prev => ({ ...prev, cidade: '' }));
+            // 2. Chama a função do pai para buscar as novas cidades na API
+            if (onEstadoChange) {
+                onEstadoChange(value);
+            }
+        }
     };
 
-    // --- 4. Envio dos Dados Conectado ao Service ---
+    // --- 4. Envio dos Dados ---
     const handleSubmit = async (e) => {
         if(e && e.preventDefault) e.preventDefault();
         
         setLoading(true);
 
         try {
+            // Preparar o payload (objeto que vai pro backend)
+            // Se o backend ainda esperar "localizacaoDaColeta" como string única:
+            // const payload = { ...formData, localizacaoDaColeta: `${formData.cidade} - ${formData.uf}` };
+            
+            // Se o backend já aceita uf e cidade separados:
+            const payload = { ...formData };
+
             if (sementeParaEditar && sementeParaEditar.id) {
-                // MODO EDIÇÃO
-                await sementesService.update(sementeParaEditar.id, formData, fotoSemente);
+                await sementesService.update(sementeParaEditar.id, payload, fotoSemente);
                 alert("Semente atualizada com sucesso!");
             } else {
-                // MODO CADASTRO
-                await sementesService.create(formData, fotoSemente);
+                await sementesService.create(payload, fotoSemente);
                 alert("Semente cadastrada com sucesso!");
             }
 
-            // Notifica o pai (Banco.jsx) para fechar o form e atualizar a lista
             if (onSuccess) onSuccess();
 
         } catch (error) {
@@ -111,7 +141,7 @@ function FormularioSemente({ onSuccess, onCancel, sementeParaEditar = null }) {
             children: 'Cancelar',
             variant: 'action-secondary',
             type: 'button',
-            onClick: onCancel, // Usa a prop recebida do pai
+            onClick: onCancel,
             disabled: loading
         },
         {
@@ -135,11 +165,8 @@ function FormularioSemente({ onSuccess, onCancel, sementeParaEditar = null }) {
                 label="Foto da Semente"
                 className='form-span-2'
                 onFileChange={(file) => setFotoSemente(file)}
-                // Se quiser mostrar a foto atual na edição, precisaria passar a URL para o componente ImageUpload
-                // previewUrl={sementeParaEditar?.fotoSementeResponseDTO?.url} 
             />
 
-            {/* Mudei type='text' para permitir digitação livre ou select se preferir manter restrito */}
             <Input
                 label="Nome Popular"
                 type='text' 
@@ -147,7 +174,6 @@ function FormularioSemente({ onSuccess, onCancel, sementeParaEditar = null }) {
                 value={formData.nomePopular}
                 onChange={handleInputChange}
                 placeholder="Digite o nome popular"
-                // Se quiser manter como select, use: type='select' e passe options={optionsNomePopular}
             />
 
             <Input
@@ -208,15 +234,33 @@ function FormularioSemente({ onSuccess, onCancel, sementeParaEditar = null }) {
                 </div>
             </div>
 
-            <Input
-                label="Localização da Coleta"
-                type='text'
-                name='localizacao'
-                value={formData.localizacao}
-                onChange={handleInputChange}
-                placeholder="Digite a localização"
-                icon={locationIcon}
-            />
+            {/* --- NOVOS CAMPOS DE LOCALIZAÇÃO (IBGE) --- */}
+            <div className='campo-linha-combinada'>
+                <div style={{ flex: 1 }}> {/* Ajuste de layout simples */}
+                    <Input
+                        label="Estado (UF)"
+                        type='select'
+                        name='uf'
+                        value={formData.uf}
+                        onChange={handleInputChange}
+                        options={optionsEstados}
+                        placeholder="Selecione o Estado"
+                    />
+                </div>
+                <div style={{ flex: 2 }}>
+                    <Input
+                        label="Cidade"
+                        type='select'
+                        name='cidade'
+                        value={formData.cidade}
+                        onChange={handleInputChange}
+                        options={optionsCidades}
+                        placeholder="Selecione a Cidade"
+                        disabled={!formData.uf} // Desabilita se não tiver UF selecionada
+                        icon={locationIcon}
+                    />
+                </div>
+            </div>
 
             <Input
                 label="Câmara Fria"

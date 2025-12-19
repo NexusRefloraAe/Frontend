@@ -10,6 +10,8 @@ import editIcon from '../../assets/edit.svg'
 import deleteIcon from '../../assets/delete.svg'
 import ExportButton from '../ExportButton/ExportButton'
 
+// ... (Mantenha as definições de colunasEntrada, colunasSaida e colunasparaExportar como estavam)
+
 const colunasEntrada = [
     { titulo: 'Lote', chave: 'lote' },
     { titulo: 'Data', chave: 'data' },
@@ -37,25 +39,17 @@ const colunasparaExportar = [
 
 function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
     
-    // Estado para os detalhes COMPLETOS da semente (buscados do backend)
     const [sementeDetalhada, setSementeDetalhada] = useState(null);
-    
-    // Estados do Histórico
     const [paginaHistorico, setPaginaHistorico] = useState(1);
     const [historicoEntrada, setHistoricoEntrada] = useState([]);
     const [historicoSaida, setHistoricoSaida] = useState([]);
     const [totalPaginas, setTotalPaginas] = useState(1);
-    
-    // Estado do Modal de Exclusão (Apenas exclusão fica aqui)
     const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    // Função auxiliar para evitar Invalid Date se a string for dd/MM/yyyy
     const formatarData = (dataString) => {
         if (!dataString) return '-';
-        // Se já vier formatado (ex: 09/07/2024), retornamos direto
         if (dataString.includes('/')) return dataString;
-        // Se for ISO ou array, tenta converter
         try {
             return new Date(dataString).toLocaleDateString('pt-BR');
         } catch (e) {
@@ -63,14 +57,11 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
         }
     };
 
-    // Função auxiliar para ler totalPages independente da estrutura (nested ou flat)
     const obterTotalPaginas = (objetoLista) => {
         if (!objetoLista) return 0;
-        // Caso 1: Estrutura aninhada (ex: entradas.page.totalPages) - Conforme seu JSON
         if (objetoLista.page && typeof objetoLista.page.totalPages === 'number') {
             return objetoLista.page.totalPages;
         }
-        // Caso 2: Estrutura plana (ex: entradas.totalPages) - Padrão Spring simples
         if (typeof objetoLista.totalPages === 'number') {
             return objetoLista.totalPages;
         }
@@ -81,10 +72,8 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
         const carregarDados = async () => {
             setLoading(true);
             try {
-                // 1. Busca detalhes completos
                 const detalhes = await sementesService.getById(sementeResumo.id);
                 
-                // Ajuste da URL da foto
                 if (detalhes?.fotoSementeResponseDTO?.url) {
                     let url = detalhes.fotoSementeResponseDTO.url;
                     if (url.includes("reflora-minio")) url = url.replace("reflora-minio", "localhost");
@@ -93,31 +82,21 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
                 }
                 setSementeDetalhada(detalhes);
 
-                // 2. Busca histórico paginado
                 try {
-                    // Backend pagina do 0, frontend do 1.
                     const hist = await sementesService.getHistorico(sementeResumo.id, paginaHistorico - 1, 2);
                     
                     const formatarItem = (item) => ({
                         ...item,
                         data: formatarData(item.data),
-                        camaraFriaFormatada: item.camaraFria ? 'Sim' : 'Não' // Ajuste conforme seu JSON (se vier string "Sim", ok, se bool, converte)
+                        camaraFriaFormatada: item.camaraFria ? 'Sim' : 'Não'
                     });
 
-                    // Acessa o content. Se seu JSON tem "entradas.content", usamos isso.
                     setHistoricoEntrada(hist?.entradas?.content?.map(formatarItem) || []);
                     setHistoricoSaida(hist?.saidas?.content?.map(formatarItem) || []);
                     
-                    // --- CÁLCULO DA PAGINAÇÃO CORRIGIDO ---
                     const paginasEntrada = obterTotalPaginas(hist?.entradas);
                     const paginasSaida = obterTotalPaginas(hist?.saidas);
-                    
-                    // Usa o maior número de páginas entre as duas listas
                     const maximo = Math.max(paginasEntrada, paginasSaida);
-                    
-                    console.log('Páginas Entrada:', paginasEntrada, 'Páginas Saída:', paginasSaida, 'Máximo:', maximo);
-
-                    // Se o máximo for 0 (sem dados), define 1 para manter consistência
                     setTotalPaginas(maximo > 0 ? maximo : 1);
 
                 } catch (errHistorico) {
@@ -146,16 +125,14 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
 
     const handleConfirmarExclusao = () => {
         if (onDeletar && sementeResumo.id) {
-            onDeletar(sementeResumo.id); // Chama a função do Pai (Banco.jsx)
+            onDeletar(sementeResumo.id);
         }
         setModalExcluirAberto(false);
-        onClose(); // Fecha o modal de detalhes também
+        onClose(); 
     };
 
-    // Se ainda está carregando ou falhou, usa o resumo da lista para exibir o básico
     const dados = sementeDetalhada || sementeResumo;
 
-    // --- FUNÇÃO GENÉRICA DE DOWNLOAD (Evita repetir código) ---
     const baixarArquivo = (response, defaultName) => {
         const disposition = response.headers['content-disposition'];
         let fileName = defaultName;
@@ -179,7 +156,6 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
         window.URL.revokeObjectURL(url);
     };
 
-    // --- HANDLER PARA PDF ---
     const handleDownloadHistoricoPDF = async () => {
         try {
             const id = sementeResumo.id;
@@ -191,7 +167,6 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
         }
     };
 
-    // --- HANDLER PARA CSV ---
     const handleDownloadHistoricoCSV = async () => {
         try {
             const id = sementeResumo.id;
@@ -229,7 +204,6 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
                                 )}
                             </div>
                             
-                            {/* Exibição dos dados do Back-end */}
                             <div className="detalhe-info">
                                 <p><strong>Lote:</strong> {dados.lote}</p>
                                 <p><strong>Data do Cadastro:</strong> {dados.dataDeCadastro}</p>
@@ -239,7 +213,9 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
                                 <p><strong>Origem:</strong> {dados.origem || '-'}</p>
                                 <p><strong>Quantidade Atual:</strong> {dados.quantidade} {dados.unidadeDeMedida}</p>
                                 <p><strong>Armazenamento:</strong> {dados.estahNaCamaraFria ? 'Câmara Fria' : 'Armazenamento Comum'}</p>
-                                <p><strong>Localização:</strong> {dados.localizacaoDaColeta || '-'}</p>
+                                
+                                {/* --- ALTERADO: Exibindo Cidade e UF --- */}
+                                <p><strong>Localização (Cidade/UF):</strong> {dados.cidade && dados.uf ? `${dados.cidade} - ${dados.uf}` : (dados.localizacaoDaColeta || '-')}</p>
                             </div>
                             
                             <div className="detalhe-acoes">
@@ -247,9 +223,8 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
                                     <img src={deleteIcon} alt="Deletar" />
                                 </button>
                                 <button onClick={() => {
-                                    // Passa os dados completos para edição
                                     onEditar(sementeDetalhada || sementeResumo);
-                                    onClose(); // Fecha modal para ver o formulário
+                                    onClose(); 
                                 }} title="Editar">
                                     <img src={editIcon} alt="Editar" />
                                 </button>
@@ -279,10 +254,6 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
                         </div>
 
                         <div className="footer-content">
-                            {/* Nota: Com o JSON de exemplo (totalPages: 1), este componente 
-                                retornará null e a barra ficará oculta visualmente. 
-                                Ela aparecerá automaticamente quando houver 2 ou mais páginas.
-                            */}
                             <Paginacao
                                 paginaAtual={paginaHistorico}
                                 totalPaginas={totalPaginas}
@@ -300,7 +271,6 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
                 </div>
             </div>
 
-            {/* Modal de Exclusão Confirmada */}
             <ModalExcluir
                 isOpen={modalExcluirAberto}
                 onClose={() => setModalExcluirAberto(false)}
