@@ -8,21 +8,8 @@ import EditarFerramenta from "../EditarFerramenta/EditarFerramenta";
 import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
 import DetalhesFerramenta from "./DetalhesFerramenta/DetalhesFerramenta";
 const HistoricoFerramenta = () => {
-    const DADOS_HISTORICO_FERRAMENTA_MOCK = [
-        // 👇 IDs adicionados
-        { id: 1, NomeInsumo: 'Ancinho', Data: '11/09/2025', Status: 'Entrada', Quantidade: 50, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
-        { id: 2, NomeInsumo: 'Pá Grande', Data: '11/09/2025', Status: 'Emprestada', Quantidade: 10, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Ramil', ResponsavelRecebe: 'Arthur' },
-        { id: 3, NomeInsumo: 'Enxada', Data: '11/09/2025', Status: 'Devolvida', Quantidade: 10, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
-        { id: 4, NomeInsumo: 'Cavadeira', Data: '11/09/2025', Status: 'Emprestada', Quantidade: 75, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Ramil', ResponsavelRecebe: 'Arthur' },
-        { id: 5, NomeInsumo: 'Regador', Data: '11/09/2025', Status: 'Entrada', Quantidade: 50, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
-        { id: 6, NomeInsumo: 'Podão', Data: '12/09/2025', Status: 'Emprestada', Quantidade: 20, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Maria', ResponsavelRecebe: 'João' },
-        { id: 7, NomeInsumo: 'Tesoura de Podar', Data: '13/09/2025', Status: 'Devolvida', Quantidade: 15, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'João', ResponsavelRecebe: 'Maria' },
-        { id: 8, NomeInsumo: 'Rastelo', Data: '14/09/2025', Status: 'Entrada', Quantidade: 30, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Carlos', ResponsavelRecebe: 'Ana' },
-        { id: 9, NomeInsumo: 'Martelo', Data: '15/09/2025', Status: 'Emprestada', Quantidade: 8, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Ana', ResponsavelRecebe: 'Carlos' },
-        { id: 10, NomeInsumo: 'Serrote', Data: '16/09/2025', Status: 'Entrada', Quantidade: 12, UnidadeMedida: 'Unidade', ResponsavelEntrega: 'Pedro', ResponsavelRecebe: 'Lucas' },
-    ];
-
     const [ferramentas, setFerramentas] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [filtros, setFiltros] = useState({
         nomeInsumo: '',
         dataInicio: '',
@@ -35,8 +22,22 @@ const HistoricoFerramenta = () => {
     const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
     const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
     
+    // Carregar dados do backend
+    const carregarDados = async () => {
+        try {
+            setLoading(true);
+            const dados = await insumoService.getHistorico('FERRAMENTA');
+            setFerramentas(dados);
+        } catch (error) {
+            console.error("Erro ao carregar histórico de ferramentas:", error);
+            alert("Não foi possível carregar o histórico de ferramentas.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        setFerramentas(DADOS_HISTORICO_FERRAMENTA_MOCK);
+        carregarDados();
     }, []);
 
     // Lógica de Filtro
@@ -46,7 +47,7 @@ const HistoricoFerramenta = () => {
 
     const handlePesquisar = () => {
         const { nomeInsumo, dataInicio, dataFim } = filtros;
-        const dadosFiltrados = DADOS_HISTORICO_FERRAMENTA_MOCK.filter(item => {
+        const dadosFiltrados = ferramentas.filter(item => {
             const matchesNome = !nomeInsumo ||
                 item.NomeInsumo.toLowerCase().includes(nomeInsumo.toLowerCase());
 

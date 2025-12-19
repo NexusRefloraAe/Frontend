@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
 import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio"; // 👈 Importado
+import insumoService from "../../../services/insumoService";
 import './HistoricoMaterial.css';
 
 import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico"; // 👈 Importado
@@ -9,21 +10,8 @@ import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
 import DetalhesMaterial from "./DetalhesMaterial/DetalhesMaterial";
 
 const HistoricoMaterial = () => {
-  const DADOS_HISTORICO_MATERIAL_MOCK = [
-    // 👇 IDs adicionados para consistência com a lógica de 'itemSelecionado'
-    { id: 1, NomeInsumo: 'Adubo', Data: '11/09/2025', Status: 'Entrada', Quantidade: 500, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
-    { id: 2, NomeInsumo: 'Terra', Data: '11/09/2025', Status: 'Saída', Quantidade: 100, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Ramil', ResponsavelRecebe: 'Arthur' },
-    { id: 3, NomeInsumo: 'Adubo', Data: '11/09/2025', Status: 'Saída', Quantidade: 100, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
-    { id: 4, NomeInsumo: 'Substrato', Data: '11/09/2025', Status: 'Saída', Quantidade: 750, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Ramil', ResponsavelRecebe: 'Arthur' },
-    { id: 5, NomeInsumo: 'Terra', Data: '11/09/2025', Status: 'Entrada', Quantidade: 500, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Arthur', ResponsavelRecebe: 'Ramil' },
-    { id: 6, NomeInsumo: 'Sementes', Data: '12/09/2025', Status: 'Entrada', Quantidade: 2000, UnidadeMedida: 'und', ResponsavelEntrega: 'Maria', ResponsavelRecebe: 'João' },
-    { id: 7, NomeInsumo: 'Fertilizante', Data: '13/09/2025', Status: 'Saída', Quantidade: 300, UnidadeMedida: 'L', ResponsavelEntrega: 'João', ResponsavelRecebe: 'Maria' },
-    { id: 8, NomeInsumo: 'Adubo Orgânico', Data: '14/09/2025', Status: 'Entrada', Quantidade: 1000, UnidadeMedida: 'Kg', ResponsavelEntrega: 'Carlos', ResponsavelRecebe: 'Ana' },
-    { id: 9, NomeInsumo: 'Plástico para Estufa', Data: '15/09/2025', Status: 'Saída', Quantidade: 50, UnidadeMedida: 'm²', ResponsavelEntrega: 'Ana', ResponsavelRecebe: 'Carlos' },
-    { id: 10, NomeInsumo: 'Água', Data: '16/09/2025', Status: 'Entrada', Quantidade: 10000, UnidadeMedida: 'L', ResponsavelEntrega: 'Pedro', ResponsavelRecebe: 'Lucas' },
-  ];
-
   const [materiais, setMateriais] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filtros, setFiltros] = useState({
     nomeInsumo: '', // 👈 Filtro específico
     dataInicio: '',
@@ -36,8 +24,22 @@ const HistoricoMaterial = () => {
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
   
+  // Carregar dados do backend
+  const carregarDados = async () => {
+    try {
+      setLoading(true);
+      const dados = await insumoService.getHistorico('MATERIAL');
+      setMateriais(dados);
+    } catch (error) {
+      console.error("Erro ao carregar histórico de materiais:", error);
+      alert("Não foi possível carregar o histórico de materiais.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
-    setMateriais(DADOS_HISTORICO_MATERIAL_MOCK);
+    carregarDados();
   }, []);
 
   // Lógica de Filtro (padrão Historico.jsx)
@@ -47,7 +49,7 @@ const HistoricoMaterial = () => {
 
   const handlePesquisar = () => {
     const { nomeInsumo, dataInicio, dataFim } = filtros;
-    const dadosFiltrados = DADOS_HISTORICO_MATERIAL_MOCK.filter(item => {
+    const dadosFiltrados = materiais.filter(item => {
       const matchesNome = !nomeInsumo ||
         item.NomeInsumo.toLowerCase().includes(nomeInsumo.toLowerCase());
 
