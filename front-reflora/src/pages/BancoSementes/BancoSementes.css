@@ -1,7 +1,13 @@
     .container-banco {
         display: flex;
         flex-direction: column;
-        height: 100vh;
+        height: calc(98vh - 80px);
+        /* ajuste se tiver header fixo */
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 0 8px;
+        /* opcional */
+        margin: 0 auto;
     }
 
     .bottons-banco ul li.botton-active {
@@ -27,7 +33,7 @@
         flex-direction: column;
     }
 
-    .content-banco > main {
+    .content-banco>main {
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -221,4 +227,4 @@
         padding: 8px;
         border-radius: 5px;
         color: white;
-    }   
+    }

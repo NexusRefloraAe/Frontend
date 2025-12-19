@@ -123,7 +123,7 @@ const HistoricoInspecao = () => {
         textoCancelar="Cancelar"
       />
 
-      <div className="historico-content-banco">
+      <div className="">
         <main>
           {/* 6. TABELA COM PROPS DE AÇÃO E PAGINAÇÃO */}
           <TabelaComBuscaPaginacao

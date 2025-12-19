@@ -124,7 +124,7 @@ function FormularioSemente({ onSuccess, onCancel, sementeParaEditar = null }) {
     ];
 
     return (
-        <div className="tabs-layout-content">
+        
         <FormGeral
             title={sementeParaEditar ? "Editar Semente" : "Cadastrar Semente"}
             actions={formActions}
@@ -227,7 +227,7 @@ function FormularioSemente({ onSuccess, onCancel, sementeParaEditar = null }) {
                 options={optionsCamaraFria}
             />
         </FormGeral>
-        </div>
+        
     );
 }
 

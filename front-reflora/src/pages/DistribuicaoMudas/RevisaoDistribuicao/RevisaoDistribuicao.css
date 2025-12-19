@@ -4,10 +4,7 @@
 /* Container da página de revisão */
 .revisao-distribuicao-pagina {
     width: 100%;
-    height: calc(90vh - 80px); /* ajuste se tiver header fixo */
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 0 8px; /* opcional */
+    
 }
 /* FORÇANDO O ESTILO DOS BOTÕES 
    O seletor abaixo procura qualquer botão dentro da nossa div principal

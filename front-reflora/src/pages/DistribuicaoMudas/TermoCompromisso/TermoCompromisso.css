@@ -5,8 +5,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh;
+
     background-color: #f4f4f4; /* Fundo levemente cinza para destacar o papel */
+height: calc(100vh - 80px); /* ajuste se tiver header fixo */
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 15px 8px; /* opcional */
 }
 
 /* --- O "PAPEL" (DOCUMENTO) --- */
@@ -19,6 +23,7 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
+    
 }
 
 /* Título do Documento */

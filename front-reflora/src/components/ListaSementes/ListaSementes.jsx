@@ -136,7 +136,7 @@ function Listasementes({
     }
 
     return (
-        <div className="tabs-layout-content">
+        <div >
             <section className="content-semente">
                 <div className="header-content-semente">
                     <h1>Lista de Sementes Cadastradas</h1>
