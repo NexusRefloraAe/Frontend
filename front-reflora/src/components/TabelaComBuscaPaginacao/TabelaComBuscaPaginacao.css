@@ -1,3 +1,7 @@
+/* ==========================================================
+   AÇÕES (BOTÕES DE ÍCONE)
+   ========================================================== */
+
 .acoes {
     display: flex;
     gap: 0.5rem;
@@ -24,7 +28,7 @@
     font-size: 1rem;
 }
 
-/* Tooltip nativo do browser */
+/* Tooltip simples */
 .btn-icone:hover::after {
     content: attr(title);
     position: absolute;
@@ -53,7 +57,7 @@
     box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
 }
 
-/* Botão Visualizar/Confirmar */
+/* Botão Confirmar / Visualizar */
 .btn-confirmar {
     background-color: #dbeafe;
     color: #1d4ed8;
@@ -79,169 +83,95 @@
     box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
 }
 
-/* Efeito de clique */
 .btn-icone:active {
     transform: translateY(0);
 }
 
-/* Responsividade para ações */
-@media (max-width: 768px) {
-    .acoes {
-        gap: 0.3rem;
-        flex-direction: column;
-        padding: 0.3rem;
-    }
+/* Responsividade ações */
 
-    .btn-icone {
-        width: 30px;
-        height: 30px;
-        font-size: 0.9rem;
-    }
-}
 
+/* ==========================================================
+   CONTAINER HISTÓRICO
+   ========================================================== */
 
 .historico-container-banco {
     display: flex;
     flex-direction: column;
     background-color: var(--cor-fundo-branco);
-    border-radius: var(--raio-borda-lg, 10px);
-    box-shadow: 0 2px 8px var(--cor-sombra-forte, rgba(0, 0, 0, 0.1));
-    border: 1px solid var(--cor-borda-verde, #e0e0e0);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
     overflow-y: auto;
-    overflow-x: hidden;
-
-
 }
 
-.historico-bottons-banco ul li.historico-botton-active {
-    background-color: #257024;
-}
-
+/* Header */
 .historico-title-content-banco {
     padding: 10px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .historico-title-content-banco img {
     width: 40px;
-    height: auto;
     cursor: pointer;
 }
 
-.historico-content-banco {
-    background-color: var(--cor-fundo-branco);
-    height: 100%;
-}
-
+/* Botões topo */
 .historico-bottons-banco ul {
     display: flex;
     gap: 10px;
     padding: 20px 10px;
     justify-content: center;
+    list-style: none;
 }
 
 .historico-bottons-banco button {
     background-color: #25702475;
     border: none;
-    padding: 5px 20px;
+    padding: 6px 20px;
     border-radius: 10px;
     color: white;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 16px;
     cursor: pointer;
-    align-items: center;
     display: flex;
-    gap: 5px;
-    justify-content: space-between;
+    gap: 6px;
 }
 
-.historico-bottons-banco button:hover {
+.historico-bottons-banco button:hover,
+.historico-bottons-banco ul li.historico-botton-active {
     background-color: #257024;
 }
 
-.historico-bottons-banco ul li {
-    list-style: none;
-}
-
+/* Conteúdo */
 .historico-content-semente {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    border-radius: 20px;
-    padding: 30px;
-    margin: 0px 30px 30px 30px;
     background-color: white;
-    height: 100%;
+    padding: 24px;
+    margin: 0 20px 20px;
+    border-radius: 16px;
 }
 
+/* Header interno */
 .historico-header-content-semente {
     display: flex;
     justify-content: space-between;
-    padding: var(--espacamento-xl, 24px);
+    padding: 16px 0;
 }
 
 .historico-header-content-semente h1 {
+    font-size: 24px;
     text-decoration: underline;
-    font-size: 25px;
 }
 
-.historico-infos-sementes-card table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.historico-infos-sementes-card table tr th {
-    background-color: #25702480;
-    padding: 12px 8px;
-    color: white;
-    font-size: 15px;
-    text-align: center;
-}
-
-.historico-infos-sementes-card table tr td {
-    text-align: center;
-    padding: 12px 8px;
-    background-color: #74748015;
-    color: #00000080;
-}
-
-.historico-infos-sementes-card table tr td input {
-    width: 100%;
-    padding: 3px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    text-align: center;
-}
-
-.historico-infos-sementes-card table tr td select {
-    width: 100%;
-    padding: 3px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    text-align: center;
-    background-color: white;
-}
-
-.historico-infos-sementes-card table tr th img {
-    width: 15px;
-    cursor: pointer;
-}
-
+/* Busca */
 .historico-input-search {
-    background-color: white;
-    border: black 1px solid;
-    border-radius: 10px;
-    padding: 10px;
     display: flex;
     align-items: center;
-    gap: 20px;
-}
-
-.historico-input-search img {
-    width: 20px;
-    cursor: pointer;
-    height: auto;
+    gap: 12px;
+    border: 1px solid #000;
+    border-radius: 10px;
+    padding: 10px;
 }
 
 .historico-input-search input {
@@ -250,111 +180,194 @@
     font-size: 16px;
 }
 
+/* ==========================================================
+   TABELA (DESKTOP)
+   ========================================================== */
+
+.historico-infos-sementes-card table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.historico-infos-sementes-card th {
+    background-color: #25702480;
+    padding: 12px;
+    color: white;
+    font-size: 15px;
+    text-align: center;
+}
+
+.historico-infos-sementes-card td {
+    background-color: #74748015;
+    padding: 12px;
+    text-align: center;
+    color: #00000080;
+}
+
+.historico-infos-sementes-card td input,
+.historico-infos-sementes-card td select {
+    width: 100%;
+    padding: 4px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+
+/* ==========================================================
+   FOOTER / PAGINAÇÃO
+   ========================================================== */
+
 .historico-footer-content {
     display: flex;
     justify-content: space-between;
-    padding: 15px;
+    padding: 16px;
     align-items: center;
 }
 
 .historico-footer-content button {
     background-color: #257024;
     border: none;
-    padding: 10px;
+    padding: 10px 14px;
     border-radius: 10px;
     color: white;
     font-weight: bold;
-    font-size: 18px;
     cursor: pointer;
 }
 
-.historico-footer-content button img {
-    width: 20px;
-    height: auto;
-}
-
-.historico-footer-content ul {
+.historico-footer-content nav ul {
     display: flex;
-    gap: 20px;
+    gap: 10px;
     list-style: none;
-    color: #66605F;
 }
 
-.historico-footer-content ul li a {
-    text-decoration: none;
-    color: #66605F;
-}
-
-/* Estiliza os links da paginação */
 .historico-footer-content nav ul li a {
-    text-decoration: none;
-    color: #66605F;
-    font-weight: bold;
     padding: 8px 12px;
-    border-radius: 5px;
-    display: block;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 6px;
+    color: #66605F;
 }
 
-/* Estilo do link 'disabled' */
-.historico-footer-content nav ul li a.disabled {
-    color: #CCCCCC;
-    pointer-events: none;
-    cursor: default;
-}
-
-/* Estilo do link 'active' */
 .historico-footer-content nav ul li a.active {
     background-color: #257024;
     color: white;
 }
 
-/* Estilo do '...' (span não clicável) */
-.historico-footer-content nav ul li span {
-    padding: 8px 12px;
-    color: #66605F;
-    font-weight: bold;
+.historico-footer-content nav ul li a.disabled {
+    color: #ccc;
+    pointer-events: none;
 }
+/* ==========================================================
+   TABELA RESPONSIVA – MOBILE (CARDS)
+   ========================================================== */
 
-.historico-active span {
-    background-color: #66605F;
-    padding: 8px;
-    border-radius: 5px;
-    color: white;
-}
-
-.loading-text,
-.no-results {
-    text-align: center;
-    padding: 20px;
-    color: #555;
-    font-style: italic;
-}
-
-.no-results {
-    color: #b91c1c;
-    font-weight: 500;
-}
-
-/* Garantir que a tabela seja responsiva */
 @media (max-width: 768px) {
-    .historico-header-content-semente {
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1rem;
+    .historico-header-content-semente h1 {
+    font-size: 15px;
+    text-decoration: underline;
+}
+    
+    .acoes {
+        gap: 0.4rem;
+        padding: 0.3rem;
     }
 
-    .historico-content-semente {
-        padding: 1rem;
-        margin: 0px 10px 10px 10px;
+    .btn-icone {
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
+    }
+    
+    .historico-infos-sementes-card table,
+    .historico-infos-sementes-card thead,
+    .historico-infos-sementes-card tbody,
+    .historico-infos-sementes-card th,
+    .historico-infos-sementes-card td,
+    .historico-infos-sementes-card tr {
+        display: block;
+        width: 100%;
     }
 
-    .historico-footer-content {
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1rem;
+    .historico-infos-sementes-card thead {
+        display: none;
     }
 
-    .historico-infos-sementes-card {
-        overflow-x: auto;
+
+    .historico-infos-sementes-card tr {
+        background-color: rgb(255, 255, 255);
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        margin-bottom: 16px;
+        padding: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .historico-infos-sementes-card td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 4px;
+        text-align: right;
+        background: transparent;
+        border: none;
+        font-size: 0.9rem;
+    }
+
+    .historico-infos-sementes-card td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #bec4be;
+        text-align: left;
+        background-color: #2d6a4f;
+        padding: 8px;
+        color: white;
+        font-size: 12px;
+        border-radius: 6px ;
+        
+    }
+
+    .historico-infos-sementes-card td[data-label="Ações"] {
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+     .historico-footer-content {
+        display: flex;
+        flex-direction: column; /* Empilha elementos */
+        justify-content: center;
+        align-items: stretch; /* Elementos ocupam toda largura disponível */
+        gap: 12px; /* Espaço entre botão e paginação */
+        padding: 12px;
+    }
+
+    .historico-footer-content button {
+        width: 100%; /* Botão ocupa toda a largura */
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 8px;
+    }
+
+    .historico-footer-content nav ul {
+        display: flex;
+        justify-content: center; /* Centraliza paginação */
+        flex-wrap: wrap; /* Quebra linhas se necessário */
+        gap: 8px;
+        padding: 0;
+    }
+
+    .historico-footer-content nav ul li a {
+        padding: 6px 10px;
+        font-size: 14px;
+        border-radius: 6px;
+    }
+
+    .historico-footer-content nav ul li a.active {
+        background-color: #257024;
+        color: white;
+    }
+
+    .historico-footer-content nav ul li a.disabled {
+        color: #ccc;
+        pointer-events: none;
     }
 }

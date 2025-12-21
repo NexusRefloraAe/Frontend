@@ -119,6 +119,7 @@ const handleSearchManual = (valor) => {
                   key={index}
                   item={item}
                   colunas={colunas}
+                  
                   onEditar={onEditar}
                   onConfirmar={onConfirmar}
                   onExcluir={onExcluir}
