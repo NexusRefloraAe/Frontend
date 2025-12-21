@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus';
+import TabLayout from '../../components/TabsLayout/TabsLayout';
 import Cadastrar from './Cadastrar/Cadastrar';
 import Historico from './Historico/Historico';
 import RelatorioVistoria from './RelatorioVistoria/RelatorioVistoria';
@@ -10,28 +10,25 @@ const VistoriaLayout = () => {
   const [activeTab, setActiveTab] = useState('cadastrar');
 
   const vistoriasMenus = [
-    { id: 'cadastrar', label: 'Cadastrar', icon: <FaSearchPlus /> },
-    { id: 'historico', label: 'Histórico', icon: <TbReportSearch /> },
-    { id: 'relatorio', label: 'Relatório', icon: <TbReportAnalytics /> },
+    { id: 'cadastrar', 
+      label: 'Cadastrar', 
+      icon: <FaSearchPlus /> ,
+      page: <Cadastrar />
+    },
+
+    { id: 'historico', 
+      label: 'Histórico', 
+      icon: <TbReportSearch />, 
+      page: <Historico />
+    },
+    { id: 'relatorio', 
+      label: 'Relatório', 
+      icon: <TbReportAnalytics/>,
+      page: <RelatorioVistoria />
+     },
   ];
 
-  return (
-    <div className="vistorias-container">
-      <div className="vistorias-nav">
-        <BotaoSubmenus
-          menus={vistoriasMenus}
-          activeMenuId={activeTab}
-          onMenuClick={setActiveTab}
-        />
-      </div>
-
-      <div className="vistorias-content">
-        {activeTab === 'cadastrar' && <Cadastrar />}
-        {activeTab === 'historico' && <Historico />}
-        {activeTab === 'relatorio' && <RelatorioVistoria />}
-      </div>
-    </div>
-  );
+  return <TabLayout tabs={vistoriasMenus} defaultActiveTab="cadastrar" />;
 };
 
 export default VistoriaLayout;

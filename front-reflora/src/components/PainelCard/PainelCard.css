@@ -51,6 +51,10 @@
 .card-icone span {
   font-size: 1.5rem;
 }
+.painel-card-container {
+  overflow-y: auto;
+}
+
 
 /* Responsividade base */
 @media (max-width: 768px) {

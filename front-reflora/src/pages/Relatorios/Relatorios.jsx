@@ -1,11 +1,9 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import PainelCard from "../../components/PainelCard/PainelCard";
 import './Relatorios.css';
 
 function Relatorios() {
-  const navigate = useNavigate();
-
   const relatorios = [
     {
       id: "sementes",
@@ -17,7 +15,7 @@ function Relatorios() {
     },
     {
       id: "canteiros",
-      titulo: "Movimentações dos Canteiros", 
+      titulo: "Movimentações dos Canteiros",
       valor: "Relatório",
       icone: "🪴",
       corFundo: "#f0fdf4",
@@ -26,7 +24,7 @@ function Relatorios() {
     {
       id: "vistorias",
       titulo: "Movimentações das Vistorias",
-      valor: "Relatório", 
+      valor: "Relatório",
       icone: "🔍",
       corFundo: "#fff7ed",
       rota: "/vistoria/relatorio-vistoria"  
@@ -39,34 +37,25 @@ function Relatorios() {
       corFundo: "#fef2f2",
       rota: "/insumo/relatorio-materiais"
     },
-    
   ];
-
-  const handleCardClick = (rota) => {
-    navigate(rota);
-  };
 
   return (
     <div className="relatorios-container">
-      <h1 className="relatorios-titulo">Relatórios</h1>
-      
       <div className="relatorios-grid">
         {relatorios.map((relatorio, index) => (
-          <div 
+          <PainelCard
             key={index}
-            onClick={() => handleCardClick(relatorio.rota)}
-            className="card-clickable"
-          >
-            <PainelCard
-              titulo={relatorio.titulo}
-              valor={relatorio.valor}
-              icone={relatorio.icone}
-              corFundo={relatorio.corFundo}
-              className="relatorio-card"
-            />
-          </div>
+            titulo={relatorio.titulo}
+            valor={relatorio.valor}
+            icone={relatorio.icone}
+            corFundo={relatorio.corFundo}
+            rota={relatorio.rota} // Navegação
+          />
         ))}
       </div>
+
+      {/* Outlet permite renderizar subrotas dentro dessa página */}
+      <Outlet />
     </div>
   );
 }

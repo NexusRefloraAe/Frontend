@@ -1,4 +1,4 @@
-import { FaEdit, FaEye, FaTrash } from "react-icons/fa"; // <-- 1. Alterado aqui
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 
 function LinhaTabelaAcoes({ item, colunas, onEditar, onConfirmar, onExcluir }) {
   const mostrarAcoes = onEditar || onConfirmar || onExcluir;
@@ -6,11 +6,19 @@ function LinhaTabelaAcoes({ item, colunas, onEditar, onConfirmar, onExcluir }) {
   return (
     <tr>
       {colunas.map((coluna) => (
-        <td key={coluna.key}>{item[coluna.key]}</td>
+        <td
+          key={coluna.key}
+          data-label={coluna.label} // 👈 AQUI ESTÁ O SEGREDO
+        >
+          {item[coluna.key]}
+        </td>
       ))}
 
       {mostrarAcoes && (
-        <td className="acoes">
+        <td
+          className="acoes"
+          data-label="Ações" // 👈 IMPORTANTE PARA O MOBILE
+        >
           {onEditar && (
             <button
               className="btn-icone btn-editar"
@@ -20,15 +28,17 @@ function LinhaTabelaAcoes({ item, colunas, onEditar, onConfirmar, onExcluir }) {
               <FaEdit className="icone" />
             </button>
           )}
+
           {onConfirmar && (
             <button
               className="btn-icone btn-confirmar"
               onClick={() => onConfirmar(item)}
               title="Visualizar"
             >
-              <FaEye className="icone" /> {/* <-- 2. Alterado aqui */}
+              <FaEye className="icone" />
             </button>
           )}
+
           {onExcluir && (
             <button
               className="btn-icone btn-excluir"

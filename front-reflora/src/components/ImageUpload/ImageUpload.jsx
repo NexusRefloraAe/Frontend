@@ -2,20 +2,10 @@ import React, { useState, useRef, useEffect } from 'react'
 import './ImageUpload.css'
 import cameraIcon from '../../assets/camera-icon.svg'
 
-/**
- * @param {object} props
- * @param {string} props.label - O texto do label (ex: "Upload de Imagem")
- * @param {function(File): void} props.onFileChange = - Função chamada quando o arquivo é selecionado
- * @param {string} props.className - Classe CSS adicional para customização
- * @param {string} [props.previewUrl] - URL da imagem existente (vinda do banco) para exibição inicial
- */
 function ImageUpload({ label, onFileChange, className = '', previewUrl }) {
-    // Renomeei o estado para 'preview' para diferenciar da prop 'previewUrl'
     const [preview, setPreview] = useState(null);
-
     const fileInputRef = useRef(null);
 
-    // --- NOVO: Efeito para carregar a imagem vinda do banco (Edição) ---
     useEffect(() => {
         if (previewUrl) {
             setPreview(previewUrl);
@@ -31,27 +21,31 @@ function ImageUpload({ label, onFileChange, className = '', previewUrl }) {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            if (onFileChange) {
-                onFileChange(file);
-            }
-            // Cria o preview local para o novo arquivo selecionado
+            if (onFileChange) onFileChange(file);
             setPreview(URL.createObjectURL(file));
         }
     };
 
     return (
-        <div className={`image-upload-wrapper ${className}`}>
+        <div className={`upload-wrapper-novo ${className}`}>
+            {/* REMOVIDO o style inline que forçava para esquerda. Agora obedece o CSS. */}
             {label && <label>{label}</label>}
 
-            <div className="image-upload-container" onClick={handleContainerClick} title='Clique para selecionar uma imagem'>
+            <div 
+                className="upload-box-novo" 
+                onClick={handleContainerClick} 
+                title='Clique para selecionar'
+            >
                 {preview ? (
-                    <img src={preview} alt="Preview" className="image-preview" />
+                    <img src={preview} alt="Preview" className="upload-preview-img" />
                 ) : (
-                    <div className="image-placeholder">
-                        <img src={cameraIcon} alt="Camera Icon" />
+                    <div className="upload-placeholder-novo">
+                        <img src={cameraIcon} alt="Ícone" />
+                        <span className="upload-text-main">Adicionar<br/>Foto</span>
                     </div>
                 )}
             </div>
+            
             <input
                 type="file"
                 ref={fileInputRef}

@@ -26,6 +26,8 @@ import RelatorioVistoria from '../pages/Vistoria/RelatorioVistoria/RelatorioVist
 import GerarRelatorio from '../pages/GerenciarSementes/GerarRelatorio/GerarRelatorio';
 import GerarRelatorioInsumo from '../pages/Insumo/GerarRelatorioInsumo/GerarRelatorioInsumo';
 
+import LayoutScroll from "../components/LayoutScroll/LayoutScroll";
+
 const AppRoutes = () => {
   return (
     <Router>
@@ -45,7 +47,7 @@ const AppRoutes = () => {
 
           <Route path="/gerenciar-canteiros" element={<GerenciarCanteirosLayout />} />
 
-          <Route path="/gerenciar-canteiros/relatorio" element={<RelatorioCanteiro />} />
+          
 
 
           <Route path="/distribuicao-mudas" element={<DistribuicaoMudasLayout />} />
@@ -54,11 +56,15 @@ const AppRoutes = () => {
           <Route path="/vistoria" element={<VistoriaLayout />} />
           <Route path="/insumo" element={<InsumoLayout />} />
 
-          <Route path="/relatorios" element={<Relatorios />} />
+          <Route element={<LayoutScroll />}>
+            <Route path="/relatorios" element={<Relatorios />} />
 
-          <Route path="/vistoria/relatorio-vistoria" element={<RelatorioVistoria />} />
-          <Route path="/insumo/relatorio-materiais" element={<GerarRelatorioInsumo tipo="materiais" />} />
-          <Route path="/gerenciamento-sementes/relatorio" element={<GerarRelatorio />} />
+            <Route path="/vistoria/relatorio-vistoria" element={<RelatorioVistoria />} />
+            <Route path="/insumo/relatorio-materiais" element={<GerarRelatorioInsumo tipo="materiais" />} />
+            <Route path="/gerenciamento-sementes/relatorio" element={<GerarRelatorio />} />
+            <Route path="/gerenciar-canteiros/relatorio" element={<RelatorioCanteiro />} />
+
+          </Route>
 
           <Route path="/configuracoes" element={<Configuracoes />} />
           <Route path="/notificacoes" element={<Notificacoes />} />
