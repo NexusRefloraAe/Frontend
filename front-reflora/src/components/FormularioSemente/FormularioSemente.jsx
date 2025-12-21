@@ -35,7 +35,8 @@ function FormularioSemente({ onSuccess, onCancel, sementeParaEditar = null }) {
         dataCadastro: '', 
         quantidade: '',
         unidadeMedida: 'KG',
-        localizacao: '',
+        estado: '',
+        cidade:'',
         camaraFria: 'nao',
     });
 
@@ -61,7 +62,8 @@ function FormularioSemente({ onSuccess, onCancel, sementeParaEditar = null }) {
                 quantidade: sementeParaEditar.quantidade || '',
                 // O backend manda "KG", "G" ou "UNIDADE", que agora batem com nossas options.
                 unidadeMedida: sementeParaEditar.unidadeDeMedida || 'KG',
-                localizacao: sementeParaEditar.localizacaoDaColeta || '',
+                estado: sementeParaEditar.estado || '',
+                cidade: sementeParaEditar.cidade || '',
                 // Backend manda Boolean, Input espera string 'sim'/'nao'
                 camaraFria: sementeParaEditar.estahNaCamaraFria ? 'sim' : 'nao'
             });
