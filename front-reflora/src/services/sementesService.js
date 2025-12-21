@@ -56,8 +56,8 @@ export const sementesService = {
         // Garante que a unidade vá em Maiúsculo para bater com o Enum (KG, UNIDADE, G)
         unidadeDeMedida: formData.unidadeMedida ? formData.unidadeMedida.toUpperCase() : null,
         
-        // CORREÇÃO: Mapeia 'localizacao' para 'localizacaoDaColeta'
-        localizacaoDaColeta: formData.localizacao, 
+        estado: formData.estado,
+        cidade: formData.cidade, 
         
         // CORREÇÃO: Converte 'sim'/'nao' para true/false
         estahNaCamaraFria: formData.camaraFria === 'sim' 
@@ -94,7 +94,8 @@ export const sementesService = {
         dataDeCadastro: dataFormatada,
         quantidade: formData.quantidade,
         unidadeDeMedida: formData.unidadeMedida ? formData.unidadeMedida.toUpperCase() : null,
-        localizacaoDaColeta: formData.localizacao,   // <-- Importante
+        estado: formData.estado,   // <-- Importante
+        cidade: formData.cidade,
         estahNaCamaraFria: formData.camaraFria === 'sim' // <-- Importante
     };
 
