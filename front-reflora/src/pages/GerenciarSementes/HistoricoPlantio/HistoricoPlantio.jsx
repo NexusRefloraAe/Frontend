@@ -57,12 +57,12 @@ const HistoricoPlantio = () => {
     } finally {
       setLoading(false);
     }
-  }, [termoBusca, ordem, direcao]); // Adicione as dependências corretas aqui
+  }, []); // Adicione as dependências corretas aqui
 
    // Carrega ao montar
    useEffect(() => {
      carregarDados(0, '', 'dataPlantio', 'desc');
-   }, [carregarDados]);
+   }, []);
 
   // Handlers de Modais (Visualizar, Fechar) mantêm-se iguais...
 // 1. CORREÇÃO: Função assíncrona com busca e tradução de dados
