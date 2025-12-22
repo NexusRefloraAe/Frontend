@@ -22,11 +22,30 @@ const HistoricoTestes = () => {
   const [modalDetalheAberto, setModalDetalheAberto] = useState(false);
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
 
+  const [ordem, setOrdem] = useState('dataPlantio'); 
+  const [direcao, setDirecao] = useState('desc');
+
+  const handleOrdenar = (novoCampo) => {
+    let novaDirecao = 'asc';
+    // Compara com o estado atual para decidir se inverte
+    if (novoCampo === ordem) {
+        novaDirecao = direcao === 'asc' ? 'desc' : 'asc';
+    }
+
+    // Atualiza visualmente
+    setOrdem(novoCampo);
+    setDirecao(novaDirecao);
+    setPaginaAtual(0); 
+    
+    // O PULO DO GATO: Chama a busca com os valores NOVOS calculados
+    carregarDados(0, termoBusca, novoCampo, novaDirecao);
+  };
+
   // 2. Carregar dados da API e CALCULAR A TAXA se necessário
-  const carregarDados = async (pagina = 0, busca = '') => {
+  const carregarDados = useCallback(async (pagina = 0, busca = '', ordem, direcao) => {
     try {
       setLoading(true);
-      const data = await testeGerminacaoService.getAll(busca, pagina);
+      const data = await testeGerminacaoService.getAll(busca, pagina, 5, ordem, direcao);
       
       const listaVindaDoBack = data.content || [];
 
@@ -62,16 +81,56 @@ const HistoricoTestes = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    carregarDados(0, '');
   }, []);
 
+  useEffect(() => {
+    carregarDados(0, '', 'dataPlantio', 'desc');
+  }, [carregarDados]);
+
   // Handlers de Modais
-  const handleVisualizar = (item) => {
-    setItemSelecionado(item);
-    setModalDetalheAberto(true);
+  const handleVisualizar = async (item) => {
+    try {
+      setLoading(true); // Opcional: Mostra loading
+      
+      // 1. Busca o dado cru do banco (Igual ao seu JSON)
+      const dadosApi = await testeGerminacaoService.getById(item.id);
+
+      // 2. FAZ A TRADUÇÃO (O Pulo do Gato) 🐱
+      // Criamos um objeto novo com os nomes que o 'DetalhesTestes' espera
+      const dadosTraduzidos = {
+          ...dadosApi, // Copia id, lote, datas...
+
+          // AQUI ESTÁ A MÁGICA:
+          // Pegamos o valor que está escondido dentro de 'sementes'
+          // e colocamos na raiz com o nome 'nomePopularSemente'
+          nomePopularSemente: dadosApi.sementes?.nomePopular || 'Sem nome',
+          
+          // Tratamento para booleanos (true -> "Sim")
+          estahNaCamaraFria: dadosApi.estahNaCamaraFria ? 'Sim' : 'Não',
+          
+          // Garante a formatação da taxa
+          taxaGerminacao: formatarTaxa(dadosApi.taxaGerminacao, dadosApi.qtdGerminou, dadosApi.qtdSemente)
+      };
+
+      // 3. Salva o objeto TRADUZIDO no estado
+      setItemSelecionado(dadosTraduzidos);
+      setModalDetalheAberto(true);
+
+    } catch (error) {
+      console.error("Erro ao carregar detalhes:", error);
+      alert("Erro ao buscar dados.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Função auxiliar simples para calcular/formatar a taxa
+  const formatarTaxa = (taxa, germinou, total) => {
+      if (taxa) return `${taxa}%`.replace('%%', '%'); // Evita %%
+      if (total > 0 && germinou != null) {
+          return ((germinou / total) * 100).toFixed(2) + '%';
+      }
+      return '-';
   };
 
   const handleFecharModalDetalhe = () => {
@@ -134,15 +193,15 @@ const HistoricoTestes = () => {
   }
 
   // 5. FUNÇÕES DA TABELA (Busca e Paginação)
-  const handleBusca = useCallback((novoTermo) => {
+  const handleBusca = (novoTermo) => {
       setTermoBusca(novoTermo);
       // We call carregarDados passing the new term immediately
-      carregarDados(0, novoTermo);
-  }, []);
+      carregarDados(0, novoTermo, ordem, direcao);
+  };
 
   const handleMudarPagina = (novaPagina) => {
     // Componente de paginação visual costuma usar base 1, API usa base 0
-    carregarDados(novaPagina - 1, termoBusca);
+    carregarDados(novaPagina - 1, termoBusca, ordem, direcao);
   };
 
   // --- NOVA LÓGICA DE DOWNLOAD (Igual ao HistoricoPlantio) ---
@@ -191,14 +250,14 @@ const HistoricoTestes = () => {
 
   // 🧩 COLUNAS MAPEADAS
   const colunas = [
-    { key: "lote", label: "Lote" },
-    { key: "nomePopularSemente", label: "Nome popular" }, 
-    { key: "dataPlantio", label: "Data do Teste" },      
-    { key: "qtdSemente", label: "Quantidade" },          
-    { key: "estahNaCamaraFria", label: "Câmara Fria" }, 
-    { key: "dataGerminacao", label: "Data Germinação" },
-    { key: "qtdGerminou", label: "Qtd Germinou(und)" },
-    { key: "taxaGerminacao", label: "Taxa Germinou %" }, // Agora virá preenchido pelo cálculo do front
+    { key: "lote", label: "Lote", sortable: true },
+    { key: "nomePopularSemente", label: "Nome popular", sortable: true, sortKey: "nomePopular" }, 
+    { key: "dataPlantio", label: "Data do Teste", sortable: true, sortKey: "dataPlantio" },      
+    { key: "qtdSemente", label: "Quantidade", sortable: true, sortKey: "qtdSemente" },          
+    { key: "estahNaCamaraFria", label: "Câmara Fria", sortable: true, sortKey: "camaraFria" }, 
+    { key: "dataGerminacao", label: "Data Germinação", sortable: true, sortKey: "dataGerminacao" },
+    { key: "qtdGerminou", label: "Qtd Germinou(und)", sortable: true, sortKey: "qtdGerminou" },
+    { key: "taxaGerminacao", label: "Taxa Germinou %", sortable: true, sortKey: "taxaGerminacao" }, // Agora virá preenchido pelo cálculo do front
   ];
 
   return (
@@ -208,6 +267,7 @@ const HistoricoTestes = () => {
 
       {modalDetalheAberto && itemSelecionado && (
         <ModalDetalheGenerico
+          isOpen={modalDetalheAberto}
           item={itemSelecionado}
           titulo="Detalhes do Teste"
           camposDetalhes={[]} 
@@ -257,11 +317,15 @@ const HistoricoTestes = () => {
             onPaginaChange={handleMudarPagina}
 
             onEditar={handleEditar}
-            onConfirmar={handleVisualizar}
+            onVisualizar={handleVisualizar}
             onExcluir={handleExcluirTeste}
 
             onExportPDF={handleExportPDF}
             onExportCSV={handleExportCSV}
+
+            onOrdenar={handleOrdenar}
+            ordemAtual={ordem}
+            direcaoAtual={direcao}
           />
         </main>
       </div>
