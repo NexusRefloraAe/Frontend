@@ -3,12 +3,12 @@ import api from './api'; // Importe sua instância do Axios configurada
 export const relatorioMovimentacaoSementeService = {
 
     // Busca os dados do Painel + Tabela
-    getPainel: async (filtros, pagina = 0) => {
+    getPainel: async (filtros, pagina = 0, itensPorPagina = 5, ordem = 'lote', direcao = 'desc') => {
         try {
             const params = {
                 page: pagina,
-                size: 9,
-                sort: 'lote,desc', // Opcional, já que seu back define padrão
+                size: itensPorPagina,
+                sort: `${ordem},${direcao}`, // AQUI: Torna a ordenação dinâmica baseada no que vem do componente
                 // Repassa os filtros apenas se tiverem valor
                 ...(filtros.nomePopular && { nomePopular: filtros.nomePopular }),
                 ...(filtros.dataInicio && { dataInicio: filtros.dataInicio }),
