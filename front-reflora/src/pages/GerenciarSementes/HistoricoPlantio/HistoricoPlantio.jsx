@@ -21,17 +21,35 @@ const HistoricoPlantio = () => {
   const [modalDetalheAberto, setModalDetalheAberto] = useState(false);
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
 
+  const [ordem, setOrdem] = useState('dataPlantio'); // Campo padrão
+  const [direcao, setDirecao] = useState('desc');    // Direção padrão
+
+  const handleOrdenar = (novoCampo) => {
+    // Se clicar na mesma coluna, inverte a direção (asc <-> desc)
+    let novaDirecao = 'asc';
+    if (novoCampo === ordem) {
+        novaDirecao = direcao === 'asc' ? 'desc' : 'asc';
+    }
+
+    // Atualiza os estados
+    setOrdem(novoCampo);
+    setDirecao(novaDirecao);
+    
+    // Reseta para a primeira página e recarrega os dados com a nova ordem
+    setPaginaAtual(0); 
+    carregarDados(0, termoBusca, novoCampo, novaDirecao);
+  };
+
   // 2. FUNÇÃO PARA CARREGAR DADOS DO BACKEND
-  const carregarDados = async (pagina = 0, busca = '') => {
+  const carregarDados = useCallback(async (pagina = 0, busca = termoBusca, ordemArg = ordem, direcaoArg = direcao) => {
     try {
       setLoading(true);
-      // Chama o serviço que bate em /movimentacoes/plantioMuda
-      const data = await plantioService.getAll(busca, pagina);
+      const data = await plantioService.getAll(busca, pagina, 5, ordemArg, direcaoArg);
       
-      // O seu controller retorna um Page (content, totalPages, etc)
-      setSementes(data.content);
-      setTotalPaginas(data.totalPages);
-      setPaginaAtual(data.number); // ou pagina
+      // Garante que, se o back-end falhar ou mudar a estrutura, o front não receba 'undefined'
+      setSementes(data.content || []);
+      setTotalPaginas(data.totalPages || 0); // O '|| 0' evita o NaN
+      setPaginaAtual(data.number || 0);
       
     } catch (error) {
       console.error("Erro ao carregar histórico:", error);
@@ -39,18 +57,44 @@ const HistoricoPlantio = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [termoBusca, ordem, direcao]); // Adicione as dependências corretas aqui
 
    // Carrega ao montar
    useEffect(() => {
-     carregarDados(0, '');
-   }, []);
+     carregarDados(0, '', 'dataPlantio', 'desc');
+   }, [carregarDados]);
 
   // Handlers de Modais (Visualizar, Fechar) mantêm-se iguais...
-  const handleVisualizar = (item) => {
-    setItemSelecionado(item);
-    setModalDetalheAberto(true);
+// 1. CORREÇÃO: Função assíncrona com busca e tradução de dados
+  const handleVisualizar = async (item) => {
+    try {
+      setLoading(true);
+      
+      // Busca dados completos no backend
+      const dadosApi = await plantioService.getById(item.id);
+      // Faz a tradução para o formato plano que o modal espera
+      const dadosTraduzidos = {
+        ...dadosApi, // Copia tudo (id, datas, quantidades...)
+
+        // Garante que o nome da semente apareça, pegando de dentro do objeto 'sementes'
+        nomePopularSemente: dadosApi.sementes?.nomePopular || item.nomePopularSemente || 'Não informado',
+
+        // Se houver outros campos aninhados ou formatações específicas, faça aqui:
+        // Exemplo: formatar tipo de plantio se vier apenas código
+        tipoPlantioDescricao: dadosApi.tipoPlantioDescricao || dadosApi.tipoPlantio || '-',
+      };
+
+      setItemSelecionado(dadosTraduzidos);
+      setModalDetalheAberto(true);
+
+    } catch (error) {
+      console.error("Erro ao carregar detalhes do plantio:", error);
+      alert("Erro ao buscar detalhes.");
+    } finally {
+      setLoading(false);
+    }
   };
+
   const handleFecharModalDetalhe = () => {
     setModalDetalheAberto(false);
     setItemSelecionado(null);
@@ -101,15 +145,15 @@ const HistoricoPlantio = () => {
   }
 
   // 5. FUNÇÕES DA TABELA (Busca e Paginação)
-  const handleBusca = useCallback((novoTermo) => {
+  const handleBusca = (novoTermo) => {
       setTermoBusca(novoTermo);
-      // We call carregarDados passing the new term immediately
-      carregarDados(0, novoTermo);
-  }, []);
+      // Passa explicitamente a ordem e direção que estão no estado AGORA
+      carregarDados(0, novoTermo, ordem, direcao);
+  };
 
   const handleMudarPagina = (novaPagina) => {
       // O componente de paginação geralmente envia index 1, o back espera 0. Ajuste se necessário.
-      carregarDados(novaPagina - 1, termoBusca); 
+      carregarDados(novaPagina - 1, termoBusca, ordem, direcao); 
   }
 
   const realizarDownload = (response, defaultName) => {
@@ -159,12 +203,12 @@ const HistoricoPlantio = () => {
   // Colunas mapeadas com os campos que vêm do DTO do Java
   // (Veja no controller: MovimentacaoSementesHistoricoResponseDTO)
   const colunas = [
-    { key: "lote", label: "Lote" },
-    { key: "nomePopularSemente", label: "Nome popular" }, // Java: setNomePopularSemente
-    { key: "dataPlantio", label: "Data de plantio" },
-    { key: "qtdSemente", label: "Qtd. Sementes" },      // Java: setQtdSemente
-    { key: "quantidadePlantada", label: "Qtd. Plantada" },
-    { key: "tipoPlantioDescricao", label: "Tipo de Plantio" }, // Java: setTipoPlantioDescricao
+    { key: "lote", label: "Lote", sortable: true },
+    { key: "nomePopularSemente", label: "Nome popular", sortable: true, sortKey:'nomePopularSemente' }, // Java: setNomePopularSemente
+    { key: "dataPlantio", label: "Data de plantio", sortable: true },
+    { key: "qtdSemente", label: "Qtd. Sementes", sortable: true, sortKey: "qtdSemente" },      // Java: setQtdSemente
+    { key: "quantidadePlantada", label: "Qtd. Plantada", sortable: true, sortKey: "quantidade" },
+    { key: "tipoPlantioDescricao", label: "Tipo de Plantio", sortable: true, sortKey: "tipoPlantio" }, // Java: setTipoPlantioDescricao
   ];
 
   return (
@@ -173,6 +217,7 @@ const HistoricoPlantio = () => {
       
       {modalDetalheAberto && itemSelecionado && (
          <ModalDetalheGenerico 
+            isOpen={modalDetalheAberto}
             item={itemSelecionado} onClose={handleFecharModalDetalhe}
             onEditar={() => handleEditar(itemSelecionado)}
             onExcluir={() => handleExcluir(itemSelecionado)}
@@ -224,11 +269,15 @@ const HistoricoPlantio = () => {
                 modoBusca="auto"
 
                 onEditar={handleEditar}
-                onConfirmar={handleVisualizar}
+                onVisualizar={handleVisualizar}
                 onExcluir={handleExcluir}
 
                 onExportPDF={handleExportPDF}
                 onExportCSV={handleExportCSV}
+
+                onOrdenar={handleOrdenar}
+                ordemAtual={ordem}
+                direcaoAtual={direcao}
               />
 
         </main>
