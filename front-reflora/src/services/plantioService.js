@@ -13,14 +13,19 @@ const formatarDataParaJava = (dataStr) => {
 
 export const plantioService = {
   // GET: Listar Plantios com paginação e busca
-  getAll: async (termoBusca = '', pagina = 0, itensPorPagina = 5) => {
+  getAll: async (termoBusca = '', pagina = 0, itensPorPagina = 5, ordem = 'dataPlantio', direcao = 'desc') => {
     const params = {
       searchTerm: termoBusca,
       page: pagina,
       size: itensPorPagina,
-      sort: 'dataPlantio,desc'
+      sort: `${ordem},${direcao}` // <--- AGORA ESTÁ DINÂMICO
     };
     const response = await api.get('/movimentacoes/plantioMuda', { params });
+    return response.data;
+  },
+  
+  getById: async (id) => {
+    const response = await api.get(`/movimentacoes/${id}`);
     return response.data;
   },
 

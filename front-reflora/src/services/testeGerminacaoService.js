@@ -2,14 +2,19 @@ import api from './api';
 
 export const testeGerminacaoService = {
   // GET: Listar Testes
-  getAll: async (termoBusca = '', pagina = 0, itensPorPagina = 5) => {
+  getAll: async (termoBusca = '', pagina = 0, itensPorPagina = 5, ordem = 'dataPlantio', direcao = 'desc') => {
     const params = {
       searchTerm: termoBusca,
       page: pagina,
       size: itensPorPagina,
-      sort: 'dataPlantio,desc'
+      sort: `${ordem},${direcao}`
     };
     const response = await api.get('/movimentacoes/testeGerminacao', { params });
+    return response.data;
+  },
+
+  getById: async (id) => {
+    const response = await api.get(`/movimentacoes/${id}`);
     return response.data;
   },
 
