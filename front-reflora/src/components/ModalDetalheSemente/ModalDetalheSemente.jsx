@@ -37,14 +37,13 @@ const colunasparaExportar = [
     { label: 'Câmara Fria', key: 'camaraFria' },
 ];
 
-function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
+function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onSolicitarExclusao }) {
     
     const [sementeDetalhada, setSementeDetalhada] = useState(null);
     const [paginaHistorico, setPaginaHistorico] = useState(1);
     const [historicoEntrada, setHistoricoEntrada] = useState([]);
     const [historicoSaida, setHistoricoSaida] = useState([]);
     const [totalPaginas, setTotalPaginas] = useState(1);
-    const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
     const [loading, setLoading] = useState(true);
 
     const formatarData = (dataString) => {
@@ -78,6 +77,9 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
                     let url = detalhes.fotoSementeResponseDTO.url;
                     if (url.includes("reflora-minio")) url = url.replace("reflora-minio", "localhost");
                     else if (url.includes("minio")) url = url.replace("minio", "localhost");
+
+                    console.log("URL da Imagem:", url);
+
                     detalhes.fotoUrl = url;
                 }
                 setSementeDetalhada(detalhes);
@@ -88,7 +90,10 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
                     const formatarItem = (item) => ({
                         ...item,
                         data: formatarData(item.data),
-                        camaraFriaFormatada: item.camaraFria ? 'Sim' : 'Não'
+                        
+                        // CORRETO: Usa o valor direto que vem do Back-end ("Sim" ou "Não")
+                        // Se por acaso vier nulo, mostra um traço ou vazio
+                        camaraFriaFormatada: item.camaraFria 
                     });
 
                     setHistoricoEntrada(hist?.entradas?.content?.map(formatarItem) || []);
@@ -122,14 +127,6 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
         ...historicoEntrada.map(item => ({ ...item, tipo: 'Entrada' })),
         ...historicoSaida.map(item => ({ ...item, tipo: 'Saída' })),
     ];
-
-    const handleConfirmarExclusao = () => {
-        if (onDeletar && sementeResumo.id) {
-            onDeletar(sementeResumo.id);
-        }
-        setModalExcluirAberto(false);
-        onClose(); 
-    };
 
     const dados = sementeDetalhada || sementeResumo;
 
@@ -194,7 +191,7 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
                         <div className="detalhe-container">
                             <div className="detalhe-imagens">
                                 {dados.fotoUrl ? (
-                                    <img src={dados.fotoUrl} alt={dados.nomePopular} />
+                                    <img src={dados.fotoUrl} alt={dados.nomePopular} style={{ width: '100%', height: '100%', objectFit: 'contain' }}/>
                                 ) : (
                                     <div className="placeholder-foto" style={{
                                         width: '100%', height: '200px', background: '#eee', 
@@ -215,11 +212,15 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
                                 <p><strong>Armazenamento:</strong> {dados.estahNaCamaraFria ? 'Câmara Fria' : 'Armazenamento Comum'}</p>
                                 
                                 {/* --- ALTERADO: Exibindo Cidade e UF --- */}
-                                <p><strong>Localização (Cidade/UF):</strong> {dados.cidade && dados.uf ? `${dados.cidade} - ${dados.uf}` : (dados.localizacaoDaColeta || '-')}</p>
+                                <p><strong>Localização (Cidade/UF):</strong> {dados.cidade && dados.estado ? `${dados.cidade} - ${dados.estado}` : '-'}</p>
                             </div>
                             
                             <div className="detalhe-acoes">
-                                <button onClick={() => setModalExcluirAberto(true)} title="Excluir">
+                                {/* BOTÃO EXCLUIR: Chama a função do Pai e fecha este modal */}
+                                <button onClick={() => {
+                                    onSolicitarExclusao(dados); // Abre o Modal do BancoSementes
+                                    onClose(); // Fecha o Detalhe
+                                }} title="Excluir">
                                     <img src={deleteIcon} alt="Deletar" />
                                 </button>
                                 <button onClick={() => {
@@ -270,17 +271,6 @@ function ModalDetalheSemente({ sementeResumo, onClose, onEditar, onDeletar }) {
                     </div>
                 </div>
             </div>
-
-            <ModalExcluir
-                isOpen={modalExcluirAberto}
-                onClose={() => setModalExcluirAberto(false)}
-                onConfirm={handleConfirmarExclusao}
-                nomeItem={dados.nomePopular}
-                titulo="Confirmar Exclusão"
-                mensagem={`Tem certeza que deseja excluir a semente "${dados.nomePopular}" (Lote: ${dados.lote})?`}
-                textoConfirmar="Excluir"
-                textoCancelar="Cancelar"
-            />
         </>
     )
 }

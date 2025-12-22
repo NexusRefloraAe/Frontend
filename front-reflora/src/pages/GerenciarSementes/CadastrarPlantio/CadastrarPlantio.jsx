@@ -78,7 +78,16 @@ const CadastrarPlantio = () => {
     
     try {
       setLoading(true);
-      await plantioService.create(formData);
+
+      const payload = { ...formData };
+
+      // 2. Formatar a data (yyyy-mm-dd -> dd/mm/yyyy)
+      if (payload.dataPlantio && payload.dataPlantio.includes('-')) {
+          const [ano, mes, dia] = payload.dataPlantio.split('-');
+          payload.dataPlantio = `${dia}/${mes}/${ano}`;
+      }
+
+      await plantioService.create(payload);
       alert("Plantio cadastrado com sucesso!");
       handleCancel(false);
     } catch (error) {
@@ -206,6 +215,18 @@ const CadastrarPlantio = () => {
                 </small>
             )}
         </div>
+
+        <Input
+          label="Qtd Mudas/Buracos (unid)"
+          name="quantidadePlantada"
+          type="number"
+          value={formData.quantidadePlantada}
+          onChange={handleChange('quantidadePlantada')}
+          onIncrement={() => handleIncrement("quantidadePlantada")}
+          onDecrement={() => handleDecrement("quantidadePlantada")}
+          required={true}
+          placeholder="Ex: 100"
+        />
 
         <Input
           label="Onde está sendo plantado?"

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
 import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico";
 import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
@@ -133,11 +133,12 @@ const HistoricoTestes = () => {
     }
   }
 
-  // 5. Funções da Tabela
-  const handleBusca = (novoTermo) => {
-    setTermoBusca(novoTermo);
-    carregarDados(0, novoTermo);
-  };
+  // 5. FUNÇÕES DA TABELA (Busca e Paginação)
+  const handleBusca = useCallback((novoTermo) => {
+      setTermoBusca(novoTermo);
+      // We call carregarDados passing the new term immediately
+      carregarDados(0, novoTermo);
+  }, []);
 
   const handleMudarPagina = (novaPagina) => {
     // Componente de paginação visual costuma usar base 1, API usa base 0
@@ -241,28 +242,27 @@ const HistoricoTestes = () => {
 
       <div className="historico-content-banco">
         <main>
-          {loading ? <p>Carregando...</p> : (
-            <TabelaComBuscaPaginacao
-              titulo="Histórico de Teste de Germinação"
-              dados={sementes}
-              colunas={colunas}
-              chaveBusca="nomePopularSemente" 
-              
-              onPesquisar={handleBusca}
-              modoBusca="manual"
-              
-              paginaAtual={paginaAtual + 1}
-              totalPaginas={totalPaginas}
-              onPaginaChange={handleMudarPagina}
+          <TabelaComBuscaPaginacao
+            titulo="Histórico de Teste de Germinação"
+            dados={sementes}
+            colunas={colunas}
+            chaveBusca="nomePopularSemente" 
+            
+            onPesquisar={handleBusca}
+            isLoading={loading}
+            modoBusca="auto"
+            
+            paginaAtual={paginaAtual + 1}
+            totalPaginas={totalPaginas}
+            onPaginaChange={handleMudarPagina}
 
-              onEditar={handleEditar}
-              onConfirmar={handleVisualizar}
-              onExcluir={handleExcluirTeste}
+            onEditar={handleEditar}
+            onConfirmar={handleVisualizar}
+            onExcluir={handleExcluirTeste}
 
-              onExportPDF={handleExportPDF}
-              onExportCSV={handleExportCSV}
-            />
-          )}
+            onExportPDF={handleExportPDF}
+            onExportCSV={handleExportCSV}
+          />
         </main>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
 import EditarPlantioSementes from "./EditarPlantioSementes/EditarPlantioSementes";
 import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
@@ -41,10 +41,10 @@ const HistoricoPlantio = () => {
     }
   };
 
-  // Carrega ao montar
-  useEffect(() => {
-    carregarDados(0, '');
-  }, []);
+   // Carrega ao montar
+   useEffect(() => {
+     carregarDados(0, '');
+   }, []);
 
   // Handlers de Modais (Visualizar, Fechar) mantêm-se iguais...
   const handleVisualizar = (item) => {
@@ -101,10 +101,11 @@ const HistoricoPlantio = () => {
   }
 
   // 5. FUNÇÕES DA TABELA (Busca e Paginação)
-  const handleBusca = (novoTermo) => {
+  const handleBusca = useCallback((novoTermo) => {
       setTermoBusca(novoTermo);
+      // We call carregarDados passing the new term immediately
       carregarDados(0, novoTermo);
-  }
+  }, []);
 
   const handleMudarPagina = (novaPagina) => {
       // O componente de paginação geralmente envia index 1, o back espera 0. Ajuste se necessário.
@@ -202,7 +203,7 @@ const HistoricoPlantio = () => {
 
       <div className="historico-content-banco">
         <main>
-          {loading ? <p>Carregando...</p> : (
+
               <TabelaComBuscaPaginacao
                 titulo="Histórico de Plantio"
                 dados={sementes}
@@ -211,13 +212,16 @@ const HistoricoPlantio = () => {
                 
                 // Passando as funções reais
                 onPesquisar={handleBusca}
+
+                // Passe o loading para a tabela gerenciar o visual
+                isLoading={loading}
                 
                 // Configuração da paginação se o componente suportar props externas
                 paginaAtual={paginaAtual + 1} // +1 para visual
                 totalPaginas={totalPaginas}
                 onPaginaChange={handleMudarPagina}
 
-                modoBusca="manual"
+                modoBusca="auto"
 
                 onEditar={handleEditar}
                 onConfirmar={handleVisualizar}
@@ -226,7 +230,7 @@ const HistoricoPlantio = () => {
                 onExportPDF={handleExportPDF}
                 onExportCSV={handleExportCSV}
               />
-          )}
+
         </main>
       </div>
     </div>

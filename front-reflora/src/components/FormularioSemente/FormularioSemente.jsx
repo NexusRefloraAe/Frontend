@@ -105,7 +105,7 @@ function FormularioSemente({
         const { name, value } = e.target;
         setFormData(prevData => ({ ...prevData, [name]: value }));
 
-        if (name === 'uf') {
+        if (name === 'estado') {
             setFormData(prev => ({ ...prev, cidade: '' }));
             if (onEstadoChange) onEstadoChange(value);
         }
@@ -299,8 +299,8 @@ function FormularioSemente({
                     <Input
                         label="Estado (UF)"
                         type='select'
-                        name='uf'
-                        value={formData.uf}
+                        name='estado'
+                        value={formData.estado}
                         onChange={handleInputChange}
                         options={optionsEstados}
                         placeholder="UF"
@@ -315,7 +315,7 @@ function FormularioSemente({
                         onChange={handleInputChange}
                         options={optionsCidades}
                         placeholder="Cidade"
-                        disabled={!formData.uf}
+                        disabled={!formData.estado}
                         icon={locationIcon}
                     />
                 </div>
