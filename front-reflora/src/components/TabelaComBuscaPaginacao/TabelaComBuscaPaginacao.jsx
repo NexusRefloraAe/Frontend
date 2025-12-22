@@ -12,106 +12,106 @@ function TabelaComBuscaPaginacao({
   colunas,
   chaveBusca,
   onEditar,
-  onConfirmar,
+  onVisualizar,
   onExcluir,
   itensPorPagina = 5,
   habilitarBusca = true,
   modoBusca = "auto",
   onExportPDF,
   onExportCSV,
-  onPesquisar,   // Função do Back-end
-  footerContent, 
+  onPesquisar, // Função do Back-end
+  footerContent,
   placeholderBusca,
-  isLoading: isLoadingProp = false, // Recebe o loading do Pai
+  isLoading: isLoadingProp = false,
   onOrdenar,
   ordemAtual,
-  direcaoAtual
+  direcaoAtual,
+  // Props de Paginação Externa (Importantes para o modo Servidor)
+  paginaAtual: paginaExterna,
+  totalPaginas: totalPaginasExterno,
+  onPaginaChange: onPaginaChangeExterno,
 }) {
   const [termoBusca, setTermoBusca] = useState("");
-  const [paginaAtual, setPaginaAtual] = useState(1);
-  // Controle local de loading para o debounce visual
+  const [paginaAtualLocal, setPaginaAtualLocal] = useState(1);
   const [localLoading, setLocalLoading] = useState(false);
 
-  // O loading final é: ou o Pai está carregando, ou estamos no debounce local
   const isLoading = isLoadingProp || localLoading;
-
-  const isServerSide = !!onPesquisar; 
-  
-  // Ref para impedir a busca automática na primeira renderização (mount)
+  const isServerSide = !!onPesquisar;
   const isFirstRender = useRef(true);
 
-  // --- EFEITO MÁGICO (Busca Automática com Debounce) ---
+  // --- LÓGICA DE DEFINIÇÃO DE ESTADO (HÍBRIDA) ---
+  // Se for Servidor, usamos o que vem do Pai. Se for Local, usamos o estado interno.
+  const pagAtualExibicao = isServerSide ? paginaExterna : paginaAtualLocal;
+
+  const totalPaginasExibicao = isServerSide
+    ? totalPaginasExterno
+    : Math.ceil(dados.length / itensPorPagina);
+
+  // Função para gerenciar a troca de página corretamente
+  const handleTrocaPagina = (novaPagina) => {
+    if (isServerSide && onPaginaChangeExterno) {
+      // Avisa o componente pai (ex: GerarRelatorio) para buscar no banco
+      onPaginaChangeExterno(novaPagina);
+    } else {
+      // Muda localmente para tabelas simples
+      setPaginaAtualLocal(novaPagina);
+    }
+  };
+
+  // --- EFEITO DE BUSCA (Debounce) ---
   useEffect(() => {
-    // Se não for server-side ou a busca estiver desabilitada, não faz nada
     if (!isServerSide || !habilitarBusca) return;
 
-    // Pula a primeira renderização (pois o Pai já carregou os dados iniciais)
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
 
-    // Ativa o loading visualmente enquanto o usuário espera o debounce
     setLocalLoading(true);
-
-    // Cria o delay de 500ms
     const timeoutId = setTimeout(() => {
-      // Chama a função do pai (Back-end)
       onPesquisar(termoBusca);
-      
-      // Reseta paginação e tira o loading
-      setPaginaAtual(1);
+      // Ao pesquisar, resetamos para a primeira página no pai ou localmente
+      if (onPaginaChangeExterno) onPaginaChangeExterno(1);
+      setPaginaAtualLocal(1);
       setLocalLoading(false);
     }, 500);
 
-    // Função de limpeza: Se o usuário digitar antes dos 500ms, cancela o timeout anterior
     return () => clearTimeout(timeoutId);
-    
-    // IMPORTANTE: Depende apenas de 'termoBusca'. 
-    // Não coloque 'onPesquisar' aqui a menos que use useCallback no pai.
-  }, [termoBusca]); 
-  // -----------------------------------------------------
+  }, [termoBusca]);
 
   // --- LÓGICA DE EXIBIÇÃO ---
   let dadosParaExibir = [];
 
   if (isServerSide) {
+    // No modo servidor, 'dados' já contém apenas a fatia da página atual vinda da API
     dadosParaExibir = dados;
   } else {
-    // Filtragem local (Client-Side)
+    // No modo local, filtramos e fatiamos o array completo aqui no front
     const dadosFiltrados = habilitarBusca && chaveBusca
       ? dados.filter((item) =>
           item[chaveBusca]?.toString().toLowerCase().includes(termoBusca.toLowerCase())
         )
       : dados;
 
-    const indiceUltimo = paginaAtual * itensPorPagina;
+    const indiceUltimo = pagAtualExibicao * itensPorPagina;
     const indicePrimeiro = indiceUltimo - itensPorPagina;
     dadosParaExibir = dadosFiltrados.slice(indicePrimeiro, indiceUltimo);
   }
 
-  const totalPaginasClient = Math.ceil((isServerSide ? dados.length : dados.length) / itensPorPagina);
-  const temAcoes = onEditar || onConfirmar || onExcluir;
-
-  // Função simples apenas para atualizar o input
-  const handleInputChange = (valor) => {
-    setTermoBusca(valor); 
-    // O useEffect acima perceberá a mudança e fará a mágica
-  };
+  const temAcoes = !!(onEditar || onVisualizar || onExcluir);
 
   return (
     <section className="historico-container-banco">
       <div className="historico-header-content-semente">
         <h1>{titulo}</h1>
-
         {habilitarBusca && (
           <SearchBar
             value={termoBusca}
-            onChange={handleInputChange} // Atualiza estado -> Dispara useEffect
-            onSearch={handleInputChange} // Botão de lupa faz o mesmo (opcional no modo auto)
+            onChange={(v) => setTermoBusca(v)}
+            onSearch={(v) => setTermoBusca(v)}
             placeholder={placeholderBusca || `Pesquisar por ${colunas[1]?.label ?? "termo"}...`}
             modo={modoBusca}
-            isLoading={isLoading} 
+            isLoading={isLoading}
           />
         )}
       </div>
@@ -121,39 +121,34 @@ function TabelaComBuscaPaginacao({
           <thead>
             <tr>
               {colunas.map((coluna) => (
-                <th 
+                <th
                   key={coluna.key}
-                  // --- LÓGICA DO CLIQUE PARA ORDENAR ---
                   onClick={() => {
-                      // Usa sortKey se existir (nome no banco), senão usa key visual
-                      if (coluna.sortable && onOrdenar) {
-                          onOrdenar(coluna.sortKey || coluna.key);
-                      }
+                    if (coluna.sortable && onOrdenar) {
+                      onOrdenar(coluna.sortKey || coluna.key);
+                    }
                   }}
-                  style={{ 
-                      cursor: coluna.sortable ? 'pointer' : 'default',
-                      userSelect: 'none', // Evita selecionar o texto ao clicar rápido
-                      textAlign: 'center'
+                  style={{
+                    cursor: coluna.sortable ? "pointer" : "default",
+                    userSelect: "none",
+                    textAlign: "center",
                   }}
                 >
-                  <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px'}}>
-                      {coluna.label} 
-                      
-                      {/* --- ÍCONE COM FEEDBACK VISUAL --- */}
-                      {coluna.sortable && (
-                        <FaArrowsAltV 
-                            className="icone-ordenar" 
-                            style={{
-                                // Opacidade: 1 se for a coluna ativa, 0.3 se inativa
-                                opacity: (ordemAtual === (coluna.sortKey || coluna.key)) ? 1 : 0.3,
-                                // Rotação: Gira 180 se for ASC, 0 se for DESC
-                                transform: (ordemAtual === (coluna.sortKey || coluna.key) && direcaoAtual === 'asc') 
-                                    ? 'rotate(180deg)' 
-                                    : 'rotate(0deg)',
-                                transition: 'transform 0.2s'
-                            }}
-                        />
-                      )}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "5px" }}>
+                    {coluna.label}
+                    {coluna.sortable && (
+                      <FaArrowsAltV
+                        className="icone-ordenar"
+                        style={{
+                          opacity: ordemAtual === (coluna.sortKey || coluna.key) ? 1 : 0.3,
+                          transform:
+                            ordemAtual === (coluna.sortKey || coluna.key) && direcaoAtual === "asc"
+                              ? "rotate(180deg)"
+                              : "rotate(0deg)",
+                          transition: "transform 0.2s",
+                        }}
+                      />
+                    )}
                   </div>
                 </th>
               ))}
@@ -162,11 +157,11 @@ function TabelaComBuscaPaginacao({
           </thead>
           <tbody>
             {isLoading ? (
-               <tr>
-                 <td colSpan={colunas.length + (temAcoes ? 1 : 0)}>
-                   <div className="loading-text">Buscando...</div>
-                 </td>
-               </tr>
+              <tr>
+                <td colSpan={colunas.length + (temAcoes ? 1 : 0)}>
+                  <div className="loading-text">Buscando...</div>
+                </td>
+              </tr>
             ) : dadosParaExibir && dadosParaExibir.length > 0 ? (
               dadosParaExibir.map((item, index) => (
                 <LinhaTabelaAcoes
@@ -174,16 +169,14 @@ function TabelaComBuscaPaginacao({
                   item={item}
                   colunas={colunas}
                   onEditar={onEditar}
-                  onConfirmar={onConfirmar}
+                  onVisualizar={onVisualizar}
                   onExcluir={onExcluir}
                 />
               ))
             ) : (
               <tr>
                 <td colSpan={colunas.length + (temAcoes ? 1 : 0)}>
-                  <div className="no-results">
-                    Nenhum resultado encontrado 😕
-                  </div>
+                  <div className="no-results">Nenhum resultado encontrado 😕</div>
                 </td>
               </tr>
             )}
@@ -191,26 +184,26 @@ function TabelaComBuscaPaginacao({
         </table>
       </div>
 
-      {footerContent ? (
-        <div className="historico-footer-content">
-            {footerContent}
-        </div>
-      ) : (
-        <div className="historico-footer-content">
-          <Paginacao
-            paginaAtual={paginaAtual}
-            totalPaginas={totalPaginasClient}
-            onPaginaChange={setPaginaAtual}
-          />
-          <ExportButton
-            data={dados}
-            columns={colunas}
-            fileName={titulo || "relatorio"}
-            onExportPDF={onExportPDF}
-            onExportCSV={onExportCSV}
-          />
-        </div>
-      )}
+      <div className="historico-footer-content">
+        {footerContent ? (
+          footerContent
+        ) : (
+          <>
+            <Paginacao
+              paginaAtual={pagAtualExibicao}
+              totalPaginas={totalPaginasExibicao}
+              onPaginaChange={handleTrocaPagina}
+            />
+            <ExportButton
+              data={dados}
+              columns={colunas}
+              fileName={titulo || "relatorio"}
+              onExportPDF={onExportPDF}
+              onExportCSV={onExportCSV}
+            />
+          </>
+        )}
+      </div>
     </section>
   );
 }
