@@ -47,7 +47,7 @@ function ModalDetalheGenerico({
     mostrarExportar = true,
     children
 }) {
-    if (!isOpen || !item) return null;
+    // if (!isOpen || !item) return null;
     const [paginaHistorico, setPaginaHistorico] = useState(1);
     const [historicoEntrada, setHistoricoEntrada] = useState(dadosEntrada);
     const [historicoSaida, setHistoricoSaida] = useState(dadosSaida);
@@ -65,8 +65,7 @@ function ModalDetalheGenerico({
     ];
 
     useEffect(() => {
-        if (onCarregarHistorico) {
-            // Caso 1: O Modal é responsável por buscar os dados (Função passada via prop)
+        if (isOpen && onCarregarHistorico && (item.id || item._id)) {
             const carregarDados = async () => {
                 try {
                     const dados = await onCarregarHistorico(item.id || item._id);
@@ -79,15 +78,10 @@ function ModalDetalheGenerico({
                 }
             };
             carregarDados();
-        } else {
-            // Caso 2: O Pai já buscou os dados e passou via props (dadosEntrada/dadosSaida)
-            // REMOVIDO: O 'else if' que inseria dados fictícios
-            
-            // Apenas sincroniza o estado local com as props recebidas
-            setHistoricoEntrada(dadosEntrada || []);
-            setHistoricoSaida(dadosSaida || []);
         }
-    }, [item.id, item._id, onCarregarHistorico, dadosEntrada, dadosSaida]);
+    }, [isOpen, item.id, item._id, onCarregarHistorico]); // Removido dadosEntrada e dadosSaida daqui
+
+    if (!isOpen || !item) return null;
 
     const handleFecharModalExcluir = () => {
         setModalExcluirAberto(false);
@@ -107,11 +101,11 @@ function ModalDetalheGenerico({
         }
     };
 
-    const handleExportar = () => {
-        if (onExportar) {
-            onExportar(item);
-        }
-    };
+    // const handleExportar = () => {
+    //     if (onExportar) {
+    //         onExportar(item);
+    //     }
+    // };
 
     const ITENS_POR_PAGINA = 4;
     const totalItens = Math.max(historicoEntrada.length, historicoSaida.length);
