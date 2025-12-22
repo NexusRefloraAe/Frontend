@@ -1,7 +1,7 @@
 import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 
-function LinhaTabelaAcoes({ item, colunas, onEditar, onConfirmar, onExcluir }) {
-  const mostrarAcoes = onEditar || onConfirmar || onExcluir;
+function LinhaTabelaAcoes({ item, colunas, onEditar, onVisualizar, onExcluir }) {
+  const mostrarAcoes = onEditar || onVisualizar || onExcluir;
 
   return (
     <tr>
@@ -29,10 +29,11 @@ function LinhaTabelaAcoes({ item, colunas, onEditar, onConfirmar, onExcluir }) {
             </button>
           )}
 
-          {onConfirmar && (
+          {onVisualizar && (
             <button
+              type="button"
               className="btn-icone btn-confirmar"
-              onClick={() => onConfirmar(item)}
+              onClick={() => onVisualizar(item)}
               title="Visualizar"
             >
               <FaEye className="icone" />
