@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
 import PainelCard from "../../../components/PainelCard/PainelCard";
 import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio";
@@ -6,16 +6,6 @@ import './GerarRelatorio.css';
 
 // 1. Importe o serviço
 import { relatorioMovimentacaoSementeService } from "../../../services/relatorioMovimentacaoSementeService";
-
-// (Opcional) Botão simples para exportação se não tiver componente específico
-const BotaoExportar = ({ label, onClick, cor }) => (
-    <button 
-        onClick={onClick} 
-        style={{ padding: '8px 16px', backgroundColor: cor, color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', marginLeft: '10px' }}
-    >
-        {label}
-    </button>
-);
 
 const GerarRelatorio = () => {
   // Estados de Dados
@@ -39,31 +29,56 @@ const GerarRelatorio = () => {
     dataFim: ''
   });
 
-  // 2. Função principal que busca dados na API
-  const carregarDados = async (pagina = 0) => {
-    try {
-        setLoading(true);
-        
-        // Chama o método getPainel do seu novo service
-        const data = await relatorioMovimentacaoSementeService.getPainel(filtros, pagina);
+  const [ordem, setOrdem] = useState('lote'); 
+  const [direcao, setDirecao] = useState('desc');
 
-        setTotais({
-            totalEntrada: data.totalEntrada,
-            totalSaida: data.totalSaida,
-            saldoDoPeriodo: data.saldoDoPeriodo
-        });
-
-        setRelatorios(data.pageTabela.content);
-        setTotalPaginas(data.pageTabela.totalPages);
-        setPaginaAtual(data.pageTabela.number);
-
-    } catch (error) {
-        console.error("Erro ao carregar relatório:", error);
-        alert("Erro ao buscar dados do relatório.");
-    } finally {
-        setLoading(false);
+  const handleOrdenar = (novoCampo) => {
+    let novaDirecao = 'asc';
+    
+    // Se clicou na mesma coluna que já está ordenada, inverte a direção
+    if (novoCampo === ordem) {
+        novaDirecao = direcao === 'asc' ? 'desc' : 'asc';
     }
+
+    setOrdem(novoCampo);
+    setDirecao(novaDirecao);
+    setPaginaAtual(0); // Volta para primeira página
+    
+    // Chama a busca com os novos parâmetros
+    carregarDados(0, novoCampo, novaDirecao);
   };
+
+  // 2. Função principal que busca dados na API
+  // 3. ATUALIZAÇÃO DO CARREGAR DADOS
+  // Agora aceita ordem e direção como argumentos (ou usa o estado atual)
+  // Dentro de GerarRelatorio.js, na função carregarDados:
+
+  const carregarDados = useCallback(async (pagina = 0, ordemArg = ordem, direcaoArg = direcao) => {
+      try {
+          setLoading(true);
+          const data = await relatorioMovimentacaoSementeService.getPainel(filtros, pagina, 9, ordemArg, direcaoArg);
+
+          setTotais({
+              totalEntrada: data.totalEntrada,
+              totalSaida: data.totalSaida,
+              saldoDoPeriodo: data.saldoDoPeriodo
+          });
+
+          // CORREÇÃO AQUI: Acessando a estrutura correta baseada no seu Postman
+          if (data.pageTabela) {
+              setRelatorios(data.pageTabela.content || []);
+              // No Postman: data.historico.page.totalPages
+              setTotalPaginas(data.pageTabela.page?.totalPages || 0);
+              // No Postman: data.historico.page.number
+              setPaginaAtual(data.pageTabela.page?.number || 0);
+          }
+
+      } catch (error) {
+          console.error("Erro ao carregar relatório:", error);
+      } finally {
+          setLoading(false);
+      }
+  }, [filtros, ordem, direcao]);
 
   // Carrega na montagem inicial
   useEffect(() => {
@@ -148,11 +163,12 @@ const GerarRelatorio = () => {
   // 3. Colunas: Chaves devem ser iguais ao DTO do Java (RegistroMovimentacaoResponseDTO)
   // Campos: lote, nomePopular, data, tipoMovimento, quantidade
   const colunas = [
-    { key: "lote", label: "Lote" },
-    { key: "nomePopular", label: "Nome Popular" },
+    { key: "lote", label: "Lote", sortable: true },
+    { key: "nomePopular", label: "Nome Popular", sortable: true },
     { 
         key: "data", 
         label: "Data",
+        sortable: true,
         // Renderiza a data formatada (DD/MM/AAAA) se vier como string ISO
         render: (item) => {
             if (!item.data) return '-';
@@ -165,8 +181,8 @@ const GerarRelatorio = () => {
             return item.data;
         }
     },
-    { key: "tipoMovimento", label: "Tipo" },
-    { key: "quantidade", label: "Quantidade" },
+    { key: "tipoMovimento", label: "Tipo", sortable: true },
+    { key: "quantidade", label: "Quantidade", sortable: true },
   ];
 
   return (
@@ -180,11 +196,6 @@ const GerarRelatorio = () => {
             onFiltroChange={handleFiltroChange}
             onPesquisar={handleGerarRelatorio}
           />
-          {/* Adicione botões de exportar aqui ou no componente de filtros
-          <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
-             <BotaoExportar label="Baixar PDF" onClick={handleExportarPDF} cor="#d32f2f" />
-             <BotaoExportar label="Baixar CSV" onClick={handleExportarCSV} cor="#1976d2" />
-          </div> */}
         </section>
 
         <section className="cards-section">
@@ -206,6 +217,8 @@ const GerarRelatorio = () => {
                 titulo="Movimentações da Semente"
                 dados={relatorios}
                 colunas={colunas}
+
+                onPesquisar={handleGerarRelatorio}
                 
                 // Desabilita busca interna do componente, pois já temos o FiltroRelatorio externo
                 habilitarBusca={false} 
@@ -218,6 +231,10 @@ const GerarRelatorio = () => {
 
                 onExportPDF={handleExportarPDF}
                 onExportCSV={handleExportarCSV}
+
+                onOrdenar={handleOrdenar}
+                ordemAtual={ordem}
+                direcaoAtual={direcao}
               />
           )}
         </section>
