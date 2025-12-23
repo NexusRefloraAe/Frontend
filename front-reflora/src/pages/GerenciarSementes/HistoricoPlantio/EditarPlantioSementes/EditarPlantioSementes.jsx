@@ -47,7 +47,7 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
       setFormData({
         lote: plantio.lote || '',
         nomePopular: plantio.nomePopularSemente || plantio.nomePopular || '', 
-        qntdSementes: plantio.qtdSemente || plantio.qntdSementes || 0,
+        qtdSemente: plantio.qtdSemente || 0,
         dataPlantio: formatarDataInput(plantio.dataPlantio),
         
         // Aqui usamos o valor tratado
