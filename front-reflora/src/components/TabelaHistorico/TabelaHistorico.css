@@ -1,44 +1,111 @@
+/* ==========================================================================
+   TabelaHistorico.css - Visual Moderno
+   ========================================================================== */
+
+/* IMPORTANTE: Para a responsividade total (scroll horizontal no celular),
+   esta tabela DEVE estar dentro de uma div wrapper com 'overflow-x: auto',
+   conforme configuramos nas conversas anteriores.
+*/
+
 .tabela-historico {
   width: 100%;
-  border-collapse: collapse;
-  border: none; 
+  border-collapse: separate; /* Mudamos para 'separate' para permitir bordas arredondadas */
+  border-spacing: 0; /* Remove espaço entre células */
+  border: none;
+  background-color: #fff;
+  
+  /* Sombra suave e bordas arredondadas para um visual de "cartão" */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  overflow: hidden; /* Garante que as quinas arredondadas cortem o conteúdo */
+  margin-bottom: 20px;
 }
 
+/* --- Células Gerais (TH e TD) --- */
 .tabela-historico th,
 .tabela-historico td {
-  padding: 12px;
-  font-size: 14px;
+  /* Aumentei um pouco o padding para ficar mais "arejado" */
+  padding: 16px 12px;
+  font-size: 0.95rem; /* Usando rem para melhor escalabilidade */
   text-align: left;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #f0f0f0; /* Borda mais suave */
+  color: #333;
+  vertical-align: middle; /* Centraliza o texto verticalmente */
+  white-space: nowrap; /* Evita que textos curtos quebrem linha no mobile */
 }
 
+/* --- Cabeçalho (TH) --- */
 .tabela-historico th {
-  font-weight: 600;
+  font-weight: 700; /* Um pouco mais negrito */
   color: white;
+  text-transform: uppercase; /* Deixa os títulos em maiúsculo (mais profissional) */
+  font-size: 0.85rem; /* Fonte ligeiramente menor pois é maiúscula */
+  letter-spacing: 0.5px; /* Espaçamento entre letras */
+  border-bottom: none; /* Remove a borda inferior do cabeçalho */
 }
 
-/* Ícones de ordenação */
-.tabela-historico th img {
-  width: 14px;
-  height: 14px;
+/* --- Ícones de ordenação --- */
+/* Ajustei para usar um span com caractere (como no seu React) ou imagem se preferir */
+.icone-ordenar {
+  display: inline-block;
   margin-left: 8px;
-  opacity: 0.8;
+  font-size: 1.1em;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.tabela-historico th:hover .icone-ordenar {
+    opacity: 1;
 }
 
-/* Linhas com fundo cinza claro */
-.tabela-historico tbody tr {
-  background-color: #F8F9FA; 
+
+/* --- Corpo da Tabela (TR e TD) --- */
+
+/* Efeito Hover (passar o mouse) na linha */
+.tabela-historico tbody tr:hover {
+  background-color: #f1f3f5; /* Cor de destaque suave ao passar o mouse */
+  transition: background-color 0.2s ease;
 }
+
+/* Zebra Striping (Linhas alternadas) mais sutil */
 .tabela-historico tbody tr:nth-child(even) {
-  background-color: #F1F3F5; 
+  background-color: #fafafa; /* Cinza muito claro, quase branco */
 }
 
-/* --- Variantes de Cor do Cabeçalho --- */
+/* Remove a borda da última linha para ficar limpo dentro do "cartão" */
+.tabela-historico tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* --- Variantes de Cor do Cabeçalho (Cores Sólidas e Vibrantes) --- */
+/* Removemos a transparência (os dois últimos dígitos do hex) para cores mais fortes */
+
 .tabela-historico--entrada th {
-  background-color: #25702490;
+  background-color: #2e7d32; /* Verde Floresta Sólido */
 }
 
 .tabela-historico--saida th {
-  background-color: #D32F2F90;
+  background-color: #c62828; /* Vermelho Forte Sólido */
 }
 
+/* Variante padrão (caso não seja entrada nem saída) */
+.tabela-historico--default th {
+    background-color: #455a64; /* Um cinza azulado neutro */
+}
+
+
+/* ==========================================================================
+   RESPONSIVIDADE (Dispositivos Menores)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .tabela-historico th,
+  .tabela-historico td {
+    /* Reduz o padding para caber mais informação na tela pequena */
+    padding: 12px 8px;
+    /* Reduz ligeiramente a fonte */
+    font-size: 0.85rem;
+  }
+  
+  .tabela-historico th {
+      font-size: 0.75rem; /* Cabeçalho um pouco menor no mobile */
+  }
+}

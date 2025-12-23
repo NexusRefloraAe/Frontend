@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import ListaSementes from '../../components/ListaSementes/ListaSementes'
-import FormularioSemente from '../../components/FormularioSemente/FormularioSemente'
-import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus'
-import { sementesService } from '../../services/sementesService'
-import { getBackendErrorMessage } from '../../utils/errorHandler'
-import { FaSeedling, FaList } from 'react-icons/fa'
-import './BancoSementes.css'
-import ModalExcluir from '../../components/ModalExcluir/ModalExcluir'
+import React, { useState, useEffect, useCallback } from 'react';
+import ListaSementes from '../../components/ListaSementes/ListaSementes';
+import FormularioSemente from '../../components/FormularioSemente/FormularioSemente';
+import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus';
+import ModalExcluir from '../../components/ModalExcluir/ModalExcluir';
+import { sementesService } from '../../services/sementesService';
+import { getBackendErrorMessage } from '../../utils/errorHandler';
+import { FaSeedling, FaList } from 'react-icons/fa';
+import './BancoSementes.css';
 
 const menusNavegacao = [
     { id: 'cadastrar', label: 'Cadastrar Semente', icon: <FaSeedling />},
@@ -17,12 +17,10 @@ function BancoSementes() {
 
     const [abaAtiva, setAbaAtiva] = useState('listar');
     
-    // Estados para dados principais
+    // Estados de Dados
     const [sementes, setSementes] = useState([]);
     const [loading, setLoading] = useState(false);
     const [erro, setErro] = useState('');
-    
-    // Estado para edição (semente sendo editada no momento)
     const [sementeEditando, setSementeEditando] = useState(null);
 
     // Estados de Paginação e Busca
@@ -30,22 +28,22 @@ function BancoSementes() {
     const [totalPaginas, setTotalPaginas] = useState(1);
     const [termoBusca, setTermoBusca] = useState('');
 
-    // Estados para Ordenação
+    // Estados de Ordenação
     const [ordem, setOrdem] = useState('dataDeCadastro'); 
     const [direcao, setDirecao] = useState('desc');      
 
-    // Estados IBGE
+    // Estados Auxiliares (IBGE) - Centralizados aqui para não duplicar requisições
     const [estados, setEstados] = useState([]);
     const [cidades, setCidades] = useState([]);
-    const [ufSelecionada, setUfSelecionada] = useState(''); 
+    // const [ufSelecionada, setUfSelecionada] = useState(''); // Não é estritamente necessário no pai se o filho gerencia o select, mas mantemos para carregar cidades
 
-    // --- NOVOS ESTADOS PARA EXCLUSÃO CENTRALIZADA ---
+    // Estados do Modal de Exclusão
     const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
     const [sementeParaExcluir, setSementeParaExcluir] = useState(null);
 
     const ITENS_POR_PAGINA = 5;
 
-    // --- 1. BUSCAR ESTADOS DO IBGE ---
+    // --- 1. BUSCAR ESTADOS (Carrega apenas uma vez) ---
     useEffect(() => {
         const fetchEstados = async () => {
             try {
@@ -59,9 +57,9 @@ function BancoSementes() {
         fetchEstados();
     }, []);
 
-    // --- 2. BUSCAR CIDADES ---
+    // --- 2. BUSCAR CIDADES (Chamado quando o formulário solicita) ---
     const handleEstadoChange = async (uf) => {
-        setUfSelecionada(uf);
+        // setUfSelecionada(uf);
         setCidades([]); 
         if (uf) {
             try {
@@ -74,7 +72,7 @@ function BancoSementes() {
         }
     };
 
-    // --- FETCH SEMENTES ---
+    // --- 3. FETCH SEMENTES (Lista Principal) ---
     const fetchSementes = useCallback(async () => {
         setLoading(true);
         try {
@@ -98,13 +96,12 @@ function BancoSementes() {
         }
     }, [abaAtiva, fetchSementes]);
 
-    // 1. Função chamada pelos filhos para ABRIR o modal
+    // --- HANDLERS DE EXCLUSÃO ---
     const handleSolicitarExclusao = (semente) => {
         setSementeParaExcluir(semente);
         setModalExcluirAberto(true);
     };
 
-    // 2. Função chamada pelo Modal para EXECUTAR a exclusão
     const handleConfirmarExclusao = async () => {
         if (!sementeParaExcluir) return;
 
@@ -115,21 +112,20 @@ function BancoSementes() {
             setModalExcluirAberto(false);
             setSementeParaExcluir(null);
 
-            // Lógica para recarregar a lista corretamente
+            // Lógica inteligente de recarregamento
             if (sementes.length === 1 && paginaAtual > 1) {
-                setPaginaAtual(paginaAtual - 1);
+                setPaginaAtual(paginaAtual - 1); // Volta uma página se apagou o último item
             } else {
                 fetchSementes(); 
             }
         } catch (error) {
             const msg = getBackendErrorMessage(error);
-            // Fecha o modal para mostrar o erro na tela ou alerta
             setModalExcluirAberto(false); 
             alert(msg);
         }
     };
 
-    // Handlers
+    // --- HANDLERS GERAIS ---
     const handleBusca = (novoTermo) => {
         setTermoBusca(novoTermo);
         setPaginaAtual(1);
@@ -150,28 +146,23 @@ function BancoSementes() {
     };
 
     const handleEditar = async (sementeResumida) => {
-        setLoading(true); // Opcional: mostrar loading enquanto busca
+        setLoading(true); 
         try {
-            // 1. Busca os dados COMPLETOS do back-end usando o ID
+            // 1. Busca dados completos
             const sementeCompleta = await sementesService.getById(sementeResumida.id);
-            
-            // 2. Define o estado com o objeto completo
             setSementeEditando(sementeCompleta); 
             
-            // 3. Configura estados auxiliares (UF/Cidade)
+            // 2. Pré-carrega as cidades do estado dessa semente para o select funcionar
             if (sementeCompleta.estado) { 
-                // Assumindo que o back retorna 'estado' como UF ou Nome. 
-                // Se o select espera UF, garanta que sementeCompleta.estado seja a UF.
-                handleEstadoChange(sementeCompleta.estado);
+                await handleEstadoChange(sementeCompleta.estado);
             }
             
-            // 4. Troca a aba para o formulário
+            // 3. Troca a aba
             setAbaAtiva('cadastrar');
             setErro('');
-
         } catch (error) {
-            console.error("Erro ao carregar detalhes para edição:", error);
-            setErro("Não foi possível carregar os dados da semente para edição.");
+            console.error("Erro edição:", error);
+            setErro("Erro ao carregar semente para edição.");
         } finally {
             setLoading(false);
         }
@@ -192,8 +183,7 @@ function BancoSementes() {
     const handleMenuClick = (menuId) => {
         if (menuId === 'cadastrar') {
             setSementeEditando(null);
-            setUfSelecionada('');
-            setCidades([]);
+            setCidades([]); // Limpa cidades ao iniciar novo cadastro
         }
         setAbaAtiva(menuId);
         setErro('');
@@ -202,7 +192,7 @@ function BancoSementes() {
     return (
         <div className="container-banco">
 
-            {/* MODAL GLOBAL DE EXCLUSÃO */}
+            {/* Modal Global de Exclusão */}
             <ModalExcluir 
                 isOpen={modalExcluirAberto}
                 onClose={() => setModalExcluirAberto(false)}
@@ -219,12 +209,12 @@ function BancoSementes() {
                         activeMenuId={abaAtiva}
                         onMenuClick={handleMenuClick} />
                 </div>
+                
                 <main>
                     {erro && <div className="alert-error" style={{color: 'red', margin: '10px'}}>{erro}</div>}
                     
-                    {/* AQUI ESTÁ A CORREÇÃO: Usamos classes diferentes para cada aba */}
                     {abaAtiva === 'listar' ? (
-                        // Container para a LISTA (Largura Total)
+                        // WRAPPER LISTA (100% largura)
                         <div className="content-lista-full">
                             <ListaSementes 
                                 sementes={sementes} 
@@ -243,12 +233,14 @@ function BancoSementes() {
                             />
                         </div>
                     ) : (
-                        // Container para o FORMULÁRIO (Largura Controlada e Bonita)
+                        // WRAPPER FORMULÁRIO (Largura controlada)
                         <div className="content-semente-form">
                             <FormularioSemente 
                                 onSuccess={handleSucessoCadastro}
                                 onCancel={handleCancelarCadastro} 
                                 sementeParaEditar={sementeEditando}
+                                
+                                // Passando dados do IBGE para o filho não precisar buscar de novo
                                 listaEstados={estados}
                                 listaCidades={cidades}
                                 onEstadoChange={handleEstadoChange}

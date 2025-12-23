@@ -1,168 +1,203 @@
 /* =========================================
-   LAYOUT GERAL
+   LAYOUT GERAL DA PÁGINA
    ========================================= */
 .container-banco {
-    display: flex;
-    flex-direction: column;
-    height: calc(98vh - 80px);
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 0 10px;
-    margin: 0 auto;
-    background-color: #F5F7FA;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 80px); /* Ajustei para 100vh para evitar scroll duplo na janela */
+  overflow-y: auto;
+  overflow-x: hidden; /* Evita scroll horizontal na página inteira */
+  padding: 0; /* Removi padding da borda da tela para mobile */
+  background-color: #F5F7FA;
 }
 
 .content-banco > main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
-    width: 100%;
-    padding-bottom: 40px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  width: 100%;
+  padding: 0 10px 40px 10px; /* Padding apenas aqui */
+  box-sizing: border-box;
 }
 
 /* =========================================
-   CONTAINERS E ABAS
+   NAVEGAÇÃO (Botões Superiores)
    ========================================= */
 .banco-navegacao {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
-}
-
-.content-semente-form {
-    width: 100%;
-    max-width: 850px;
-    margin: 0 auto; 
-    display: flex;
-    flex-direction: column;
-}
-
-.content-lista-full {
-    width: 100%;
-    max-width: 100%;
-    padding: 0 5px;
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  width: 100%;
 }
 
 /* =========================================
-   ESTILO DO CARTÃO DA LISTA (CORRIGIDO)
+   WRAPPERS (Conteúdos das Abas)
+   ========================================= */
+
+/* Wrapper do Formulário */
+.content-semente-form {
+  width: 100%;
+  max-width: 900px; /* Sincronizado com o wide do FormGeral */
+  margin: 0 auto; 
+  display: flex;
+  flex-direction: column;
+}
+
+/* Wrapper da Lista (Tabela) */
+.content-lista-full {
+  width: 100%;
+  max-width: 100%; /* Deixa a tabela ocupar tudo */
+  padding: 0;
+}
+
+/* =========================================
+   ESTILO DO CARTÃO DA LISTA
    ========================================= */
 .infos-sementes-card {
-    background-color: white;
-    border-radius: 8px;
-    padding: 25px; /* Mais espaço interno */
-    
-    /* Borda Verde Fina (Igual à imagem Histórico) */
-    border: 1px solid #257024; 
-    
-    width: 100%;
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    min-height: 200px;
+  background-color: white;
+  border-radius: 10px; /* Igual ao FormGeral */
+  padding: 24px;
+  border: 1px solid #e0e0e0; /* Suavizei a borda para combinar com o Form */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  
+  /* CRÍTICO PARA TABELAS GRANDES: */
+  overflow-x: auto; /* Permite scroll horizontal SÓ na tabela se precisar */
 }
 
 /* HEADER DO CARTÃO */
 .header-content-semente {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-    flex-wrap: wrap;
-    gap: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .titulo-lista {
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-    text-decoration: underline; /* Sublinhado igual referência */
-    margin: 0;
+  font-size: 1.5rem; /* Igual ao H2 do FormGeral */
+  font-weight: 600;
+  color: #333;
+  margin: 0;
 }
 
+/* INPUT DE BUSCA */
 .input-search {
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 5px 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 300px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 300px;
+  max-width: 100%; /* Segurança para mobile */
 }
+
 .input-search input {
-    border: none;
-    height: 35px;
-    width: 100%;
-    outline: none;
+  border: none;
+  height: 100%;
+  width: 100%;
+  outline: none;
+  font-size: 1rem;
 }
-.input-search img {
-    width: 18px;
-    opacity: 0.6;
-    cursor: pointer;
+
+.input-search img, 
+.input-search svg { /* Suporte para SVG caso use ícones React */
+  width: 18px;
+  opacity: 0.6;
+  cursor: pointer;
 }
 
 /* =========================================
-   COR DA TABELA (Sage Green / Verde Musgo Claro)
+   TABELA E CORES
    ========================================= */
-/* Sobrescreve a cor do cabeçalho para ficar igual ao Histórico */
 .infos-sementes-card .tabela-historico--listagem th {
-    background-color: #8FBC8F !important; /* "DarkSeaGreen" - Tom pastel exato */
-    color: white;
-    font-weight: 600;
-    padding: 12px;
+  background-color: #8FBC8F !important;
+  color: white;
+  font-weight: 600;
+  padding: 12px;
+  white-space: nowrap; /* Evita que cabeçalhos quebrem linha feio */
 }
 
 .infos-sementes-card .tabela-historico td {
-    padding: 12px;
-    border-bottom: 1px solid #eee;
-    color: #555;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  color: #555;
+  vertical-align: middle;
 }
 
 /* =========================================
-   RODAPÉ (DENTRO DO CARTÃO)
+   RODAPÉ (Paginação e Exportar)
    ========================================= */
 .footer-content {
-    display: flex;
-    justify-content: space-between; /* Exportar na Esq, Paginacao na Dir */
-    align-items: center;
-    width: 100%;
-    margin-top: 25px; /* Espaço entre tabela e botões */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
 }
 
-/* Garante que o botão exportar fique alinhado à esquerda */
-.footer-left {
-    display: flex;
-    justify-content: flex-start;
-}
-
-/* Garante que a paginação fique alinhada à direita */
-.footer-right {
-    display: flex;
-    justify-content: flex-end;
-}
+.footer-left { display: flex; justify-content: flex-start; }
+.footer-right { display: flex; justify-content: flex-end; }
 
 /* =========================================
-   MOBILE
+   RESPONSIVIDADE (Sincronizado em 992px)
    ========================================= */
-@media (max-width: 768px) {
-    .header-content-semente {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    .input-search {
-        width: 100%;
-    }
-    .infos-sementes-card {
-        padding: 15px;
-        overflow-x: auto;
-    }
-    .footer-content {
-        flex-direction: column-reverse;
-        gap: 15px;
-    }
-    .footer-left, .footer-right {
-        justify-content: center;
-        width: 100%;
-    }
+@media (max-width: 992px) {
+  
+  /* Ajuste geral do container */
+  .content-banco > main {
+    padding: 0 0 40px 0; /* Remove padding lateral para ganhar espaço */
+  }
+
+  /* Header vira coluna */
+  .header-content-semente {
+    flex-direction: column;
+    align-items: stretch; /* Estica os itens */
+    gap: 12px;
+  }
+  
+  .titulo-lista {
+    text-align: center;
+  }
+
+  .input-search {
+    width: 100%; /* Busca ocupa largura total */
+  }
+
+  /* Cartão da lista */
+  .infos-sementes-card {
+    padding: 16px; /* Menos padding interno */
+    border-radius: 0; /* Opcional: tira borda arredondada no mobile */
+    border-left: none;
+    border-right: none;
+    box-shadow: none;
+  }
+
+  /* Footer vira coluna invertida (Paginação em cima, exportar em baixo) */
+  .footer-content {
+    flex-direction: column-reverse;
+    gap: 20px;
+  }
+
+  .footer-left, .footer-right {
+    justify-content: center;
+    width: 100%;
+  }
+  
+  /* Wrapper do Formulário no Mobile */
+  .content-semente-form {
+    max-width: 100%; /* Garante que o form use 100% */
+  }
 }
