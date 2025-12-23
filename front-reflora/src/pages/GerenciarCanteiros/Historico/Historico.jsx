@@ -4,13 +4,12 @@ import TabelaResponsiva from "../../../components/TabelaResponsiva/TabelaRespons
 import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico";
 import EditarPlantioCanteiro from "../EditarPlantioCanteiro/EditarPlantioCanteiro";
 import Paginacao from "../../../components/Paginacao/Paginacao";
-import { FaEye } from "react-icons/fa";
 
 // Services
 import { canteiroService } from "../../../services/canteiroService";
 import { getBackendErrorMessage } from "../../../utils/errorHandler";
 
-// Styles (Importante: Certifique-se que o Historico.css está na mesma pasta)
+// Styles
 import "./Historico.css"; 
 
 const Historico = () => {
@@ -23,8 +22,8 @@ const Historico = () => {
     const [selecionados, setSelecionados] = useState([]);
     const [valoresSaida, setValoresSaida] = useState({});
 
-    // Modais (Controlam visibilidade)
-    const [modalDetalheAberto, setModalDetalheAberto] = useState(false); // Só abre se true
+    // Modais
+    const [modalDetalheAberto, setModalDetalheAberto] = useState(false);
     const [canteiroSelecionado, setCanteiroSelecionado] = useState(null);
     const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
     
@@ -105,11 +104,11 @@ const Historico = () => {
             setHistoricoEntradas(fmtHist(hist?.entradas));
             setHistoricoSaidas(fmtHist(hist?.saidas));
             setCanteiroSelecionado(detalhes);
-            setModalDetalheAberto(true); // Só agora o modal aparece
+            setModalDetalheAberto(true);
         } catch (e) { alert("Erro ao carregar detalhes."); }
     };
 
-    // --- COLUNAS DA TABELA ---
+    // --- COLUNAS DA TABELA (Sem coluna de Ações/Olho) ---
     const colunas = [
         {
             key: 'select', label: '', width: '40px', align: 'center',
@@ -125,7 +124,7 @@ const Historico = () => {
         { 
             key: "NomeCanteiro", label: "Nome do Canteiro", sortable: true, sortKey: "nomeCanteiro",
             render: (item) => (
-                <span className="link-detalhes" onClick={() => handleDetalheCanteiro(item)}>
+                <span className="link-detalhes" onClick={() => handleDetalheCanteiro(item)} title="Ver Detalhes">
                     {item.NomeCanteiro}
                 </span>
             )
@@ -144,14 +143,6 @@ const Historico = () => {
                     disabled={!selecionados.includes(item.id)}
                 />
             )
-        },
-        {
-            key: "acoes", label: "Detalhes", width: '80px', align: 'center',
-            render: (item) => (
-                <button className="btn-detalhes-icone" onClick={() => handleDetalheCanteiro(item)} title="Ver Detalhes">
-                    <FaEye />
-                </button>
-            )
         }
     ];
 
@@ -163,7 +154,6 @@ const Historico = () => {
 
     return (
         <div className="historico-page-container">
-            {/* CONTAINER PRINCIPAL (TABELA) */}
             <div className="historico-content-wrapper">
                 {erro && <p style={{color:'red'}}>{erro}</p>}
                 
@@ -181,7 +171,6 @@ const Historico = () => {
                     direcaoAtual={direcao}
                     placeholderBusca="Pesquisar canteiro..."
                     
-                    // RODAPÉ: PAGINAÇÃO + BOTÃO
                     footerContent={
                         <div className="table-footer-container">
                             <Paginacao 
@@ -197,9 +186,9 @@ const Historico = () => {
                 />
             </div>
 
-            {/* MODAL DETALHES (SÓ APARECE SE modalDetalheAberto FOR TRUE) */}
+            {/* MODAL DETALHES (Com classe para esconder foto) */}
             {modalDetalheAberto && canteiroSelecionado && (
-                <div className="wrapper-modal-sem-foto"> {/* Classe para esconder foto se quiser */}
+                <div className="wrapper-modal-sem-foto">
                     <ModalDetalheGenerico
                         isOpen={modalDetalheAberto}
                         onClose={() => setModalDetalheAberto(false)}
@@ -214,8 +203,9 @@ const Historico = () => {
                         ]}
                         colunasEntrada={colModal} dadosEntrada={historicoEntradas}
                         colunasSaida={colModal} dadosSaida={historicoSaidas}
+                        // Botões ativos
                         onEditar={() => { setModalDetalheAberto(false); setModalEdicaoAberto(true); }}
-                        onExcluir={() => alert("Função Excluir aqui")}
+                        onExcluir={() => alert("Excluir lógica aqui")}
                     />
                 </div>
             )}
