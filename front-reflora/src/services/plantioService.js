@@ -54,6 +54,13 @@ export const plantioService = {
     return sementesUnicas;
   },
 
+  // GET: Listar todos os plantios de mudas disponíveis (com saldo) para mover para canteiro
+  // Usado para preencher o Select de "Lote de Origem"
+  getMudasDisponiveis: async () => {
+      const response = await api.get('/movimentacoes/plantioMuda/disponiveis');
+      return response.data;
+  },
+
   // GET: Buscar detalhes exatos de uma semente pelo Lote
   buscarSementePorLote: async (lote) => {
     if (!lote) return null;
