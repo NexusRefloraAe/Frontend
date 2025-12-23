@@ -1,8 +1,8 @@
 /* ==========================================================================
-   ModalDetalheGenerico.css - TOTALMENTE ISOLADO
+   ModalDetalheGenerico.css - Layout Visual "Reflora" (Idêntico ao Semente)
    ========================================================================== */
 
-/* 1. Overlay (Fundo) */
+/* 1. OVERLAY (Fundo Escuro) */
 .modal-overlay-generico {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
@@ -10,28 +10,28 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1200;
-  padding: 15px;
-  backdrop-filter: blur(4px);
+  z-index: 1200; /* Alto z-index para ficar acima de tudo */
+  padding: 10px;
+  backdrop-filter: blur(2px);
 }
 
-/* 2. Card do Modal */
+/* 2. CARD DO MODAL */
 .modal-content-generico {
   background-color: #fff;
   width: 100%;
-  max-width: 950px;
-  max-height: 92vh;
+  max-width: 900px; /* Largura ideal */
+  max-height: 95vh;
   border-radius: 12px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden; 
 }
 
-/* Header */
+/* HEADER */
 .modal-header-generico {
-  padding: 16px 24px;
+  padding: 12px 16px;
   border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-between;
@@ -42,214 +42,219 @@
 
 .modal-header-generico h2 {
   margin: 0;
-  font-size: 1.4rem;
-  color: #2e7d32;
+  font-size: 1.1rem;
+  color: #2e7d32; /* Verde Título */
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .close-btn-generico {
-  background: transparent; border: none; cursor: pointer; padding: 6px;
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  transition: background 0.2s;
+  background: transparent; border: none; cursor: pointer; padding: 4px;
 }
-.close-btn-generico:hover { background: #f5f5f5; }
-.close-btn-generico img { width: 24px; opacity: 0.6; }
+.close-btn-generico img { width: 22px; opacity: 0.6; }
 
-/* Corpo */
+/* BODY (Conteúdo com Scroll) */
 .modal-body-generico {
-  padding: 30px;
+  padding: 20px;
   overflow-y: auto;
   flex: 1;
 }
 
-/* --- SEÇÃO SUPERIOR --- */
+/* --- SEÇÃO SUPERIOR: GRID (FOTO + DADOS) --- */
 .detalhe-top-generico {
   display: flex;
-  gap: 30px;
-  margin-bottom: 40px;
-  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 25px;
 }
 
-/* Imagem */
+/* Imagem (Esquerda) */
 .img-wrapper-generico {
   flex-shrink: 0;
 }
 .img-wrapper-generico img {
-  width: 180px; height: 180px;
+  width: 140px; height: 140px;
   object-fit: cover;
-  border-radius: 12px;
-  border: 1px solid #e0e0e0;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-radius: 8px;
+  border: 1px solid #ddd;
 }
-.placeholder-generico {
-  width: 180px; height: 180px;
-  background: #f9f9f9; color: #aaa;
+/* Placeholder se não tiver foto */
+.img-wrapper-generico span {
   display: flex; align-items: center; justify-content: center;
-  border-radius: 12px; border: 1px solid #e0e0e0; font-size: 1rem; font-weight: 500;
+  width: 140px; height: 140px;
+  background: #f5f5f5; color: #999;
+  border-radius: 8px; border: 1px solid #ddd; font-size: 0.8rem;
 }
 
-/* Dados */
+/* Dados e Botões (Direita) */
+.dados-acoes-wrapper {
+  flex: 1;
+  display: flex; /* Flex para separar dados dos botões se precisar */
+  gap: 20px;
+}
+
+/* Grid de Informações */
 .info-grid-generico {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 30px;
-  row-gap: 15px;
-  align-content: start;
-  padding-right: 20px;
-  border-right: 1px solid #f0f0f0;
+  grid-template-columns: 1fr 1fr; /* 2 Colunas */
+  gap: 10px 20px;
+  font-size: 0.9rem;
+  color: #333;
 }
 
 .info-item-generico {
-  border-bottom: 1px solid #f9f9f9;
-  padding-bottom: 8px;
+  display: flex; 
+  flex-direction: column; /* Label em cima */
+  border-bottom: 1px solid transparent; /* Desktop sem borda */
 }
 
 .info-item-generico label {
   color: #2e7d32;
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  display: block;
-  margin-bottom: 4px;
-  letter-spacing: 0.5px;
+  margin-bottom: 2px;
 }
-.info-item-generico span { 
-  display: block; 
-  font-size: 1.05rem; 
-  color: #333;
-  line-height: 1.4;
-  word-break: break-word;
+.info-item-generico span {
+  display: block; line-height: 1.2;
 }
 
-/* Botões */
+/* Botões de Ação (Vertical na direita, igual Semente) */
 .acoes-generico {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding-left: 10px;
+  gap: 8px;
 }
 .btn-generico {
-  width: 44px; height: 44px;
-  border-radius: 10px;
-  border: 1px solid #e0e0e0;
+  width: 36px; height: 36px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
   background: #fff;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: all 0.2s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
-.btn-generico:hover { background: #f0f0f0; transform: translateY(-2px); border-color: #ccc; }
-.btn-generico img { width: 22px; }
+.btn-generico:hover { background: #f5f5f5; border-color: #999; }
+.btn-generico img { width: 18px; }
 
-/* --- HISTÓRICO --- */
+
+/* --- SEÇÃO HISTÓRICO --- */
 .hist-container-generico {
   border-top: 1px solid #eee;
-  padding-top: 30px;
+  padding-top: 15px;
+  margin-top: 10px;
 }
+
 .hist-container-generico h3 {
-  font-size: 1.2rem; color: #444; margin: 0 0 20px 0;
-  text-transform: uppercase; font-weight: 700; letter-spacing: 1px;
+  font-size: 1rem; color: #555; margin: 0 0 10px 0;
+  text-transform: uppercase; font-weight: 700;
 }
 
 .hist-tabelas-generico {
   display: flex;
-  gap: 30px;
+  gap: 15px;
 }
 
 .wrapper-tab-generico {
   flex: 1;
-  display: flex;
-  flex-direction: column;
+  display: flex; flex-direction: column;
   min-width: 0;
 }
 
+/* Títulos das Tabelas */
 .titulo-tab-generico {
-  padding: 12px;
+  padding: 6px;
   font-weight: 700;
   color: #fff;
-  border-radius: 10px 10px 0 0;
+  border-radius: 6px 6px 0 0;
   text-align: center;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
-.bg-ent-gen { background-color: #2e7d32; }
-.bg-sai-gen { background-color: #d32f2f; }
 
-/* Limpeza da Tabela Responsiva dentro do Genérico */
+/* Cores das Tabelas */
+.bg-ent-gen { background-color: #2e7d32; } /* Verde */
+.bg-sai-gen { background-color: #d32f2f; } /* Vermelho */
+
+/* Ajuste Fino da Tabela Responsiva dentro do Modal */
 .wrapper-tab-generico .tabela-container {
   box-shadow: none !important;
-  border: 1px solid #e0e0e0 !important;
+  border: 1px solid #ddd !important;
   border-top: none !important;
-  border-radius: 0 0 10px 10px !important;
+  border-radius: 0 0 6px 6px !important;
   margin-bottom: 0 !important;
 }
 .wrapper-tab-generico .tabela-top-bar { display: none !important; }
 .wrapper-tab-generico td, .wrapper-tab-generico th {
-  padding: 14px 16px !important;
-  font-size: 0.95rem !important;
+  padding: 6px 8px !important;
+  font-size: 0.8rem !important;
 }
-/* Saída Vermelha */
-.wrapper-saida-generico .tabela-table th {
+
+/* Cabeçalho Vermelho para Saída */
+.wrapper-tab-generico:last-child .tabela-table th {
   background-color: #d32f2f !important;
-  border-bottom: 1px solid rgba(255,255,255,0.2) !important;
+  border-bottom-color: rgba(255,255,255,0.3) !important;
 }
 
 /* Rodapé */
 .footer-generico {
-  margin-top: 30px;
+  margin-top: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 20px;
+  padding-top: 10px;
   border-top: 1px solid #f9f9f9;
 }
 
 /* ==========================================================================
-   RESPONSIVIDADE (MOBILE)
+   MOBILE OTIMIZADO (Max 768px)
    ========================================================================== */
 @media (max-width: 768px) {
-  .modal-content-generico { width: 95%; max-height: 98vh; margin: 0 auto; }
-  .modal-body-generico { padding: 16px; }
+  .modal-content-generico { width: 98%; max-height: 98vh; margin: 0 auto; }
+  .modal-body-generico { padding: 12px; }
 
+  /* Layout: Foto + Botões na Esq | Dados na Dir */
   .detalhe-top-generico {
-    flex-direction: column; align-items: center; gap: 15px; margin-bottom: 25px;
+    display: grid;
+    grid-template-columns: 90px 1fr; /* Coluna Fixa | Resto */
+    gap: 12px;
+    margin-bottom: 20px;
   }
 
-  .img-wrapper-generico img, .placeholder-generico {
-    width: 120px; height: 120px;
+  .img-wrapper-generico, .img-wrapper-generico span {
+    width: 90px; height: 90px;
+    grid-column: 1; grid-row: 1;
   }
 
+  /* Botões embaixo da foto */
   .acoes-generico {
-    flex-direction: row; padding-left: 0; border-right: none;
-    gap: 20px; width: 100%; justify-content: center;
-    padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;
+    grid-column: 1; grid-row: 2;
+    flex-direction: row; justify-content: space-between;
   }
-  .btn-generico { width: 48px; height: 48px; }
+  .btn-generico { width: 42px; height: 42px; }
 
+  /* Dados na direita */
+  .dados-acoes-wrapper { display: contents; /* Remove o flex wrapper para o grid funcionar */ }
+  
   .info-grid-generico {
-    grid-template-columns: 1fr; gap: 0; width: 100%; padding-right: 0; border-right: none;
+    grid-column: 2; grid-row: 1 / span 2;
+    display: flex; flex-direction: column;
+    gap: 0;
+    border: 1px solid #eee; border-radius: 8px;
+    background: #fafafa; padding: 2px 8px;
   }
 
   .info-item-generico {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 0; border-bottom: 1px solid #eee;
+    flex-direction: row; justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee; padding: 6px 0;
   }
   .info-item-generico:last-child { border-bottom: none; }
   
-  .info-item-generico label { 
-      margin-bottom: 0; font-size: 0.8rem; color: #666; flex-shrink: 0; margin-right: 15px;
-  }
-  .info-item-generico span { text-align: right; font-size: 0.9rem; }
+  .info-item-generico label { margin-bottom: 0; font-size: 0.7rem; color: #666; }
+  .info-item-generico span { text-align: right; font-size: 0.8rem; font-weight: 500; }
 
+  /* Tabelas Empilhadas */
   .hist-tabelas-generico { flex-direction: column; gap: 20px; }
-  
-  .wrapper-tab-generico td, .wrapper-tab-generico th {
-    padding: 10px !important; font-size: 0.85rem !important;
-  }
-
-  .footer-generico { flex-direction: column-reverse; gap: 15px; margin-top: 20px; }
+  .footer-generico { flex-direction: column-reverse; gap: 10px; }
 }

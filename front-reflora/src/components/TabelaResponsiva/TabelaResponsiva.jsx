@@ -8,7 +8,7 @@ const TabelaResponsiva = ({
   dados,         
   termoBusca,    
   onPesquisar,   
-  placeholderBusca = "Pesquisar por lote ou nome...",
+  placeholderBusca = "Pesquisar...",
   footerContent, 
   onOrdenar,     
   ordemAtual,    
@@ -28,7 +28,7 @@ const TabelaResponsiva = ({
   return (
     <div className="tabela-container">
       
-      {/* 1. TOPO: Título e Busca */}
+      {/* 1. TOPO */}
       <div className="tabela-top-bar">
         {titulo && <h2 className="tabela-titulo">{titulo}</h2>}
         
@@ -46,7 +46,7 @@ const TabelaResponsiva = ({
         )}
       </div>
 
-      {/* 2. ÁREA DE SCROLL (Vertical e Horizontal) */}
+      {/* 2. ÁREA DE SCROLL */}
       <div className="tabela-scroll-area">
         <table className="tabela-table">
           <thead>
@@ -54,10 +54,10 @@ const TabelaResponsiva = ({
               {colunas.map((col, idx) => (
                 <th 
                   key={idx} 
-                  onClick={() => col.sortable && onOrdenar(col.sortKey || col.key)}
-                  style={{ cursor: col.sortable ? 'pointer' : 'default' }}
+                  onClick={() => col.sortable && onOrdenar && onOrdenar(col.sortKey || col.key)}
+                  style={{ cursor: col.sortable ? 'pointer' : 'default', width: col.width }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: col.align || 'flex-start' }}>
                     {col.label}
                     {renderSortIcon(col)}
                   </div>
@@ -71,8 +71,9 @@ const TabelaResponsiva = ({
               dados.map((item, rowIdx) => (
                 <tr key={item.id || rowIdx}>
                   {colunas.map((col, colIdx) => (
-                    <td key={`${rowIdx}-${colIdx}`}>
-                      {item[col.key]}
+                    <td key={`${rowIdx}-${colIdx}`} style={{ textAlign: col.align || 'left' }}>
+                      {/* AQUI ESTÁ A MUDANÇA: Se tiver render, usa ele. Se não, texto normal */}
+                      {col.render ? col.render(item) : item[col.key]}
                     </td>
                   ))}
                 </tr>
@@ -88,7 +89,7 @@ const TabelaResponsiva = ({
         </table>
       </div>
 
-      {/* 3. RODAPÉ (Fixo embaixo da rolagem) */}
+      {/* 3. RODAPÉ */}
       {footerContent && (
         <div className="tabela-footer">
           {footerContent}

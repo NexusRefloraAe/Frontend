@@ -1,0 +1,199 @@
+/* src/pages/GerenciarCanteiros/Historico/Historico.css */
+
+/* 1. Container da Página */
+.historico-page-container {
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #f4f6f8; /* Fundo suave */
+  min-height: 100vh; /* Garante altura total */
+}
+
+/* 2. Cartão Branco que envolve a Tabela */
+.historico-content-wrapper {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 100%; /* Garante que não estoure a tela */
+  box-sizing: border-box;
+}
+
+/* 3. Estilos da Tabela (Elementos Internos) */
+
+/* Checkbox */
+.checkbox-selecao {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #2e7d32; /* Verde Reflora */
+  vertical-align: middle;
+}
+
+/* Link do Nome (Estilo Clicável) */
+.link-detalhes {
+  color: #2e7d32; /* Verde */
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s;
+  display: inline-block;
+  border-bottom: 1px dotted transparent;
+}
+.link-detalhes:hover {
+  color: #1b5e20;
+  border-bottom-color: #1b5e20;
+}
+
+/* Botão Olho */
+.btn-detalhes-icone {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  font-size: 1.1rem;
+  transition: transform 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+}
+.btn-detalhes-icone:hover {
+  color: #2e7d32;
+  background-color: #e8f5e9;
+  transform: scale(1.1);
+}
+
+/* 4. Input Quantidade Saída */
+.input-qtd-saida {
+  width: 100%;
+  max-width: 100px; /* Largura controlada */
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  background-color: #f9f9f9; /* Padrão cinza */
+}
+
+/* Quando habilitado (item selecionado) */
+.input-qtd-saida:not(:disabled) {
+  background-color: #fff;
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 1px rgba(46, 125, 50, 0.1);
+}
+
+.input-qtd-saida:focus {
+  outline: none;
+  border-color: #1b5e20;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
+}
+
+/* 5. Rodapé da Tabela (Paginação + Botão) */
+.table-footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 10px;
+  flex-wrap: wrap; /* Permite quebrar linha no mobile */
+  gap: 15px;
+}
+
+/* Botão Adicionar (Verde) */
+.btn-adicionar {
+  background-color: #2e7d32;
+  color: white;
+  padding: 10px 30px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(46, 125, 50, 0.2);
+  transition: background-color 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+}
+
+.btn-adicionar:hover {
+  background-color: #1b5e20;
+  transform: translateY(-1px);
+}
+
+.btn-adicionar:active {
+  transform: translateY(0);
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 600px) {
+  .historico-page-container {
+    padding: 10px;
+  }
+  
+  .historico-content-wrapper {
+    padding: 15px;
+  }
+
+  /* No celular, o rodapé empilha: Paginação em cima, Botão embaixo */
+  .table-footer-container {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .btn-adicionar {
+    width: 100%; /* Botão largura total no mobile */
+  }
+}
+/* src/pages/GerenciarCanteiros/Historico/Historico.css */
+
+/* ... (Mantenha todo o CSS anterior do Historico aqui) ... */
+.historico-page-container { width: 100%; padding: 20px; box-sizing: border-box; background-color: #f4f6f8; min-height: 100vh; }
+.historico-content-wrapper { background-color: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); padding: 20px; display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 100%; box-sizing: border-box; }
+.checkbox-selecao { width: 18px; height: 18px; cursor: pointer; accent-color: #2e7d32; vertical-align: middle; }
+.link-detalhes { color: #2e7d32; font-weight: 600; text-decoration: none; cursor: pointer; transition: color 0.2s; display: inline-block; border-bottom: 1px dotted transparent; }
+.link-detalhes:hover { color: #1b5e20; border-bottom-color: #1b5e20; }
+.btn-detalhes-icone { background: transparent; border: none; cursor: pointer; color: #666; font-size: 1.1rem; transition: transform 0.2s, color 0.2s; display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 50%; }
+.btn-detalhes-icone:hover { color: #2e7d32; background-color: #e8f5e9; transform: scale(1.1); }
+.input-qtd-saida { width: 100%; max-width: 100px; padding: 8px; border: 1px solid #ddd; border-radius: 6px; text-align: center; font-size: 0.95rem; transition: all 0.2s; background-color: #f9f9f9; }
+.input-qtd-saida:not(:disabled) { background-color: #fff; border-color: #2e7d32; box-shadow: 0 0 0 1px rgba(46, 125, 50, 0.1); }
+.input-qtd-saida:focus { outline: none; border-color: #1b5e20; box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2); }
+.table-footer-container { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 10px; flex-wrap: wrap; gap: 15px; }
+.btn-adicionar { background-color: #2e7d32; color: white; padding: 10px 30px; border: none; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 6px rgba(46, 125, 50, 0.2); transition: background-color 0.2s, transform 0.1s; display: flex; align-items: center; justify-content: center; min-width: 120px; }
+.btn-adicionar:hover { background-color: #1b5e20; transform: translateY(-1px); }
+.btn-adicionar:active { transform: translateY(0); }
+@media (max-width: 600px) {
+  .historico-page-container { padding: 10px; }
+  .historico-content-wrapper { padding: 15px; }
+  .table-footer-container { flex-direction: column; align-items: center; justify-content: center; }
+  .btn-adicionar { width: 100%; }
+}
+
+
+/* ==================================================================
+   OVERRIDE PARA ESCONDER FOTO NO MODAL (Apenas nesta página)
+================================================================== */
+/* 1. Altera o container superior para bloco (remove o grid) */
+.wrapper-modal-sem-foto .detalhe-top-generico {
+    display: block !important;
+}
+
+/* 2. Esconde o elemento da imagem */
+.wrapper-modal-sem-foto .img-wrapper-generico {
+    display: none !important;
+}
+
+/* 3. Garante que os dados ocupem 100% da largura */
+.wrapper-modal-sem-foto .dados-acoes-wrapper {
+    width: 100%;
+    margin-top: 0; /* Remove margem se houver */
+}
