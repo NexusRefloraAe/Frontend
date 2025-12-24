@@ -6,6 +6,7 @@ import ModalExcluir from '../ModalExcluir/ModalExcluir'
 import closeIcon from '../../assets/close.svg'
 import editIcon from '../../assets/edit.svg'
 import deleteIcon from '../../assets/delete.svg'
+import './ModalDetalheGenerico.css';
 
 /**
  * @param {object} props
@@ -107,7 +108,7 @@ function ModalDetalheGenerico({
     //     }
     // };
 
-    const ITENS_POR_PAGINA = 4;
+    const ITENS_POR_PAGINA = 2;
     const totalItens = Math.max(historicoEntrada.length, historicoSaida.length);
     const totalPaginas = Math.ceil(totalItens / ITENS_POR_PAGINA);
     const indiceUltimo = paginaHistorico * ITENS_POR_PAGINA;
