@@ -21,20 +21,29 @@ const HistoricoInspecao = () => {
   const [termoBusca, setTermoBusca] = useState('');
 
   // 2. Função para carregar dados reais da API
-  const carregarDados = useCallback(async (pagina) => {
+  const carregarDados = useCallback(async (paginaDestino) => {
     setLoading(true);
     try {
-      // Spring usa página 0 para o início, React usa 1
-      const response = await inspecaoService.getAll(pagina - 1, itensPorPagina);
-      
-      // O Spring retorna um objeto Page com o atributo 'content'
-      setDados(response.content); 
-      setTotalPaginas(response.totalPages);
-    } catch (error) {
-      console.error("Erro ao carregar inspeções:", error);
-    } finally {
-      setLoading(false);
-    }
+        // Envia para o back (ex: página 1 vira 0)
+        const response = await inspecaoService.getAll(paginaDestino - 1, itensPorPagina);
+        
+        console.log("Resposta completa da API:", response); // Debug para conferir no console
+
+        // ATENÇÃO AQUI: A estrutura correta baseada no seu Postman
+        setDados(response.content || []); 
+        
+        // Caminho correto: response.page.totalPages
+        if (response.page) {
+            setTotalPaginas(response.page.totalPages);
+            // Sincroniza o estado local com o número real vindo do banco
+            setPaginaAtual(response.page.number + 1); 
+        }
+
+      } catch (error) {
+          console.error("Erro ao carregar inspeções:", error);
+      } finally {
+          setLoading(false);
+      }
   }, [itensPorPagina]);
 
   // Carrega os dados ao montar o componente ou mudar de página
@@ -73,43 +82,29 @@ const HistoricoInspecao = () => {
   }
 
   const handleConfirmarExclusao = async () => {
-    if (inspecaoExcluindo) {
-        try {
-            setLoading(true); // Inicia o loading visual
-            
-            // 1. Chama o serviço para deletar no Banco de Dados
-            await inspecaoService.delete(inspecaoExcluindo.id);
+    if (!inspecaoExcluindo) return;
 
-            const isUltimoItemDaPagina = dados.length === 1;
-            const naoEhPrimeiraPagina = paginaAtual > 1;
+    try {
+        setLoading(true);
+        await inspecaoService.delete(inspecaoExcluindo.id);
 
-            if (isUltimoItemDaPagina && naoEhPrimeiraPagina) {
-              // Ao mudar o estado da página, o useEffect será disparado automaticamente
-              setPaginaAtual(prev => prev - 1);
-            } else {
-              // Se ainda houver outros itens na página ou for a página 1, apenas recarregamos
-              await carregarDados(paginaAtual);
-            }
-            
-            // 2. Feedback de sucesso
-            console.log("Inspeção excluída com sucesso:", inspecaoExcluindo.id);
-            alert("Inspeção removida com sucesso!");
+        alert("Inspeção removida com sucesso!");
 
-            // 3. Fecha o modal e limpa o estado do item que estava sendo excluído
-            setModalExclusaoAberto(false);
-            setInspecaoExcluindo(null);
-
-            // 4. Recarrega os dados da API para atualizar a tabela
-            // Se a página ficar vazia (ex: deletou o único item da pág 2), 
-            // você pode implementar uma lógica para voltar uma página, mas carregarDados resolve.
-            carregarDados(paginaAtual); 
-
-        } catch (error) {
-            console.error("Erro ao excluir inspeção:", error);
-            alert("Erro ao tentar excluir a inspeção. Tente novamente.");
-        } finally {
-            setLoading(false); // Para o loading
+        // Lógica para retroceder página se deletar o último item
+        if (dados.length === 1 && paginaAtual > 1) {
+            setPaginaAtual(prev => prev - 1); // O useEffect chamará carregarDados
+        } else {
+            await carregarDados(paginaAtual); // Recarrega a mesma página
         }
+
+        setModalExclusaoAberto(false);
+        setInspecaoExcluindo(null);
+
+    } catch (error) {
+        console.error("Erro ao excluir:", error);
+        alert("Erro ao excluir.");
+    } finally {
+        setLoading(false);
     }
   };
 
@@ -132,6 +127,10 @@ const HistoricoInspecao = () => {
     setTermoBusca(termo);
     setPaginaAtual(1);
     // Aqui você poderia chamar carregarDados(1, termo) se o back aceitasse busca
+  };
+
+  const handleMudarPagina = (novaPagina) => {
+    setPaginaAtual(novaPagina);
   };
 
   // Colunas da tabela
@@ -187,28 +186,27 @@ const HistoricoInspecao = () => {
             mostrarAcoes={true}
 
             onPesquisar={handlePesquisar}
-
             onEditar={handleEditar} // Passa a função
             onExcluir={handleExcluir} // Passa a função
 
             paginaAtual={paginaAtual}
             totalPaginas={totalPaginas}
             itensPorPagina={itensPorPagina}
-            onPaginaChange={setPaginaAtual}
+            onPaginaChange={handleMudarPagina}
             onItensPorPaginaChange={setItensPorPagina}
             onBuscaChange={handleBuscaChange}
             termoBusca={termoBusca}
 
-            footerContent={
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
-                <button 
-                  className="btn-exportar"
-                  onClick={() => alert('Relatório exportado com sucesso!')}
-                >
-                  Exportar ↑
-                </button>
-              </div>
-            }
+            // footerContent={
+            //   <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+            //     <button 
+            //       className="btn-exportar"
+            //       onClick={() => alert('Relatório exportado com sucesso!')}
+            //     >
+            //       Exportar ↑
+            //     </button>
+            //   </div>
+            // }
           />
         </main>
       </div>
