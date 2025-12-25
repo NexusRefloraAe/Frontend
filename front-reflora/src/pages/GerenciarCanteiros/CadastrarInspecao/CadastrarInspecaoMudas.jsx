@@ -154,6 +154,7 @@ const CadastrarInspecaoMudas = () => {
                     label="Nome Popular (Espécie)"
                     name="nomePopular"
                     type="text"
+                    placeholder="Preenchido automaticamente"
                     value={formData.nomePopular}
                     readOnly={true} // Campo automático
                     disabled={true}
@@ -213,7 +214,6 @@ const CadastrarInspecaoMudas = () => {
                         { value: 'Em tratamento', label: 'Em tratamento' },
                     ]}
                 />
-
                 <Input
                     label="Pragas/Doenças"
                     name="pragasDoencas"
@@ -221,7 +221,7 @@ const CadastrarInspecaoMudas = () => {
                     value={formData.pragasDoencas}
                     onChange={handleChange('pragasDoencas')}
                     required={true}
-                    placeholder="Selecione"
+                    placeholder="Selecione o estado de saúde"
                     options={[
                         { value: 'Nenhuma', label: 'Nenhuma' },
                         { value: 'Formigas', label: 'Formigas' },
@@ -229,7 +229,6 @@ const CadastrarInspecaoMudas = () => {
                         { value: 'Outros', label: 'Outros' },
                     ]}
                 />
-
                 <Input
                     label="Estimativa de Mudas Prontas"
                     name="estimativaMudasProntas"
