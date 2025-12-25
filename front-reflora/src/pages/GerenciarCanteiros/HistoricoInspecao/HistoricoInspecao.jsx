@@ -1,25 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
 import EditarInspecao from "../EditarInspecao/EditarInspecao"; 
 import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir"; 
-
-
+import { inspecaoService } from "../../../services/inspecaoMudaService";
 
 const HistoricoInspecao = () => {
-  
-  const DADOS_INSPECAO_MOCK = [
-    // Adicionei 'id' para facilitar a edição/exclusão
-    { id: 1, Lote: 'A001', NomePopular: 'Ipê-amarelo', DataInspecao: '20/05/2025', TratosCulturais: 'Regação', PragasDoencas: 'Nenhuma', EstadoSaude: 'Boa', Qntd: 700, Observacoes: 'Lorem ipsum' },
-    { id: 2, Lote: 'A002', NomePopular: 'Jacarandá-mimoso', DataInspecao: '20/05/2025', TratosCulturais: 'Regação', PragasDoencas: 'Nenhuma', EstadoSaude: 'Ruim', Qntd: 300, Observacoes: 'Boa' },
-    { id: 3, Lote: 'A005', NomePopular: 'Aroeira', DataInspecao: '20/05/2025', TratosCulturais: 'Regação', PragasDoencas: 'Nenhuma', EstadoSaude: 'Em tratamento', Qntd: 700, Observacoes: 'Boa' },
-    { id: 4, Lote: 'A007', NomePopular: 'Pau-brasil', DataInspecao: '20/05/2025', TratosCulturais: 'Adubação', PragasDoencas: 'Nenhuma', EstadoSaude: 'Boa', Qntd: 700, Observacoes: 'Lorem ipsum' },
-    { id: 5, Lote: 'A007', NomePopular: 'Ipê-amarelo', DataInspecao: '20/05/2025', TratosCulturais: 'Adubação', PragasDoencas: 'Nenhuma', EstadoSaude: 'Boa', Qntd: 300, Observacoes: 'Lorem ipsum' },
-    { id: 6, Lote: 'A008', NomePopular: 'Cedro-rosa', DataInspecao: '21/05/2025', TratosCulturais: 'Poda', PragasDoencas: 'Cochonilha', EstadoSaude: 'Em tratamento', Qntd: 150, Observacoes: 'Aplicado inseticida' },
-    { id: 7, Lote: 'A009', NomePopular: 'Jatobá', DataInspecao: '21/05/2025', TratosCulturais: 'Regação', PragasDoencas: 'Nenhuma', EstadoSaude: 'Boa', Qntd: 500, Observacoes: '' },
-    { id: 8, Lote: 'A010', NomePopular: 'Sibipiruna', DataInspecao: '22/05/2025', TratosCulturais: 'Regação', PragasDoencas: 'Nenhuma', EstadoSaude: 'Boa', Qntd: 600, Observacoes: 'Tudo OK' },
-    { id: 9, Lote: 'A011', NomePopular: 'Angico', DataInspecao: '22/05/2025', TratosCulturais: 'Adubação', PragasDoencas: 'Pulgões', EstadoSaude: 'Em tratamento', Qntd: 250, Observacoes: 'Tratamento iniciado' },
-    { id: 10, Lote: 'A012', NomePopular: 'Pau-ferro', DataInspecao: '23/05/2025', TratosCulturais: 'Regação', PragasDoencas: 'Nenhuma', EstadoSaude: 'Boa', Qntd: 800, Observacoes: '' },
-  ];
 
   // 2. Estados para modais e dados
   const [dados, setDados] = useState([]);
@@ -27,15 +12,35 @@ const HistoricoInspecao = () => {
   const [inspecaoExcluindo, setInspecaoExcluindo] = useState(null);
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
+  const [loading, setLoading] = useState(false);
   
   // Estados para paginação
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(0);
   const [itensPorPagina, setItensPorPagina] = useState(5); 
   const [termoBusca, setTermoBusca] = useState('');
 
+  // 2. Função para carregar dados reais da API
+  const carregarDados = useCallback(async (pagina) => {
+    setLoading(true);
+    try {
+      // Spring usa página 0 para o início, React usa 1
+      const response = await inspecaoService.getAll(pagina - 1, itensPorPagina);
+      
+      // O Spring retorna um objeto Page com o atributo 'content'
+      setDados(response.content); 
+      setTotalPaginas(response.totalPages);
+    } catch (error) {
+      console.error("Erro ao carregar inspeções:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [itensPorPagina]);
+
+  // Carrega os dados ao montar o componente ou mudar de página
   useEffect(() => {
-    setDados(DADOS_INSPECAO_MOCK);
-  }, []);
+    carregarDados(paginaAtual);
+  }, [paginaAtual, carregarDados]);
 
   // 3. Handlers para abrir/fechar modais
   
@@ -49,25 +54,63 @@ const HistoricoInspecao = () => {
     setModalExclusaoAberto(true);
   };
 
-  const handleSalvarEdicao = (dadosEditados) => {
-    setDados(prev => prev.map(item => 
-      item.id === inspecaoEditando.id ? dadosEditados : item
-    ));
-    
-    console.log("Inspeção atualizada:", dadosEditados);
-    setModalEdicaoAberto(false);
-    setInspecaoEditando(null);
-  };
-
-  const handleConfirmarExclusao = () => {
-    if (inspecaoExcluindo) {
-      setDados(prev => prev.filter(item => 
-        item.id !== inspecaoExcluindo.id
-      ));
-      console.log("Inspeção excluída:", inspecaoExcluindo);
+  const handleSalvarEdicao = async (dadosDoForm) => {
+    try {
+        setLoading(true);
+        // Chama a API enviando o ID original e os novos dados
+        await inspecaoService.update(inspecaoEditando.id, dadosDoForm);
+        
+        // Sucesso: fecha modal e atualiza a lista
+        setModalEdicaoAberto(false);
+        carregarDados(paginaAtual); 
+        alert("Inspeção atualizada com sucesso!");
+    } catch (error) {
+        console.error("Erro ao atualizar:", error);
+        alert("Não foi possível salvar as alterações.");
+    } finally {
+        setLoading(false);
     }
-    setModalExclusaoAberto(false);
-    setInspecaoExcluindo(null);
+  }
+
+  const handleConfirmarExclusao = async () => {
+    if (inspecaoExcluindo) {
+        try {
+            setLoading(true); // Inicia o loading visual
+            
+            // 1. Chama o serviço para deletar no Banco de Dados
+            await inspecaoService.delete(inspecaoExcluindo.id);
+
+            const isUltimoItemDaPagina = dados.length === 1;
+            const naoEhPrimeiraPagina = paginaAtual > 1;
+
+            if (isUltimoItemDaPagina && naoEhPrimeiraPagina) {
+              // Ao mudar o estado da página, o useEffect será disparado automaticamente
+              setPaginaAtual(prev => prev - 1);
+            } else {
+              // Se ainda houver outros itens na página ou for a página 1, apenas recarregamos
+              await carregarDados(paginaAtual);
+            }
+            
+            // 2. Feedback de sucesso
+            console.log("Inspeção excluída com sucesso:", inspecaoExcluindo.id);
+            alert("Inspeção removida com sucesso!");
+
+            // 3. Fecha o modal e limpa o estado do item que estava sendo excluído
+            setModalExclusaoAberto(false);
+            setInspecaoExcluindo(null);
+
+            // 4. Recarrega os dados da API para atualizar a tabela
+            // Se a página ficar vazia (ex: deletou o único item da pág 2), 
+            // você pode implementar uma lógica para voltar uma página, mas carregarDados resolve.
+            carregarDados(paginaAtual); 
+
+        } catch (error) {
+            console.error("Erro ao excluir inspeção:", error);
+            alert("Erro ao tentar excluir a inspeção. Tente novamente.");
+        } finally {
+            setLoading(false); // Para o loading
+        }
+    }
   };
 
   const handleCancelarEdicao = () => {
@@ -85,16 +128,23 @@ const HistoricoInspecao = () => {
     setPaginaAtual(1);
   };
 
+  const handlePesquisar = (termo) => {
+    setTermoBusca(termo);
+    setPaginaAtual(1);
+    // Aqui você poderia chamar carregarDados(1, termo) se o back aceitasse busca
+  };
+
   // Colunas da tabela
   const colunas = [
-    { key: "Lote", label: "Lote" },
-    { key: "NomePopular", label: "Nome Popular" },
-    { key: "DataInspecao", label: "Data da Inspeção" },
-    { key: "TratosCulturais", label: "Tratos Culturais" },
-    { key: "PragasDoencas", label: "Pragas/Doenças" },
-    { key: "EstadoSaude", label: "Estado de Saúde" },
-    { key: "Qntd", label: "Qntd" },
-    { key: "Observacoes", label: "Observações" },
+    { key: "loteMuda", label: "Lote" },
+    { key: "nomePopular", label: "Nome Popular" },
+    { key: "nomeCanteiro", label: "Nome do local" },
+    { key: "dataInspecao", label: "Data da Inspeção" },
+    { key: "tratosCulturais", label: "Tratos Culturais" },
+    { key: "doencasPragas", label: "Pragas/Doenças" },
+    { key: "estadoSaude", label: "Estado de Saúde" },
+    { key: "estimativaMudasProntas", label: "Qntd" },
+    { key: "nomeResponsavel", label: "Nome do Responsável" },
   ];
 
   return (
@@ -116,9 +166,9 @@ const HistoricoInspecao = () => {
         isOpen={modalExclusaoAberto}
         onClose={handleCancelarExclusao}
         onConfirm={handleConfirmarExclusao}
-        nomeItem={inspecaoExcluindo?.NomePopular}
+        nomeItem={inspecaoExcluindo?.nomePopular}
         titulo="Excluir Inspeção"
-        mensagem={`Tem certeza que deseja excluir a inspeção do lote "${inspecaoExcluindo?.Lote} - ${inspecaoExcluindo?.NomePopular}"? Esta ação não pode ser desfeita.`}
+        mensagem={`Tem certeza que deseja excluir a inspeção do lote "${inspecaoExcluindo?.loteMuda} - ${inspecaoExcluindo?.nomePopular}"? Esta ação não pode ser desfeita.`}
         textoConfirmar="Excluir"
         textoCancelar="Cancelar"
       />
@@ -130,15 +180,19 @@ const HistoricoInspecao = () => {
             titulo="Histórico de Inspeção"
             dados={dados}
             colunas={colunas}
-            chaveBusca="NomePopular"
+            chaveBusca="nomePopular"
             
+            isLoading={loading}
             mostrarBusca={true}
             mostrarAcoes={true}
+
+            onPesquisar={handlePesquisar}
 
             onEditar={handleEditar} // Passa a função
             onExcluir={handleExcluir} // Passa a função
 
             paginaAtual={paginaAtual}
+            totalPaginas={totalPaginas}
             itensPorPagina={itensPorPagina}
             onPaginaChange={setPaginaAtual}
             onItensPorPaginaChange={setItensPorPagina}
