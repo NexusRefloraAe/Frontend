@@ -3,6 +3,8 @@ import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao
 import EditarInspecao from "../EditarInspecao/EditarInspecao"; 
 import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir"; 
 import { inspecaoService } from "../../../services/inspecaoMudaService";
+import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico";
+import DetalheInspecao from "./DetalheInspecao/DetalheInspecao";
 
 const HistoricoInspecao = () => {
 
@@ -12,6 +14,8 @@ const HistoricoInspecao = () => {
   const [inspecaoExcluindo, setInspecaoExcluindo] = useState(null);
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
+  const [modalDetalheAberto, setModalDetalheAberto] = useState(false);  
+  const [itemSelecionado, setItemSelecionado] = useState(null);
   const [loading, setLoading] = useState(false);
   
   // Estados para paginação
@@ -56,11 +60,15 @@ const HistoricoInspecao = () => {
   const handleEditar = (inspecao) => {
     setInspecaoEditando(inspecao);
     setModalEdicaoAberto(true);
+
+    setModalDetalheAberto(false);
   };
 
   const handleExcluir = (inspecao) => {
     setInspecaoExcluindo(inspecao);
     setModalExclusaoAberto(true);
+
+    setModalDetalheAberto(false);
   };
 
   const handleSalvarEdicao = async (dadosDoForm) => {
@@ -133,6 +141,26 @@ const HistoricoInspecao = () => {
     setPaginaAtual(novaPagina);
   };
 
+  const handleVisualizar = async (item) => {
+      try {
+          setLoading(true);
+          // Busca os dados detalhados no Back-end pelo ID
+          const dadosCompletos = await inspecaoService.getById(item.id);
+          setItemSelecionado(dadosCompletos);
+          setModalDetalheAberto(true);
+      } catch (error) {
+          console.error("Erro ao carregar detalhes:", error);
+          alert("Não foi possível carregar os detalhes da inspeção.");
+      } finally {
+          setLoading(false);
+      }
+  };
+
+  const handleFecharModalDetalhe = () => {
+    setModalDetalheAberto(false);
+    setItemSelecionado(null);
+  };
+
   // Colunas da tabela
   const colunas = [
     { key: "loteMuda", label: "Lote" },
@@ -158,6 +186,23 @@ const HistoricoInspecao = () => {
             inspecao={inspecaoEditando}
             onSalvar={handleSalvarEdicao}
           />
+      )}
+
+      {modalDetalheAberto && itemSelecionado && (
+          <ModalDetalheGenerico
+              isOpen={modalDetalheAberto}
+              item={itemSelecionado}
+              titulo="Detalhes da Inspeção"
+              camposDetalhes={[]} 
+              onClose={handleFecharModalDetalhe}
+              onEditar={() => handleEditar(itemSelecionado)}
+              onExcluir={() => handleExcluir(itemSelecionado)}
+              mostrarHistorico={false}
+              mostrarExportar={false}
+              mostrarAcoes={true}
+          >
+              <DetalheInspecao item={itemSelecionado} />
+          </ModalDetalheGenerico>
       )}
 
       {/* 5. MODAL DE EXCLUSÃO */}
@@ -188,6 +233,7 @@ const HistoricoInspecao = () => {
             onPesquisar={handlePesquisar}
             onEditar={handleEditar} // Passa a função
             onExcluir={handleExcluir} // Passa a função
+            onVisualizar={handleVisualizar}
 
             paginaAtual={paginaAtual}
             totalPaginas={totalPaginas}
