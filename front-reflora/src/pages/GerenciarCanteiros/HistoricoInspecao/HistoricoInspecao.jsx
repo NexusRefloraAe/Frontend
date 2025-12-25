@@ -165,7 +165,7 @@ const HistoricoInspecao = () => {
   const colunas = [
     { key: "loteMuda", label: "Lote" },
     { key: "nomePopular", label: "Nome Popular" },
-    { key: "nomeCanteiro", label: "Nome do local" },
+    { key: "nomeCanteiro", label: "Nome do Local" },
     { key: "dataInspecao", label: "Data da Inspeção" },
     { key: "tratosCulturais", label: "Tratos Culturais" },
     { key: "doencasPragas", label: "Pragas/Doenças" },

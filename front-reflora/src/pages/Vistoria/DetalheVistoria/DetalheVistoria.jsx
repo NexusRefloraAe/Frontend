@@ -5,18 +5,19 @@ const DetalheVistoria = ({ item }) => {
   return (
     // Este container ajuda a aplicar nosso CSS customizado
     <div className="detalhe-vistoria-info-custom">
-      <p><strong>Lote da Muda:</strong> {item.Lote}</p>
-      <p><strong>Data da inspeção:</strong> {item.DataVistoria}</p>
-      <p><strong>Responsável:</strong> {item.Responsavel}</p>
-      <p><strong>Estimativa de Mudas prontas:</strong> {item.EstimativaMudas}</p>
-      <p><strong>Status:</strong> {item.Status}</p>
-      <p><strong>Tratos Culturais:</strong> {item.TratosCulturais}</p>
-      <p><strong>Pragas/Doenças:</strong> {item.PragasDoencas}</p>
+      <p><strong>Lote da Muda:</strong> {item.loteMuda}</p>
+      <p><strong>Local:</strong> {item.nomeCanteiro}</p>
+      <p><strong>Data da vistoria:</strong> {item.dataVistoria}</p>
+      <p><strong>Responsável:</strong> {item.nomeResponsavel}</p>
+      <p><strong>Estimativa de Mudas prontas:</strong> {item.estimativaMudasProntas}</p>
+      <p><strong>Status:</strong> {item.estadoSaude}</p>
+      <p><strong>Tratos Culturais:</strong> {item.tratosCulturais}</p>
+      <p><strong>Pragas/Doenças:</strong> {item.doencasPragas}</p>
       
       {/* Classe especial para o layout de "Observações" */}
       <p className="observacoes">
         <strong>Observações:</strong>
-        <span>{item.Observacoes}</span>
+        <span>{item.observacao}</span>
       </p>
     </div>
   );

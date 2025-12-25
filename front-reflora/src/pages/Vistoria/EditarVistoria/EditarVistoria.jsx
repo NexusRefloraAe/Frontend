@@ -2,33 +2,53 @@ import React, { useState, useEffect } from 'react';
 import FormGeral from '../../../components/FormGeral/FormGeral';
 import Input from '../../../components/Input/Input';
 
+const formatarDataParaInput = (dataDDMMYYYY) => {
+    if (!dataDDMMYYYY) return '';
+    const parts = dataDDMMYYYY.split('/');
+    if (parts.length === 3) {
+        // [DD, MM, YYYY] -> YYYY-MM-DD
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+    return ''; 
+};
+
 const EditarVistoria = ({ isOpen, onClose, onSave, itemParaEditar }) => {
 
   const [formData, setFormData] = useState({
-    lote: '',
+    id: '',
+    loteMuda: '',
+    // nomePopular: '',
+    nomeCanteiro: '',
     dataVistoria: '',
-    estadoSaude: 'Boa',
-    tratosCulturais: 'Adubação e Rega',
-    estimativaMudas: 0,
+    tratosCulturais: '',
+    estadoSaude: '',
+    doencasPragas: '',
+    estimativaMudasProntas: 0,
     nomeResponsavel: '',
-    observacoes: ''
+    observacao: ''
   });
 
   useEffect(() => {
     if (itemParaEditar) {
       setFormData({
-        lote: itemParaEditar.Lote || '',
-        dataVistoria: itemParaEditar.DataVistoria ? itemParaEditar.DataVistoria.split('/').reverse().join('-') : '', // Converte DD/MM/YYYY para YYYY-MM-DD
-        nomeResponsavel: itemParaEditar.Responsavel || '',
-        
-        // Campos que não estão na tabela, mas podem estar no objeto (ou usamos padrão)
-        estadoSaude: itemParaEditar.EstadoSaude || 'Boa',
-        tratosCulturais: itemParaEditar.TratosCulturais || 'Adubação e Rega',
-        estimativaMudas: itemParaEditar.EstimativaMudas || 0,
-        observacoes: itemParaEditar.Observacoes || ''
+        id: itemParaEditar.id,
+        loteMuda: itemParaEditar.loteMuda || '',
+        // nomePopular: itemParaEditar.nomePopular || '',
+        nomeCanteiro: itemParaEditar.nomeCanteiro || '',
+        dataVistoria: formatarDataParaInput(itemParaEditar.dataVistoria),
+        tratosCulturais: itemParaEditar.tratosCulturais || '',
+        estadoSaude: itemParaEditar.estadoSaude || '',
+        doencasPragas: itemParaEditar.doencasPragas || '',
+        estimativaMudasProntas: itemParaEditar.estimativaMudasProntas || 0,
+        nomeResponsavel: itemParaEditar.nomeResponsavel || '',
+        observacao: itemParaEditar.observacao || ''
       });
     }
   }, [itemParaEditar]);
+
+  if (!isOpen) {
+        return null;
+    }
 
   const handleCancel = (confirmar = true) => {
     if (confirmar) {
@@ -54,21 +74,8 @@ const EditarVistoria = ({ isOpen, onClose, onSave, itemParaEditar }) => {
   };
 
   // Handler 'onSave' (chama a prop com os dados)
-  const handleSubmit = (e) => {
-    // Mapeia os dados do formulário de volta para o formato do objeto original
-    const dadosAtualizados = {
-        ...itemParaEditar, // Mantém dados que não estão no form (como ID, NomePopular, etc)
-        Lote: formData.lote,
-        DataVistoria: formData.dataVistoria.split('-').reverse().join('/'), // Converte YYYY-MM-DD para DD/MM/YYYY
-        Responsavel: formData.nomeResponsavel,
-        EstadoSaude: formData.estadoSaude,
-        TratosCulturais: formData.tratosCulturais,
-        EstimativaMudas: formData.estimativaMudas,
-        Observacoes: formData.observacoes,
-        // Atualiza o Status para refletir a edição
-        Status: 'Vistoria Atualizada' 
-    };
-    onSave(dadosAtualizados);
+  const handleSubmit = () => {
+    onSave(formData);
   };
 
   const actions = [
@@ -84,11 +91,6 @@ const EditarVistoria = ({ isOpen, onClose, onSave, itemParaEditar }) => {
       children: 'Salvar Edições',
     },
   ];
-
-  // Verificação 'isOpen'
-  if (!isOpen) {
-    return null;
-  }
 
   // JSX envolvido em um overlay de modal
   return (
@@ -118,12 +120,17 @@ const EditarVistoria = ({ isOpen, onClose, onSave, itemParaEditar }) => {
                     <div className="input-row">
                         <Input
                             label="Lote"
-                            name="lote"
-                            type="text"
-                            value={formData.lote}
-                            readOnly={true}
-                            className="input-readonly"
+                            value={formData.loteMuda}
+                            disabled={true}
                         />
+                          <Input 
+                              label="Canteiro" 
+                              value={formData.nomeCanteiro} 
+                              disabled={true} 
+                          />
+                    </div>
+
+                    <div className="input-row">
                         <Input
                             label="Data da Vistoria"
                             name="dataVistoria"
@@ -132,9 +139,6 @@ const EditarVistoria = ({ isOpen, onClose, onSave, itemParaEditar }) => {
                             onChange={handleChange('dataVistoria')}
                             required={true}
                         />
-                    </div>
-
-                    <div className="input-row">
                         <Input
                             label="Estado de Saúde"
                             name="estadoSaude"
@@ -150,6 +154,9 @@ const EditarVistoria = ({ isOpen, onClose, onSave, itemParaEditar }) => {
                                 { value: 'Péssima', label: 'Péssima' }
                             ]}
                         />
+                    </div>
+
+                    <div className="input-row">
                         <Input
                             label="Tratos Culturais"
                             name="tratosCulturais"
@@ -164,35 +171,32 @@ const EditarVistoria = ({ isOpen, onClose, onSave, itemParaEditar }) => {
                                 { value: 'Adubação e Rega', label: 'Adubação e Rega' }
                             ]}
                         />
-                    </div>
-
-                    <div className="input-row">
                         <Input
                             label="Estimativa de Mudas"
-                            name="estimativaMudas"
+                            name="estimativaMudasProntas"
                             type="number"
-                            value={formData.estimativaMudas}
-                            onChange={handleChange('estimativaMudas')}
+                            value={formData.estimativaMudasProntas}
+                            onChange={handleChange('estimativaMudasProntas')}
                             onIncrement={handleEstimativaInc}
                             onDecrement={handleEstimativaDec}
                             required={true}
                         />
-                        <Input
-                            label="Nome do Responsável"
-                            name="nomeResponsavel"
-                            type="text"
-                            value={formData.nomeResponsavel}
-                            onChange={handleChange('nomeResponsavel')}
-                            required={true}
-                        />
                     </div>
+                    <Input
+                        label="Nome do Responsável"
+                        name="nomeResponsavel"
+                        type="text"
+                        value={formData.nomeResponsavel}
+                        onChange={handleChange('nomeResponsavel')}
+                        required={true}
+                    />
 
                     <Input
                         label="Observações"
-                        name="observacoes"
+                        name="observacao"
                         type="textarea"
-                        value={formData.observacoes}
-                        onChange={handleChange('observacoes')}
+                        value={formData.observacao}
+                        onChange={handleChange('observacao')}
                         required={false}
                         rows={4}
                     />

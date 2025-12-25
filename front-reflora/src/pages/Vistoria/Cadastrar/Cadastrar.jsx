@@ -210,15 +210,31 @@ const Cadastrar = () => {
             required={true}
           />
           <Input
-            label="Nome do Responsável"
-            name="nomeResponsavel"
-            type="text"
-            value={formData.nomeResponsavel}
-            onChange={handleChange('nomeResponsavel')}
-            placeholder="Informe o nome do responsável"
-            required={true}
+              label="Pragas/Doenças"
+              name="pragasDoencas"
+              type="select"
+              value={formData.doencasPragas}
+              onChange={handleChange('doencasPragas')}
+              required={true}
+              placeholder="Selecione o estado de saúde"
+              options={[
+                  { value: 'Nenhuma', label: 'Nenhuma' },
+                  { value: 'Formigas', label: 'Formigas' },
+                  { value: 'Fungos', label: 'Fungos' },
+                  { value: 'Outros', label: 'Outros' },
+              ]}
           />
         </div>
+        
+        <Input
+          label="Nome do Responsável"
+          name="nomeResponsavel"
+          type="text"
+          value={formData.nomeResponsavel}
+          onChange={handleChange('nomeResponsavel')}
+          placeholder="Informe o nome do responsável"
+          required={true}
+        />
 
         <Input
           label="Observações"

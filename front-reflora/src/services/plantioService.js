@@ -61,6 +61,19 @@ export const plantioService = {
       return response.data;
   },
 
+  // GET: Listar apenas lotes que já viraram mudas (ehMuda = true e quantidade > 0)
+  // Retorna uma lista de LoteMudaDTO (loteMuda, nomePopular)
+  getLotesConfirmados: async () => {
+    try {
+      // Ajuste a URL conforme o seu @RequestMapping no Controller
+      const response = await api.get('/movimentacoes/plantioMuda/mudasProntas');
+      return response.data; // Retorna List<LoteMudaDTO>
+    } catch (error) {
+      console.error("Erro ao buscar lotes confirmados:", error);
+      return [];
+    }
+  },
+
   // GET: Buscar detalhes exatos de uma semente pelo Lote
   buscarSementePorLote: async (lote) => {
     if (!lote) return null;
@@ -115,7 +128,7 @@ export const plantioService = {
       
       loteSemente: formData.lote,
       dataPlantio: formatarDataParaJava(formData.dataPlantio),
-      tipoPlantio: formData.tipoPlantio ? formData.tipoPlantio.toUpperCase() : null,
+      tipoPlantio: formData.tipoPlantio,
       
       // ✅ CORREÇÃO DE NOMES
       quantidadePlantada: Number(formData.quantidadePlantada || formData.qntdPlantada),
