@@ -66,7 +66,8 @@ function ModalDetalheGenerico({
     ];
 
     useEffect(() => {
-        if (isOpen && onCarregarHistorico && (item.id || item._id)) {
+        // Adicione o ?. aqui para evitar o erro de null
+        if (isOpen && onCarregarHistorico && (item?.id || item?._id)) { 
             const carregarDados = async () => {
                 try {
                     const dados = await onCarregarHistorico(item.id || item._id);
@@ -80,7 +81,8 @@ function ModalDetalheGenerico({
             };
             carregarDados();
         }
-    }, [isOpen, item.id, item._id, onCarregarHistorico]); // Removido dadosEntrada e dadosSaida daqui
+        // Corrija as dependências aqui também
+    }, [isOpen, item?.id, item?._id, onCarregarHistorico]); // Removido dadosEntrada e dadosSaida daqui
 
     if (!isOpen || !item) return null;
 
