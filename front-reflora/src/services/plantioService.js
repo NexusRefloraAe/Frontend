@@ -108,7 +108,7 @@ export const plantioService = {
       dataPlantio: formatarDataParaJava(formData.dataPlantio),
       
       // Garante Uppercase para o Enum (SEMENTEIRA, SAQUINHO, CHAO)
-      tipoPlantio: formData.tipoPlantio ? formData.tipoPlantio.toUpperCase() : null,
+      tipoPlantio: formData.tipoPlantio,
       
       // ✅ CORREÇÃO DE NOMES (Fallback para garantir compatibilidade)
       // Tenta ler o nome novo (padronizado) OU o nome antigo do estado
