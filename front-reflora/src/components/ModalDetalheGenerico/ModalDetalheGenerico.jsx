@@ -83,9 +83,6 @@ function ModalDetalheGenerico({
         // Dependência segura: usa item?.id
     }, [item?.id, item?._id, isOpen, onCarregarHistorico, dadosEntrada, dadosSaida]);
 
-    // 3. Só agora fazemos o "early return" visual
-    if (!isOpen || !item) return null;
-
     // Declarações que dependem de 'item' ou estado
     const dadosParaExportar = [
         ...historicoEntrada.map(i => ({ ...i, tipo: 'Entrada' })),
