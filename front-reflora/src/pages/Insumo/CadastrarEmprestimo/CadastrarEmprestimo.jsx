@@ -5,59 +5,101 @@ import insumoService from '../../../services/insumoService';
 import './CadastrarEmprestimo.css';
 
 const CadastrarEmprestimo = ({
-  item,
-  onSalvar,
-  onCancelar
+  item,       
+  onSalvar,   
+  onCancelar  
 }) => {
   const hoje = new Date().toISOString().split('T')[0];
+  
+  // Lista completa vinda do banco
+  const [listaFerramentas, setListaFerramentas] = useState([]);
+  
+  // Lista filtrada para o autocomplete
+  const [sugestoes, setSugestoes] = useState([]); 
+  
+  const [loading, setLoading] = useState(true);
 
-  // Estado inicial — se receber item, preenche os dados
   const [formData, setFormData] = useState({
-    nomeInsumo: '',
-    status: '',
+    insumoId: '',
+    nomeInsumo: '', // O que o usuário digita
+    status: 'EMPRESTADO',
     quantidade: '',
-    unidadeMedida: 'Unidade', // Padrão para ferramentas
+    unidadeMedida: 'Unidade',
     dataRegistro: hoje,
     responsavelEntrega: '',
     responsavelReceber: '',
   });
 
-  // Atualiza formData quando o item de edição muda
+  // 1. Carregar a lista completa ao abrir
+  useEffect(() => {
+    const carregarFerramentas = async () => {
+      try {
+        setLoading(true);
+        const dados = await insumoService.listarInsumos('FERRAMENTA');
+        setListaFerramentas(dados);
+      } catch (error) {
+        console.error("Erro ao carregar ferramentas:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    carregarFerramentas();
+  }, []);
+
+  // 2. Se vier edição, preenche
   useEffect(() => {
     if (item) {
-      setFormData({
-        nomeInsumo: item.NomeInsumo || item.nome || '', // Ajuste para pegar 'nome' se vier do DTO
-        status: item.Status || '',
-        quantidade: item.Quantidade || '',
+      setFormData(prev => ({
+        ...prev,
+        insumoId: item.id,
+        nomeInsumo: item.NomeInsumo || item.nomeInsumo || '',
+        status: item.Status ? item.Status.toUpperCase() : 'EMPRESTADO',
+        quantidade: '',
         unidadeMedida: item.UnidadeMedida || 'Unidade',
-        dataRegistro: item.Data || hoje,
-        responsavelEntrega: item.ResponsavelEntrega || '',
-        responsavelReceber: item.ResponsavelRecebe || '',
-      });
+      }));
     }
-  }, [item, hoje]);
+  }, [item]);
 
-  const handleCancel = () => {
-    if (onCancelar) {
-      onCancelar();
+  // --- Lógica do Autocomplete ---
+  const handleNomeChange = (e) => {
+    const valor = e.target.value;
+    
+    // Atualiza o texto do input e limpa o ID se o usuário estiver digitando
+    setFormData(prev => ({ 
+        ...prev, 
+        nomeInsumo: valor,
+        insumoId: '' // Força o usuário a selecionar da lista novamente
+    }));
+
+    if (valor.length > 0) {
+      // Filtra a lista localmente (case insensitive)
+      const filtrados = listaFerramentas.filter(f => 
+        f.nome.toLowerCase().includes(valor.toLowerCase())
+      );
+      setSugestoes(filtrados);
     } else {
-      const confirmar = window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.');
-      if (confirmar) {
-        resetForm();
-      }
+      setSugestoes([]);
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      nomeInsumo: '',
-      status: '',
-      quantidade: '',
-      unidadeMedida: 'Unidade',
-      dataRegistro: hoje,
-      responsavelEntrega: '',
-      responsavelReceber: '',
-    });
+  const selecionarFerramenta = (ferramenta) => {
+    setFormData(prev => ({
+      ...prev,
+      insumoId: ferramenta.id,
+      nomeInsumo: ferramenta.nome,
+      unidadeMedida: ferramenta.unidadeMedida || 'Unidade'
+    }));
+    setSugestoes([]); // Esconde a lista
+  };
+
+  const handleBlurNome = () => {
+    // Delay para permitir o clique na sugestão
+    setTimeout(() => setSugestoes([]), 200);
+  };
+  // ------------------------------
+
+  const handleCancel = () => {
+    if (onCancelar) onCancelar();
   };
 
   const handleChange = (field) => (e) => {
@@ -66,37 +108,26 @@ const CadastrarEmprestimo = ({
   };
 
   const handleQuantidadeInc = () => {
-    setFormData(prev => ({
-      ...prev,
-      quantidade: Math.max(0, (prev.quantidade || 0) + 1)
-    }));
+    setFormData(prev => ({ ...prev, quantidade: Math.max(0, (prev.quantidade || 0) + 1) }));
   };
 
   const handleQuantidadeDec = () => {
-    setFormData(prev => ({
-      ...prev,
-      quantidade: Math.max(0, (prev.quantidade || 0) - 1)
-    }));
+    setFormData(prev => ({ ...prev, quantidade: Math.max(0, (prev.quantidade || 0) - 1) }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validação básica
-    if (!formData.nomeInsumo) return alert('Por favor, informe o nome da ferramenta.');
-    if (!formData.status) return alert('Por favor, selecione o status.');
-    if (!formData.quantidade || formData.quantidade <= 0) return alert('Por favor, informe uma quantidade válida.');
-    if (!formData.responsavelEntrega) return alert('Por favor, informe o responsável pela entrega.');
-    if (!formData.responsavelReceber) return alert('Por favor, informe o responsável por receber.');
+    if (!formData.insumoId) return alert('Por favor, selecione uma ferramenta da lista.');
+    if (!formData.quantidade || formData.quantidade <= 0) return alert('Informe uma quantidade válida.');
+    if (!formData.responsavelEntrega) return alert('Informe o responsável pela entrega.');
+    if (!formData.responsavelReceber) return alert('Informe o responsável por receber.');
 
     try {
-      // Montar payload para o Backend
-      // Nota: O backend precisa do ID do insumo. Se 'item' for null (novo cadastro manual),
-      // certifique-se de que o backend suporta busca por nome ou ajuste a lógica aqui.
       const payload = {
-        insumoId: item ? item.id : null, 
+        insumoId: formData.insumoId,
         nomeInsumo: formData.nomeInsumo,
-        status: formData.status.toUpperCase(), // 'EMPRESTADO', 'DEVOLVIDO', 'ENTRADA'
+        status: formData.status,
         quantidade: Number(formData.quantidade),
         dataRegistro: formData.dataRegistro,
         responsavelEntrega: formData.responsavelEntrega,
@@ -105,117 +136,149 @@ const CadastrarEmprestimo = ({
 
       await insumoService.registrarMovimentacao(payload);
 
-      alert('Movimento registrado com sucesso!');
+      const acaoRealizada = formData.status === 'EMPRESTADO' ? 'Empréstimo' : 'Devolução';
+      alert(`${acaoRealizada} registrada com sucesso!`);
 
       if (onSalvar) {
-        onSalvar(formData); // Atualiza a tela pai (Tabela)
+        onSalvar(formData); 
       } else {
-        resetForm();
+        setFormData({ 
+            ...formData, 
+            quantidade: '', 
+            responsavelEntrega: '', 
+            responsavelReceber: '',
+            nomeInsumo: '',
+            insumoId: '' 
+        });
       }
 
     } catch (error) {
-      console.error('Erro ao registrar movimentação:', error);
-      alert('Erro ao registrar movimentação. Verifique os dados.');
+      console.error('Erro ao registrar:', error);
+      if (error.response && error.response.data) {
+          alert(`Erro: ${error.response.data.message || 'Erro ao registrar.'}`);
+      } else {
+          alert('Erro ao registrar movimentação.');
+      }
     }
   };
 
-  // Definição das actions dentro do componente para acessar o handleCancel
+  const textoBotao = formData.status === 'EMPRESTADO' ? 'Registrar Saída' : 'Registrar Entrada';
+
   const actions = [
-    {
-      type: 'button',
-      variant: 'action-secondary',
-      children: 'Cancelar',
-      onClick: handleCancel,
-    },
-    {
-      type: 'submit',
-      variant: 'primary',
-      children: item ? 'Atualizar' : 'Salvar Registro',
-    },
+    { type: 'button', variant: 'action-secondary', children: 'Cancelar', onClick: handleCancel },
+    { type: 'submit', variant: 'primary', children: textoBotao },
   ];
 
   return (
     <div className="cadastrar-emprestimo">
       <FormGeral
-        title={item ? "Editar Movimento da Ferramenta" : "Registrar Movimento da Ferramenta"}
+        title={`Movimentação de Ferramenta`}
         actions={actions}
         onSubmit={handleSubmit}
         useGrid={false}
       >
-        {/* Tipo de Insumo — fixo, não editável */}
         <div className="input-row">
-          <Input
-            label="Tipo de insumo"
-            name="tipoInsumo"
-            type="text"
-            value="Ferramenta"
-            readOnly={true}
-            className="input-readonly"
-          />
-        </div>
+          
+          {/* CAMPO COM AUTOCOMPLETE (IGUAL PLANTIO) */}
+          <div style={{ position: 'relative', flex: 1 }}>
+            <Input
+              label="Ferramenta"
+              name="nomeInsumo"
+              type="text"
+              value={formData.nomeInsumo}
+              onChange={handleNomeChange}
+              onBlur={handleBlurNome}
+              required={true}
+              placeholder="Digite para buscar..."
+              autoComplete="off"
+              // Se estiver editando um item específico (vindo da tabela), bloqueia a busca
+              readOnly={!!item} 
+            />
 
-        {/* Nome do Insumo */}
-        <div className="input-row">
-          <Input
-            label="Nome do Insumo"
-            name="nomeInsumo"
-            type="text"
-            value={formData.nomeInsumo}
-            onChange={handleChange('nomeInsumo')}
-            placeholder="Ex: Pá Grande"
-            required={true}
-            // Se estiver editando, talvez queira bloquear a mudança do nome para garantir consistência do ID
-            readOnly={!!item} 
-            className={item ? "input-readonly" : ""}
-          />
-        </div>
-
-        {/* Status */}
-        <div className="input-row">
-          <Input
-            label="Status"
+            {/* LISTA SUSPENSA */}
+            {sugestoes.length > 0 && !item && (
+                <ul style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    right: 0,
+                    zIndex: 1000,
+                    backgroundColor: 'white',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px',
+                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                    listStyle: 'none',
+                    padding: 0,
+                    margin: 0,
+                    maxHeight: '200px',
+                    overflowY: 'auto'
+                }}>
+                    {sugestoes.map((f) => (
+                        <li 
+                            key={f.id}
+                            onClick={() => selecionarFerramenta(f)}
+                            style={{
+                                padding: '10px',
+                                cursor: 'pointer',
+                                borderBottom: '1px solid #eee',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
+                        >
+                            <div>
+                                <strong>{f.nome}</strong>
+                            </div>
+                            <span style={{ fontSize: '0.85em', color: '#666', backgroundColor: '#eef', padding: '2px 6px', borderRadius: '4px' }}>
+                                Estoque: {f.quantidadeAtual} {f.unidadeMedida?.toLowerCase() || 'und'}
+                            </span>
+                        </li>
+                    ))}
+                </ul>
+            )}
+          </div>
+           
+           <Input
+            label="Tipo de Ação"
             name="status"
             type="select"
             value={formData.status}
             onChange={handleChange('status')}
             required={true}
             options={[
-              { value: '', label: 'Selecione o status...' },
-              { value: 'Emprestado', label: 'Emprestado' },
-              { value: 'Devolvido', label: 'Devolvido' },
-              { value: 'Entrada', label: 'Entrada' }, // Adicionado Entrada para consistência com enum
+              { value: 'EMPRESTADO', label: 'Emprestar (Sai do Estoque)' },
+              { value: 'DEVOLVIDO', label: 'Devolver (Volta ao Estoque)' },
             ]}
           />
         </div>
 
-        {/* Quantidade e Unidade */}
         <div className="input-row">
           <Input
-            label="Quantidade"
+            label={formData.status === 'EMPRESTADO' ? "Quantidade a Retirar" : "Quantidade a Devolver"}
             name="quantidade"
             type="number"
             value={formData.quantidade}
             onChange={handleChange('quantidade')}
             onIncrement={handleQuantidadeInc}
             onDecrement={handleQuantidadeDec}
-            placeholder="Ex: 10"
+            placeholder="Ex: 1"
             required={true}
-            min="0"
+            min="1"
           />
           <Input
-            label="Unidade de Medida"
+            label="Medida"
             name="unidadeMedida"
             type="text"
-            value="Unidade"
+            value={formData.unidadeMedida}
             readOnly={true}
-            className="input-readonly"
           />
         </div>
 
-        {/* Data de Registro */}
         <div className="input-row">
           <Input
-            label="Data de Registro"
+            label="Data"
             name="dataRegistro"
             type="date"
             value={formData.dataRegistro}
@@ -224,24 +287,23 @@ const CadastrarEmprestimo = ({
           />
         </div>
 
-        {/* Responsáveis */}
         <div className="input-row">
           <Input
-            label="Responsável pela Entrega"
+            label={formData.status === 'EMPRESTADO' ? "Resp. Entrega (Almoxarifado)" : "Quem está Devolvendo?"}
             name="responsavelEntrega"
             type="text"
             value={formData.responsavelEntrega}
             onChange={handleChange('responsavelEntrega')}
-            placeholder="Ex: Arthur dos Santos Pereira"
+            placeholder="Nome da pessoa"
             required={true}
           />
           <Input
-            label="Responsável por Receber"
+            label={formData.status === 'EMPRESTADO' ? "Resp. Recebe (Funcionário)" : "Quem Recebeu no Estoque?"}
             name="responsavelReceber"
             type="text"
             value={formData.responsavelReceber}
             onChange={handleChange('responsavelReceber')}
-            placeholder="Ex: Ramil dos Santos Pereira"
+            placeholder="Nome da pessoa"
             required={true}
           />
         </div>

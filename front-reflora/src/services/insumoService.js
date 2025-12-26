@@ -72,6 +72,10 @@ const insumoService = {
     excluirMovimentacao: async (id) => {
         const response = await api.delete(`/insumos/movimentacao/${id}`);
         return response.data;
+    },
+    atualizarMovimentacao: async (id, dados) => {    
+        const response = await api.put(`/insumos/movimentacao/${id}`, dados);
+        return response.data;
     }
 };
 

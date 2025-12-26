@@ -1,61 +1,40 @@
-// components/EditarMaterial/EditarMaterial.jsx
 import React, { useState, useEffect } from 'react';
 import FormGeral from '../../../components/FormGeral/FormGeral';
 import Input from '../../../components/Input/Input';
+import insumoService from '../../../services/insumoService';
 import './EditarMaterial.css';
 
-const EditarMaterial = ({ 
-  isOpen, 
-  onClose, 
-  material, 
-  onSalvar 
-}) => {
+const EditarMaterial = ({ isOpen, onClose, itemParaEditar, onSalvar }) => {
   const [formData, setFormData] = useState({
-    tipoInsumo: '',
     nomeInsumo: '',
     quantidade: '',
     unidadeMedida: '',
     dataRegistro: '',
     responsavelEntrega: '',
     responsavelReceber: '',
-    estoqueMinimo: ''
+    estoqueMinimo: '',
+    status: ''
   });
 
   useEffect(() => {
-    if (material) {
+    if (itemParaEditar) {
       setFormData({
-        tipoInsumo: material.tipoInsumo || 'Material',
-        nomeInsumo: material.NomeInsumo || '',
-        quantidade: material.Quantidade || '',
-        unidadeMedida: material.UnidadeMedida || '',
-        dataRegistro: material.Data || '',
-        responsavelEntrega: material.ResponsavelEntrega || '',
-        responsavelReceber: material.ResponsavelRecebe || '',
-        estoqueMinimo: material.EstoqueMinimo || ''
+        nomeInsumo: itemParaEditar.NomeInsumo || '',
+        quantidade: itemParaEditar.Quantidade || '',
+        unidadeMedida: itemParaEditar.UnidadeMedida || 'UNIDADE',
+        dataRegistro: formatarDataParaInput(itemParaEditar.Data),
+        responsavelEntrega: itemParaEditar.ResponsavelEntrega || '',
+        responsavelReceber: itemParaEditar.ResponsavelRecebe || '',
+        estoqueMinimo: itemParaEditar.EstoqueMinimo || '',
+        status: itemParaEditar.Status || 'ENTRADA'
       });
     }
-  }, [material]);
+  }, [itemParaEditar]);
 
-  const handleCancel = (confirmar = true) => {
-    const resetForm = () => {
-      setFormData({
-        tipoInsumo: '',
-        nomeInsumo: '',
-        quantidade: '',
-        unidadeMedida: '',
-        dataRegistro: '',
-        responsavelEntrega: '',
-        responsavelReceber: '',
-        estoqueMinimo: ''
-      });
-      onClose();
-    };
-
-    if (confirmar && window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
-      resetForm();
-    } else if (!confirmar) {
-      resetForm();
-    }
+  const formatarDataParaInput = (dataBR) => {
+    if (!dataBR || dataBR.includes('-')) return dataBR;
+    const [dia, mes, ano] = dataBR.split('/');
+    return `${ano}-${mes}-${dia}`;
   };
 
   const handleChange = (field) => (e) => {
@@ -63,70 +42,75 @@ const EditarMaterial = ({
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleQuantidadeInc = () => {
-    setFormData(prev => ({ 
-      ...prev, 
-      quantidade: Math.max(0, (prev.quantidade || 0) + 1) 
-    }));
-  };
-
-  const handleQuantidadeDec = () => {
-    setFormData(prev => ({ 
-      ...prev, 
-      quantidade: Math.max(0, (prev.quantidade || 0) - 1) 
-    }));
-  };
-
-  const handleEstoqueMinimoInc = () => {
-    setFormData(prev => ({ 
-      ...prev, 
-      estoqueMinimo: Math.max(0, (prev.estoqueMinimo || 0) + 1) 
-    }));
-  };
-
-  const handleEstoqueMinimoDec = () => {
-    setFormData(prev => ({ 
-      ...prev, 
-      estoqueMinimo: Math.max(0, (prev.estoqueMinimo || 0) - 1) 
-    }));
-  };
+  const handleQuantidadeInc = () => setFormData(p => ({ ...p, quantidade: Number(p.quantidade) + 1 }));
+  const handleQuantidadeDec = () => setFormData(p => ({ ...p, quantidade: Math.max(0, Number(p.quantidade) - 1) }));
+  const handleEstoqueMinimoInc = () => setFormData(p => ({ ...p, estoqueMinimo: Number(p.estoqueMinimo) + 1 }));
+  const handleEstoqueMinimoDec = () => setFormData(p => ({ ...p, estoqueMinimo: Math.max(0, Number(p.estoqueMinimo) - 1) }));
 
   const getUnidadesMedida = () => {
     return [
-      { value: 'Quilograma', label: 'Kg' },
-      { value: 'Litro', label: 'Litro' },
-      { value: 'Metro', label: 'Metro' },
-      { value: 'Unidade', label: 'Unidade' },
-      { value: 'Saco', label: 'Saco' },
-      { value: 'Caixa', label: 'Caixa' }
+      { value: 'KG', label: 'Kg' },
+      { value: 'LITRO', label: 'Litro' },
+      { value: 'METRO', label: 'Metro' },
+      { value: 'UNIDADE', label: 'Unidade' },
+      { value: 'SACO', label: 'Saco' },
+      { value: 'CAIXA', label: 'Caixa' }
     ];
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!material) {
-      alert('Erro: Material não encontrado.');
-      return;
-    }
+    if (!itemParaEditar?.id) return alert('Erro: ID não encontrado.');
 
-    console.log('Material atualizado:', formData);
-    onSalvar(formData);
-    handleCancel(false);
+    let sucessoApi = false;
+
+    try {
+        const payload = {
+            insumoId: itemParaEditar.id,
+            nomeInsumo: formData.nomeInsumo,
+            status: formData.status ? formData.status.toUpperCase() : 'ENTRADA',
+            quantidade: Number(formData.quantidade),
+            dataRegistro: formData.dataRegistro,
+            responsavelEntrega: formData.responsavelEntrega,
+            responsavelReceber: formData.responsavelReceber,
+            unidadeMedida: formData.unidadeMedida
+        };
+
+        // 1. Atualiza no Banco
+        await insumoService.atualizarMovimentacao(itemParaEditar.id, payload);
+        sucessoApi = true;
+        
+        alert('Material atualizado com sucesso!');
+
+        // 2. Atualiza a Tela (Sem Refresh)
+        if (onSalvar) {
+            onSalvar({ 
+                id: itemParaEditar.id, 
+                NomeInsumo: formData.nomeInsumo,
+                Data: formData.dataRegistro.split('-').reverse().join('/'), 
+                Status: formData.status,
+                Quantidade: Number(formData.quantidade),
+                UnidadeMedida: formData.unidadeMedida,
+                ResponsavelEntrega: formData.responsavelEntrega,
+                ResponsavelRecebe: formData.responsavelReceber,
+                EstoqueMinimo: Number(formData.estoqueMinimo),
+                imagem: itemParaEditar.imagem
+            });
+        }
+
+        // 3. Fecha Modal
+        onClose(); 
+
+    } catch (error) {
+        console.error("Erro ao atualizar:", error);
+        // Só mostra erro se não tiver passado da fase de API
+        if (!sucessoApi) alert("Erro ao atualizar material.");
+    }
   };
 
   const actions = [
-    {
-      type: 'button',
-      variant: 'action-secondary',
-      children: 'Cancelar',
-      onClick: () => handleCancel(true),
-    },
-    {
-      type: 'submit',
-      variant: 'primary',
-      children: 'Salvar Edições',
-    },
+    { type: 'button', variant: 'action-secondary', children: 'Cancelar', onClick: () => onClose() },
+    { type: 'submit', variant: 'primary', children: 'Salvar Edições' },
   ];
 
   if (!isOpen) return null;
@@ -134,110 +118,28 @@ const EditarMaterial = ({
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <button 
-          className="btn-fechar-modal"
-          onClick={() => handleCancel(true)}
-          title="Fechar"
-        >
-          ×
-        </button>
-        
+        <button className="btn-fechar-modal" onClick={onClose}>×</button>
         <FormGeral
-          title={`Editar Material - ${material?.NomeInsumo || ''}`}
+          title={`Editar Material - ${itemParaEditar?.NomeInsumo || ''}`}
           actions={actions}
           onSubmit={handleSubmit}
           useGrid={false}
         >
-          <div className="input-row">
-            <Input
-              label="Nome do material"
-              name="nomeInsumo"
-              type="text"
-              value={formData.nomeInsumo}
-              onChange={handleChange('nomeInsumo')}
-              placeholder="Ex: Adubo"
-              required={true}
-            />
-            <Input
-              label="Quantidade"
-              name="quantidade"
-              type="number"
-              value={formData.quantidade}
-              onChange={handleChange('quantidade')}
-              onIncrement={handleQuantidadeInc}
-              onDecrement={handleQuantidadeDec}
-              placeholder="Ex: 300"
-              required={true}
-              min="0"
-            />
+           <div className="input-row">
+            <Input label="Nome" name="nomeInsumo" type="text" value={formData.nomeInsumo} onChange={handleChange('nomeInsumo')} required />
+            <Input label="Qtd" name="quantidade" type="number" value={formData.quantidade} onChange={handleChange('quantidade')} onIncrement={handleQuantidadeInc} onDecrement={handleQuantidadeDec} />
           </div>
-
           <div className="input-row">
-            <Input
-              label="Unidade de medida"
-              name="unidadeMedida"
-              type="select"
-              value={formData.unidadeMedida}
-              onChange={handleChange('unidadeMedida')}
-              required={true}
-              options={getUnidadesMedida()}
-            />
-            <Input
-              label="Estoque Mínimo"
-              name="estoqueMinimo"
-              type="number"
-              value={formData.estoqueMinimo}
-              onChange={handleChange('estoqueMinimo')}
-              onIncrement={handleEstoqueMinimoInc}
-              onDecrement={handleEstoqueMinimoDec}
-              placeholder="Ex: 100"
-              required={true}
-              min="0"
-            />
+            <Input label="Unidade" name="unidadeMedida" type="select" value={formData.unidadeMedida} onChange={handleChange('unidadeMedida')} options={getUnidadesMedida()} required />
+            <Input label="Mínimo" name="estoqueMinimo" type="number" value={formData.estoqueMinimo} onChange={handleChange('estoqueMinimo')} onIncrement={handleEstoqueMinimoInc} onDecrement={handleEstoqueMinimoDec} />
           </div>
-
           <div className="input-row">
-            <Input
-              label="Data de Registro"
-              name="dataRegistro"
-              type="date"
-              value={formData.dataRegistro}
-              onChange={handleChange('dataRegistro')}
-              required={true}
-            />
-            <Input
-              label="Status"
-              name="status"
-              type="select"
-              value={formData.status}
-              onChange={handleChange('status')}
-              required={true}
-              options={[
-                { value: 'Entrada', label: 'Entrada' },
-                { value: 'Saída', label: 'Saída' }
-              ]}
-            />
+            <Input label="Data" name="dataRegistro" type="date" value={formData.dataRegistro} onChange={handleChange('dataRegistro')} required />
+            <Input label="Status" name="status" type="select" value={formData.status} onChange={handleChange('status')} required options={[{value: 'ENTRADA', label: 'Entrada'}, {value: 'SAIDA', label: 'Saída'}]} />
           </div>
-
           <div className="input-row">
-            <Input
-              label="Responsável pela Entrega"
-              name="responsavelEntrega"
-              type="text"
-              value={formData.responsavelEntrega}
-              onChange={handleChange('responsavelEntrega')}
-              placeholder="Ex: Arthur dos Santos Pereira"
-              required={true}
-            />
-            <Input
-              label="Responsável por Receber"
-              name="responsavelReceber"
-              type="text"
-              value={formData.responsavelReceber}
-              onChange={handleChange('responsavelReceber')}
-              placeholder="Ex: Ramil dos Santos Pereira"
-              required={true}
-            />
+            <Input label="Resp. Entrega" name="responsavelEntrega" type="text" value={formData.responsavelEntrega} onChange={handleChange('responsavelEntrega')} required />
+            <Input label="Resp. Recebe" name="responsavelReceber" type="text" value={formData.responsavelReceber} onChange={handleChange('responsavelReceber')} required />
           </div>
         </FormGeral>
       </div>

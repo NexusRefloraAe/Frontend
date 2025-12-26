@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
 import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio";
-import insumoService from "../../../services/insumoService"; // Importação do serviço
+import insumoService from "../../../services/insumoService";
 import './HistoricoMaterial.css';
 
 import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico";
@@ -11,7 +11,7 @@ import DetalhesMaterial from "./DetalhesMaterial/DetalhesMaterial";
 
 const HistoricoMaterial = () => {
   const [materiais, setMateriais] = useState([]);
-  const [dadosOriginais, setDadosOriginais] = useState([]); // Backup para filtro
+  const [dadosOriginais, setDadosOriginais] = useState([]); 
   const [loading, setLoading] = useState(true);
   
   const [filtros, setFiltros] = useState({
@@ -20,43 +20,40 @@ const HistoricoMaterial = () => {
     dataFim: ''
   });
 
-  // Estados dos modais
   const [itemSelecionado, setItemSelecionado] = useState(null);
   const [modalDetalheAberto, setModalDetalheAberto] = useState(false);
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
   
-  // Função auxiliar para formatar data (AAAA-MM-DD -> DD/MM/AAAA)
   const formatarData = (dataIso) => {
     if (!dataIso) return '-';
     const [ano, mes, dia] = dataIso.toString().split('-');
     return `${dia}/${mes}/${ano}`;
   };
 
-  // Carregar dados do backend
   const carregarDados = async () => {
     try {
       setLoading(true);
       const dadosBackend = await insumoService.getHistorico('MATERIAL');
       
-      // Mapeia os dados do Backend (camelCase) para o Frontend (PascalCase)
       const dadosFormatados = dadosBackend.map(item => ({
         id: item.id,
         NomeInsumo: item.nomeInsumo,
-        Data: formatarData(item.data), // Formata data
+        Data: formatarData(item.data),
         Status: item.status,
         Quantidade: item.quantidade,
         UnidadeMedida: item.unidadeMedida,
         ResponsavelEntrega: item.responsavelEntrega,
         ResponsavelRecebe: item.responsavelRecebe,
-        imagem: item.imagem
+        imagem: item.imagem,
+        EstoqueMinimo: item.estoqueMinimo // Garanta que o Backend envia isso
       }));
 
       setMateriais(dadosFormatados);
-      setDadosOriginais(dadosFormatados); // Salva o backup
+      setDadosOriginais(dadosFormatados);
     } catch (error) {
-      console.error("Erro ao carregar histórico de materiais:", error);
-      alert("Não foi possível carregar o histórico de materiais.");
+      console.error("Erro ao carregar histórico:", error);
+      alert("Não foi possível carregar o histórico.");
     } finally {
       setLoading(false);
     }
@@ -66,7 +63,6 @@ const HistoricoMaterial = () => {
     carregarDados();
   }, []);
 
-  // Lógica de Filtro
   const handleFiltroChange = (name, value) => {
     setFiltros(prev => ({ ...prev, [name]: value }));
   };
@@ -74,23 +70,19 @@ const HistoricoMaterial = () => {
   const handlePesquisar = () => {
     const { nomeInsumo, dataInicio, dataFim } = filtros;
     
-    // Filtra usando dadosOriginais para não perder itens
     const dadosFiltrados = dadosOriginais.filter(item => {
       const matchesNome = !nomeInsumo ||
         item.NomeInsumo.toLowerCase().includes(nomeInsumo.toLowerCase());
 
       let matchesData = true;
       if (dataInicio || dataFim) {
-        // Converte DD/MM/AAAA para Date
         const [day, month, year] = item.Data.split('/');
         const itemDate = new Date(`${year}-${month}-${day}`);
-        
         const startDate = dataInicio ? new Date(dataInicio) : null;
         const endDate = dataFim ? new Date(dataFim) : null;
 
         if (endDate) endDate.setDate(endDate.getDate() + 1);
         
-        // Zera horas para comparação precisa de datas
         if(startDate) startDate.setHours(0,0,0,0);
         if(itemDate) itemDate.setHours(0,0,0,0);
 
@@ -102,7 +94,6 @@ const HistoricoMaterial = () => {
     setMateriais(dadosFiltrados);
   };
 
-  // Handlers dos Modais
   const handleVisualizar = (item) => {
     setItemSelecionado(item);
     setModalDetalheAberto(true);
@@ -126,10 +117,13 @@ const HistoricoMaterial = () => {
   };
 
   const handleSalvarEdicao = (dadosAtualizados) => {
-    // Atualiza visualmente nas duas listas
-    const atualizarLista = (lista) => lista.map(item =>
-      item.id === dadosAtualizados.id ? dadosAtualizados : item
-    );
+    // Atualiza a lista visualmente comparando Strings de ID
+    const atualizarLista = (lista) => lista.map(item => {
+      if (String(item.id) === String(dadosAtualizados.id)) {
+        return { ...item, ...dadosAtualizados };
+      }
+      return item;
+    });
 
     setMateriais(prev => atualizarLista(prev));
     setDadosOriginais(prev => atualizarLista(prev));
@@ -138,24 +132,20 @@ const HistoricoMaterial = () => {
     setItemSelecionado(null);
   };
 
-  // --- FUNÇÃO DE EXCLUSÃO ATUALIZADA (Chama o Backend) ---
   const handleConfirmarExclusao = async () => {
     if (itemSelecionado) {
       try {
-        // 1. Chama o Backend para deletar
         await insumoService.excluirMovimentacao(itemSelecionado.id);
 
-        // 2. Remove visualmente das duas listas (se o backend responder OK)
         const removerDaLista = (lista) => lista.filter(item => item.id !== itemSelecionado.id);
-
         setMateriais(prev => removerDaLista(prev));
         setDadosOriginais(prev => removerDaLista(prev));
         
         alert("Movimentação excluída com sucesso!");
 
       } catch (error) {
-        console.error("Erro ao excluir material:", error);
-        alert("Erro ao excluir o registro. Tente novamente.");
+        console.error("Erro ao excluir:", error);
+        alert("Erro ao excluir o registro.");
       }
     }
     setModalExclusaoAberto(false);
@@ -178,8 +168,8 @@ const HistoricoMaterial = () => {
     { key: "Status", label: "Status" },
     { key: "Quantidade", label: "Quantidade" },
     { key: "UnidadeMedida", label: "Unidade de Medida" },
-    { key: "ResponsavelEntrega", label: "Responsável pela Entrega" },
-    { key: "ResponsavelRecebe", label: "Responsável por Receber" },
+    { key: "ResponsavelEntrega", label: "Resp. Entrega" },
+    { key: "ResponsavelRecebe", label: "Resp. Recebe" },
   ];
 
   return (
@@ -218,11 +208,10 @@ const HistoricoMaterial = () => {
         )}
       </div>
 
-      {/* MODAIS */}
       <ModalDetalheGenerico
         isOpen={modalDetalheAberto}
         item={itemSelecionado} 
-        titulo="Detalhes da Movimentação"
+        titulo="Detalhes"
         camposDetalhes={[]} 
         onClose={handleFecharModalDetalhe}
         onEditar={() => handleEditar(itemSelecionado)}
@@ -237,7 +226,8 @@ const HistoricoMaterial = () => {
       <EditarMaterial
         isOpen={modalEdicaoAberto}
         onClose={handleCancelarEdicao}
-        onSave={handleSalvarEdicao}
+        // --- AQUI ESTAVA O ERRO: mudado de onSave para onSalvar ---
+        onSalvar={handleSalvarEdicao} 
         itemParaEditar={itemSelecionado} 
       />
 
@@ -247,7 +237,7 @@ const HistoricoMaterial = () => {
         onConfirm={handleConfirmarExclusao}
         nomeItem={itemSelecionado?.NomeInsumo}
         titulo="Confirmar Exclusão"
-        mensagem={`Tem certeza que deseja excluir a movimentação do insumo "${itemSelecionado?.NomeInsumo}"?`}
+        mensagem="Deseja excluir esta movimentação?"
         textoConfirmar="Excluir"
         textoCancelar="Cancelar"
       />
