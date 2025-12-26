@@ -4,6 +4,7 @@ import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/Modal
 import EditarPlantioCanteiro from "../EditarPlantioCanteiro/EditarPlantioCanteiro";
 
 import { canteiroService } from "../../../services/canteiroService";
+import { plantioCanteiroService } from "../../../services/plantioCanteiroService";
 import { getBackendErrorMessage } from "../../../utils/errorHandler";
 
 const Historico = () => {
@@ -156,15 +157,29 @@ const Historico = () => {
         setModalEdicaoAberto(true);
     };
 
-    const handleSalvarEdicao = async (dadosEditados) => {
+    const handleSalvarEdicao = async (dadosParaAtualizar) => {
+        setLoading(true);
         try {
-            await canteiroService.update(dadosEditados.id, dadosEditados);
-            alert("Canteiro atualizado!");
-            fetchCanteiros();
+            // Agora chamamos o service de PLANTIO (Lote)
+            // dadosParaAtualizar já vem do formulário com: { id, quantidade, dataPlantio }
+            await plantioCanteiroService.update(dadosParaAtualizar.id, {
+                quantidade: dadosParaAtualizar.quantidade,
+                data: dadosParaAtualizar.dataPlantio // O service formatará para dd/MM/yyyy
+            });
+
+            alert("Lote atualizado com sucesso!");
+            
+            // Fecha o modal e limpa estados
             setModalEdicaoAberto(false);
             setCanteiroSelecionado(null);
+            
+            // Recarrega a tabela principal (para atualizar a soma total de mudas do canteiro)
+            fetchCanteiros(); 
         } catch (error) {
+            console.error(error);
             alert(getBackendErrorMessage(error));
+        } finally {
+            setLoading(false);
         }
     };
 

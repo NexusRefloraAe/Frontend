@@ -30,7 +30,7 @@ export const testeGerminacaoService = {
       dataPlantio: formatarDataParaJava(formData.dataTeste), // Front chama de dataTeste
       
       // (!) HACK: Valores padrão para passar na validação @NotNull/@Min da classe pai
-      tipoPlantio: 'SEMENTEIRA', 
+      tipoPlantio: 'Sementeira', 
       quantidadePlantada: 1, 
 
       // 3. Campos Específicos
@@ -57,7 +57,7 @@ export const testeGerminacaoService = {
       dataPlantio: formatarDataParaJava(formData.dataTeste),
       
       // Valores padrão novamente
-      tipoPlantio: 'SEMENTEIRA',
+      tipoPlantio: 'Sementeira',
       quantidadePlantada: 1,
 
       qtdSemente: Number(formData.quantidade),

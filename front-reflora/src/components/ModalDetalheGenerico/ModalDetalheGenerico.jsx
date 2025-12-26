@@ -6,7 +6,28 @@ import ModalExcluir from '../ModalExcluir/ModalExcluir'
 import closeIcon from '../../assets/close.svg'
 import editIcon from '../../assets/edit.svg'
 import deleteIcon from '../../assets/delete.svg'
+import './ModalDetalheGenerico.css';
 
+/**
+ * @param {object} props
+ * @param {object} props.item - Objeto com os detalhes do item a ser exibido no modal
+ * @param {string} props.titulo - Título do modal
+ * @param {array} props.camposDetalhes - Array de objetos com { label, chave, valorPadrao } para os campos de detalhe
+ * @param {array} props.colunasEntrada - Colunas para a tabela de entradas
+ * @param {array} props.colunasSaida - Colunas para a tabela de saídas
+ * @param {array} props.dadosEntrada - Dados para a tabela de entradas
+ * @param {array} props.dadosSaida - Dados para a tabela de saídas
+ * @param {function} props.onCarregarHistorico - Função para carregar dados do histórico
+ * @param {function(): void} props.onClose - Função para fechar o modal
+ * @param {function(): void} props.onEditar - Função para editar o item
+ * @param {function(): void} props.onExcluir - Função para excluir o item
+ * @param {function(): void} props.onExportar - Função para exportar dados
+ * @param {string} props.textoExclusao - Texto personalizado para a exclusão
+ * @param {boolean} props.mostrarAcoes - Se mostra os botões de ação (editar/excluir)
+ * @param {boolean} props.mostrarHistorico - Se mostra a seção de histórico
+ * @param {boolean} props.mostrarExportar - Se mostra o botão de exportar
+ * @param {ReactNode} props.children - Conteúdo adicional personalizado
+ */
 function ModalDetalheGenerico({
     isOpen = false,
     item = {},
@@ -76,6 +97,27 @@ function ModalDetalheGenerico({
         { label: 'Quantidade', key: 'quantidade' },
     ];
 
+    useEffect(() => {
+        // Adicione o ?. aqui para evitar o erro de null
+        if (isOpen && onCarregarHistorico && (item?.id || item?._id)) { 
+            const carregarDados = async () => {
+                try {
+                    const dados = await onCarregarHistorico(item.id || item._id);
+                    if (dados) {
+                        setHistoricoEntrada(dados.entradas || []);
+                        setHistoricoSaida(dados.saidas || []);
+                    }
+                } catch (error) {
+                    console.error("Erro ao carregar histórico no modal:", error);
+                }
+            };
+            carregarDados();
+        }
+        // Corrija as dependências aqui também
+    }, [isOpen, item?.id, item?._id, onCarregarHistorico]); // Removido dadosEntrada e dadosSaida daqui
+
+    if (!isOpen || !item) return null;
+
     const handleFecharModalExcluir = () => {
         setModalExcluirAberto(false);
     };
@@ -94,7 +136,13 @@ function ModalDetalheGenerico({
         }
     };
 
-    const ITENS_POR_PAGINA = 4;
+    // const handleExportar = () => {
+    //     if (onExportar) {
+    //         onExportar(item);
+    //     }
+    // };
+
+    const ITENS_POR_PAGINA = 2;
     const totalItens = Math.max(historicoEntrada.length, historicoSaida.length);
     const totalPaginas = Math.ceil(totalItens / ITENS_POR_PAGINA);
     const indiceUltimo = paginaHistorico * ITENS_POR_PAGINA;

@@ -13,15 +13,18 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
     quantidadePlantada: 0, // ✅ Corrigido (era qntdPlantada)
   });
 
-  // --- 1. FUNÇÃO DE NORMALIZAÇÃO (O SEGREDO DA INTEGRAÇÃO) ---
-  // Transforma "Chão", "CHÃO", "chão" -> "CHAO"
-  const normalizarEnum = (valor) => {
-    if (!valor) return '';
-    return String(valor)
-      .normalize('NFD')               // Separa acentos
-      .replace(/[\u0300-\u036f]/g, "") // Remove acentos
-      .toUpperCase();                 // Tudo Maiúsculo
-  };
+  // const mapearParaBackend = (valor) => {
+  //   const dePara = {
+  //     'CHAO': 'Chão',
+  //     'CHÃO': 'Chão',
+  //     'Chão': 'Chão',
+  //     'SEMENTEIRA': 'Sementeira',
+  //     'Sementeira': 'Sementeira',
+  //     'SAQUINHO': 'Saquinho',
+  //     'Saquinho': 'Saquinho'
+  //   };
+  //   return dePara[valor] || valor;
+  // };
 
   useEffect(() => {
     if (plantio) {
@@ -37,21 +40,15 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
       // --- 2. TRATAMENTO NO CARREGAMENTO ---
       // Se o back mandar "Chão" (descrição), convertemos para "CHAO" (value do select)
       // para que o campo já venha selecionado corretamente.
-      let tipoPlantioNormalizado = '';
-      if (plantio.tipoPlantioDescricao) {
-          tipoPlantioNormalizado = normalizarEnum(plantio.tipoPlantioDescricao);
-      } else if (plantio.tipoPlantio) {
-          tipoPlantioNormalizado = normalizarEnum(plantio.tipoPlantio);
-      }
 
       setFormData({
         lote: plantio.lote || '',
         nomePopular: plantio.nomePopularSemente || plantio.nomePopular || '', 
-        qntdSementes: plantio.qtdSemente || plantio.qntdSementes || 0,
+        qtdSemente: plantio.qtdSemente || 0,
         dataPlantio: formatarDataInput(plantio.dataPlantio),
         
         // Aqui usamos o valor tratado
-        tipoPlantio: tipoPlantioNormalizado, 
+        tipoPlantio: plantio.tipoPlantio, 
         
         // Backend envia 'quantidadePlantada'
         quantidadePlantada: plantio.quantidadePlantada || plantio.qntdPlantada || 0,
@@ -75,7 +72,7 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
     const dadosSalvos = {
       id: plantio.id, 
       ...formData,
-      tipoPlantio: normalizarEnum(formData.tipoPlantio) 
+      tipoPlantio: formData.tipoPlantio
     };
 
     onSalvar(dadosSalvos);
@@ -131,9 +128,7 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
             name="lote"
             type="text"
             value={formData.lote}
-            onChange={handleChange('lote')}
-            required={true}
-            placeholder="A001"
+            disabled={true}
           />
 
           <Input
@@ -141,9 +136,7 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
             name="nomePopular"
             type="text"
             value={formData.nomePopular}
-            onChange={handleChange('nomePopular')}
-            required={true}
-            placeholder="Ipê"
+            disabled={true}
           />
 
           <Input
@@ -190,9 +183,9 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
             required={true}
             placeholder="Selecione"
             options={[
-              { value: 'SEMENTEIRA', label: 'Sementeira' },
-              { value: 'SAQUINHO', label: 'Saquinho' },
-              { value: 'CHAO', label: 'Chão' }, 
+              { value: 'Sementeira', label: 'Sementeira' },
+              { value: 'Saquinho', label: 'Saquinho' },
+              { value: 'Chão', label: 'Chão' }, // O VALUE DEVE SER "Chão" para bater com o @JsonValue do Java
             ]}
           />
         </FormGeral>

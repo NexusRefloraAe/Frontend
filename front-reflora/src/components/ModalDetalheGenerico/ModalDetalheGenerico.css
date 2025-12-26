@@ -1,0 +1,70 @@
+/* Container principal do rodapé do modal */
+.footer-content {
+    display: flex;
+    justify-content: space-between; /* Garante Paginação na esquerda e Exportar na direita */
+    align-items: center;
+    width: 100%;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #eee; /* Linha sutil de separação */
+}
+
+/* Estilização da Navegação (Paginação) baseada no seu padrão */
+.footer-content nav {
+    display: flex;
+    align-items: center;
+}
+
+.footer-content nav ul {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+/* Estilo dos links/botões numéricos e Anterior/Próxima */
+.footer-content nav ul li a,
+.footer-content nav ul li button {
+    text-decoration: none;
+    color: var(--cor-texto-secundario, #666);
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: var(--raio-borda-sm, 8px);
+    display: block;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    background: none;
+    cursor: pointer;
+}
+
+/* Efeito Hover */
+.footer-content nav ul li a:hover:not(.disabled),
+.footer-content nav ul li button:hover:not(.disabled) {
+    background-color: var(--cor-fundo-overlay, #f5f5f5);
+    border-color: var(--cor-borda-cinza, #ddd);
+}
+
+/* Página Ativa (O quadrado verde da Imagem 2) */
+.footer-content nav ul li a.active,
+.footer-content nav ul li button.active {
+    background-color: var(--cor-verde-primario, #2e7d32);
+    color: white !important;
+    border-color: var(--cor-verde-primario, #2e7d32);
+}
+
+/* Estado Desabilitado */
+.footer-content nav ul li a.disabled,
+.footer-content nav ul li button.disabled {
+    color: var(--cor-texto-claro, #ccc);
+    pointer-events: none;
+    cursor: default;
+}
+
+/* Estilo para os três pontinhos (...) caso existam */
+.footer-content nav ul li span {
+    padding: 8px 6px;
+    color: var(--cor-texto-secundario, #666);
+    font-weight: bold;
+}

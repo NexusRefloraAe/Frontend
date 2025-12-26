@@ -13,43 +13,38 @@ const formatarDataParaInput = (dataDDMMYYYY) => {
     return ''; 
 };
 
-const formatarDataParaSalvar = (dataYYYYMMDD) => {
-    if (!dataYYYYMMDD) return '';
-    const parts = dataYYYYMMDD.split('-');
-    if (parts.length === 3) {
-        // [YYYY, MM, DD] -> DD/MM/YYYY
-        return `${parts[2]}/${parts[1]}/${parts[0]}`;
-    }
-    return '';
-};
-
 const EditarInspecao = ({ isOpen, onClose, onSalvar, inspecao }) => {
     const [formData, setFormData] = useState({
-        lote: '',
+        id: '',
+        loteMuda: '',
         nomePopular: '',
+        nomeCanteiro: '',
         dataInspecao: '',
         tratosCulturais: '',
         estadoSaude: '',
-        pragasDoencas: '',
-        qntd: 0, // Campo da tabela é 'Qntd'
-        observacoes: '',
+        doencasPragas: '',
+        estimativaMudasProntas: 0,
+        nomeResponsavel: '',
+        observacao: '',
     });
 
     useEffect(() => {
         if (inspecao) {
             setFormData({
-                id: inspecao.id, // Manter o ID para a lógica de salvar
-                lote: inspecao.Lote || '',
-                nomePopular: inspecao.NomePopular || '',
-                dataInspecao: formatarDataParaInput(inspecao.DataInspecao), // Formatar data
-                tratosCulturais: inspecao.TratosCulturais || '',
-                estadoSaude: inspecao.EstadoSaude || '',
-                pragasDoencas: inspecao.PragasDoencas || '',
-                qntd: inspecao.Qntd || 0, // Usar 'Qntd'
-                observacoes: inspecao.Observacoes || '',
+                id: inspecao.id,
+                loteMuda: inspecao.loteMuda || '',
+                nomePopular: inspecao.nomePopular || '',
+                nomeCanteiro: inspecao.nomeCanteiro || '',
+                dataInspecao: formatarDataParaInput(inspecao.dataInspecao),
+                tratosCulturais: inspecao.tratosCulturais || '',
+                estadoSaude: inspecao.estadoSaude || '',
+                doencasPragas: inspecao.doencasPragas || '',
+                estimativaMudasProntas: inspecao.estimativaMudasProntas || 0,
+                nomeResponsavel: inspecao.nomeResponsavel || '',
+                observacao: inspecao.observacao || '',
             });
         }
-    }, [inspecao]); // Dependência: 'inspecao'
+    }, [inspecao]);
 
     if (!isOpen) {
         return null;
@@ -61,24 +56,9 @@ const EditarInspecao = ({ isOpen, onClose, onSalvar, inspecao }) => {
     };
 
     const handleSubmit = () => {
-        // 3. Formata os dados de volta e chama onSalvar
-        const dadosSalvos = {
-            ...inspecao, // Mantém dados originais (como 'id')
-            ...formData, // Sobrescreve com dados do form
-            // Mapeia de volta para os nomes de chave originais (com letra maiúscula)
-            Lote: formData.lote,
-            NomePopular: formData.nomePopular,
-            DataInspecao: formatarDataParaSalvar(formData.dataInspecao), // Formata data
-            TratosCulturais: formData.tratosCulturais,
-            EstadoSaude: formData.estadoSaude,
-            PragasDoencas: formData.pragasDoencas,
-            Qntd: formData.qntd,
-            Observacoes: formData.observacoes,
-        };
-        
-        onSalvar(dadosSalvos);
-        onClose(); // Fecha o modal após salvar
-    };
+        // Envia o formData completo para o componente pai salvar na API
+        onSalvar(formData);
+    }
 
     // Handlers do Stepper
     const handleIncrement = (field) => () => {
@@ -127,24 +107,21 @@ const EditarInspecao = ({ isOpen, onClose, onSalvar, inspecao }) => {
 
                     <Input
                         label="Lote"
-                        name="lote"
-                        type="text"
-                        value={formData.lote}
-                        onChange={handleChange('lote')}
-                        required={true}
-                        options={[ { value: 'A001', label: 'A001' }, /* ...outros... */ ]}
+                        value={formData.loteMuda}
+                        disabled={true}
                         
                     />
 
                     <Input
                         label="Nome Popular"
-                        name="nomePopular"
-                        type="text"
                         value={formData.nomePopular}
-                        onChange={handleChange('nomePopular')}
-                        required={true}
-                        options={[ { value: 'Ipê-amarelo', label: 'Ipê-amarelo' }, /* ...outros... */ ]}
-                        
+                        disabled={true} 
+                    />
+
+                    <Input 
+                        label="Canteiro" 
+                        value={formData.nomeCanteiro} 
+                        disabled={true} 
                     />
 
                     <Input
@@ -162,12 +139,12 @@ const EditarInspecao = ({ isOpen, onClose, onSalvar, inspecao }) => {
                         type="select"
                         value={formData.tratosCulturais}
                         onChange={handleChange('tratosCulturais')}
-                        required={true}
+                        required={true}  
                         options={[
-                            { value: 'Regação', label: 'Regação' },
-                            { value: 'Adubação', label: 'Adubação' },
-                            { value: 'Poda', label: 'Poda' },
-                            /* ...outros... */
+                            { value: 'Adubação e Regação', label: 'Adubação, Regação' },
+                            { value: 'Adubação', label: 'Apenas Adubação' },
+                            { value: 'Regação', label: 'Apenas Regação' },
+                            { value: 'Nenhum', label: 'Nenhum' },
                         ]}
                     />
 
@@ -179,47 +156,50 @@ const EditarInspecao = ({ isOpen, onClose, onSalvar, inspecao }) => {
                         onChange={handleChange('estadoSaude')}
                         required={true}
                         options={[
+                            { value: 'Ótima', label: 'Ótima' },
                             { value: 'Boa', label: 'Boa' },
-                            { value: 'Em tratamento', label: 'Em tratamento' },
+                            { value: 'Regular', label: 'Regular' },
                             { value: 'Ruim', label: 'Ruim' },
+                            { value: 'Péssima', label: 'Péssima' },
+                            { value: 'Em tratamento', label: 'Em tratamento' },
                         ]}
                     />
 
                     <Input
                         label="Pragas/Doenças"
-                        name="pragasDoencas"
+                        name="doencasPragas"
                         type="select"
-                        value={formData.pragasDoencas}
-                        onChange={handleChange('pragasDoencas')}
+                        value={formData.doencasPragas}
+                        onChange={handleChange('doencasPragas')}
                         required={true}
                         options={[
                             { value: 'Nenhuma', label: 'Nenhuma' },
-                            { value: 'Cochonilha', label: 'Cochonilha' },
-                            { value: 'Pulgões', label: 'Pulgões' },
-                            /* ...outros... */
+                            { value: 'Formigas', label: 'Formigas' },
+                            { value: 'Fungos', label: 'Fungos' },
+                            { value: 'Outros', label: 'Outros' },
                         ]}
                     />
 
                     {/* Campo 'Qntd' (baseado no 'estimativaMudasProntas') */}
                     <Input
                         label="Quantidade"
-                        name="qntd"
+                        name="estimativaMudasProntas"
                         type="number"
-                        value={formData.qntd}
-                        onChange={handleChange('qntd')}
+                        value={formData.estimativaMudasProntas}
+                        onChange={handleChange('estimativaMudasProntas')}
                         required={true}
-                        onIncrement={handleIncrement('qntd')}
-                        onDecrement={handleDecrement('qntd')}
+                        onIncrement={handleIncrement('estimativaMudasProntas')}
+                        onDecrement={handleDecrement('estimativaMudasProntas')}
                     />
 
                     {/* Campo de Observações (ocupa 2 colunas) */}
                     <div className="form-geral__campo--span-2">
                         <Input
                             label="Observações"
-                            name="observacoes"
+                            name="observacao"
                             type="textarea"
-                            value={formData.observacoes}
-                            onChange={handleChange('observacoes')}
+                            value={formData.observacao}
+                            onChange={handleChange('observacao')}
                             placeholder="Insira observações adicionais..."
                         />
                     </div>

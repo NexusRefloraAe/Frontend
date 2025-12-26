@@ -27,6 +27,11 @@ export const canteiroService = {
         return data;
     },
 
+    getNomesCanteiros: async () => {
+        const response = await api.get('/canteiros/nomes');
+        return response.data; // Retorna ["Canteiro 1", "Canteiro 2", ...]
+    },
+
     getById: async (id) => {
         const response = await api.get(`/canteiros/${id}`);
         return response.data;

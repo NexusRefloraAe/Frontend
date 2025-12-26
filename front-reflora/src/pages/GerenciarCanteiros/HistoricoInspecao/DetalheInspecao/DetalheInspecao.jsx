@@ -1,13 +1,14 @@
 import React from 'react';
-import './DetalheVistoria.css'; // Vamos criar este CSS a seguir
+import './DetalheInspecao.css'; // Vamos criar este CSS a seguir
 
-const DetalheVistoria = ({ item }) => {
+const DetalheInspecao = ({ item }) => {
   return (
     // Este container ajuda a aplicar nosso CSS customizado
-    <div className="detalhe-vistoria-info-custom">
+    <div className="detalhe-inpecao-info-custom">
       <p><strong>Lote da Muda:</strong> {item.loteMuda}</p>
-      <p><strong>Local:</strong> {item.nomeCanteiro}</p>
-      <p><strong>Data da vistoria:</strong> {item.dataVistoria}</p>
+      <p><strong>Nome da Muda</strong> {item.nomePopular}</p>
+      <p><strong>Local</strong> {item.nomeCanteiro}</p>
+      <p><strong>Data da inspeção:</strong> {item.dataInspecao}</p>
       <p><strong>Responsável:</strong> {item.nomeResponsavel}</p>
       <p><strong>Estimativa de Mudas prontas:</strong> {item.estimativaMudasProntas}</p>
       <p><strong>Status:</strong> {item.estadoSaude}</p>
@@ -23,4 +24,4 @@ const DetalheVistoria = ({ item }) => {
   );
 };
 
-export default DetalheVistoria;
+export default DetalheInspecao;
