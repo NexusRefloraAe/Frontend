@@ -128,7 +128,7 @@ const EditarTeste = ({ isOpen, onSalvar, onCancelar, teste }) => {
                         type="text"
                         value={formData.lote}
                         onChange={handleChange('lote')}
-                        required={true}
+                        disabled={true}
                     />
                     <Input
                         label="Nome Popular"
@@ -136,7 +136,7 @@ const EditarTeste = ({ isOpen, onSalvar, onCancelar, teste }) => {
                         type="text"
                         value={formData.nomePopular}
                         onChange={handleChange('nomePopular')}
-                        required={true}
+                        disabled={true}
                     />
                     <Input
                         label="Data do Teste"
