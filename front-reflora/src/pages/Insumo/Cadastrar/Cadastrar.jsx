@@ -81,21 +81,27 @@ const Cadastrar = () => {
   };
 
   const getUnidadesMedida = () => {
+    const opcoesComuns = [
+        { value: '', label: 'Selecione a medida...' } // <--- ADICIONAR ISTO
+    ];
+
     if (tipoInsumo === 'Ferramenta') {
       return [
-        { value: 'Unidade', label: 'Unidade' },
-        { value: 'Peça', label: 'Peça' },
-        { value: 'Jogo', label: 'Jogo' },
-        { value: 'Conjunto', label: 'Conjunto' }
+        ...opcoesComuns,
+        { value: 'UNIDADE', label: 'Unidade' },
+        { value: 'PECA', label: 'Peça' },
+        { value: 'JOGO', label: 'Jogo' },
+        { value: 'CONJUNTO', label: 'Conjunto' }
       ];
     } else if (tipoInsumo === 'Material') {
       return [
-        { value: 'Quilograma', label: 'Kg' },
-        { value: 'Litro', label: 'Litro' },
-        { value: 'Metro', label: 'Metro' },
-        { value: 'Unidade', label: 'Unidade' },
-        { value: 'Saco', label: 'Saco' },
-        { value: 'Caixa', label: 'Caixa' }
+        ...opcoesComuns,
+        { value: 'KG', label: 'Kg' },
+        { value: 'LITRO', label: 'Litro' },
+        { value: 'METRO', label: 'Metro' },
+        { value: 'UNIDADE', label: 'Unidade' },
+        { value: 'SACO', label: 'Saco' },
+        { value: 'CAIXA', label: 'Caixa' }
       ];
     }
     return [];
@@ -114,13 +120,30 @@ const Cadastrar = () => {
       alert('Por favor, selecione o tipo de insumo.');
       return;
     }
+    
+    // --- NOVA VALIDAÇÃO ---
+    if (!formData.unidadeMedida) {
+      alert('Por favor, selecione a unidade de medida.');
+      return;
+    }
 
     try {
-      // Prepara o objeto exatamente como o DTO do java espera
+      // --- CORREÇÃO AQUI ---
+      // Prepara o objeto, convertendo strings vazias para null ou números
       const payload = {
-        tipoInsumo: tipoInsumo.toUpperCase(), // Backend espera 'MATERIAL' ou 'FERRAMENTA'
-        ...formData
+        tipoInsumo: tipoInsumo.toUpperCase(),
+        nomeInsumo: formData.nomeInsumo,
+        unidadeMedida: formData.unidadeMedida,
+        dataRegistro: formData.dataRegistro,
+        responsavelEntrega: formData.responsavelEntrega,
+        responsavelReceber: formData.responsavelReceber,
+        
+        // Garante que números vão como números, e vazios como null
+        quantidade: formData.quantidade === '' ? 0 : Number(formData.quantidade),
+        estoqueMinimo: formData.estoqueMinimo === '' ? 0 : Number(formData.estoqueMinimo)
       };
+
+      console.log("Enviando Payload:", payload); // Útil para debug
 
       // Chama o back end
       await insumoService.cadastrar(payload);

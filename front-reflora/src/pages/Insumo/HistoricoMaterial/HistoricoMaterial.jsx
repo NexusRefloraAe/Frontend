@@ -1,35 +1,59 @@
 import React, { useState, useEffect } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
-import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio"; // 👈 Importado
-import insumoService from "../../../services/insumoService";
+import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio";
+import insumoService from "../../../services/insumoService"; // Importação do serviço
 import './HistoricoMaterial.css';
 
-import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico"; // 👈 Importado
+import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico";
 import EditarMaterial from "../EditarMaterial/EditarMaterial";
 import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
 import DetalhesMaterial from "./DetalhesMaterial/DetalhesMaterial";
 
 const HistoricoMaterial = () => {
   const [materiais, setMateriais] = useState([]);
+  const [dadosOriginais, setDadosOriginais] = useState([]); // Backup para filtro
   const [loading, setLoading] = useState(true);
+  
   const [filtros, setFiltros] = useState({
-    nomeInsumo: '', // 👈 Filtro específico
+    nomeInsumo: '',
     dataInicio: '',
     dataFim: ''
   });
 
-  // Estados unificados para controlar os modais (padrão Historico.jsx)
+  // Estados dos modais
   const [itemSelecionado, setItemSelecionado] = useState(null);
   const [modalDetalheAberto, setModalDetalheAberto] = useState(false);
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
   
+  // Função auxiliar para formatar data (AAAA-MM-DD -> DD/MM/AAAA)
+  const formatarData = (dataIso) => {
+    if (!dataIso) return '-';
+    const [ano, mes, dia] = dataIso.toString().split('-');
+    return `${dia}/${mes}/${ano}`;
+  };
+
   // Carregar dados do backend
   const carregarDados = async () => {
     try {
       setLoading(true);
-      const dados = await insumoService.getHistorico('MATERIAL');
-      setMateriais(dados);
+      const dadosBackend = await insumoService.getHistorico('MATERIAL');
+      
+      // Mapeia os dados do Backend (camelCase) para o Frontend (PascalCase)
+      const dadosFormatados = dadosBackend.map(item => ({
+        id: item.id,
+        NomeInsumo: item.nomeInsumo,
+        Data: formatarData(item.data), // Formata data
+        Status: item.status,
+        Quantidade: item.quantidade,
+        UnidadeMedida: item.unidadeMedida,
+        ResponsavelEntrega: item.responsavelEntrega,
+        ResponsavelRecebe: item.responsavelRecebe,
+        imagem: item.imagem
+      }));
+
+      setMateriais(dadosFormatados);
+      setDadosOriginais(dadosFormatados); // Salva o backup
     } catch (error) {
       console.error("Erro ao carregar histórico de materiais:", error);
       alert("Não foi possível carregar o histórico de materiais.");
@@ -42,27 +66,33 @@ const HistoricoMaterial = () => {
     carregarDados();
   }, []);
 
-  // Lógica de Filtro (padrão Historico.jsx)
+  // Lógica de Filtro
   const handleFiltroChange = (name, value) => {
     setFiltros(prev => ({ ...prev, [name]: value }));
   };
 
   const handlePesquisar = () => {
     const { nomeInsumo, dataInicio, dataFim } = filtros;
-    const dadosFiltrados = materiais.filter(item => {
+    
+    // Filtra usando dadosOriginais para não perder itens
+    const dadosFiltrados = dadosOriginais.filter(item => {
       const matchesNome = !nomeInsumo ||
         item.NomeInsumo.toLowerCase().includes(nomeInsumo.toLowerCase());
 
       let matchesData = true;
       if (dataInicio || dataFim) {
-        // Assume formato DD/MM/AAAA. Ajuste se necessário.
+        // Converte DD/MM/AAAA para Date
         const [day, month, year] = item.Data.split('/');
         const itemDate = new Date(`${year}-${month}-${day}`);
+        
         const startDate = dataInicio ? new Date(dataInicio) : null;
         const endDate = dataFim ? new Date(dataFim) : null;
 
-        // Adiciona 1 dia ao endDate para incluir o dia final na busca
         if (endDate) endDate.setDate(endDate.getDate() + 1);
+        
+        // Zera horas para comparação precisa de datas
+        if(startDate) startDate.setHours(0,0,0,0);
+        if(itemDate) itemDate.setHours(0,0,0,0);
 
         if (startDate && (isNaN(itemDate) || itemDate < startDate)) matchesData = false;
         if (endDate && (isNaN(itemDate) || itemDate >= endDate)) matchesData = false;
@@ -72,7 +102,7 @@ const HistoricoMaterial = () => {
     setMateriais(dadosFiltrados);
   };
 
-  // Handlers unificados para abrir os modais (padrão Historico.jsx)
+  // Handlers dos Modais
   const handleVisualizar = (item) => {
     setItemSelecionado(item);
     setModalDetalheAberto(true);
@@ -80,38 +110,53 @@ const HistoricoMaterial = () => {
 
   const handleEditar = (item) => {
     setItemSelecionado(item);
-    setModalDetalheAberto(false); // Fecha o de detalhe se estiver aberto
+    setModalDetalheAberto(false);
     setModalEdicaoAberto(true);
   };
 
   const handleExcluir = (item) => {
     setItemSelecionado(item);
-    setModalDetalheAberto(false); // Fecha o de detalhe se estiver aberto
+    setModalDetalheAberto(false);
     setModalExclusaoAberto(true);
   };
 
-  // Handlers para fechar/salvar (padrão Historico.jsx)
   const handleFecharModalDetalhe = () => {
     setModalDetalheAberto(false);
     setItemSelecionado(null);
   };
 
   const handleSalvarEdicao = (dadosAtualizados) => {
-    setMateriais(prev =>
-      prev.map(item =>
-        // Assume que 'dadosAtualizados' contém o 'id'
-        item.id === dadosAtualizados.id ? dadosAtualizados : item
-      )
+    // Atualiza visualmente nas duas listas
+    const atualizarLista = (lista) => lista.map(item =>
+      item.id === dadosAtualizados.id ? dadosAtualizados : item
     );
+
+    setMateriais(prev => atualizarLista(prev));
+    setDadosOriginais(prev => atualizarLista(prev));
+    
     setModalEdicaoAberto(false);
     setItemSelecionado(null);
   };
 
-  const handleConfirmarExclusao = () => {
+  // --- FUNÇÃO DE EXCLUSÃO ATUALIZADA (Chama o Backend) ---
+  const handleConfirmarExclusao = async () => {
     if (itemSelecionado) {
-      setMateriais(prev =>
-        prev.filter(item => item.id !== itemSelecionado.id) // Usa o ID
-      );
+      try {
+        // 1. Chama o Backend para deletar
+        await insumoService.excluirMovimentacao(itemSelecionado.id);
+
+        // 2. Remove visualmente das duas listas (se o backend responder OK)
+        const removerDaLista = (lista) => lista.filter(item => item.id !== itemSelecionado.id);
+
+        setMateriais(prev => removerDaLista(prev));
+        setDadosOriginais(prev => removerDaLista(prev));
+        
+        alert("Movimentação excluída com sucesso!");
+
+      } catch (error) {
+        console.error("Erro ao excluir material:", error);
+        alert("Erro ao excluir o registro. Tente novamente.");
+      }
     }
     setModalExclusaoAberto(false);
     setItemSelecionado(null);
@@ -127,7 +172,6 @@ const HistoricoMaterial = () => {
     setItemSelecionado(null);
   };
 
-
   const colunas = [
     { key: "NomeInsumo", label: "Nome do Insumo" },
     { key: "Data", label: "Data" },
@@ -138,11 +182,8 @@ const HistoricoMaterial = () => {
     { key: "ResponsavelRecebe", label: "Responsável por Receber" },
   ];
 
-
-
   return (
     <div className="historico-material-container">
-      {/* Layout de Filtros (padrão Historico.jsx) */}
       <div className="header-filtros">
         <h1>Histórico de Movimentação</h1>
         <FiltrosRelatorio
@@ -151,7 +192,6 @@ const HistoricoMaterial = () => {
           onPesquisar={handlePesquisar}
           buttonText="Pesquisar"
           buttonVariant="success"
-          // Passa os campos de filtro específicos para este componente
           camposFiltro={[
              { name: 'nomeInsumo', label: 'Nome do Insumo', type: 'text' },
              { name: 'dataInicio', label: 'Data Início', type: 'date' },
@@ -161,60 +201,51 @@ const HistoricoMaterial = () => {
       </div>
 
       <div className="tabela-wrapper">
-        <TabelaComBuscaPaginacao
-          titulo="Histórico de Movimentação de Materiais"
-          dados={materiais}
-          colunas={colunas}
-          chaveBusca="NomeInsumo"
-          mostrarBusca={true}
-          mostrarAcoes={true}
-
-          // Handlers atualizados
-          onEditar={handleEditar}
-          onExcluir={handleExcluir}
-          onConfirmar={handleVisualizar} // 👈 'onConfirmar' chama 'handleVisualizar'
-        />
+        {loading ? (
+            <p>Carregando dados...</p>
+        ) : (
+            <TabelaComBuscaPaginacao
+              titulo="Histórico de Movimentação de Materiais"
+              dados={materiais}
+              colunas={colunas}
+              chaveBusca="NomeInsumo"
+              mostrarBusca={true}
+              mostrarAcoes={true}
+              onEditar={handleEditar}
+              onExcluir={handleExcluir}
+              onConfirmar={handleVisualizar}
+            />
+        )}
       </div>
 
-      {/* Renderização dos 3 modais */}
-
-      {/* MODAL DE DETALHES (Visualizar) - (padrão Historico.jsx) */}
-      
-        <ModalDetalheGenerico
-          isOpen={modalDetalheAberto}
-          item={itemSelecionado} 
-          titulo="Detalhes da Movimentação"
-          
-          // Usa 'camposDetalhes' para renderizar os dados
-          camposDetalhes={[]} 
-
-          onClose={handleFecharModalDetalhe}
-          onEditar={() => handleEditar(itemSelecionado)}
-          onExcluir={() => handleExcluir(itemSelecionado)}
-
-          // Configurações visuais
-          mostrarHistorico={false}
-          mostrarExportar={false}
-          mostrarAcoes={true}
-        >
-          <DetalhesMaterial item={itemSelecionado} />
-        </ModalDetalheGenerico>
+      {/* MODAIS */}
+      <ModalDetalheGenerico
+        isOpen={modalDetalheAberto}
+        item={itemSelecionado} 
+        titulo="Detalhes da Movimentação"
+        camposDetalhes={[]} 
+        onClose={handleFecharModalDetalhe}
+        onEditar={() => handleEditar(itemSelecionado)}
+        onExcluir={() => handleExcluir(itemSelecionado)}
+        mostrarHistorico={false}
+        mostrarExportar={false}
+        mostrarAcoes={true}
+      >
+        <DetalhesMaterial item={itemSelecionado} />
+      </ModalDetalheGenerico>
      
-      {/* MODAL DE EDIÇÃO */}
       <EditarMaterial
         isOpen={modalEdicaoAberto}
         onClose={handleCancelarEdicao}
         onSave={handleSalvarEdicao}
-        // Prop renomeada para consistência (antes era 'material')
         itemParaEditar={itemSelecionado} 
       />
 
-      {/* MODAL DE EXCLUSÃO */}
       <ModalExcluir
         isOpen={modalExclusaoAberto}
         onClose={handleCancelarExclusao}
         onConfirm={handleConfirmarExclusao}
-        nomeItem={itemSelecionado?.NomeInsumo} // Usa 'itemSelecionado'
+        nomeItem={itemSelecionado?.NomeInsumo}
         titulo="Confirmar Exclusão"
         mensagem={`Tem certeza que deseja excluir a movimentação do insumo "${itemSelecionado?.NomeInsumo}"?`}
         textoConfirmar="Excluir"

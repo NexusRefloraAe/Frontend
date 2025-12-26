@@ -7,26 +7,6 @@ import closeIcon from '../../assets/close.svg'
 import editIcon from '../../assets/edit.svg'
 import deleteIcon from '../../assets/delete.svg'
 
-/**
- * @param {object} props
- * @param {object} props.item - Objeto com os detalhes do item a ser exibido no modal
- * @param {string} props.titulo - Título do modal
- * @param {array} props.camposDetalhes - Array de objetos com { label, chave, valorPadrao } para os campos de detalhe
- * @param {array} props.colunasEntrada - Colunas para a tabela de entradas
- * @param {array} props.colunasSaida - Colunas para a tabela de saídas
- * @param {array} props.dadosEntrada - Dados para a tabela de entradas
- * @param {array} props.dadosSaida - Dados para a tabela de saídas
- * @param {function} props.onCarregarHistorico - Função para carregar dados do histórico
- * @param {function(): void} props.onClose - Função para fechar o modal
- * @param {function(): void} props.onEditar - Função para editar o item
- * @param {function(): void} props.onExcluir - Função para excluir o item
- * @param {function(): void} props.onExportar - Função para exportar dados
- * @param {string} props.textoExclusao - Texto personalizado para a exclusão
- * @param {boolean} props.mostrarAcoes - Se mostra os botões de ação (editar/excluir)
- * @param {boolean} props.mostrarHistorico - Se mostra a seção de histórico
- * @param {boolean} props.mostrarExportar - Se mostra o botão de exportar
- * @param {ReactNode} props.children - Conteúdo adicional personalizado
- */
 function ModalDetalheGenerico({
     isOpen = false,
     item = {},
@@ -47,41 +27,54 @@ function ModalDetalheGenerico({
     mostrarExportar = true,
     children
 }) {
-    // if (!isOpen || !item) return null;
+    // 1. Hooks SEMPRE no topo (antes de qualquer return)
     const [paginaHistorico, setPaginaHistorico] = useState(1);
     const [historicoEntrada, setHistoricoEntrada] = useState(dadosEntrada);
     const [historicoSaida, setHistoricoSaida] = useState(dadosSaida);
     const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
 
+    // 2. UseEffect com proteção para item null
+    useEffect(() => {
+        // Se não estiver aberto ou item for nulo, não faz nada
+        if (!isOpen || !item) return;
+
+        if (onCarregarHistorico) {
+            const carregarDados = async () => {
+                // Proteção: usa optional chaining (?.) ou verifica se existe
+                const id = item.id || item._id;
+                if (!id) return;
+
+                const dados = await onCarregarHistorico(id);
+                if (dados && dados.entradas) setHistoricoEntrada(dados.entradas);
+                if (dados && dados.saidas) setHistoricoSaida(dados.saidas);
+            };
+            carregarDados();
+        } else {
+            // Atualiza os dados se vierem via props (dadosEntrada/dadosSaida)
+            setHistoricoEntrada(dadosEntrada.length > 0 ? dadosEntrada : [
+                { data: '20/05/2025', quantidade: 300, responsavel: 'Padrão' } // Mock de fallback
+            ]);
+            setHistoricoSaida(dadosSaida.length > 0 ? dadosSaida : [
+                { data: '30/05/2025', quantidade: 200, responsavel: 'Padrão' } // Mock de fallback
+            ]);
+        }
+        // Dependência segura: usa item?.id
+    }, [item?.id, item?._id, isOpen, onCarregarHistorico, dadosEntrada, dadosSaida]);
+
+    // 3. Só agora fazemos o "early return" visual
+    if (!isOpen || !item) return null;
+
+    // Declarações que dependem de 'item' ou estado
     const dadosParaExportar = [
-        ...historicoEntrada.map(item => ({ ...item, tipo: 'Entrada' })),
-        ...historicoSaida.map(item => ({ ...item, tipo: 'Saída' })),
+        ...historicoEntrada.map(i => ({ ...i, tipo: 'Entrada' })),
+        ...historicoSaida.map(i => ({ ...i, tipo: 'Saída' })),
     ];
 
     const colunasparaExportar = [
-        { label: 'Nome Popular', key: 'nomePopular' }, // A chave deve ser a mesma do objeto de dados
         { label: 'Data', key: 'data' },
+        { label: 'Nome Responsavel', key: 'responsavel' },
         { label: 'Quantidade', key: 'quantidade' },
     ];
-
-    useEffect(() => {
-        if (isOpen && onCarregarHistorico && (item.id || item._id)) {
-            const carregarDados = async () => {
-                try {
-                    const dados = await onCarregarHistorico(item.id || item._id);
-                    if (dados) {
-                        setHistoricoEntrada(dados.entradas || []);
-                        setHistoricoSaida(dados.saidas || []);
-                    }
-                } catch (error) {
-                    console.error("Erro ao carregar histórico no modal:", error);
-                }
-            };
-            carregarDados();
-        }
-    }, [isOpen, item.id, item._id, onCarregarHistorico]); // Removido dadosEntrada e dadosSaida daqui
-
-    if (!isOpen || !item) return null;
 
     const handleFecharModalExcluir = () => {
         setModalExcluirAberto(false);
@@ -101,12 +94,6 @@ function ModalDetalheGenerico({
         }
     };
 
-    // const handleExportar = () => {
-    //     if (onExportar) {
-    //         onExportar(item);
-    //     }
-    // };
-
     const ITENS_POR_PAGINA = 4;
     const totalItens = Math.max(historicoEntrada.length, historicoSaida.length);
     const totalPaginas = Math.ceil(totalItens / ITENS_POR_PAGINA);
@@ -125,7 +112,8 @@ function ModalDetalheGenerico({
     };
 
     const obterNomeItem = () => {
-        return item.nome || item.material || item.insumo || item.descricao || 'Item';
+        // Adicionei 'NomeInsumo' que é usado no seu HistoricoFerramenta
+        return item.nome || item.material || item.insumo || item.descricao || item.NomeInsumo || 'Item';
     };
 
     return (
@@ -196,7 +184,7 @@ function ModalDetalheGenerico({
                                     onPaginaChange={setPaginaHistorico}
                                 />
                                 {mostrarExportar && (
-                                    <ExportButton data={dadosParaExportar} columns={colunasparaExportar} fileName={`historico_movimentacao_canteiro${item.id}`} />
+                                    <ExportButton data={dadosParaExportar} columns={colunasparaExportar} fileName={`historico_${obterNomeItem()}`} />
                                 )}
                             </div>
                         </div>
