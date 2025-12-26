@@ -41,7 +41,8 @@ function ModalDetalheGenerico({
     onClose,
     onEditar,
     onExcluir,
-    onExportar,
+    onExportarPdf, // Nova prop
+    onExportarCsv, // Nova prop
     textoExclusao = 'este item',
     mostrarAcoes = true,
     mostrarHistorico = true,
@@ -231,9 +232,24 @@ function ModalDetalheGenerico({
                                     totalPaginas={totalPaginas}
                                     onPaginaChange={setPaginaHistorico}
                                 />
-                                {mostrarExportar && (
-                                    <ExportButton data={dadosParaExportar} columns={colunasparaExportar} fileName={`historico_${obterNomeItem()}`} />
-                                )}
+                                <div>
+                                    {onExportarPdf && onExportarCsv && (
+                                        <ExportButton
+                                            data={dadosParaExportar} 
+                                            columns={colunasparaExportar} 
+                                            fileName={`historico_movimentacao_canteiro${item.id}`}
+                                            onExportPDF={onExportarPdf}
+                                            onExportCSV={onExportarCsv}
+                                        />
+                                    )}
+                                    {mostrarExportar && !onExportarPdf && !onExportarCsv && (
+                                        <ExportButton 
+                                            data={dadosParaExportar} 
+                                            columns={colunasparaExportar} 
+                                            fileName={`historico_movimentacao_canteiro${item.id}`} 
+                                        />
+                                    )}
+                                </div>
                             </div>
                         </div>
                     )}

@@ -21,6 +21,10 @@ function TabelaSelecionar({
   paginaAtual: paginaPai, // Propriedade do pai (servidor)
   totalPaginas: totalPaginasPai, // Propriedade do pai (servidor)
   onPageChange, // Função do pai (servidor)
+
+  onOrdenar,
+  ordemAtual,
+  direcaoAtual
 }) {
   const [termoBusca, setTermoBusca] = useState("");
   const [paginaInterna, setPaginaInterna] = useState(1); // Estado para modo local
@@ -163,8 +167,13 @@ function TabelaSelecionar({
             <tr>
               <th>Selecionar</th>
               {colunas.map((coluna) => (
-                <th key={coluna.key}>
-                  {coluna.label} <FaArrowsAltV className="icone-ordenar" />
+                <th key={coluna.key} onClick={() => onOrdenar && onOrdenar(coluna.key)}>
+                  {coluna.label}
+                  {ordemAtual === coluna.key || (ordemAtual === 'quantidadePlantada' && coluna.key === 'Quantidade') || (ordemAtual === 'nomePopularSemente' && coluna.key === 'NomePopular') ? (
+                        direcaoAtual === 'asc' ? <FaArrowsAltV className="icone-ordenar"/> : <FaArrowsAltV className="icone-ordenar"/>
+                    ) : (
+                        <FaArrowsAltV className="icone-ordenar" />
+                    )}
                 </th>
               ))}
               <th>Quantidade Saída</th>

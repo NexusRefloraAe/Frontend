@@ -220,6 +220,59 @@ const Historico = () => {
         { key: "Quantidade", label: "Quantidade" },
     ];
 
+    const downloadArquivo = (blob, nomeArquivo) => {
+        const disposition = blob.headers['content-disposition'];
+        let fileName = nomeArquivo;
+
+        if (disposition) {
+            const filenameRegex = /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
+            const matches = filenameRegex.exec(disposition);
+            if (matches && matches[1]) { 
+                fileName = matches[1].replace(/['"]/g, '');
+                fileName = decodeURIComponent(fileName); 
+            }
+        }
+
+        const url = window.URL.createObjectURL(new Blob([blob.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', fileName); // Nome que aparecerá para o usuário
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+        window.URL.revokeObjectURL(url);
+    };
+
+    // --- HANDLERS DE EXPORTAÇÃO ---
+    const handleExportarPdf = async (item) => {
+        try {
+            setLoading(true);
+            const blob = await canteiroService.exportarHistoricoPdf(item.id);
+            // Gera nome: Historico_NomeDoCanteiro.pdf
+            const nomeArquivo = `Historico_${item.nomeCanteiro || item.nome || 'Canteiro'}.pdf`;
+            downloadArquivo(blob, nomeArquivo);
+        } catch (error) {
+            console.error("Erro ao baixar PDF:", error);
+            alert("Erro ao exportar PDF.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleExportarCsv = async (item) => {
+        try {
+            setLoading(true);
+            const blob = await canteiroService.exportarHistoricoCsv(item.id);
+            const nomeArquivo = `Historico_${item.nomeCanteiro || item.nome || 'Canteiro'}.csv`;
+            downloadArquivo(blob, nomeArquivo);
+        } catch (error) {
+            console.error("Erro ao baixar CSV:", error);
+            alert("Erro ao exportar CSV.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="historico-page-container">
             <div className="historico-content-wrapper">
@@ -239,7 +292,6 @@ const Historico = () => {
                     termoBusca={termoBusca}
                     onSearchChange={handleBusca}
                     habilitarBusca={true}
-                    modoBusca="server"
 
                     ordemAtual={ordem}
                     direcaoAtual={direcao}
@@ -249,7 +301,6 @@ const Historico = () => {
                     onSelecionar={handleSelecionarItens}
                     onQuantidadeChange={handleQuantidadeChange}
                     chaveBusca="NomePopular"
-                    chaveQuantidade="Quantidade"
                 />
             </div>
 
@@ -278,6 +329,9 @@ const Historico = () => {
                     ]}
                     dadosEntrada={historicoEntradas}
                     dadosSaida={historicoSaidas}
+
+                    onExportarPdf={() => handleExportarPdf(canteiroSelecionado)}
+                    onExportarCsv={() => handleExportarCsv(canteiroSelecionado)}
                     
                     onClose={handleFecharModalDetalhe}
                     onEditar={handleEditarCanteiro}

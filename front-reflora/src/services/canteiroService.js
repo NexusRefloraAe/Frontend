@@ -94,5 +94,17 @@ export const canteiroService = {
         };
         const response = await api.get(`/canteiros/${id}/historico-detalhado`, { params });
         return response.data;
-    }
+    },
+
+    exportarHistoricoPdf: (id) => {
+        return api.get(`/canteiros/${id}/historico/export/pdf`, {
+            responseType: 'blob'
+        });
+    },
+
+    exportarHistoricoCsv: (id) => {
+        return api.get(`/canteiros/${id}/historico/export/csv`, {
+            responseType: 'blob'
+        });
+    },
 };
