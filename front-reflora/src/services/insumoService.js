@@ -73,8 +73,38 @@ const insumoService = {
         const response = await api.delete(`/insumos/movimentacao/${id}`);
         return response.data;
     },
-    atualizarMovimentacao: async (id, dados) => {    
+    atualizarMovimentacao: async (id, dados) => {
         const response = await api.put(`/insumos/movimentacao/${id}`, dados);
+        return response.data;
+    },
+
+    // Método para listar TUDO (Materiais e Ferramentas) com paginação
+    getAll: async (termo = '', pagina = 0, tamanho = 10, ordem = 'nome', direcao = 'asc') => {
+        // Ajuste a URL conforme o seu Backend. 
+        // Se o seu backend não tiver paginação unificada, precisaremos criar ou filtrar no front.
+        // Supondo que você criou: @GetMapping("/todos") com Pageable
+        const params = {
+            termo,
+            page: pagina,
+            size: tamanho,
+            sort: `${ordem},${direcao}`
+        };
+        const response = await api.get('/insumos/todos', { params });
+        return response.data;
+    },
+
+    // Método para deletar o INSUMO (e seu histórico)
+    delete: async (id) => {
+        await api.delete(`/insumos/${id}`);
+    },
+
+    // Buscar por ID para edição
+    getById: async (id) => {
+        const response = await api.get(`/insumos/${id}`);
+        return response.data;
+    },
+    atualizarInsumo: async (id, dados) => {
+        const response = await api.put(`/insumos/${id}`, dados);
         return response.data;
     }
 };
