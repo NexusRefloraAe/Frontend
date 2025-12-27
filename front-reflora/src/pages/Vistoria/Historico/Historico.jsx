@@ -81,25 +81,58 @@ const Historico = () => {
   //   setFiltros((prev) => ({ ...prev, [name]: value }));
   // };
 
-  // const handlePesquisar = () => {
-  //   const { nomePopular, dataInicio, dataFim } = filtros;
-  //   const dadosFiltrados = DADOS_VISTORIAS_MOCK.filter(item => {
-  //     const matchesNome = !nomePopular ||
-  //       item.NomePopular.toLowerCase().includes(nomePopular.toLowerCase());
+// --- FUNÇÃO UTILITÁRIA DE DOWNLOAD ---
+  const realizarDownload = (response, defaultName) => {
+    const disposition = response.headers['content-disposition'];
+    let fileName = defaultName;
 
-  //     let matchesData = true;
-  //     if (dataInicio || dataFim) {
-  //       const [day, month, year] = item.DataVistoria.split('/');
-  //       const itemDate = new Date(`${year}-${month}-${day}`);
-  //       const startDate = dataInicio ? new Date(dataInicio) : null;
-  //       const endDate = dataFim ? new Date(dataFim) : null;
-  //       if (startDate && (isNaN(itemDate) || itemDate < startDate)) matchesData = false;
-  //       if (endDate && (isNaN(itemDate) || itemDate > endDate)) matchesData = false;
-  //     }
-  //     return matchesNome && matchesData;
-  //   });
-  //   setVistorias(dadosFiltrados);
-  // };
+    if (disposition) {
+      // Regex para extrair o nome do arquivo enviado pelo Spring (Content-Disposition)
+      const filenameRegex = /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
+      const matches = filenameRegex.exec(disposition);
+      if (matches && matches[1]) {
+        fileName = matches[1].replace(/['"]/g, '');
+        fileName = decodeURIComponent(fileName);
+      }
+    }
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url); // Importante para performance
+  };
+
+  // --- HANDLERS DE EXPORTAÇÃO ---
+  const handleExportPDF = async () => {
+    try {
+      setLoading(true);
+      // 'termoBusca' aqui representa o filtro de lote que o usuário digitou
+      const response = await vistoriaService.exportarHistoricoPdf(termoBusca);
+      realizarDownload(response, 'historico_vistorias.pdf');
+    } catch (error) {
+      console.error("Erro export PDF:", error);
+      alert("Erro ao gerar PDF do histórico.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      setLoading(true);
+      const response = await vistoriaService.exportarHistoricoCsv(termoBusca);
+      realizarDownload(response, 'historico_vistorias.csv');
+    } catch (error) {
+      console.error("Erro export CSV:", error);
+      alert("Erro ao gerar CSV do histórico.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Handlers unificados para abrir os modais
   const handleVisualizar = async (item) => {
@@ -253,6 +286,9 @@ const Historico = () => {
           itensPorPagina={itensPorPagina}
           onItensPorPaginaChange={setItensPorPagina}
           termoBusca={termoBusca}
+
+          onExportPDF={handleExportPDF}
+          onExportCSV={handleExportCSV}
         />
       </div>
 
