@@ -112,6 +112,7 @@ function TabelaComBuscaPaginacao({
             placeholder={placeholderBusca || `Pesquisar por ${colunas[1]?.label ?? "termo"}...`}
             modo={modoBusca}
             isLoading={isLoading}
+            showButton={true}
           />
         )}
       </div>

@@ -102,6 +102,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid #e0e0e0;
     overflow-y: auto;
+
 }
 
 /* Header */
@@ -110,6 +111,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    
 }
 
 .historico-title-content-banco img {
@@ -160,8 +162,14 @@
 }
 
 .historico-header-content-semente h1 {
-    font-size: 24px;
-    text-decoration: underline;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2e7d32;
+  margin: 0;
+  flex: 1; /* Ocupa espaço disponível */
+  min-width: 200px;
+  padding-left: 15px; /* Mais espaçamento lateral */
+
 }
 
 /* Busca */
@@ -171,13 +179,13 @@
     gap: 12px;
     border: 1px solid #000;
     border-radius: 10px;
-    padding: 10px;
 }
 
 .historico-input-search input {
     border: none;
     outline: none;
     font-size: 16px;
+   
 }
 
 /* ==========================================================
@@ -266,70 +274,6 @@
     .historico-header-content-semente h1 {
     font-size: 15px;
     text-decoration: underline;
-}
-    
-    .acoes {
-        gap: 0.4rem;
-        padding: 0.3rem;
-    }
-
-    .btn-icone {
-        width: 30px;
-        height: 30px;
-        font-size: 0.9rem;
-    }
-    
-    .historico-infos-sementes-card table,
-    .historico-infos-sementes-card thead,
-    .historico-infos-sementes-card tbody,
-    .historico-infos-sementes-card th,
-    .historico-infos-sementes-card td,
-    .historico-infos-sementes-card tr {
-        display: block;
-        width: 100%;
-    }
-
-    .historico-infos-sementes-card thead {
-        display: none;
-    }
-
-
-    .historico-infos-sementes-card tr {
-        background-color: rgb(255, 255, 255);
-        border: 1px solid #e5e7eb;
-        border-radius: 14px;
-        margin-bottom: 16px;
-        padding: 12px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    }
-
-    .historico-infos-sementes-card td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 4px;
-        text-align: right;
-        background: transparent;
-        border: none;
-        font-size: 0.9rem;
-    }
-
-    .historico-infos-sementes-card td::before {
-        content: attr(data-label);
-        font-weight: 600;
-        color: #bec4be;
-        text-align: left;
-        background-color: #2d6a4f;
-        padding: 8px;
-        color: white;
-        font-size: 12px;
-        border-radius: 6px ;
-        
-    }
-
-    .historico-infos-sementes-card td[data-label="Ações"] {
-        justify-content: space-between;
-        margin-top: 10px;
     }
      .historico-footer-content {
         display: flex;
@@ -370,4 +314,5 @@
         color: #ccc;
         pointer-events: none;
     }
+    
 }

@@ -1,0 +1,58 @@
+.custom-date {
+  position: relative;
+  width: 100%;
+}
+
+/* Input nativo invisível */
+.custom-date__native {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Caixa visual */
+.custom-date__display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--espacamento-sm);
+  border: 1px solid var(--cor-borda-cinza);
+  border-radius: var(--raio-borda-xs);
+  font-size: var(--tamanho-fonte-sm);
+  background: white;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.custom-date__display:hover {
+  border-color: var(--cor-borda-foco);
+}
+
+.custom-date__display span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-date__display .placeholder {
+  color: var(--cor-texto-secundario);
+}
+
+.custom-date__display .has-value {
+  color: var(--cor-texto-primario);
+}
+
+.custom-date__icon {
+  opacity: 0.6;
+}
+
+.custom-date.disabled {
+  background-color: var(--cor-fundo-cinza);
+  cursor: not-allowed;
+}
+
+.custom-date.disabled .custom-date__display {
+  cursor: not-allowed;
+  background-color: var(--cor-fundo-cinza);
+}
