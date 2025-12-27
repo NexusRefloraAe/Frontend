@@ -34,15 +34,30 @@ export const inspecaoService = {
         return response.data;
     },
 
-    getAll: async (pagina = 0, itensPorPagina = 5, ordem = 'dataInspecao', direcao = 'desc') => {
+    getAll: async (pagina = 0, itensPorPagina = 5, nomePopular = '', ordem = 'dataInspecao', direcao = 'desc') => {
         const params = {
             page: pagina,
             size: itensPorPagina,
+            nomePopular: nomePopular || undefined,
             sort: `${ordem},${direcao}`
         };
 
         const response = await api.get(`/inspecoes`, { params });
         return response.data;
+    },
+
+    exportarHistoricoPdf : async (termoBusca) => {
+        return api.get('/inspecoes/export/pdf', {
+            params: {nomePopular: termoBusca},
+            responseType: 'blob'
+        });
+    },
+
+    exportarHistoricoCsv : async (termoBusca) => {
+        return api.get('/inspecoes/export/csv', {
+            params: {nomePopular: termoBusca},
+            responseType: 'blob'
+        });
     },
 
     getById: async (id) => {
