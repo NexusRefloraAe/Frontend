@@ -33,10 +33,11 @@ export const vistoriaService = {
         return response.data;
     },
 
-    getAll: async (pagina = 0, itensPorPagina = 5, ordem = 'dataVistoria', direcao = 'desc') => {
+    getAll: async (pagina = 0, itensPorPagina = 5, lote = '', ordem = 'dataVistoria', direcao = 'desc') => {
         const params = {
             page: pagina,
             size: itensPorPagina,
+            lote: lote || undefined,
             sort: `${ordem},${direcao}`
         };
 
