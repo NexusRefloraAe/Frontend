@@ -69,5 +69,54 @@ export const vistoriaService = {
 
     delete: async (id) => {
         await api.delete(`/vistorias/${id}`);
+    },
+
+    exportarHistoricoPdf: async (termoBusca) => {
+        return api.get('/vistorias/export/pdf', {
+            params: { lote: termoBusca }, // O Axios lida com o ?lote=... automaticamente
+            responseType: 'blob'
+        });
+    },
+
+    exportarHistoricoCsv: async (termoBusca) => {
+        return api.get('/vistorias/export/csv', {
+            params: { lote: termoBusca },
+            responseType: 'blob'
+        });
+    },
+
+    getRelatorio: async (filtros, pagina = 0, itensPorPagina = 5, ordem='dataVistoria', direcao='desc') => {
+        const params = {
+            nomePopular: filtros.nomePopular,
+            dataInicio: formatarDataParaJava(filtros.dataInicio),
+            dataFim: formatarDataParaJava(filtros.dataFim),
+            page: pagina,
+            size: itensPorPagina,
+            sort: `${ordem},${direcao}`
+        };
+
+        const response = await api.get('/vistorias/relatorio', { params });
+        return response.data;
+    },
+
+    exportarRelatorioPdf: async (filtros) => {
+        const params = {
+            nomePopular: filtros.nomePopular,
+            dataInicio: formatarDataParaJava(filtros.dataInicio),
+            dataFim: formatarDataParaJava(filtros.dataFim)
+        };
+        return api.get('/vistorias/relatorio/export/pdf', { params, responseType: 'blob' });
+    },
+
+    exportarRelatorioCsv: async (filtros) => {
+        const params = {
+            nomePopular: filtros.nomePopular,
+            dataInicio: formatarDataParaJava(filtros.dataInicio),
+            dataFim: formatarDataParaJava(filtros.dataFim)
+        };
+        return api.get('/vistorias/relatorio/export/csv', {
+            params,
+            responseType: 'blob'
+        });
     }
 };
