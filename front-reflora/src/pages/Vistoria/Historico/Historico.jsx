@@ -11,11 +11,11 @@ import EditarVistoria from "../EditarVistoria/EditarVistoria";
 import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
 
 const Historico = () => {
-  const [filtros, setFiltros] = useState({
-    nomePopular: "",
-    dataInicio: "",
-    dataFim: "",
-  });
+  // const [filtros, setFiltros] = useState({
+  //   nomePopular: "",
+  //   dataInicio: "",
+  //   dataFim: "",
+  // });
 
   // Estados unificados para controlar os modais
   const [dados, setDados] = useState([]);
@@ -32,13 +32,22 @@ const Historico = () => {
   const [itensPorPagina, setItensPorPagina] = useState(5);
   const [termoBusca, setTermoBusca] = useState("");
 
+  // 1. Novo estado para Ordenação
+  const [ordenacao, setOrdenacao] = useState({ 
+    campo: 'dataVistoria', 
+    direcao: 'desc' 
+  });
+
   const carregarDados = useCallback(
     async (paginaDestino) => {
       setLoading(true);
       try {
         const response = await vistoriaService.getAll(
           paginaDestino - 1,
-          itensPorPagina
+          itensPorPagina,
+          termoBusca,
+          ordenacao.campo,
+          ordenacao.direcao
         );
         setDados(response.content || []);
 
@@ -54,16 +63,23 @@ const Historico = () => {
         setLoading(false);
       }
     },
-    [itensPorPagina]
+    [itensPorPagina, termoBusca, ordenacao]
   );
+
+  // 4. Função para tratar a ordenação ao clicar no cabeçalho da tabela
+  const handleOrdenar = (campo) => {
+    const novaDirecao = ordenacao.campo === campo && ordenacao.direcao === 'asc' ? 'desc' : 'asc';
+    setOrdenacao({ campo, direcao: novaDirecao });
+    setPaginaAtual(1); // Reseta para a primeira página ao ordenar
+  };
 
   useEffect(() => {
     carregarDados(paginaAtual);
   }, [paginaAtual, carregarDados]);
 
-  const handleFiltroChange = (name, value) => {
-    setFiltros((prev) => ({ ...prev, [name]: value }));
-  };
+  // const handleFiltroChange = (name, value) => {
+  //   setFiltros((prev) => ({ ...prev, [name]: value }));
+  // };
 
   // const handlePesquisar = () => {
   //   const { nomePopular, dataInicio, dataFim } = filtros;
@@ -189,19 +205,19 @@ const Historico = () => {
   };
 
   const colunas = [
-    { key: "loteMuda", label: "Lote" },
-    { key: "nomeCanteiro", label: "Nome do Local" },
-    { key: "dataVistoria", label: "Data da Vistoria" },
-    { key: "tratosCulturais", label: "Tratos Culturais" },
-    { key: "doencasPragas", label: "Pragas/Doenças" },
-    { key: "estadoSaude", label: "Estado de Saúde" },
-    { key: "estimativaMudasProntas", label: "Qntd" },
-    { key: "nomeResponsavel", label: "Nome do Responsável" },
+    { key: "loteMuda", label: "Lote", sortable: true, sortKey: "plantioCanteiro.plantioOrigem.lote" },
+    { key: "nomeCanteiro", label: "Nome do Local", sortable: true, sortKey: "plantioCanteiro.canteiro.nome" },
+    { key: "dataVistoria", label: "Data da Vistoria", sortable: true },
+    { key: "tratosCulturais", label: "Tratos Culturais", sortable: true },
+    { key: "doencasPragas", label: "Pragas/Doenças", sortable: true },
+    { key: "estadoSaude", label: "Estado de Saúde", sortable: true },
+    { key: "estimativaMudasProntas", label: "Qntd", sortable: true },
+    { key: "nomeResponsavel", label: "Nome do Responsável", sortable: true },
   ];
 
   return (
     <div className="historico-container">
-      <div className="header-filtros">
+      {/* <div className="header-filtros">
         <h1>Histórico de Vistorias</h1>
         <FiltrosRelatorio
           filtros={filtros}
@@ -210,22 +226,27 @@ const Historico = () => {
           buttonText="Pesquisar"
           buttonVariant="success"
         />
-      </div>
+      </div> */}
 
       <div className="tabela-wrapper">
         <TabelaComBuscaPaginacao
           titulo="Histórico de Vistorias"
           dados={dados}
           colunas={colunas}
-          chaveBusca="nomePopular"
+
           habilitarBusca={true}
           isLoading={loading}
           mostrarBusca={true}
           mostrarAcoes={true}
+
           onPesquisar={handlePesquisar}
           onEditar={handleEditar}
           onExcluir={handleExcluir}
           onVisualizar={handleVisualizar} // 👈 'onConfirmar' chama 'handleVisualizar'
+          onOrdenar={handleOrdenar}
+          ordemAtual={ordenacao.campo}
+          direcaoAtual={ordenacao.direcao}
+
           paginaAtual={paginaAtual}
           totalPaginas={totalPaginas}
           onPaginaChange={handleMudarPagina}
