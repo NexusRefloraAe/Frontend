@@ -159,7 +159,7 @@ function ModalDetalheGenerico({
 
     const obterNomeItem = () => {
         // Adicionei 'NomeInsumo' que é usado no seu HistoricoFerramenta
-        return item.nome || item.material || item.insumo || item.descricao || item.NomeInsumo || 'Item';
+        return item.nome || item.material || item.insumo || item.descricao || item.NomeInsumo || null;
     };
 
     return (
@@ -260,7 +260,7 @@ function ModalDetalheGenerico({
                 onConfirm={handleConfirmarExclusao}
                 nomeItem={obterNomeItem()}
                 titulo="Confirmar Exclusão"
-                mensagem={`Tem certeza que deseja excluir ${textoExclusao} "${obterNomeItem()}"? Esta ação não pode ser desfeita.`}
+                mensagem={`Tem certeza que deseja excluir ${textoExclusao} ${ obterNomeItem() != null ? `"${obterNomeItem()}"` : ''}? Esta ação não pode ser desfeita.`}
                 textoConfirmar="Excluir"
                 textoCancelar="Cancelar"
             />
