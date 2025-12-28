@@ -72,13 +72,8 @@ function ModalDetalheGenerico({
             };
             carregarDados();
         } else {
-            // Atualiza os dados se vierem via props (dadosEntrada/dadosSaida)
-            setHistoricoEntrada(dadosEntrada.length > 0 ? dadosEntrada : [
-                { data: '20/05/2025', quantidade: 300, responsavel: 'Padrão' } // Mock de fallback
-            ]);
-            setHistoricoSaida(dadosSaida.length > 0 ? dadosSaida : [
-                { data: '30/05/2025', quantidade: 200, responsavel: 'Padrão' } // Mock de fallback
-            ]);
+            setHistoricoEntrada(dadosEntrada);
+            setHistoricoSaida(dadosSaida);
         }
         // Dependência segura: usa item?.id
     }, [item?.id, item?._id, isOpen, onCarregarHistorico, dadosEntrada, dadosSaida]);
