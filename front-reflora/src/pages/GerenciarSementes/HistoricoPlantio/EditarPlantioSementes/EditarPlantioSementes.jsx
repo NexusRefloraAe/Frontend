@@ -5,11 +5,11 @@ import Input from "../../../../components/Input/Input";
 const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
   // 1. Estado alinhado com o DTO do Java (nomes exatos)
   const [formData, setFormData] = useState({
-    lote: '',
-    nomePopular: '', // Apenas para exibição (não é salvo no update)
-    qtdSemente: 0,   // ✅ Corrigido (era qntdSementes)
-    dataPlantio: '',
-    tipoPlantio: '',
+    lote: "",
+    nomePopular: "", // Apenas para exibição (não é salvo no update)
+    qtdSemente: 0, // ✅ Corrigido (era qntdSementes)
+    dataPlantio: "",
+    tipoPlantio: "",
     quantidadePlantada: 0, // ✅ Corrigido (era qntdPlantada)
   });
 
@@ -29,36 +29,40 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
   useEffect(() => {
     if (plantio) {
       const formatarDataInput = (dataStr) => {
-          if(!dataStr) return '';
-          if(dataStr.includes('/')) {
-             const parts = dataStr.split('/');
-             return `${parts[2]}-${parts[1]}-${parts[0]}`;
-          }
-          return dataStr;
+        if (!dataStr) return "";
+        if (dataStr.includes("/")) {
+          const parts = dataStr.split("/");
+          return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+        return dataStr;
       };
 
-      // --- 2. TRATAMENTO NO CARREGAMENTO ---
-      // Se o back mandar "Chão" (descrição), convertemos para "CHAO" (value do select)
-      // para que o campo já venha selecionado corretamente.
-
       setFormData({
-        lote: plantio.lote || '',
-        nomePopular: plantio.nomePopularSemente || plantio.nomePopular || '', 
+        lote: plantio.lote || plantio.loteSemente || "",
+        nomePopular: 
+        plantio.sementes?.nomePopular || // Estrutura do getById
+        plantio.nomePopularSemente ||    // Estrutura da lista da tabela
+        plantio.nomePopular ||           // Fallback
+        "",
         qtdSemente: plantio.qtdSemente || 0,
         dataPlantio: formatarDataInput(plantio.dataPlantio),
-        
-        // Aqui usamos o valor tratado
-        tipoPlantio: plantio.tipoPlantio, 
-        
-        // Backend envia 'quantidadePlantada'
-        quantidadePlantada: plantio.quantidadePlantada || plantio.qntdPlantada || 0,
+
+        // ✅ TRATAMENTO ROBUSTO:
+        // Tenta pegar 'tipoPlantio' (do getById) ou 'tipoPlantioDescricao' (da tabela)
+        tipoPlantio: plantio.tipoPlantio || plantio.tipoPlantioDescricao || "",
+
+        quantidadePlantada: plantio.quantidadePlantada || 0,
       });
     }
   }, [plantio]);
 
   const handleCancel = (confirmar = true) => {
     if (confirmar) {
-      if (window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
+      if (
+        window.confirm(
+          "Deseja cancelar? As alterações não salvas serão perdidas."
+        )
+      ) {
         onCancelar();
       }
     } else {
@@ -70,9 +74,9 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
     // --- 3. TRATAMENTO NO ENVIO ---
     // Garante que enviamos "CHAO" sem acento para o Java não dar erro 500
     const dadosSalvos = {
-      id: plantio.id, 
+      id: plantio.id,
       ...formData,
-      tipoPlantio: formData.tipoPlantio
+      tipoPlantio: formData.tipoPlantio,
     };
 
     onSalvar(dadosSalvos);
@@ -80,7 +84,11 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
 
   const handleChange = (field) => (e) => {
     // Para Selects, as vezes o valor vem direto, as vezes via target
-    const value = e.target ? (e.target.type === 'number' ? Number(e.target.value) : e.target.value) : e;
+    const value = e.target
+      ? e.target.type === "number"
+        ? Number(e.target.value)
+        : e.target.value
+      : e;
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -96,15 +104,15 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
 
   const actions = [
     {
-      type: 'button',
-      variant: 'action-secondary',
-      children: 'Cancelar',
+      type: "button",
+      variant: "action-secondary",
+      children: "Cancelar",
       onClick: () => handleCancel(true),
     },
     {
-      type: 'submit',
-      variant: 'primary',
-      children: 'Salvar Edições',
+      type: "submit",
+      variant: "primary",
+      children: "Salvar Edições",
     },
   ];
 
@@ -113,7 +121,11 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
   return (
     <div className="modal-overlay" onClick={() => handleCancel(false)}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <button type="button" className="modal-close-button" onClick={() => handleCancel(true)}>
+        <button
+          type="button"
+          className="modal-close-button"
+          onClick={() => handleCancel(true)}
+        >
           &times;
         </button>
 
@@ -144,7 +156,7 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
             name="dataPlantio"
             type="date"
             value={formData.dataPlantio}
-            onChange={handleChange('dataPlantio')}
+            onChange={handleChange("dataPlantio")}
             required={true}
           />
 
@@ -153,9 +165,9 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
             name="qtdSemente"
             type="number"
             value={formData.qtdSemente} // Nome corrigido
-            onChange={handleChange('qtdSemente')}
-            onIncrement={handleIncrement('qtdSemente')}
-            onDecrement={handleDecrement('qtdSemente')}
+            onChange={handleChange("qtdSemente")}
+            onIncrement={handleIncrement("qtdSemente")}
+            onDecrement={handleDecrement("qtdSemente")}
             required={true}
           />
 
@@ -164,7 +176,7 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
             name="quantidadePlantada"
             type="number"
             value={formData.quantidadePlantada} // Nome corrigido
-            onChange={handleChange('quantidadePlantada')}
+            onChange={handleChange("quantidadePlantada")}
             onIncrement={handleIncrement("quantidadePlantada")}
             onDecrement={handleDecrement("quantidadePlantada")}
             required={true}
@@ -179,13 +191,13 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
             name="tipoPlantio"
             type="select"
             value={formData.tipoPlantio}
-            onChange={handleChange('tipoPlantio')}
+            onChange={handleChange("tipoPlantio")}
             required={true}
             placeholder="Selecione"
             options={[
-              { value: 'Sementeira', label: 'Sementeira' },
-              { value: 'Saquinho', label: 'Saquinho' },
-              { value: 'Chão', label: 'Chão' }, // O VALUE DEVE SER "Chão" para bater com o @JsonValue do Java
+              { value: "Sementeira", label: "Sementeira" },
+              { value: "Saquinho", label: "Saquinho" },
+              { value: "Chão", label: "Chão" }, // O VALUE DEVE SER "Chão" para bater com o @JsonValue do Java
             ]}
           />
         </FormGeral>
