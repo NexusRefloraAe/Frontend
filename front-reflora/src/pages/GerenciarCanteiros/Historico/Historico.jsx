@@ -374,6 +374,8 @@ const Historico = () => {
           textoExclusao="o canteiro"
           mostrarAcoes={true}
           mostrarHistorico={true}
+          mostrarExportar={true}
+          mostrarImagem={false}
         />
       )}
 

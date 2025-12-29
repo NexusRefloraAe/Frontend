@@ -24,7 +24,7 @@ function ModalDetalheGenerico({
   mostrarAcoes = true,
   mostrarHistorico = true,
   mostrarExportar = true,
-  mostrarImagem = true, // <--- NOVA PROP (Padrão true para manter compatibilidade)
+  mostrarImagem = true,
   textoExclusao = "este item",
   children,
   onExportarPdf,
@@ -38,10 +38,12 @@ function ModalDetalheGenerico({
   const [historicoSaida, setHistoricoSaida] = useState(dadosSaida);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
 
-  const ITENS_PAGINA = 5; // Quantidade de linhas por página no modal
-
   useEffect(() => {
     if (isOpen) {
+      // Reseta as páginas ao abrir
+      setPaginaEntrada(1);
+      setPaginaSaida(1);
+
       if (onCarregarHistorico && (item?.id || item?._id)) {
         const carregar = async () => {
           try {
@@ -56,26 +58,26 @@ function ModalDetalheGenerico({
         };
         carregar();
       } else {
-        if (historicoEntrada !== dadosEntrada)
-          setHistoricoEntrada(dadosEntrada);
+        // Atualiza apenas se os dados mudaram para evitar loops
+        if (historicoEntrada !== dadosEntrada) setHistoricoEntrada(dadosEntrada);
         if (historicoSaida !== dadosSaida) setHistoricoSaida(dadosSaida);
       }
-    } else {
-      setPaginaHistorico(1);
     }
-  }, [isOpen, item?.id, item?._id, onCarregarHistorico]);
+  }, [isOpen, item, onCarregarHistorico, dadosEntrada, dadosSaida]);
 
   if (!isOpen || !item) return null;
 
   const ITENS_PAGINA = 5;
-  const totalItens = Math.max(historicoEntrada.length, historicoSaida.length);
-  const totalPaginas = Math.ceil(totalItens / ITENS_PAGINA) || 1;
-  const idxInicio = (paginaHistorico - 1) * ITENS_PAGINA;
-  const idxFim = idxInicio + ITENS_PAGINA;
 
-  // 3. Lógica de fatiamento (Slice) para SAÍDAS
-  const totalPaginasSaida =
-    Math.ceil(historicoSaida.length / ITENS_PAGINA) || 1;
+  // 2. Lógica de Paginação Independente (Entrada)
+  const totalPaginasEntrada = Math.ceil(historicoEntrada.length / ITENS_PAGINA) || 1;
+  const entradasPaginadas = historicoEntrada.slice(
+    (paginaEntrada - 1) * ITENS_PAGINA,
+    paginaEntrada * ITENS_PAGINA
+  );
+
+  // 3. Lógica de Paginação Independente (Saída)
+  const totalPaginasSaida = Math.ceil(historicoSaida.length / ITENS_PAGINA) || 1;
   const saidasPaginadas = historicoSaida.slice(
     (paginaSaida - 1) * ITENS_PAGINA,
     paginaSaida * ITENS_PAGINA
@@ -106,10 +108,8 @@ function ModalDetalheGenerico({
           </div>
 
           <div className="modal-body-generico">
-            {/* SEÇÃO TOPO: FOTO + DADOS (Mantido) */}
+            {/* SEÇÃO TOPO: FOTO + DADOS */}
             <div className="detalhe-top-generico">
-              
-              {/* --- AQUI ESTÁ A MUDANÇA: Verifica se deve mostrar a imagem --- */}
               {mostrarImagem && (
                 <div className="img-wrapper-generico">
                   {imagemUrl ? (
@@ -162,6 +162,7 @@ function ModalDetalheGenerico({
               <div className="hist-container-generico">
                 <h3>Histórico de Movimentação</h3>
                 <div className="hist-tabelas-generico">
+                  
                   {/* Tabela de Entradas */}
                   <div className="wrapper-tab-generico">
                     <div className="titulo-tab-generico bg-ent-gen">
