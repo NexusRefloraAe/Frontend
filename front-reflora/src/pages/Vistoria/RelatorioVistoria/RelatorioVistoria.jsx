@@ -126,7 +126,7 @@ const RelatorioVistoria = () => {
   ];
 
   return (
-    <div className="relatorio-vistoria-container">
+    <div className="relatorio-vistoria-container auth-scroll-fix">
       <div className="relatorio-vistoria-content">
         
         {/* Seção de Filtros */}

@@ -307,29 +307,39 @@ const HistoricoPlantio = () => {
 
       <div className="historico-content-banco">
         <main>
-          <TabelaComBuscaPaginacao
-            titulo="Histórico de Plantio"
-            dados={sementes}
-            colunas={colunas}
-            chaveBusca="nomePopularSemente" // Campo para o placeholder da busca
-            // Passando as funções reais
-            onPesquisar={handleBusca}
-            // Passe o loading para a tabela gerenciar o visual
-            isLoading={loading}
-            // Configuração da paginação se o componente suportar props externas
-            paginaAtual={paginaAtual + 1} // +1 para visual
-            totalPaginas={totalPaginas}
-            onPaginaChange={handleMudarPagina}
-            modoBusca="auto"
-            onEditar={handleEditar}
-            onVisualizar={handleVisualizar}
-            onExcluir={handleExcluir}
-            onExportPDF={handleExportPDF}
-            onExportCSV={handleExportCSV}
-            onOrdenar={handleOrdenar}
-            ordemAtual={ordem}
-            direcaoAtual={direcao}
-          />
+
+              <TabelaComBuscaPaginacao
+                titulo="Histórico de Plantio"
+                dados={sementes}
+                colunas={colunas}
+                chaveBusca="nomePopularSemente" // Campo para o placeholder da busca
+                
+                // Passando as funções reais
+                onPesquisar={handleBusca}
+
+                // Passe o loading para a tabela gerenciar o visual
+                isLoading={loading}
+                
+                // Configuração da paginação se o componente suportar props externas
+                paginaAtual={paginaAtual + 1} // +1 para visual
+                totalPaginas={totalPaginas}
+                onPaginaChange={handleMudarPagina}
+
+                modoBusca="auto"
+
+                onEditar={handleEditar}
+                onVisualizar={handleVisualizar}
+                onExcluir={handleExcluir}
+
+                onExportPDF={handleExportPDF}
+                onExportCSV={handleExportCSV}
+
+                onOrdenar={handleOrdenar}
+                ordemAtual={ordem}
+                direcaoAtual={direcao}
+                
+              />
+
         </main>
       </div>
     </div>

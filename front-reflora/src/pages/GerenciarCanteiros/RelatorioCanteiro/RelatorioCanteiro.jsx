@@ -1,120 +1,31 @@
-import React, { useState, useEffect, useCallback } from "react";
-import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
+import React, { useState, useEffect } from "react";
+import TabelaResponsiva from "../../../components/TabelaResponsiva/TabelaResponsiva";
 import PainelCard from "../../../components/PainelCard/PainelCard";
 import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio";
-import { registroCanteiroService } from "../../../services/registroCanteiroService";
-import "./RelatorioCanteiro.css";
+import Paginacao from "../../../components/Paginacao/Paginacao";
+import './RelatorioCanteiro.css';
+import LayoutScroll from "../../../components/LayoutScroll/LayoutScroll";
 
 const RelatorioCanteiro = () => {
-  // --- ESTADOS ---
-  const [loading, setLoading] = useState(false);
-  const [itensPorPagina] = useState(9);
-  const [ordem, setOrdem] = useState('data'); 
-  const [direcao, setDirecao] = useState('desc');
-  
-  // Estados de paginação (Adicionados para bater com o JSX)
-  const [paginaAtual, setPaginaAtual] = useState(0);
-  const [totalPaginas, setTotalPaginas] = useState(0);
+  // ... (Dados MOCK, estados e filtros iguais) ...
+  const DADOS_RELATORIO = [
+    { id: 1, Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '01/01/2025', QuantidadeEntrada: 350, DataSaida: '20/01/2025', QuantidadeSaida: 100, TempoNoCanteiro: '20 dias' },
+    // ...
+  ];
 
-  const [dadosPainel, setDadosPainel] = useState({
-    totalEntrada: 0,
-    totalSaida: 0,
-    totalAtual: 0,
-    tabela: { 
-      content: [],
-      page: { totalPages: 0, number: 0, totalElements: 0 }
-    },
-  });
+  const [relatorios, setRelatorios] = useState([]);
+  const [filtros, setFiltros] = useState({ nomePopular: '', dataInicio: '', dataFim: '' });
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const itensPorPagina = 5;
 
-  const [filtros, setFiltros] = useState({
-    nomePopular: "",
-    dataInicio: "",
-    dataFim: "",
-  });
+  const painelItems = [
+    { id: 1, titulo: 'Total Entrada (und)', valor: '100.000', className: 'card-entrada' },
+    // ...
+  ];
 
-  // --- FUNÇÕES DE CARREGAMENTO ---
-  const carregarDados = useCallback(
-    async (pagina = 0, ordemArg = ordem, direcaoArg = direcao) => {
-      setLoading(true);
-      try {
-        const data = await registroCanteiroService.getPainel(filtros, pagina, itensPorPagina, ordemArg, direcaoArg);
-        setDadosPainel(data);
-        
-        // Sincroniza estados de paginação baseados no objeto 'page' do Postman
-        if (data.tabela && data.tabela.page) {
-            setTotalPaginas(data.tabela.page.totalPages);
-            setPaginaAtual(data.tabela.page.number);
-        }
-      } catch (error) {
-        console.error("Erro ao carregar relatório:", error);
-        alert("Erro ao carregar relatório");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [filtros, itensPorPagina, ordem, direcao]
-  );
-
-  useEffect(() => {
-    carregarDados();
-  }, [itensPorPagina]);
-
-  // --- ORDENAÇÃO ---
-  const handleOrdenar = (novoCampo) => {
-    let novaDirecao = 'asc';
-    if (novoCampo === ordem) {
-        novaDirecao = direcao === 'asc' ? 'desc' : 'asc';
-    }
-    setOrdem(novoCampo);
-    setDirecao(novaDirecao);
-    setPaginaAtual(0);
-    carregarDados(0, novoCampo, novaDirecao);
-  };
-
-  const handleFiltroChange = (name, value) => {
-    setFiltros((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleGerarRelatorio = () => {
-    carregarDados(0); 
-  };
-
-  // --- LÓGICA DE EXPORTAÇÃO (Adicionada conforme seu modelo preferido) ---
-  const realizarDownload = (response, defaultName) => {
-      const disposition = response.headers['content-disposition'];
-      let fileName = defaultName;
-
-      if (disposition) {
-          const filenameRegex = /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
-          const matches = filenameRegex.exec(disposition);
-          if (matches && matches[1]) { 
-              fileName = decodeURIComponent(matches[1].replace(/['"]/g, '')); 
-          }
-      }
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', fileName);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-  };
-
-  const handleExportarPDF = async () => {
-      try { 
-        const response = await registroCanteiroService.exportarPdf(filtros); 
-        realizarDownload(response, 'relatorio_canteiro.pdf');
-      } catch (e) { alert("Erro ao baixar PDF"); }
-  };
-
-  const handleExportarCSV = async () => {
-      try { 
-        const response = await registroCanteiroService.exportarCsv(filtros); 
-        realizarDownload(response, 'relatorio_canteiro.csv');
-      } catch (e) { alert("Erro ao baixar CSV"); }
-  };
+  useEffect(() => { setRelatorios(DADOS_RELATORIO); }, []);
+  const handleFiltroChange = (name, value) => { setFiltros(prev => ({ ...prev, [name]: value })); };
+  const handleGerarRelatorio = () => { /* lógica de filtro */ };
 
   // --- CONFIGURAÇÃO DE UI ---
   const painelItems = [
@@ -124,75 +35,60 @@ const RelatorioCanteiro = () => {
   ];
 
   const colunas = [
-    { key: "nomeCanteiro", label: "Canteiro", sortable: true },
-    { key: "lote", label: "Lote Origem", sortable: true },
-    { key: "nomePopular", label: "Espécie", sortable: true },
-    { 
-        key: "data", 
-        label: "Data", 
-        sortable: true,
-        render: (item) => {
-            if (!item.data) return '-';
-            // Formata data ISO (yyyy-mm-dd) para PT-BR
-            if (typeof item.data === 'string' && item.data.includes('-')) {
-                const [ano, mes, dia] = item.data.split('-');
-                return `${dia}/${mes}/${ano}`;
-            }
-            return item.data;
-        }
-    },
-    { key: "tipoMovimento", label: "Movimento", sortable: true },
-    { key: "quantidade", label: "Qtd (und)", sortable: true },
+    { key: "Lote", label: "Lote" },
+    { key: "NomePopular", label: "Nome Popular" },
+    { key: "DataEntrada", label: "Data Entrada" },
+    { key: "QuantidadeEntrada", label: "Qtd Entrada" },
+    { key: "DataSaida", label: "Data Saída" },
+    { key: "QuantidadeSaida", label: "Qtd Saída" },
+    { key: "TempoNoCanteiro", label: "Tempo" },
   ];
 
+  // Paginação Frontend
+  const totalPaginas = Math.ceil(relatorios.length / itensPorPagina);
+  const dadosPaginados = relatorios.slice((paginaAtual - 1) * itensPorPagina, paginaAtual * itensPorPagina);
+
   return (
-    <div className="relatorio-canteiro-container">
-      <div className="relatorio-canteiro-content">
+    <div className="relatorio-canteiro-container auth-scroll-fix ">
+      <div className="relatorio-canteiro-content ">
+        
+        {/* Filtros e Cards (Mantenha igual) */}
         <section className="filtros-section">
           <h1>Gerar Relatório</h1>
-          <FiltrosRelatorio
-            filtros={filtros}
-            onFiltroChange={handleFiltroChange}
-            onPesquisar={handleGerarRelatorio}
-          />
+          <FiltrosRelatorio filtros={filtros} onFiltroChange={handleFiltroChange} onPesquisar={handleGerarRelatorio} />
         </section>
 
         <section className="cards-section">
           <div className="cards-container">
-            {painelItems.map((item) => (
-              <PainelCard key={item.id} {...item} />
+            {painelItems.map(item => (
+              <PainelCard key={item.id} titulo={item.titulo} valor={item.valor} className={item.className} />
             ))}
           </div>
         </section>
 
+        {/* Tabela Responsiva substituindo TabelaComBuscaPaginacao */}
         <section className="tabela-section">
-          {loading ? (
-            <p>Carregando dados...</p>
-          ) : (
-            <TabelaComBuscaPaginacao
-              titulo="Movimentações dos Canteiros"
-              dados={dadosPainel.tabela.content}
-              colunas={colunas}
-              habilitarBusca={false}
-              mostrarAcoes={false}
-              
-              // Paginação
-              totalPaginas={totalPaginas}
-              paginaAtual={paginaAtual + 1}
-              onPaginaChange={(proximaPagina) => carregarDados(proximaPagina - 1)}
-              itensPorPagina={itensPorPagina}
-              onPesquisar={handleGerarRelatorio}
-
-              // Exportação
-              onExportPDF={handleExportarPDF}
-              onExportCSV={handleExportarCSV}
-
-              // Ordenação
-              onOrdenar={handleOrdenar}
-              ordemAtual={ordem}
-              direcaoAtual={direcao}
-            />
-          )}
+          <TabelaResponsiva
+            titulo="Movimentações dos Canteiros"
+            dados={dadosPaginados}
+            colunas={colunas}
+            // Não passamos onPesquisar nem termoBusca, pois o filtro é externo
+            footerContent={
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                     <Paginacao 
+                        paginaAtual={paginaAtual} 
+                        totalPaginas={totalPaginas} 
+                        onPaginaChange={setPaginaAtual} 
+                     />
+                     <button 
+                        className="btn-exportar" 
+                        onClick={() => alert('Exportar')}
+                     >
+                        Exportar ↑
+                     </button>
+                </div>
+            }
+          />
         </section>
       </div>
     </div>

@@ -155,6 +155,7 @@ const RevisaoDistribuicao = () => {
                     />
 
                     {/* ESTADOS E CIDADES CONTINUAM COMO SELECT (IBGE) */}
+                    <div className="grupo-selects-grid-2">
                     <Input
                         label="Estado da Sede"
                         name="estadoSede"
@@ -196,6 +197,7 @@ const RevisaoDistribuicao = () => {
                         loading={loadingCidadesDistribuicao}
                         disabled={!formData.estadoDistribuicao}
                     />
+                    </div>
                 </FormGeral>
             </div>
         </div>

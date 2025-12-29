@@ -5,8 +5,9 @@ import editIcon from '../../assets/edit.svg';
 import deleteIcon from '../../assets/delete.svg';
 import { FaExchangeAlt } from "react-icons/fa";
 
-// Componentes
-import TabelaComBuscaPaginacao from "../TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
+// --- ATENÇÃO: Importe o novo componente aqui ---
+import TabelaResponsiva from "../TabelaResponsiva/TabelaResponsiva"; // Ajuste o caminho conforme criou
+
 import Paginacao from "../Paginacao/Paginacao";
 import ExportButton from "../ExportButton/ExportButton";
 
@@ -18,7 +19,6 @@ function ListaSementes({
     onPageChange, 
     termoBusca, 
     onSearchChange,
-    loading,
     onEditar, 
     onSolicitarExclusao,
     ordemAtual,
@@ -27,16 +27,13 @@ function ListaSementes({
 }) {
 
     const [sementeSelecionada, setSementeSelecionada] = useState(null);
-    const [itensPorPagina, setItensPorPagina] = useState(10); 
 
-    // --- 1. Colunas ---
+    // Definição das colunas para a TabelaResponsiva
     const colunas = [
         { key: 'lote', label: 'Lote', sortable: true },
-        // Alterei a key para 'dataFormatada' que criaremos abaixo
-        { key: 'dataDeCadastro', label: 'Data Cadastro', sortable: true }, 
-        { key: 'nomeRenderizado', label: 'Nome Popular', sortable: true, sortKey:'nomePopular' }, 
-        { key: 'quantidadeAtualFormatada', label: 'Qtd Atual', sortable: true, sortKey:'quantidade'},
-        // Estes campos não existem na entidade bruta, mas vamos tratar para não quebrar
+        { key: 'dataFormatada', label: 'Data Cadastro', sortable: true, sortKey: 'dataDeCadastro' }, 
+        { key: 'nomeRenderizado', label: 'Nome Popular', sortable: true, sortKey: 'nomePopular' }, 
+        { key: 'quantidadeAtualFormatada', label: 'Qtd Atual', sortable: true, sortKey: 'quantidade' },
         { key: 'quantidadeSaidaFormatada', label: 'Qtd Saída', sortable: false },
         { key: 'finalidadeAtual', label: 'Finalidade', sortable: false },
         { key: 'acoesRenderizadas', label: 'Ações', sortable: false } 
@@ -51,68 +48,22 @@ function ListaSementes({
         { label: 'Finalidade', key: 'finalidadeAtual' },
     ];
 
-    // --- 2. Handlers ---
+    // Handlers de Detalhes e Exportação (Mantidos iguais ao seu código original...)
     const handleVerDetalhes = (semente) => setSementeSelecionada(semente);
     const handleFecharDetalhes = () => setSementeSelecionada(null);
 
     const handleDownloadPDFBackend = async () => {
         try {
             const response = await sementesService.exportarRelatorioPdf(termoBusca);
-            
-            // 1. Tenta pegar o nome do arquivo enviado pelo Back-end
-            let fileName = 'relatorio_sementes.pdf'; // Nome padrão (fallback)
-            
+            let fileName = 'relatorio_sementes.pdf';
             const disposition = response.headers['content-disposition'];
-            if (disposition) {
-                // Regex para extrair o texto depois de filename=
-                const filenameRegex = /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
-                const matches = filenameRegex.exec(disposition);
-                if (matches && matches[1]) { 
-                    fileName = matches[1].replace(/['"]/g, '');
-                    fileName = decodeURIComponent(fileName); 
-                }
-            }
-
-            // 2. Cria o link de download usando o fileName dinâmico
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            
-            // AQUI ESTÁ A MUDANÇA: Usamos a variável fileName
-            link.setAttribute('download', fileName); 
-            
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            
-            // Boa prática: liberar memória
-            window.URL.revokeObjectURL(url);
-
-        } catch (error) {
-            console.error("Erro PDF:", error);
-            alert("Erro ao baixar PDF.");
-        }
-    };
-
-    const handleDownloadCSVBackend = async () => {
-        try {
-            // 1. Chama o serviço de CSV
-            const response = await sementesService.exportarRelatorioCsv(termoBusca);
-
-            // 2. Extrai nome do arquivo (Mesma lógica do PDF)
-            const disposition = response.headers['content-disposition'];
-            let fileName = 'relatorio_sementes.csv'; // Fallback
-
             if (disposition) {
                 const filenameRegex = /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
                 const matches = filenameRegex.exec(disposition);
                 if (matches && matches[1]) { 
-                    fileName = matches[1].replace(/['"]/g, '');
-                    fileName = decodeURIComponent(fileName); 
+                    fileName = decodeURIComponent(matches[1].replace(/['"]/g, '')); 
                 }
             }
-
-            // 3. Download
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
@@ -121,22 +72,44 @@ function ListaSementes({
             link.click();
             link.remove();
             window.URL.revokeObjectURL(url);
-
         } catch (error) {
-            console.error("Erro ao baixar CSV:", error);
-            alert("Erro ao gerar o relatório CSV.");
+            console.error("Erro PDF:", error);
+            alert("Erro ao baixar PDF.");
         }
     };
 
-    // --- FUNÇÃO AUXILIAR PARA FORMATAR DATA ---
+    const handleDownloadCSVBackend = async () => {
+        try {
+            const response = await sementesService.exportarRelatorioCsv(termoBusca);
+            let fileName = 'relatorio_sementes.csv';
+            const disposition = response.headers['content-disposition'];
+            if (disposition) {
+                const filenameRegex = /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
+                const matches = filenameRegex.exec(disposition);
+                if (matches && matches[1]) { 
+                    fileName = decodeURIComponent(matches[1].replace(/['"]/g, '')); 
+                }
+            }
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erro CSV:", error);
+            alert("Erro ao baixar CSV.");
+        }
+    };
+
     const formatarData = (data) => {
         if (!data) return '-';
-        // Se vier como Array [2024, 10, 2] (Padrão Java LocalDate sem formatação)
         if (Array.isArray(data)) {
             const [ano, mes, dia] = data;
             return `${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${ano}`;
         }
-        // Se vier como String "2024-10-02"
         if (typeof data === 'string' && data.includes('-')) {
             const [ano, mes, dia] = data.split('-');
             return `${dia}/${mes}/${ano}`;
@@ -144,31 +117,23 @@ function ListaSementes({
         return data;
     };
 
-    // --- 3. Dados Formatados (Correção aqui) ---
+    // --- PREPARAÇÃO DOS DADOS (Crucial para o componente renderizar certo) ---
     const dadosFormatados = (sementes || []).map((semente, index) => {
-        
-        // CORREÇÃO CRÍTICA:
-        // O Back-end já manda 'quantidadeAtualFormatada' pronto (ex: "1500 G").
-        // Só calculamos se ele NÃO vier (fallback).
         const qtdTexto = semente.quantidadeAtualFormatada 
             ? semente.quantidadeAtualFormatada
             : (semente.quantidade ? `${semente.quantidade} ${semente.unidadeDeMedida || ''}` : '0');
 
         return {
             ...semente,
-            id: `${semente.id}-${index}`,
-            // Data: O Back-end DTO já manda string "22/11/2025" às vezes. 
-            // O formatarData cuida disso, mas se já vier pronto, mantemos.
+            id: semente.id || `idx-${index}`,
+            // Chaves devem bater com "colunas" acima
+            lote: semente.lote,
             dataFormatada: formatarData(semente.dataDeCadastro),
-            
-            // Quantidade: Usamos a lógica corrigida acima
             quantidadeAtualFormatada: qtdTexto,
-            
-            // Saída e Finalidade: O Back-end DTO também já manda isso!
-            // Se vier do back, usamos. Se não, usamos o padrão.
             quantidadeSaidaFormatada: semente.quantidadeSaidaFormatada || '-', 
             finalidadeAtual: semente.finalidadeAtual || 'Estoque',    
-
+            
+            // JSX para renderização direta
             nomeRenderizado: (
                 <a 
                     href="#" 
@@ -179,12 +144,12 @@ function ListaSementes({
                 </a>
             ),
             acoesRenderizadas: (
-                <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
                     <button onClick={() => onEditar(semente)} style={{ border: 'none', background: 'transparent', cursor: 'pointer' }} title="Editar">
-                        <img src={editIcon} alt="Editar" style={{ width: '18px' }} />
+                        <img src={editIcon} alt="Editar" style={{ width: '20px', height: '20px' }} />
                     </button>
                     <button onClick={() => onSolicitarExclusao(semente)} style={{ border: 'none', background: 'transparent', cursor: 'pointer' }} title="Excluir">
-                        <img src={deleteIcon} alt="Excluir" style={{ width: '18px' }} />
+                        <img src={deleteIcon} alt="Excluir" style={{ width: '20px', height: '20px' }} />
                     </button>
                     {semente.idUltimoMovimentacao && (
                         <button 
@@ -201,44 +166,41 @@ function ListaSementes({
     });
 
     return (
-        <div style={{ width: '100%' }}>
-            <TabelaComBuscaPaginacao
+        <div style={{ width: '100%', paddingBottom: '20px' }}>
+            
+            {/* NOVO COMPONENTE SUBSTITUINDO O ANTIGO */}
+            <TabelaResponsiva
                 titulo="Lista de Sementes Cadastradas"
-
-                onOrdenar={onOrdenar} 
+                
+                // Props de Dados
+                colunas={colunas}
+                dados={dadosFormatados}
+                
+                // Props de Ordenação
+                onOrdenar={onOrdenar}
                 ordemAtual={ordemAtual}
                 direcaoAtual={direcaoAtual}
-                
-                // Dados e Colunas
-                dados={dadosFormatados}
-                colunas={colunas}
-                
-                // Busca
+
+                // Props de Busca
                 termoBusca={termoBusca}
                 onPesquisar={onSearchChange}
-                mostrarBusca={true}
-                placeholderBusca="Pesquisar por lote ou nome"
-                
-                paginaAtual={null} 
-                
+                placeholderBusca="Pesquisar por lote ou nome..."
+
+                // Footer customizado (Paginação + Exportar)
                 footerContent={
                     <div style={{ 
                         display: 'flex', 
-                        justifyContent: 'space-between', // Separa os itens nas pontas
-                        width: '100%',
+                        justifyContent: 'space-between', 
                         alignItems: 'center', 
-                        marginTop: '15px',
                         flexWrap: 'wrap',
-                        gap: '10px'
+                        gap: '15px'
                     }}>
-                        {/* Item 1: Vai para a Esquerda */}
                         <Paginacao 
                             paginaAtual={paginaAtual} 
                             totalPaginas={totalPaginas} 
                             onPaginaChange={onPageChange} 
                         />
                         
-                        {/* Item 2: Vai para a Direita */}
                         <ExportButton 
                             data={sementes} 
                             columns={colunasparaExportar} 

@@ -1,0 +1,122 @@
+/* ==========================================================================
+   TabelaResponsiva.css - Versão Full Width (Largura Total)
+   ========================================================================== */
+
+/* Container Principal */
+.tabela-container {
+  width: 100%;          /* Ocupa 100% do container pai */
+  max-width: 100%;      /* Remove limites de largura máxima */
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #d0d0d0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-bottom: 20px;
+  position: relative;
+  box-sizing: border-box; /* Garante que o padding não estoure a largura */
+}
+
+/* --- BARRA DE TOPO --- */
+.tabela-top-bar {
+  padding: 15px 20px; /* Mais espaçamento lateral */
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between; /* Espalha título e busca */
+  align-items: center;
+  gap: 15px;
+  background-color: #fff;
+  flex-wrap: wrap; /* Permite quebrar linha em telas pequenas */
+}
+
+.tabela-titulo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2e7d32;
+  margin: 0;
+  flex: 1; /* Ocupa espaço disponível */
+  min-width: 200px;
+}
+
+/* Busca Wrapper */
+.tabela-busca-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px 12px;
+  background: #f9f9f9;
+  width: 300px; /* Largura fixa para a busca (opcional, ou use 100% no mobile) */
+  max-width: 100%;
+}
+
+.tabela-busca-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 0.9rem;
+  padding-left: 8px;
+  color: #555;
+}
+
+/* --- ÁREA DE SCROLL --- */
+.tabela-scroll-area {
+  width: 100%;
+  overflow-x: auto; /* Rolagem horizontal se necessário */
+  -webkit-overflow-scrolling: touch;
+}
+/* --- TABELA --- */
+.tabela-table {
+  width: 100%;           /* Força a tabela a esticar */
+  border-collapse: collapse;
+  min-width: 800px;      /* Garante largura mínima para não esmagar colunas */
+  table-layout: auto;    /* Colunas se ajustam ao conteúdo */
+}
+
+/* Cabeçalho */
+.tabela-table th {
+  background-color: #8FBC8F;
+  color: #ffffff;
+  text-align: left;
+  padding: 14px 16px;    /* Mais espaçamento interno (padding) */
+  border-right: 1px solid rgba(255, 255, 255, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  font-weight: 700;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Células */
+.tabela-table td {
+  padding: 14px 16px;    /* Mais espaçamento para parecer mais largo */
+  color: #333;
+  vertical-align: middle;
+  border-right: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.9rem;
+}
+
+.tabela-table tr:nth-child(even) { background-color: #fafafa; }
+.tabela-table tr:hover { background-color: #f0f7f0; }
+
+/* --- RODAPÉ --- */
+.tabela-footer {
+  padding: 15px 20px;
+  border-top: 1px solid #e0e0e0;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .tabela-top-bar { flex-direction: column; align-items: stretch; }
+  .tabela-busca-wrapper { width: 100%; }
+  .tabela-titulo { text-align: center; margin-bottom: 10px; }
+}

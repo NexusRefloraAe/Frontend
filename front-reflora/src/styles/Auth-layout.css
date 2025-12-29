@@ -16,6 +16,11 @@
 .auth-banner-mobile {
   display: none;
 }
+.auth-scroll-fix {
+  height: calc(80vh - 80px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
 
 .auth-form-wrapper {
   flex: 1;

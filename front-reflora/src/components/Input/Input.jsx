@@ -1,26 +1,27 @@
-import React from 'react';
-import './Input.css';
+import React from "react";
+import "./Input.css";
+import CustomSelect from "../CustomSelect/CustomSelect";
+import CustomDate from "../CustomDate/CustomDate";
 
-const Input = ({ 
-  label, 
-  type = 'text', 
-  name, 
-  placeholder, 
-  value, 
-  onChange, 
-  required, 
-  icon, 
+const Input = ({
+  label,
+  type = "text",
+  name,
+  placeholder,
+  value,
+  onChange,
+  required,
+  icon,
   onIconClick,
-  options, 
+  options,
   readOnly = false,
-  onIncrement, 
+  onIncrement,
   onDecrement,
-  // 1. Recebe todas as outras propriedades extras aqui (incluindo onBlur)
-  ...rest 
+  ...rest
 }) => {
-  
-  const isSelect = type === 'select';
-  const isStepper = type === 'number' && onIncrement && onDecrement;
+  const isSelect = type === "select";
+  const isStepper = type === "number" && onIncrement && onDecrement;
+  const isDate = type === "date";
 
   return (
     <div className="input-component-wrapper">
@@ -37,41 +38,32 @@ const Input = ({
             required={required}
             readOnly={readOnly}
             className="input-field"
-            // 2. Repassa as props extras (onBlur, disabled, etc.)
-            {...rest} 
+            {...rest}
           />
           <div className="stepper-controls">
-            <button type="button" onClick={onDecrement} disabled={rest.disabled}>-</button>
-            <button type="button" onClick={onIncrement} disabled={rest.disabled}>+</button>
+            <button type="button" onClick={onDecrement}>-</button>
+            <button type="button" onClick={onIncrement}>+</button>
           </div>
         </div>
 
       ) : isSelect ? (
-        <div className="input-field-container">
-          <select
-            id={name}
-            name={name}
-            value={value}
-            onChange={onChange}
-            required={required}
-            // readOnly não funciona bem em select, usa-se disabled
-            disabled={readOnly || rest.disabled} 
-            className="input-field"
-            // 2. Repassa as props extras
-            {...rest}
-          >
-            {placeholder && (
-              <option value="" disabled>
-                {placeholder}
-              </option>
-            )}
-            {options?.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <CustomSelect
+          name={name}
+          value={value}
+          onChange={onChange}
+          options={options}
+          placeholder={placeholder}
+          disabled={readOnly || rest.disabled}
+        />
+
+      ) : isDate ? (
+        <CustomDate
+          name={name}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          disabled={readOnly || rest.disabled}
+        />
 
       ) : (
         <div className="input-field-container">
@@ -85,14 +77,12 @@ const Input = ({
             required={required}
             readOnly={readOnly}
             className="input-field"
-            style={{ paddingRight: icon ? '2.5rem' : 'var(--espacamento-sm)' }}
-            // 2. Repassa as props extras (AQUI QUE O onBlur VAI FUNCIONAR)
             {...rest}
           />
           {icon && (
             <img
               src={icon}
-              alt="Ícone do Input"
+              alt="Ícone"
               className="input-icon"
               onClick={onIconClick}
             />

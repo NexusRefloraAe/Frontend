@@ -186,7 +186,7 @@ const GerarRelatorio = () => {
   ];
 
   return (
-    <div className="gerar-relatorio-container">
+    <div className="gerar-relatorio-container auth-scroll-fix">
       <div className="gerar-relatorio-content">
         
         <section className="filtros-section">

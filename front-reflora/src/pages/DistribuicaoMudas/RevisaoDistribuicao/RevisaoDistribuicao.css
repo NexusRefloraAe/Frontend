@@ -4,6 +4,7 @@
 /* Container da página de revisão */
 .revisao-distribuicao-pagina {
     width: 100%;
+    min-width: 0;
     
 }
 /* FORÇANDO O ESTILO DOS BOTÕES 
@@ -54,3 +55,21 @@
     gap: 15px;
     padding-top: 20px;
 }
+.revisao-distribuicao-pagina .form-geral__campos--grid {
+  grid-template-columns: 1fr;
+}
+/* Grupo específico de selects */
+.grupo-selects-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  grid-column: span 1; /* ocupa largura total do form */
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .grupo-selects-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+

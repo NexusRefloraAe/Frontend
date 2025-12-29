@@ -1,266 +1,156 @@
-import React, { useState, useEffect } from 'react'
-import Paginacao from '../Paginacao/Paginacao'
-import ExportButton from '../ExportButton/ExportButton'
-import TabelaHistorico from '../TabelaHistorico/TabelaHistorico'
-import ModalExcluir from '../ModalExcluir/ModalExcluir'
-import closeIcon from '../../assets/close.svg'
-import editIcon from '../../assets/edit.svg'
-import deleteIcon from '../../assets/delete.svg'
+import React, { useState, useEffect } from 'react';
 import './ModalDetalheGenerico.css';
+import Paginacao from '../Paginacao/Paginacao';
+import ExportButton from '../ExportButton/ExportButton';
+import TabelaResponsiva from '../TabelaResponsiva/TabelaResponsiva'; 
+import ModalExcluir from '../ModalExcluir/ModalExcluir';
+import closeIcon from '../../assets/close.svg';
+import editIcon from '../../assets/edit.svg';
+import deleteIcon from '../../assets/delete.svg';
 
-/**
- * @param {object} props
- * @param {object} props.item - Objeto com os detalhes do item a ser exibido no modal
- * @param {string} props.titulo - Título do modal
- * @param {array} props.camposDetalhes - Array de objetos com { label, chave, valorPadrao } para os campos de detalhe
- * @param {array} props.colunasEntrada - Colunas para a tabela de entradas
- * @param {array} props.colunasSaida - Colunas para a tabela de saídas
- * @param {array} props.dadosEntrada - Dados para a tabela de entradas
- * @param {array} props.dadosSaida - Dados para a tabela de saídas
- * @param {function} props.onCarregarHistorico - Função para carregar dados do histórico
- * @param {function(): void} props.onClose - Função para fechar o modal
- * @param {function(): void} props.onEditar - Função para editar o item
- * @param {function(): void} props.onExcluir - Função para excluir o item
- * @param {function(): void} props.onExportar - Função para exportar dados
- * @param {string} props.textoExclusao - Texto personalizado para a exclusão
- * @param {boolean} props.mostrarAcoes - Se mostra os botões de ação (editar/excluir)
- * @param {boolean} props.mostrarHistorico - Se mostra a seção de histórico
- * @param {boolean} props.mostrarExportar - Se mostra o botão de exportar
- * @param {ReactNode} props.children - Conteúdo adicional personalizado
- */
 function ModalDetalheGenerico({
     isOpen = false,
     item = {},
     titulo = 'Detalhes',
-    camposDetalhes = [],
-    colunasEntrada = [],
-    colunasSaida = [],
-    dadosEntrada = [],
-    dadosSaida = [],
+    camposDetalhes = [],       
+    colunasEntrada = [],       
+    colunasSaida = [],         
+    dadosEntrada = [],         
+    dadosSaida = [],           
     onCarregarHistorico,
     onClose,
     onEditar,
     onExcluir,
-    onExportarPdf, // Nova prop
-    onExportarCsv, // Nova prop
-    textoExclusao = 'este item',
     mostrarAcoes = true,
     mostrarHistorico = true,
     mostrarExportar = true,
+    textoExclusao = 'este item',
     children
 }) {
-    // 1. Hooks SEMPRE no topo (antes de qualquer return)
     const [paginaHistorico, setPaginaHistorico] = useState(1);
     const [historicoEntrada, setHistoricoEntrada] = useState(dadosEntrada);
     const [historicoSaida, setHistoricoSaida] = useState(dadosSaida);
     const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
 
-    // 2. UseEffect com proteção para item null
     useEffect(() => {
-        // Se não estiver aberto ou item for nulo, não faz nada
-        if (!isOpen || !item) return;
-
-        if (onCarregarHistorico) {
-            const carregarDados = async () => {
-                // Proteção: usa optional chaining (?.) ou verifica se existe
-                const id = item.id || item._id;
-                if (!id) return;
-
-                const dados = await onCarregarHistorico(id);
-                if (dados && dados.entradas) setHistoricoEntrada(dados.entradas);
-                if (dados && dados.saidas) setHistoricoSaida(dados.saidas);
-            };
-            carregarDados();
-        } else {
-            setHistoricoEntrada(dadosEntrada);
-            setHistoricoSaida(dadosSaida);
-        }
-        // Dependência segura: usa item?.id
-    }, [item?.id, item?._id, isOpen, onCarregarHistorico, dadosEntrada, dadosSaida]);
-
-    // Declarações que dependem de 'item' ou estado
-    const dadosParaExportar = [
-        ...historicoEntrada.map(i => ({ ...i, tipo: 'Entrada' })),
-        ...historicoSaida.map(i => ({ ...i, tipo: 'Saída' })),
-    ];
-
-    const colunasparaExportar = [
-        { label: 'Data', key: 'data' },
-        { label: 'Nome Responsavel', key: 'responsavel' },
-        { label: 'Quantidade', key: 'quantidade' },
-    ];
-
-    useEffect(() => {
-        // Adicione o ?. aqui para evitar o erro de null
-        if (isOpen && onCarregarHistorico && (item?.id || item?._id)) { 
-            const carregarDados = async () => {
+        if (isOpen && onCarregarHistorico && (item.id || item._id)) {
+            const carregar = async () => {
                 try {
                     const dados = await onCarregarHistorico(item.id || item._id);
                     if (dados) {
                         setHistoricoEntrada(dados.entradas || []);
                         setHistoricoSaida(dados.saidas || []);
                     }
-                } catch (error) {
-                    console.error("Erro ao carregar histórico no modal:", error);
-                }
+                } catch (error) { console.error(error); }
             };
-            carregarDados();
+            carregar();
+        } else {
+            setHistoricoEntrada(dadosEntrada);
+            setHistoricoSaida(dadosSaida);
         }
-        // Corrija as dependências aqui também
-    }, [isOpen, item?.id, item?._id, onCarregarHistorico]); // Removido dadosEntrada e dadosSaida daqui
+    }, [isOpen, item, onCarregarHistorico, dadosEntrada, dadosSaida]);
 
     if (!isOpen || !item) return null;
 
-    const handleFecharModalExcluir = () => {
-        setModalExcluirAberto(false);
-    };
-
-    const handleConfirmarExclusao = () => {
-        if (onExcluir) {
-            onExcluir(item);
-        }
-        setModalExcluirAberto(false);
-        onClose();
-    };
-
-    const handleEditar = () => {
-        if (onEditar) {
-            onEditar(item);
-        }
-    };
-
-    // const handleExportar = () => {
-    //     if (onExportar) {
-    //         onExportar(item);
-    //     }
-    // };
-
-    const ITENS_POR_PAGINA = 2;
+    // Paginação
+    const ITENS_PAGINA = 5;
     const totalItens = Math.max(historicoEntrada.length, historicoSaida.length);
-    const totalPaginas = Math.ceil(totalItens / ITENS_POR_PAGINA);
-    const indiceUltimo = paginaHistorico * ITENS_POR_PAGINA;
-    const indicePrimeiro = indiceUltimo - ITENS_POR_PAGINA;
+    const totalPaginas = Math.ceil(totalItens / ITENS_PAGINA) || 1;
+    const idxInicio = (paginaHistorico - 1) * ITENS_PAGINA;
+    const idxFim = idxInicio + ITENS_PAGINA;
+    
+    const entradasPagina = historicoEntrada.slice(idxInicio, idxFim);
+    const saidasPagina = historicoSaida.slice(idxInicio, idxFim);
 
-    const entradasPagina = historicoEntrada.slice(indicePrimeiro, indiceUltimo);
-    const saidasPagina = historicoSaida.slice(indicePrimeiro, indiceUltimo);
-
-    const obterValorCampo = (campo) => {
-        if (campo.valorPadrao) return campo.valorPadrao;
-        if (campo.formatar && typeof campo.formatar === 'function') {
-            return campo.formatar(item[campo.chave]);
-        }
-        return item[campo.chave] ?? 'Não informado';
+    const obterValor = (campo) => {
+        const val = item[campo.chave];
+        if (campo.formatar && typeof campo.formatar === 'function') return campo.formatar(val, item);
+        return (val !== null && val !== undefined && val !== '') ? val : '-';
     };
 
-    const obterNomeItem = () => {
-        // Adicionei 'NomeInsumo' que é usado no seu HistoricoFerramenta
-        return item.nome || item.material || item.insumo || item.descricao || item.NomeInsumo || null;
-    };
+    const imagemUrl = item.imagem || item.fotoUrl || item.foto || null;
+    const nomeItem = item.nome || item.nomePopular || 'Item';
 
     return (
         <>
-            <div className='modal-overlay' onClick={onClose}>
-                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                    <button className='modal-close-button' onClick={onClose}>
-                        <img src={closeIcon} alt="Fechar" />
-                    </button>
+            <div className='modal-overlay-generico' onClick={onClose}>
+                <div className="modal-content-generico" onClick={(e) => e.stopPropagation()}>
+                    
+                    <div className="modal-header-generico">
+                        <h2>{titulo}</h2>
+                        <button className='close-btn-generico' onClick={onClose}>
+                            <img src={closeIcon} alt="Fechar" />
+                        </button>
+                    </div>
 
-                    <h2>{titulo}</h2>
-
-                    <div className="detalhe-container">
-                        {item.imagem && (
-                            <div className="detalhe-imagens">
-                                <img src={item.imagem} alt={obterNomeItem()} />
+                    <div className="modal-body-generico">
+                        
+                        {/* SEÇÃO TOPO: FOTO + DADOS */}
+                        <div className="detalhe-top-generico">
+                            <div className="img-wrapper-generico">
+                                {imagemUrl ? (
+                                    <img src={imagemUrl} alt="Item" onError={(e)=>e.target.style.display='none'} />
+                                ) : (
+                                    <span style={{color:'#ccc', fontWeight:'bold'}}>Sem Foto</span>
+                                )}
                             </div>
-                        )}
+                            
+                            <div className="dados-acoes-wrapper">
+                                <div className="info-grid-generico">
+                                    {camposDetalhes.map((campo, idx) => (
+                                        <div className="info-item-generico" key={idx}>
+                                            <label>{campo.label}</label>
+                                            <span>{obterValor(campo)}</span>
+                                        </div>
+                                    ))}
+                                    {children}
+                                </div>
 
-                        <div className="detalhe-info">
-                            {camposDetalhes.map((campo, index) => (
-                                <p key={index}>
-                                    <strong>{campo.label}</strong> {obterValorCampo(campo)}
-                                </p>
-                            ))}
-
-                            {children}
+                                {mostrarAcoes && (
+                                    <div className="acoes-generico">
+                                        <button className="btn-generico" onClick={() => setModalExcluirAberto(true)} title="Excluir">
+                                            <img src={deleteIcon} alt="Excluir" />
+                                        </button>
+                                        <button className="btn-generico" onClick={() => onEditar && onEditar(item)} title="Editar">
+                                            <img src={editIcon} alt="Editar" />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
-                        {mostrarAcoes && (
-                            <div className="detalhe-acoes">
-                                <button onClick={() => setModalExcluirAberto(true)}>
-                                    <img src={deleteIcon} alt="Deletar" />
-                                </button>
-                                <button onClick={handleEditar}>
-                                    <img src={editIcon} alt="Editar" />
-                                </button>
+                        {/* SEÇÃO INFERIOR: HISTÓRICO */}
+                        {mostrarHistorico && (
+                            <div className="hist-container-generico">
+                                <h3>Histórico de Movimentação</h3>
+                                <div className="hist-tabelas-generico">
+                                    <div className="wrapper-tab-generico">
+                                        <div className="titulo-tab-generico bg-ent-gen">Entradas</div>
+                                        <TabelaResponsiva colunas={colunasEntrada} dados={entradasPagina} onPesquisar={null} />
+                                    </div>
+                                    <div className="wrapper-tab-generico">
+                                        <div className="titulo-tab-generico bg-sai-gen">Saídas</div>
+                                        <TabelaResponsiva colunas={colunasSaida} dados={saidasPagina} onPesquisar={null} />
+                                    </div>
+                                </div>
+                                
+                                <div className="footer-generico">
+                                    <Paginacao paginaAtual={paginaHistorico} totalPaginas={totalPaginas} onPaginaChange={setPaginaHistorico} />
+                                    {mostrarExportar && <ExportButton data={[]} columns={[]} fileName="historico" />}
+                                </div>
                             </div>
                         )}
                     </div>
-
-                    {mostrarHistorico && (
-                        <div className="historico-container">
-                            <h3>Histórico de Movimentação</h3>
-                            <div className="historico-tabelas">
-                                <div className="tabela-wrapper">
-                                    <h4 className='tabela-entrada'>Entradas</h4>
-                                    <TabelaHistorico
-                                        colunas={colunasEntrada}
-                                        dados={entradasPagina}
-                                        variant="entrada"
-                                    />
-                                </div>
-                                <div className="tabela-wrapper">
-                                    <h4 className='tabela-saida'>Saídas</h4>
-                                    <TabelaHistorico
-                                        colunas={colunasSaida}
-                                        dados={saidasPagina}
-                                        variant="saida"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="footer-content">
-                                <Paginacao
-                                    paginaAtual={paginaHistorico}
-                                    totalPaginas={totalPaginas}
-                                    onPaginaChange={setPaginaHistorico}
-                                />
-                                <div>
-                                    {onExportarPdf && onExportarCsv && (
-                                        <ExportButton
-                                            data={dadosParaExportar} 
-                                            columns={colunasparaExportar} 
-                                            fileName={`historico_movimentacao_canteiro${item.id}`}
-                                            onExportPDF={onExportarPdf}
-                                            onExportCSV={onExportarCsv}
-                                        />
-                                    )}
-                                    {mostrarExportar && !onExportarPdf && !onExportarCsv && (
-                                        <ExportButton 
-                                            data={dadosParaExportar} 
-                                            columns={colunasparaExportar} 
-                                            fileName={`historico_movimentacao_canteiro${item.id}`} 
-                                        />
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
 
-            {/* Modal de Exclusão */}
             <ModalExcluir
-                isOpen={modalExcluirAberto}
-                onClose={handleFecharModalExcluir}
-                onConfirm={handleConfirmarExclusao}
-                nomeItem={obterNomeItem()}
-                titulo="Confirmar Exclusão"
-                mensagem={`Tem certeza que deseja excluir ${textoExclusao} ${ obterNomeItem() != null ? `"${obterNomeItem()}"` : ''}? Esta ação não pode ser desfeita.`}
-                textoConfirmar="Excluir"
-                textoCancelar="Cancelar"
+                isOpen={modalExcluirAberto} onClose={() => setModalExcluirAberto(false)}
+                onConfirm={() => { onExcluir && onExcluir(item); setModalExcluirAberto(false); onClose(); }}
+                titulo="Confirmar Exclusão" mensagem={`Deseja excluir "${nomeItem}"?`} nomeItem={nomeItem}
             />
         </>
-    )
+    );
 }
 
 export default ModalDetalheGenerico;

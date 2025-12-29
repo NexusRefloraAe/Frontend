@@ -194,10 +194,18 @@ const PerfilUsuario = () => {
 
   return (
     <div className="perfil-usuario">
-      
-      {/* --- SEÇÃO DO AVATAR CORRIGIDA --- */}
+
+      <FormGeral
+        title={isEditing ? 'Editar Perfil' : 'Gerencie suas informações pessoais'}
+        actions={actionsConfig}
+        onSubmit={handleSave}
+        useGrid={true}
+        loading={isLoading}
+        layout="wide"
+      >
+        {/* --- SEÇÃO DO AVATAR CORRIGIDA --- */}
       {/* Usamos flex-column para colocar o botão embaixo da imagem */}
-      <div className="perfil-usuario__avatar-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
+      <div className="perfil-usuario__avatar-section " style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
         
         {/* Container da imagem (Circular) */}
         <div className="perfil-usuario__avatar" 
@@ -225,27 +233,18 @@ const PerfilUsuario = () => {
 
         {/* Botão movido para FORA do círculo da imagem */}
         {isEditing && (
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center',   }}>
               <Button
                 variant="outline"
                 icon={<img src={importarfotoIcon} alt="Ícone de Câmera" style={{ width: '20px', height: '20px' }} />}
                 onClick={handleTrocarFoto}
                 size="small"
-              >
-                Trocar Foto
-              </Button>
+                children={"Trocar Foto"}
+              />
             </div>
         )}
       </div>
-
-      <FormGeral
-        title={isEditing ? 'Editar Perfil' : 'Gerencie suas informações pessoais'}
-        actions={actionsConfig}
-        onSubmit={handleSave}
-        useGrid={true}
-        loading={isLoading}
-        layout="wide"
-      >
+      <div className="grupo-selects-grid-2-perfil">
         <div className="form-geral__campo--span-2">
           <Input
             label="Nome Completo"
@@ -324,6 +323,7 @@ const PerfilUsuario = () => {
             required={true}
             readOnly={!isEditing || isLoading}
           />
+        </div>
         </div>
         
       </FormGeral>
