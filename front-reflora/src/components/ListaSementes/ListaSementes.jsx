@@ -49,7 +49,7 @@ function ListaSementes({
       sortKey: "quantidade",
     },
     { key: "quantidadeSaidaFormatada", label: "Qtd Saída", sortable: false },
-    { key: "finalidadeAtual", label: "Finalidade", sortable: false },
+    { key: "finalidadeAtual", label: "Status", sortable: false },
     { key: "acoesRenderizadas", label: "Ações", sortable: false },
   ];
 

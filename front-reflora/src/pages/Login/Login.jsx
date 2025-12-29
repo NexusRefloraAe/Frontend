@@ -86,15 +86,15 @@ const Login = () => {
         children: isLoading ? "Entrando..." : "Entrar",
         disabled: isLoading
       },
-      {
-        type: "button",
-        variant: "secondary",
-        icon: <FcGoogle />,
-        onClick: handleGoogleLogin,
-        children: "Continuar com a Google",
-        // Opcional: Desabilitar o botão do Google enquanto faz login normal também
-        disabled: isLoading 
-      }
+      // {
+      //   type: "button",
+      //   variant: "secondary",
+      //   icon: <FcGoogle />,
+      //   onClick: handleGoogleLogin,
+      //   children: "Continuar com a Google",
+      //   // Opcional: Desabilitar o botão do Google enquanto faz login normal também
+      //   disabled: isLoading 
+      // }
     ],
     footer: {
       text: "Não tem uma Conta?",
