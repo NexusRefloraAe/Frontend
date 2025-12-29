@@ -1,125 +1,224 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import TabelaResponsiva from "../../../components/TabelaResponsiva/TabelaResponsiva";
 import PainelCard from "../../../components/PainelCard/PainelCard";
 import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio";
 import Paginacao from "../../../components/Paginacao/Paginacao";
-import './RelatorioCanteiro.css';
-// import LayoutScroll from "../../../components/LayoutScroll/LayoutScroll"; // Se não for usado diretamente aqui, pode ser removido, ou mantido se fizer parte do layout pai
+import ExportButton from "../../../components/ExportButton/ExportButton";
+
+// Services e Utils
+import { registroCanteiroService } from "../../../services/registroCanteiroService";
+import { getBackendErrorMessage } from "../../../utils/errorHandler";
+
+import "./RelatorioCanteiro.css";
 
 const RelatorioCanteiro = () => {
-  // --- MOCK DATA (Simulação do Backend) ---
-  const DADOS_RELATORIO = [
-    { id: 1, Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '01/01/2025', QuantidadeEntrada: 350, DataSaida: '20/01/2025', QuantidadeSaida: 100, TempoNoCanteiro: '20 dias' },
-    { id: 2, Lote: 'B002', NomePopular: 'Jacarandá', DataEntrada: '05/01/2025', QuantidadeEntrada: 200, DataSaida: '-', QuantidadeSaida: 0, TempoNoCanteiro: '15 dias' },
-    // Adicione mais dados mock aqui se quiser testar a paginação
-  ];
-
-  // Estados
-  const [relatorios, setRelatorios] = useState([]);
-  const [filtros, setFiltros] = useState({ nomePopular: '', dataInicio: '', dataFim: '' });
+  // --- ESTADOS ---
+  const [loading, setLoading] = useState(false);
   const [paginaAtual, setPaginaAtual] = useState(1);
-  
-  // Objeto que faltava para preencher os Cards
+  const [totalPaginas, setTotalPaginas] = useState(1);
+  const [ordem, setOrdem] = useState("data");
+  const [direcao, setDirecao] = useState("desc");
+
+  const [filtros, setFiltros] = useState({
+    nomePopular: "",
+    dataInicio: "",
+    dataFim: "",
+  });
+
   const [dadosPainel, setDadosPainel] = useState({
     totalEntrada: 0,
     totalSaida: 0,
-    totalAtual: 0
+    totalAtual: 0,
+    tabela: { content: [] },
   });
 
-  const itensPorPagina = 5;
+  const ITENS_POR_PAGINA = 9;
 
-  // Carrega os dados iniciais
-  useEffect(() => { 
-    setRelatorios(DADOS_RELATORIO); 
-    
-    // Simulação de cálculo de totais para o painel
-    // Num cenário real, isso viria do backend ou seria um reduce no array
-    setDadosPainel({
-        totalEntrada: 100000, 
-        totalSaida: 50000,
-        totalAtual: 50000
-    });
-  }, []);
+  // --- CARREGAMENTO DE DADOS ---
+  const fetchDados = useCallback(
+    async (pagina = 1) => {
+      setLoading(true);
+      try {
+        // O Spring espera a página começando em 0, por isso (pagina - 1)
+        const data = await registroCanteiroService.getPainel(
+          filtros,
+          pagina - 1,
+          ITENS_POR_PAGINA,
+          ordem,
+          direcao
+        );
 
-  const handleFiltroChange = (name, value) => { 
-    setFiltros(prev => ({ ...prev, [name]: value })); 
+        setDadosPainel(data);
+        // Sincroniza a paginação vinda do objeto Page do Spring
+        setTotalPaginas(data.tabela?.page?.totalPages || 1);
+        setPaginaAtual(pagina);
+      } catch (error) {
+        console.error(error);
+        alert(getBackendErrorMessage(error));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [filtros, ordem, direcao]
+  );
+
+  // Carrega ao montar ou quando ordem/direção mudar
+  useEffect(() => {
+    fetchDados(1);
+  }, [fetchDados]);
+
+  // --- HANDLERS ---
+  const handleFiltroChange = (name, value) => {
+    setFiltros((prev) => ({ ...prev, [name]: value }));
   };
-  
-  const handleGerarRelatorio = () => { 
-    // Lógica de filtro aqui 
-    console.log("Filtrando com:", filtros);
+
+  const handleGerarRelatorio = () => {
+    fetchDados(1); // Sempre volta para a página 1 ao filtrar
   };
 
-  // --- CONFIGURAÇÃO DE UI (Agora corrigido) ---
-  // Apenas UMA declaração de painelItems e usando o estado dadosPainel
+  const handleOrdenar = (campo) => {
+    const novaDirecao = campo === ordem && direcao === "asc" ? "desc" : "asc";
+    setOrdem(campo);
+    setDirecao(novaDirecao);
+  };
+
+  // Helper para processar downloads de arquivos (Blob)
+  const realizarDownload = (response, defaultName) => {
+    const disposition = response.headers["content-disposition"];
+    let fileName = defaultName;
+
+    if (disposition) {
+      const filenameRegex =
+        /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
+      const matches = filenameRegex.exec(disposition);
+      if (matches && matches[1]) {
+        fileName = decodeURIComponent(matches[1].replace(/['"]/g, ""));
+      }
+    }
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleExportarPDF = async () => {
+    try {
+      const res = await registroCanteiroService.exportarPdf(filtros);
+      realizarDownload(res, "relatorio_canteiro.pdf");
+    } catch (e) {
+      alert("Erro ao baixar PDF");
+    }
+  };
+
+  const handleExportarCSV = async () => {
+    try {
+      const res = await registroCanteiroService.exportarCsv(filtros);
+      realizarDownload(res, "relatorio_canteiro.csv");
+    } catch (e) {
+      alert("Erro ao baixar CSV");
+    }
+  };
+
+  // --- CONFIGURAÇÃO DE UI ---
   const painelItems = [
-    { id: 1, titulo: 'Total Entrada', valor: dadosPainel.totalEntrada.toLocaleString(), className: 'card-entrada' },
-    { id: 2, titulo: 'Total Saída', valor: dadosPainel.totalSaida.toLocaleString(), className: 'card-saida' },
-    { id: 3, titulo: 'Saldo Atual', valor: dadosPainel.totalAtual.toLocaleString(), className: 'card-atual' },
+    {
+      id: 1,
+      titulo: "Total Entrada",
+      valor: dadosPainel.totalEntrada.toLocaleString(),
+      className: "card-entrada",
+    },
+    {
+      id: 2,
+      titulo: "Total Saída",
+      valor: dadosPainel.totalSaida.toLocaleString(),
+      className: "card-saida",
+    },
+    {
+      id: 3,
+      titulo: "Saldo Atual",
+      valor: dadosPainel.totalAtual.toLocaleString(),
+      className: "card-atual",
+    },
   ];
 
   const colunas = [
-    { key: "Lote", label: "Lote" },
-    { key: "NomePopular", label: "Nome Popular" },
-    { key: "DataEntrada", label: "Data Entrada" },
-    { key: "QuantidadeEntrada", label: "Qtd Entrada" },
-    { key: "DataSaida", label: "Data Saída" },
-    { key: "QuantidadeSaida", label: "Qtd Saída" },
-    { key: "TempoNoCanteiro", label: "Tempo" },
+    { key: "nomeCanteiro", label: "Canteiro", sortable: true },
+    { key: "lote", label: "Lote Origem", sortable: true },
+    { key: "nomePopular", label: "Espécie", sortable: true },
+    {
+      key: "data",
+      label: "Data",
+      sortable: true,
+      render: (item) => {
+        if (!item.data) return "-";
+        // Formata data ISO (yyyy-mm-dd) para PT-BR
+        if (typeof item.data === "string" && item.data.includes("-")) {
+          const [ano, mes, dia] = item.data.split("-");
+          return `${dia}/${mes}/${ano}`;
+        }
+        return item.data;
+      },
+    },
+    { key: "tipoMovimento", label: "Movimento", sortable: true },
+    { key: "quantidade", label: "Qtd (und)", sortable: true },
   ];
-
-  // Paginação Frontend
-  const totalPaginas = Math.ceil(relatorios.length / itensPorPagina);
-  const dadosPaginados = relatorios.slice((paginaAtual - 1) * itensPorPagina, paginaAtual * itensPorPagina);
 
   return (
     <div className="relatorio-canteiro-container auth-scroll-fix">
       <div className="relatorio-canteiro-content">
-        
-        {/* Filtros */}
         <section className="filtros-section">
           <h1>Gerar Relatório</h1>
-          <FiltrosRelatorio 
-            filtros={filtros} 
-            onFiltroChange={handleFiltroChange} 
-            onPesquisar={handleGerarRelatorio} 
+          <FiltrosRelatorio
+            filtros={filtros}
+            onFiltroChange={handleFiltroChange}
+            onPesquisar={handleGerarRelatorio}
           />
         </section>
 
-        {/* Cards */}
         <section className="cards-section">
           <div className="cards-container">
-            {painelItems.map(item => (
-              <PainelCard 
-                key={item.id} 
-                titulo={item.titulo} 
-                valor={item.valor} 
-                className={item.className} 
-              />
+            {painelItems.map((item) => (
+              <PainelCard key={item.id} {...item} />
             ))}
           </div>
         </section>
 
-        {/* Tabela */}
         <section className="tabela-section">
           <TabelaResponsiva
             titulo="Movimentações dos Canteiros"
-            dados={dadosPaginados}
+            dados={dadosPainel.tabela.content}
             colunas={colunas}
+            loading={loading}
+            onOrdenar={handleOrdenar}
+            ordemAtual={ordem}
+            direcaoAtual={direcao}
             footerContent={
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                      <Paginacao 
-                        paginaAtual={paginaAtual} 
-                        totalPaginas={totalPaginas} 
-                        onPaginaChange={setPaginaAtual} 
-                      />
-                      <button 
-                        className="btn-exportar" 
-                        onClick={() => alert('Exportar')}
-                      >
-                        Exportar ↑
-                      </button>
-                </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "100%",
+                  flexWrap: "wrap",
+                  gap: "15px",
+                }}
+              >
+                <Paginacao
+                  paginaAtual={paginaAtual}
+                  totalPaginas={totalPaginas}
+                  onPaginaChange={fetchDados}
+                />
+                <ExportButton
+                  onExportPDF={handleExportarPDF}
+                  onExportCSV={handleExportarCSV}
+                  fileName="relatorio_canteiro"
+                />
+              </div>
             }
           />
         </section>
