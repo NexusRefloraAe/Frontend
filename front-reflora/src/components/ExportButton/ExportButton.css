@@ -62,7 +62,7 @@
   border: none;
   cursor: pointer;
   font-size: 14px;
-  color: #eff0f3;
+  color: #000;
   transition: background 0.2s;
   display: block;
   text-decoration: none; /* Remove sublinhado se for link */
