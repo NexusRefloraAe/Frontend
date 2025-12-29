@@ -45,7 +45,7 @@
 
 .export-menu {
   position: relative;
-  background: white;
+  background-color: white;
   border-radius: 8px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
   margin-top: 6px;
@@ -58,17 +58,19 @@
 .export-menu .csv-link {
   width: 100%;
   text-align: left;
-  padding: 8px 12px;
-  background: none;
+  padding: 10px 14px;
+  background-color: #ffffff; /* Garante fundo branco em cada item */
   border: none;
   cursor: pointer;
   font-size: 14px;
-  color: #2d3748;
-  transition: background 0.2s;
+  color: #000000; /* Letras pretas puras */
+  transition: background-color 0.2s ease;
   display: block;
+  text-decoration: none; /* Remove sublinhado se for link */
 }
 
 .export-menu button:hover,
 .export-menu .csv-link:hover {
-  background-color: #edf2f7;
+  background-color: #f0f0f0; /* Cinza claro neutro */
+  color: #000000; /* Mantém o texto preto no hover */
 }
