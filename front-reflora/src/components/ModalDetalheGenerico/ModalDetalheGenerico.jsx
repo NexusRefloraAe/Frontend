@@ -27,11 +27,18 @@ function ModalDetalheGenerico({
   mostrarImagem = true, // <--- NOVA PROP (Padrão true para manter compatibilidade)
   textoExclusao = "este item",
   children,
+  onExportarPdf,
+  onExportarCsv
 }) {
-  const [paginaHistorico, setPaginaHistorico] = useState(1);
+  // 1. Estados de página separados para cada tabela
+  const [paginaEntrada, setPaginaEntrada] = useState(1);
+  const [paginaSaida, setPaginaSaida] = useState(1);
+
   const [historicoEntrada, setHistoricoEntrada] = useState(dadosEntrada);
   const [historicoSaida, setHistoricoSaida] = useState(dadosSaida);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
+
+  const ITENS_PAGINA = 5; // Quantidade de linhas por página no modal
 
   useEffect(() => {
     if (isOpen) {
@@ -44,7 +51,7 @@ function ModalDetalheGenerico({
               setHistoricoSaida(dados.saidas || []);
             }
           } catch (error) {
-            console.error("Erro ao carregar histórico no modal:", error);
+            console.error("Erro ao carregar histórico:", error);
           }
         };
         carregar();
@@ -66,8 +73,13 @@ function ModalDetalheGenerico({
   const idxInicio = (paginaHistorico - 1) * ITENS_PAGINA;
   const idxFim = idxInicio + ITENS_PAGINA;
 
-  const entradasPagina = historicoEntrada.slice(idxInicio, idxFim);
-  const saidasPagina = historicoSaida.slice(idxInicio, idxFim);
+  // 3. Lógica de fatiamento (Slice) para SAÍDAS
+  const totalPaginasSaida =
+    Math.ceil(historicoSaida.length / ITENS_PAGINA) || 1;
+  const saidasPaginadas = historicoSaida.slice(
+    (paginaSaida - 1) * ITENS_PAGINA,
+    paginaSaida * ITENS_PAGINA
+  );
 
   const obterValor = (campo) => {
     const val = item[campo.chave];
@@ -94,7 +106,7 @@ function ModalDetalheGenerico({
           </div>
 
           <div className="modal-body-generico">
-            {/* SEÇÃO TOPO: FOTO + DADOS */}
+            {/* SEÇÃO TOPO: FOTO + DADOS (Mantido) */}
             <div className="detalhe-top-generico">
               
               {/* --- AQUI ESTÁ A MUDANÇA: Verifica se deve mostrar a imagem --- */}
@@ -124,7 +136,6 @@ function ModalDetalheGenerico({
                   ))}
                   {children}
                 </div>
-
                 {mostrarAcoes && (
                   <div className="acoes-generico">
                     <button
@@ -146,41 +157,62 @@ function ModalDetalheGenerico({
               </div>
             </div>
 
-            {/* SEÇÃO INFERIOR: HISTÓRICO */}
+            {/* SEÇÃO INFERIOR: HISTÓRICO COM PAGINAÇÃO INDEPENDENTE */}
             {mostrarHistorico && (
               <div className="hist-container-generico">
                 <h3>Histórico de Movimentação</h3>
                 <div className="hist-tabelas-generico">
+                  {/* Tabela de Entradas */}
                   <div className="wrapper-tab-generico">
                     <div className="titulo-tab-generico bg-ent-gen">
                       Entradas
                     </div>
                     <TabelaResponsiva
                       colunas={colunasEntrada}
-                      dados={entradasPagina}
+                      dados={entradasPaginadas}
                       onPesquisar={null}
+                      footerContent={
+                        totalPaginasEntrada > 1 && (
+                          <Paginacao
+                            paginaAtual={paginaEntrada}
+                            totalPaginas={totalPaginasEntrada}
+                            onPaginaChange={setPaginaEntrada}
+                          />
+                        )
+                      }
                     />
                   </div>
+
+                  {/* Tabela de Saídas */}
                   <div className="wrapper-tab-generico">
                     <div className="titulo-tab-generico bg-sai-gen">Saídas</div>
                     <TabelaResponsiva
                       colunas={colunasSaida}
-                      dados={saidasPagina}
+                      dados={saidasPaginadas}
                       onPesquisar={null}
+                      footerContent={
+                        totalPaginasSaida > 1 && (
+                          <Paginacao
+                            paginaAtual={paginaSaida}
+                            totalPaginas={totalPaginasSaida}
+                            onPaginaChange={setPaginaSaida}
+                          />
+                        )
+                      }
                     />
                   </div>
                 </div>
 
-                <div className="footer-generico">
-                  <Paginacao
-                    paginaAtual={paginaHistorico}
-                    totalPaginas={totalPaginas}
-                    onPaginaChange={setPaginaHistorico}
-                  />
-                  {mostrarExportar && (
-                    <ExportButton data={[]} columns={[]} fileName="historico" />
-                  )}
-                </div>
+                {/* Botão de Exportar no rodapé geral do histórico */}
+                {mostrarExportar && (
+                  <div className="footer-exportar-modal">
+                    <ExportButton
+                      onExportPDF={onExportarPdf}
+                      onExportCSV={onExportarCsv}
+                      fileName={`Historico_${nomeItem}`}
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>

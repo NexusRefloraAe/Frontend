@@ -88,7 +88,7 @@ const ExportButton = ({
                 className="btn-exportar"
                 onClick={() => setMenuAberto(!menuAberto)}
             >
-                Exportar <FaShareAlt />
+                Exportar ↑
             </button>
 
             {menuAberto && (
