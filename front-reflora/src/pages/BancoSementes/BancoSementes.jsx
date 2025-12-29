@@ -44,6 +44,28 @@ function BancoSementes() {
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
   const [sementeParaExcluir, setSementeParaExcluir] = useState(null);
 
+  const handleIniciarCorrecao = (semente) => {
+    // Normalizamos o texto: remove espaços e coloca em maiúsculo
+    const finalidade = semente.finalidadeAtual
+      ? semente.finalidadeAtual.trim().toUpperCase()
+      : "";
+
+    // Se o texto contém "PLANTIO" (independente de ser 'Plantio' ou 'PLANTIO' no banco)
+    // ele deve ser enviado para a aba de TESTE para ser corrigido.
+    const abaDestino = finalidade.includes("PLANTIO")
+      ? "Cadastrar-Teste"
+      : "Cadastrar-Plantio";
+
+    console.log(`Dado Original: ${finalidade} | Indo para: ${abaDestino}`);
+
+    navigate("/gerenciar-sementes", {
+      state: {
+        dadosParaCorrecao: semente,
+        abaAlvo: abaDestino,
+      },
+    });
+  };
+
   // --- 1. CARREGAR ESTADOS DO IBGE (Apenas na montagem) ---
   useEffect(() => {
     const fetchEstados = async () => {
@@ -244,6 +266,8 @@ function BancoSementes() {
                 termoBusca={termoBusca}
                 onSearchChange={handleBusca}
                 onRecarregar={fetchSementes}
+
+                onIniciarCorrecao={handleIniciarCorrecao}
                 
                 // Props de Ação
                 onEditar={handleEditar}   

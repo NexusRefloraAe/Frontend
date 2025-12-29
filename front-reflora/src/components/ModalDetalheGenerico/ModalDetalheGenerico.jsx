@@ -25,6 +25,8 @@ function ModalDetalheGenerico({
   mostrarHistorico = true,
   mostrarExportar = true,
   children,
+  onExportarPdf,
+  onExportarCsv
 }) {
   // 1. Estados de página separados para cada tabela
   const [paginaEntrada, setPaginaEntrada] = useState(1);
@@ -202,8 +204,8 @@ function ModalDetalheGenerico({
                 {mostrarExportar && (
                   <div className="footer-exportar-modal">
                     <ExportButton
-                      onExportPDF={() => console.log("Exportar PDF")}
-                      onExportCSV={() => console.log("Exportar CSV")}
+                      onExportPDF={onExportarPdf}
+                      onExportCSV={onExportarCsv}
                       fileName={`Historico_${nomeItem}`}
                     />
                   </div>
