@@ -1,41 +1,46 @@
-import React, { useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./CustomDateStyle.css";
 
-const CustomDate = ({
-  name,
-  value,
-  onChange,
-  placeholder = "Selecione a data",
-  disabled = false
-}) => {
-  const inputRef = useRef(null);
+const CustomDate = ({ name, value, onChange, placeholder = "Selecione a data", disabled = false }) => {
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(value || "");
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const calendarRef = useRef(null);
 
   const openCalendar = () => {
-    if (!disabled && inputRef.current) {
-      inputRef.current.showPicker?.(); // Chrome / Mobile
-      inputRef.current.focus();
-    }
+    if (!disabled) setShowCalendar(!showCalendar);
   };
+
+  // Fecha o calendário se clicar fora
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (calendarRef.current && !calendarRef.current.contains(e.target)) {
+        setShowCalendar(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleDayClick = (day) => {
+    const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+    setSelectedDate(date.toISOString().split("T")[0]);
+    onChange && onChange({ target: { name, value: date.toISOString().split("T")[0] } });
+    setShowCalendar(false);
+  };
+
+  const daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
+  const monthDays = Array.from({ length: daysInMonth(currentMonth.getFullYear(), currentMonth.getMonth()) }, (_, i) => i + 1);
+
+  const prevMonth = () => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
+  const nextMonth = () => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
 
   return (
     <div className={`custom-date ${disabled ? "disabled" : ""}`}>
-      <input
-        ref={inputRef}
-        type="date"
-        name={name}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        className="custom-date__native"
-      />
-
       <div className="custom-date__display" onClick={openCalendar}>
-        <span className={value ? "has-value" : "placeholder"}>
-          {value
-            ? new Date(value).toLocaleDateString("pt-BR")
-            : placeholder}
+        <span className={selectedDate ? "has-value" : "placeholder"}>
+          {selectedDate ? new Date(selectedDate).toLocaleDateString("pt-BR") : placeholder}
         </span>
-
         <svg
           className="custom-date__icon"
           xmlns="http://www.w3.org/2000/svg"
@@ -54,6 +59,23 @@ const CustomDate = ({
           <line x1="3" y1="10" x2="21" y2="10" />
         </svg>
       </div>
+
+      {showCalendar && (
+        <div className="custom-date__calendar" ref={calendarRef}>
+          <div className="calendar-header">
+            <button type="button" onClick={prevMonth}>&lt;</button>
+            <span>{currentMonth.toLocaleString("pt-BR", { month: "long", year: "numeric" })}</span>
+            <button type="button" onClick={nextMonth}>&gt;</button>
+          </div>
+          <div className="calendar-body">
+            {monthDays.map((day) => (
+              <div key={day} className="calendar-day" onClick={() => handleDayClick(day)}>
+                {day}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

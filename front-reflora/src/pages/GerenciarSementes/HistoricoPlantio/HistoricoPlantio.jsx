@@ -278,6 +278,7 @@ const HistoricoPlantio = () => {
                 onOrdenar={handleOrdenar}
                 ordemAtual={ordem}
                 direcaoAtual={direcao}
+                
               />
 
         </main>

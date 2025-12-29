@@ -111,7 +111,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    
+
 }
 
 .historico-title-content-banco img {
@@ -162,14 +162,24 @@
 }
 
 .historico-header-content-semente h1 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #2e7d32;
-  margin: 0;
-  flex: 1; /* Ocupa espaço disponível */
-  min-width: 200px;
-  padding-left: 15px; /* Mais espaçamento lateral */
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2e7d32;
+    margin: 0;
+    flex: 1;
+    /* Ocupa espaço disponível */
+    min-width: 200px;
+    padding-left: 15px;
+    /* Mais espaçamento lateral */
 
+}
+
+/* --- ÁREA DE SCROLL --- */
+.tabela-scroll-area-historico {
+    width: 100%;
+    overflow-x: auto;
+    /* Rolagem horizontal se necessário */
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Busca */
@@ -179,13 +189,14 @@
     gap: 12px;
     border: 1px solid #000;
     border-radius: 10px;
+
 }
 
 .historico-input-search input {
     border: none;
     outline: none;
     font-size: 16px;
-   
+
 }
 
 /* ==========================================================
@@ -198,19 +209,34 @@
 }
 
 .historico-infos-sementes-card th {
-    background-color: #25702480;
-    padding: 12px;
-    color: white;
-    font-size: 15px;
-    text-align: center;
+    background-color: #8FBC8F;
+    color: #ffffff;
+    text-align: left;
+    padding: 14px 16px;
+    /* Mais espaçamento interno (padding) */
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    font-weight: 700;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .historico-infos-sementes-card td {
-    background-color: #74748015;
-    padding: 12px;
-    text-align: center;
-    color: #00000080;
+    padding: 14px 16px;
+    /* Mais espaçamento para parecer mais largo */
+    color: #333;
+    vertical-align: middle;
+    border-right: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 0.9rem;
 }
+.historico-infos-sementes-card tr:nth-child(even) {background-color: #fafafa;}
+
+.historico-infos-sementes-card tr:hover {background-color: #f0f7f0;}
+
 
 .historico-infos-sementes-card td input,
 .historico-infos-sementes-card td select {
@@ -266,26 +292,32 @@
     color: #ccc;
     pointer-events: none;
 }
+
 /* ==========================================================
    TABELA RESPONSIVA – MOBILE (CARDS)
    ========================================================== */
 
 @media (max-width: 768px) {
     .historico-header-content-semente h1 {
-    font-size: 15px;
-    text-decoration: underline;
+        font-size: 15px;
+        text-decoration: underline;
     }
-     .historico-footer-content {
+
+    .historico-footer-content {
         display: flex;
-        flex-direction: column; /* Empilha elementos */
+        flex-direction: column;
+        /* Empilha elementos */
         justify-content: center;
-        align-items: stretch; /* Elementos ocupam toda largura disponível */
-        gap: 12px; /* Espaço entre botão e paginação */
+        align-items: stretch;
+        /* Elementos ocupam toda largura disponível */
+        gap: 12px;
+        /* Espaço entre botão e paginação */
         padding: 12px;
     }
 
     .historico-footer-content button {
-        width: 100%; /* Botão ocupa toda a largura */
+        width: 100%;
+        /* Botão ocupa toda a largura */
         padding: 10px;
         font-size: 16px;
         border-radius: 8px;
@@ -293,8 +325,10 @@
 
     .historico-footer-content nav ul {
         display: flex;
-        justify-content: center; /* Centraliza paginação */
-        flex-wrap: wrap; /* Quebra linhas se necessário */
+        justify-content: center;
+        /* Centraliza paginação */
+        flex-wrap: wrap;
+        /* Quebra linhas se necessário */
         gap: 8px;
         padding: 0;
     }
@@ -314,5 +348,5 @@
         color: #ccc;
         pointer-events: none;
     }
-    
+
 }

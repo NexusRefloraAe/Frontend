@@ -11,6 +11,11 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #e0e0e0;
   overflow: visible; /* IMPORTANTE para selects */
+   height: calc(80vh - 80px); /* ajuste se tiver header fixo */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 8px; /* opcional */
+  margin: 0 auto;
 }
 
 /* ===============================

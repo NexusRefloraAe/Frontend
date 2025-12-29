@@ -123,8 +123,8 @@ const GerarRelatorioInsumo = () => {
       ];
 
   return (
-    <div className="gerar-relatorio-insumo-container">
-      <div className="gerar-relatorio-insumo-content">
+    <div className="gerar-relatorio-insumo-container auth-scroll-fix ">
+      <div className="gerar-relatorio-insumo-content ">
         
         {/* Seção de Filtros */}
         <section className="filtros-section">

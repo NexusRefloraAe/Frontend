@@ -14,7 +14,7 @@ function TabelaComBuscaPaginacao({
   onEditar,
   onVisualizar,
   onExcluir,
-  itensPorPagina = 5,
+  itensPorPagina = 1,
   habilitarBusca = true,
   modoBusca = "auto",
   onExportPDF,
@@ -89,8 +89,8 @@ function TabelaComBuscaPaginacao({
     // No modo local, filtramos e fatiamos o array completo aqui no front
     const dadosFiltrados = habilitarBusca && chaveBusca
       ? dados.filter((item) =>
-          item[chaveBusca]?.toString().toLowerCase().includes(termoBusca.toLowerCase())
-        )
+        item[chaveBusca]?.toString().toLowerCase().includes(termoBusca.toLowerCase())
+      )
       : dados;
 
     const indiceUltimo = pagAtualExibicao * itensPorPagina;
@@ -116,73 +116,74 @@ function TabelaComBuscaPaginacao({
           />
         )}
       </div>
-
-      <div className="historico-infos-sementes-card">
-        <table>
-          <thead>
-            <tr>
-              {colunas.map((coluna) => (
-                <th
-                  key={coluna.key}
-                  onClick={() => {
-                    if (coluna.sortable && onOrdenar) {
-                      onOrdenar(coluna.sortKey || coluna.key);
-                    }
-                  }}
-                  style={{
-                    cursor: coluna.sortable ? "pointer" : "default",
-                    userSelect: "none",
-                    textAlign: "center",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "5px" }}>
-                    {coluna.label}
-                    {coluna.sortable && (
-                      <FaArrowsAltV
-                        className="icone-ordenar"
-                        style={{
-                          opacity: ordemAtual === (coluna.sortKey || coluna.key) ? 1 : 0.3,
-                          transform:
-                            ordemAtual === (coluna.sortKey || coluna.key) && direcaoAtual === "asc"
-                              ? "rotate(180deg)"
-                              : "rotate(0deg)",
-                          transition: "transform 0.2s",
-                        }}
-                      />
-                    )}
-                  </div>
-                </th>
-              ))}
-              {temAcoes && <th>Ações</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
+      <div className="tabela-scroll-area-historico">
+        <div className="historico-infos-sementes-card">
+          <table>
+            <thead>
               <tr>
-                <td colSpan={colunas.length + (temAcoes ? 1 : 0)}>
-                  <div className="loading-text">Buscando...</div>
-                </td>
+                {colunas.map((coluna) => (
+                  <th
+                    key={coluna.key}
+                    onClick={() => {
+                      if (coluna.sortable && onOrdenar) {
+                        onOrdenar(coluna.sortKey || coluna.key);
+                      }
+                    }}
+                    style={{
+                      cursor: coluna.sortable ? "pointer" : "default",
+                      userSelect: "none",
+                      textAlign: "center",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "5px" }}>
+                      {coluna.label}
+                      {coluna.sortable && (
+                        <FaArrowsAltV
+                          className="icone-ordenar"
+                          style={{
+                            opacity: ordemAtual === (coluna.sortKey || coluna.key) ? 1 : 0.3,
+                            transform:
+                              ordemAtual === (coluna.sortKey || coluna.key) && direcaoAtual === "asc"
+                                ? "rotate(180deg)"
+                                : "rotate(0deg)",
+                            transition: "transform 0.2s",
+                          }}
+                        />
+                      )}
+                    </div>
+                  </th>
+                ))}
+                {temAcoes && <th>Ações</th>}
               </tr>
-            ) : dadosParaExibir && dadosParaExibir.length > 0 ? (
-              dadosParaExibir.map((item, index) => (
-                <LinhaTabelaAcoes
-                  key={item.id || index}
-                  item={item}
-                  colunas={colunas}
-                  onEditar={onEditar}
-                  onVisualizar={onVisualizar}
-                  onExcluir={onExcluir}
-                />
-              ))
-            ) : (
-              <tr>
-                <td colSpan={colunas.length + (temAcoes ? 1 : 0)}>
-                  <div className="no-results">Nenhum resultado encontrado 😕</div>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={colunas.length + (temAcoes ? 1 : 0)}>
+                    <div className="loading-text">Buscando...</div>
+                  </td>
+                </tr>
+              ) : dadosParaExibir && dadosParaExibir.length > 0 ? (
+                dadosParaExibir.map((item, index) => (
+                  <LinhaTabelaAcoes
+                    key={item.id || index}
+                    item={item}
+                    colunas={colunas}
+                    onEditar={onEditar}
+                    onVisualizar={onVisualizar}
+                    onExcluir={onExcluir}
+                  />
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={colunas.length + (temAcoes ? 1 : 0)}>
+                    <div className="no-results">Nenhum resultado encontrado 😕</div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className="historico-footer-content">

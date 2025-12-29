@@ -4,11 +4,7 @@
 .container-banco {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 80px); /* Ajustei para 100vh para evitar scroll duplo na janela */
-  overflow-y: auto;
-  overflow-x: hidden; /* Evita scroll horizontal na página inteira */
-  padding: 0; /* Removi padding da borda da tela para mobile */
-  background-color: #F5F7FA;
+ 
 }
 
 .content-banco > main {

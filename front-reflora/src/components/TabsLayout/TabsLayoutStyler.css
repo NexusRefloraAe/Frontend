@@ -12,17 +12,13 @@
 
 .tabs-layout-nav {
   width: 100%;
-  max-width: 800px;
+ 
   margin: 0 auto;
 }
 
 .tabs-layout-content {
   width: 100%;
-  max-width: 1200px;
-  height: calc(80vh - 80px); /* ajuste se tiver header fixo */
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 0 8px; /* opcional */
   margin: 0 auto;
+ 
 }
 

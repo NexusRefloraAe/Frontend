@@ -67,7 +67,6 @@
   overflow-x: auto; /* Rolagem horizontal se necessário */
   -webkit-overflow-scrolling: touch;
 }
-
 /* --- TABELA --- */
 .tabela-table {
   width: 100%;           /* Força a tabela a esticar */

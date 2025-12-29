@@ -1,10 +1,14 @@
 /* src/components/PerfilUsuario/PerfilUsuario.css */
 .perfil-usuario {
-  max-width: 800px;
+  width: 100%;
   margin: 0 auto;
   padding: 0 auto; /* Remove padding externo */
-  overflow: hidden;
+ 
 }
+.perfil-usuario .form-geral {
+  height: calc(80vh - 80px); /* sobrescreve só aqui */
+}
+
 
 .perfil-usuario__avatar-section {
   display: flex;
@@ -12,6 +16,23 @@
   margin: 0;
   padding: 0;
 }
+.perfil-usuario .form-geral__campos--grid {
+  grid-template-columns: 1fr;
+}
+.grupo-selects-grid-2-perfil {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  grid-column: span 1; /* ocupa largura total do form */
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .grupo-selects-grid-2-perfil {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 /* --- ESTILOS ANTIGOS REMOVIDOS ---
   .perfil-usuario__avatar,

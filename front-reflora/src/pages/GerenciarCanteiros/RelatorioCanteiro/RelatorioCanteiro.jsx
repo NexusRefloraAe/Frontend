@@ -4,6 +4,7 @@ import PainelCard from "../../../components/PainelCard/PainelCard";
 import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio";
 import Paginacao from "../../../components/Paginacao/Paginacao";
 import './RelatorioCanteiro.css';
+import LayoutScroll from "../../../components/LayoutScroll/LayoutScroll";
 
 const RelatorioCanteiro = () => {
   // ... (Dados MOCK, estados e filtros iguais) ...
@@ -41,8 +42,8 @@ const RelatorioCanteiro = () => {
   const dadosPaginados = relatorios.slice((paginaAtual - 1) * itensPorPagina, paginaAtual * itensPorPagina);
 
   return (
-    <div className="relatorio-canteiro-container">
-      <div className="relatorio-canteiro-content">
+    <div className="relatorio-canteiro-container auth-scroll-fix ">
+      <div className="relatorio-canteiro-content ">
         
         {/* Filtros e Cards (Mantenha igual) */}
         <section className="filtros-section">
