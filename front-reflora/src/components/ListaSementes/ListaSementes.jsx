@@ -192,6 +192,7 @@ function ListaSementes({
                         display: 'flex', 
                         justifyContent: 'space-between', 
                         alignItems: 'center', 
+                        width: '100%',
                         flexWrap: 'wrap',
                         gap: '15px'
                     }}>
