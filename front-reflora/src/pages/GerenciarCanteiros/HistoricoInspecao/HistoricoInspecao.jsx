@@ -1,147 +1,304 @@
-import React, { useState, useEffect } from "react";
-import TabelaResponsiva from "../../../components/TabelaResponsiva/TabelaResponsiva"; // Caminho novo
-import EditarInspecao from "../EditarInspecao/EditarInspecao"; 
-import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir"; 
-import Paginacao from "../../../components/Paginacao/Paginacao"; // Componente de paginação
-
-import { FaEdit, FaTrash } from 'react-icons/fa'; // Ícones
+import React, { useState, useEffect, useCallback } from "react";
+import TabelaResponsiva from "../../../components/TabelaResponsiva/TabelaResponsiva";
+import EditarInspecao from "../EditarInspecao/EditarInspecao";
+import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
+import Paginacao from "../../../components/Paginacao/Paginacao";
+import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico";
+import DetalheInspecao from "./DetalheInspecao/DetalheInspecao";
+import ExportButton from "../../../components/ExportButton/ExportButton"; // Assumindo que você tem este componente
+import { inspecaoService } from "../../../services/inspecaoMudaService";
+import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 
 const HistoricoInspecao = () => {
-  
-  // ... (Seus dados MOCK e estados mantidos) ...
-  const DADOS_INSPECAO_MOCK = [
-    { id: 1, Lote: 'A001', NomePopular: 'Ipê-amarelo', DataInspecao: '20/05/2025', TratosCulturais: 'Regação', PragasDoencas: 'Nenhuma', EstadoSaude: 'Boa', Qntd: 700, Observacoes: 'Lorem ipsum' },
-    // ... outros dados
-  ];
-
+  // 1. Estados de Dados e UI
   const [dados, setDados] = useState([]);
-  const [inspecaoEditando, setInspecaoEditando] = useState(null);
-  const [inspecaoExcluindo, setInspecaoExcluindo] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [itemSelecionado, setItemSelecionado] = useState(null);
+
+  // 2. Estados de Modais
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
-  const [paginaAtual, setPaginaAtual] = useState(1);
-  const [termoBusca, setTermoBusca] = useState('');
-  const itensPorPagina = 5; 
+  const [modalDetalheAberto, setModalDetalheAberto] = useState(false);
+  const [inspecaoEditando, setInspecaoEditando] = useState(null);
+  const [inspecaoExcluindo, setInspecaoExcluindo] = useState(null);
 
-  // 2. Função para carregar dados reais da API
-  // 1. FUNÇÃO PARA CARREGAR DADOS (Sincronizada com busca e ordenação)
-  const carregarDados = useCallback(async (pagina = 0, ordemArg = ordem, direcaoArg = direcao, buscaArg = termoBusca) => {
-    setLoading(true);
-    try {
-        // CORREÇÃO: Passar todos os argumentos que o Service espera
+  // 3. Estados de Filtro, Ordenação e Paginação
+  const [paginaAtual, setPaginaAtual] = useState(1); // UI usa 1-based
+  const [totalPaginas, setTotalPaginas] = useState(0);
+  const [termoBusca, setTermoBusca] = useState("");
+  const [ordem, setOrdem] = useState("dataInspecao");
+  const [direcao, setDirecao] = useState("desc");
+  const itensPorPagina = 5;
+
+  // 4. Função para carregar dados da API
+  const carregarDados = useCallback(
+    async (
+      pagina = paginaAtual,
+      campoOrdem = ordem,
+      dir = direcao,
+      busca = termoBusca
+    ) => {
+      setLoading(true);
+      try {
+        // API Spring usa 0-based, por isso (pagina - 1)
         const response = await inspecaoService.getAll(
-            pagina, 
-            itensPorPagina, 
-            buscaArg, // nomePopular
-            ordemArg, // campo de ordenação
-            direcaoArg // direção (asc/desc)
+          pagina - 1,
+          itensPorPagina,
+          busca,
+          campoOrdem,
+          dir
         );
-        
-        console.log("Resposta API:", response);
 
-        // Ajuste de mapeamento baseado no retorno padrão do Spring Page
-        setDados(response.content || []); 
-        
-        if (response.page) {
-            setTotalPaginas(response.page.totalPages);
-            setPaginaAtual(response.page.number); 
-        }
+        setDados(response.content || []);
+        setTotalPaginas(response.totalPages || 0);
       } catch (error) {
-          console.error("Erro ao carregar inspeções:", error);
+        console.error("Erro ao carregar inspeções:", error);
       } finally {
-          setLoading(false);
+        setLoading(false);
       }
-  }, [itensPorPagina, ordem, direcao, termoBusca]);
+    },
+    [itensPorPagina, paginaAtual, ordem, direcao, termoBusca]
+  );
 
   useEffect(() => {
-    // Simulação de filtro simples no front-end para o mock
-    const dadosFiltrados = DADOS_INSPECAO_MOCK.filter(d => 
-        d.NomePopular.toLowerCase().includes(termoBusca.toLowerCase()) || 
-        d.Lote.toLowerCase().includes(termoBusca.toLowerCase())
-    );
-    setDados(dadosFiltrados);
-  }, [termoBusca]);
+    carregarDados();
+  }, [carregarDados]);
 
-  // Handlers (Mantenha os seus originais)
-  const handleEditar = (inspecao) => { setInspecaoEditando(inspecao); setModalEdicaoAberto(true); };
-  const handleExcluir = (inspecao) => { setInspecaoExcluindo(inspecao); setModalExclusaoAberto(true); };
-  const handleSalvarEdicao = (d) => { /* ... */ setModalEdicaoAberto(false); };
-  const handleConfirmarExclusao = () => { /* ... */ setModalExclusaoAberto(false); };
-  const handleCancelarEdicao = () => { setModalEdicaoAberto(false); };
-  const handleCancelarExclusao = () => { setModalExclusaoAberto(false); };
+  // 5. Handlers de Ação
+  const handleVisualizar = async (item) => {
+    try {
+      setLoading(true);
+      const dadosCompletos = await inspecaoService.getById(item.id);
+      setItemSelecionado(dadosCompletos);
+      setModalDetalheAberto(true);
+    } catch (error) {
+      alert("Não foi possível carregar os detalhes.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // Colunas Adaptadas para TabelaResponsiva
+  const handleEditar = (inspecao) => {
+    setInspecaoEditando(inspecao);
+    setModalEdicaoAberto(true);
+    setModalDetalheAberto(false);
+  };
+
+  const handleExcluir = (inspecao) => {
+    setInspecaoExcluindo(inspecao);
+    setModalExclusaoAberto(true);
+    setModalDetalheAberto(false);
+  };
+
+  const handleSalvarEdicao = async (dadosDoForm) => {
+    try {
+      setLoading(true);
+      await inspecaoService.update(inspecaoEditando.id, dadosDoForm);
+      setModalEdicaoAberto(false);
+      carregarDados();
+      alert("Atualizado com sucesso!");
+    } catch (error) {
+      alert("Erro ao atualizar.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleConfirmarExclusao = async () => {
+    try {
+      setLoading(true);
+      await inspecaoService.delete(inspecaoExcluindo.id);
+      setModalExclusaoAberto(false);
+      carregarDados();
+      alert("Excluído com sucesso!");
+    } catch (error) {
+      alert("Erro ao excluir.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOrdenar = (campo) => {
+    const novaDirecao = campo === ordem && direcao === "asc" ? "desc" : "asc";
+    setOrdem(campo);
+    setDirecao(novaDirecao);
+    setPaginaAtual(1); // Reseta para primeira página ao ordenar
+  };
+
+  // 6. Lógica de Exportação (vinda do código antigo)
+  const realizarDownload = (response, defaultName) => {
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", defaultName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
+
+  const handleExportarPDF = async () => {
+    try {
+      setLoading(true);
+      const response = await inspecaoService.exportarHistoricoPdf(termoBusca);
+      realizarDownload(response, "historico_inspecoes.pdf");
+    } catch (error) {
+      alert("Erro ao exportar PDF.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExportarCSV = async () => {
+    try {
+      setLoading(true);
+      const response = await inspecaoService.exportarHistoricoCsv(termoBusca);
+      realizarDownload(response, "historico_inspecoes.csv");
+    } catch (error) {
+      alert("Erro ao exportar CSV.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 7. Definição das Colunas para a TabelaResponsiva
   const colunas = [
-    { key: "Lote", label: "Lote" },
-    { key: "NomePopular", label: "Nome Popular" },
-    { key: "DataInspecao", label: "Data" },
-    { key: "TratosCulturais", label: "Tratos" },
-    { key: "PragasDoencas", label: "Pragas" },
-    { key: "EstadoSaude", label: "Saúde" },
-    { key: "Qntd", label: "Qtd" },
-    { 
-        key: "acoes", 
-        label: "Ações", 
-        align: "right",
-        render: (item) => (
-            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                <button onClick={() => handleEditar(item)} title="Editar" style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                    <FaEdit color="#fbc02d" size={16} />
-                </button>
-                <button onClick={() => handleExcluir(item)} title="Excluir" style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                    <FaTrash color="#d32f2f" size={16} />
-                </button>
-            </div>
-        )
+    {
+      key: "loteMuda",
+      label: "Lote",
+      sortable: true,
+      sortKey: "plantioCanteiro.plantioOrigem.lote",
+    },
+    {
+      key: "nomePopular",
+      label: "Nome Popular",
+      sortable: true,
+      sortKey: "plantioCanteiro.plantioOrigem.sementes.nomePopular",
+    },
+    {
+      key: "nomeCanteiro",
+      label: "Local",
+      sortable: true,
+      sortKey: "plantioCanteiro.canteiro.nome",
+    },
+    { key: "dataInspecao", label: "Data", sortable: true },
+    { key: "estadoSaude", label: "Saúde", sortable: true },
+    { key: "estimativaMudasProntas", label: "Qntd", sortable: true },
+    {
+      key: "acoes",
+      label: "Ações",
+      align: "center",
+      render: (item) => (
+        <div className="container-acoes-estavel" style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+          {/* <button onClick={() => handleEditar(item)} title="Editar" style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
+                        <FaEdit color="#fbc02d" size={16} />
+                    </button>
+                    <button onClick={() => handleVisualizar(item)} title="Visualizar" style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
+                        <FaEye color="#1976d2"/>
+                    </button>
+                    <button onClick={() => handleExcluir(item)} title="Excluir" style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
+                        <FaTrash color="#d32f2f" size={16} />
+                    </button> */}
+          <button
+            className="btn-icone btn-editar"
+            onClick={() => handleEditar(item)}
+            title="Editar"
+          >
+            <FaEdit className="icone" />
+          </button>
+          <button
+            type="button"
+            className="btn-icone btn-confirmar"
+            onClick={() => handleVisualizar(item)}
+            title="Visualizar"
+          >
+            <FaEye className="icone" />
+          </button>
+          <button
+            className="btn-icone btn-excluir"
+            onClick={() => handleExcluir(item)}
+            title="Excluir"
+          >
+            <FaTrash className="icone" />
+          </button>
+        </div>
+      ),
     },
   ];
 
-  // Paginação Frontend para o Mock
-  const totalPaginas = Math.ceil(dados.length / itensPorPagina);
-  const dadosPaginados = dados.slice((paginaAtual - 1) * itensPorPagina, paginaAtual * itensPorPagina);
-
   return (
-    <div className="historico-container-banco"> 
+    <div className="historico-container-banco">
+      {/* Modais */}
+      {modalEdicaoAberto && (
+        <EditarInspecao
+          isOpen={modalEdicaoAberto}
+          onClose={() => setModalEdicaoAberto(false)}
+          inspecao={inspecaoEditando}
+          onSalvar={handleSalvarEdicao}
+        />
+      )}
 
-      {modalEdicaoAberto && ( <EditarInspecao isOpen={modalEdicaoAberto} onClose={handleCancelarEdicao} inspecao={inspecaoEditando} onSalvar={handleSalvarEdicao} /> )}
-      
+      {modalDetalheAberto && itemSelecionado && (
+        <ModalDetalheGenerico
+          isOpen={modalDetalheAberto}
+          item={itemSelecionado}
+          titulo="Detalhes da Inspeção"
+          onClose={() => setModalDetalheAberto(false)}
+          onEditar={() => handleEditar(itemSelecionado)}
+          onExcluir={() => handleExcluir(itemSelecionado)}
+          mostrarHistorico={false}
+          mostrarExportar={false}
+          mostrarAcoes={true}
+        >
+          <DetalheInspecao item={itemSelecionado} />
+        </ModalDetalheGenerico>
+      )}
+
       <ModalExcluir
         isOpen={modalExclusaoAberto}
-        onClose={handleCancelarExclusao}
+        onClose={() => setModalExclusaoAberto(false)}
         onConfirm={handleConfirmarExclusao}
-        nomeItem={inspecaoExcluindo?.nomePopular}
+        nomeItem={`${inspecaoExcluindo?.loteMuda} - ${inspecaoExcluindo?.nomePopular}`}
         titulo="Excluir Inspeção"
-        mensagem="Tem certeza?"
+        mensagem="Tem certeza que deseja excluir esta inspeção?"
       />
 
-      <div className="">
-        <main>
-          <TabelaResponsiva
-            titulo="Histórico de Inspeção"
-            dados={dadosPaginados}
-            colunas={colunas}
-            termoBusca={termoBusca}
-            onPesquisar={setTermoBusca}
-            placeholderBusca="Buscar por nome ou lote..."
-            footerContent={
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                     <Paginacao 
-                        paginaAtual={paginaAtual} 
-                        totalPaginas={totalPaginas} 
-                        onPaginaChange={setPaginaAtual} 
-                     />
-                     <button 
-                        className="btn-exportar" 
-                        onClick={() => alert('Exportar')}
-                        style={{ background: '#2e7d32', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer' }}
-                     >
-                        Exportar ↑
-                     </button>
-                </div>
-            }
-          />
-        </main>
-      </div>
+      <main>
+        <TabelaResponsiva
+          titulo="Histórico de Inspeção"
+          dados={dados}
+          colunas={colunas}
+          termoBusca={termoBusca}
+          onPesquisar={(valor) => {
+            setTermoBusca(valor);
+            setPaginaAtual(1);
+          }}
+          placeholderBusca="Buscar por nome ou lote..."
+          onOrdenar={handleOrdenar}
+          ordemAtual={ordem}
+          direcaoAtual={direcao}
+          isLoading={loading}
+          footerContent={
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <Paginacao
+                paginaAtual={paginaAtual}
+                totalPaginas={totalPaginas}
+                onPaginaChange={setPaginaAtual}
+              />
+              <ExportButton
+                onExportPDF={handleExportarPDF}
+                onExportCSV={handleExportarCSV}
+              />
+            </div>
+          }
+        />
+      </main>
     </div>
   );
 };
