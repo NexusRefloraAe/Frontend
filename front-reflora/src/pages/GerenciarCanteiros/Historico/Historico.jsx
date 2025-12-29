@@ -249,7 +249,7 @@ const Historico = () => {
                         item={canteiroSelecionado}
                         titulo="Detalhes do Canteiro"
                         camposDetalhes={[
-                            { label: 'Nome:', chave: 'nomeCanteiro' },
+                            { label: 'Nome:', chave: 'NomeCanteiro' },
                             { label: 'Cadastro:', chave: 'dataCriacao', formatar: d => new Date(d).toLocaleDateString('pt-BR') },
                             { label: 'Qtd Atual:', chave: 'quantidadePlantada' },
                             { label: 'Espaço Disp.:', chave: 'espacoDisponivel' },

@@ -267,6 +267,7 @@ const Historico = () => {
           dados={dados}
           colunas={colunas}
 
+          placeholderBusca="Pesquisar por lote da Muda..."
           habilitarBusca={true}
           isLoading={loading}
           mostrarBusca={true}
