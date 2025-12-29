@@ -90,12 +90,38 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
 
   // 2. Função de Cancelar para voltar ao Banco
   const handleCancel = (confirmar = true) => {
-    if (
-      confirmar &&
-      !window.confirm("Deseja cancelar e voltar ao Banco de Sementes?")
-    )
-      return;
-    navigate("/banco-sementes");
+    const resetForm = () => {
+      // Se estivermos em modo de correção, voltamos para a listagem
+      if (dadosParaCorrecao) {
+        navigate("/banco-sementes");
+      } else {
+        // Se for cadastro comum, apenas limpamos os campos e ficamos na tela
+        setFormData({
+          lote: "",
+          nomePopular: "",
+          dataTeste: "",
+          quantidade: 0,
+          camaraFria: "",
+          dataGerminacao: "",
+          qntdGerminou: 0,
+          taxaGerminou: "",
+        });
+        setSugestoes([]);
+        setEstoqueAtual(null);
+      }
+    };
+
+    if (confirmar) {
+      if (
+        window.confirm(
+          "Deseja cancelar? As alterações não salvas serão perdidas."
+        )
+      ) {
+        resetForm();
+      }
+    } else {
+      resetForm();
+    }
   };
 
   const handleChange = (field) => (e) => {
@@ -131,15 +157,16 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
       setLoading(true);
 
       if (dadosParaCorrecao?.idUltimoMovimentacao) {
-        // ✅ MODO CORREÇÃO
+        // ✅ MODO CORREÇÃO: Converte o registro e volta para o banco
         await movimentacaoSementeService.corrigir(
           dadosParaCorrecao.idUltimoMovimentacao,
           formData,
-          "germinacao" // Tipo para TesteGerminacaoRequestDTO
+          "germinacao"
         );
         alert("Movimentação corrigida para Teste com sucesso!");
+        navigate("/banco-sementes");
       } else {
-        // ✅ MODO CADASTRO NORMAL
+        // ✅ MODO CADASTRO NORMAL: Cria o registro e permanece na tela
         const payload = { ...formData };
         if (payload.dataTeste && payload.dataTeste.includes("-")) {
           const [ano, mes, dia] = payload.dataTeste.split("-");
@@ -147,9 +174,10 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
         }
         await testeGerminacaoService.create(payload);
         alert("Teste cadastrado com sucesso!");
-      }
 
-      navigate("/banco-sementes"); // Volta ao banco após sucesso
+        // Limpa o formulário para o próximo teste sem sair da página
+        handleCancel(false);
+      }
     } catch (error) {
       console.error(error);
       const msg = error.response?.data?.message || "Erro ao salvar cadastro.";

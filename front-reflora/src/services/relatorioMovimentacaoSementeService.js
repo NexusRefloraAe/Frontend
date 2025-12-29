@@ -15,7 +15,7 @@ export const relatorioMovimentacaoSementeService = {
                 ...(filtros.dataFim && { dataFim: filtros.dataFim }),
             };
 
-            const response = await api.get('/registros/painel', { params });
+            const response = await api.get('/registros/sementes/painel', { params });
             const data = response.data;
 
             // --- ADAPTAÇÃO (MAPPING) ---
@@ -42,7 +42,7 @@ export const relatorioMovimentacaoSementeService = {
         };
         // Atenção à URL: deve bater com seu Controller (@GetMapping("/exports/pdf"))
         // Se o controller está em /api/registros, a url é /registros/exports/pdf
-        return api.get('/registros/exports/pdf', {
+        return api.get('/registros/sementes/exports/pdf', {
             params,
             responseType: 'blob' 
         });
@@ -54,7 +54,7 @@ export const relatorioMovimentacaoSementeService = {
             ...(filtros.dataInicio && { dataInicio: filtros.dataInicio }),
             ...(filtros.dataFim && { dataFim: filtros.dataFim }),
         };
-        return api.get('/registros/exports/csv', {
+        return api.get('/registros/sementes/exports/csv', {
             params,
             responseType: 'blob'
         });

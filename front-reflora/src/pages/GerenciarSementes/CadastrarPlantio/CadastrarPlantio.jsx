@@ -72,12 +72,36 @@ const CadastrarPlantio = ({ dadosParaCorrecao }) => {
 
   // 2. Função de Cancelar corrigida para voltar ao Banco
   const handleCancel = (confirmar = true) => {
-    if (
-      confirmar &&
-      !window.confirm("Deseja cancelar e voltar ao Banco de Sementes?")
-    )
-      return;
-    navigate("/banco-sementes");
+    const resetForm = () => {
+      // 1. Se houver dados de correção, voltamos para a listagem principal
+      if (dadosParaCorrecao) {
+        navigate("/banco-sementes");
+      } else {
+        // 2. Caso contrário, apenas limpamos o formulário e ficamos na página
+        setFormData({
+          lote: "",
+          nomePopular: "",
+          qtdSemente: 0,
+          dataPlantio: "",
+          tipoPlantio: "",
+          quantidadePlantada: 0,
+        });
+        setSugestoes([]);
+        setEstoqueAtual(null);
+      }
+    };
+
+    if (confirmar) {
+      if (
+        window.confirm(
+          "Deseja cancelar? As alterações não salvas serão perdidas."
+        )
+      ) {
+        resetForm();
+      }
+    } else {
+      resetForm();
+    }
   };
 
   const handleChange = (field) => (e) => {
@@ -110,13 +134,16 @@ const CadastrarPlantio = ({ dadosParaCorrecao }) => {
       setLoading(true);
 
       if (dadosParaCorrecao?.idUltimoMovimentacao) {
-        // ✅ MODO CORREÇÃO
+        // ✅ MODO CORREÇÃO: Converte de um tipo para outro
         await movimentacaoSementeService.corrigir(
           dadosParaCorrecao.idUltimoMovimentacao,
           formData,
           "muda"
         );
         alert("Movimentação corrigida com sucesso!");
+
+        // Como é uma correção, voltamos para a listagem principal
+        navigate("/banco-sementes");
       } else {
         // ✅ MODO CADASTRO NORMAL
         const payload = { ...formData };
@@ -126,9 +153,18 @@ const CadastrarPlantio = ({ dadosParaCorrecao }) => {
         }
         await plantioService.create(payload);
         alert("Plantio cadastrado com sucesso!");
-      }
 
-      navigate("/banco-sementes"); // Volta ao banco após sucesso
+        // 💡 Se você quer que o formulário limpe após cadastrar e permanecer na página:
+        setFormData({
+          lote: "",
+          nomePopular: "",
+          qtdSemente: 0,
+          dataPlantio: "",
+          tipoPlantio: "",
+          quantidadePlantada: 0,
+        });
+        // O navigate NÃO é chamado aqui, mantendo o usuário na página
+      }
     } catch (error) {
       console.error(error);
       const msg =

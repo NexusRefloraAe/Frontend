@@ -30,20 +30,35 @@ const insumoService = {
     }, // <--- A VÍRGULA QUE FALTAVA ESTÁ AQUI
 
     // Novo método para download de CSV
+    // Novo método para download de CSV
     downloadCsv: async (filtros) => {
         try {
             const response = await api.get('/insumos/relatorio/csv', {
                 params: filtros,
-                responseType: 'blob' // Importante para downloads
+                responseType: 'blob' 
             });
-            // Cria um link temporário para baixar o arquivo
+
+            // 1. Extrair o nome do arquivo do header Content-Disposition
+            const contentDisposition = response.headers['content-disposition'];
+            let nomeArquivo = `relatorio_${filtros.tipoInsumo}.csv`; // Fallback
+
+            if (contentDisposition) {
+                const match = contentDisposition.match(/filename=(.+)/);
+                if (match && match[1]) {
+                    // Remove aspas se houver e limpa espaços
+                    nomeArquivo = match[1].replace(/["']/g, '').trim();
+                }
+            }
+
+            // 2. Criar o link e disparar o download
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `relatorio_${filtros.tipoInsumo}_${new Date().toISOString()}.csv`);
+            link.setAttribute('download', nomeArquivo); 
             document.body.appendChild(link);
             link.click();
             link.remove();
+            window.URL.revokeObjectURL(url);
         } catch (error) {
             console.error("Erro ao baixar CSV:", error);
             throw error;
@@ -57,18 +72,31 @@ const insumoService = {
                 params: filtros,
                 responseType: 'blob'
             });
+
+            const contentDisposition = response.headers['content-disposition'];
+            let nomeArquivo = `relatorio_${filtros.tipoInsumo}.pdf`;
+
+            if (contentDisposition) {
+                const match = contentDisposition.match(/filename=(.+)/);
+                if (match && match[1]) {
+                    nomeArquivo = match[1].replace(/["']/g, '').trim();
+                }
+            }
+
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `relatorio_${filtros.tipoInsumo}_${new Date().toISOString()}.pdf`);
+            link.setAttribute('download', nomeArquivo);
             document.body.appendChild(link);
             link.click();
             link.remove();
+            window.URL.revokeObjectURL(url);
         } catch (error) {
             console.error("Erro ao baixar PDF:", error);
             throw error;
         }
     },
+    
     excluirMovimentacao: async (id) => {
         const response = await api.delete(`/insumos/movimentacao/${id}`);
         return response.data;
