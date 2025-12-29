@@ -17,6 +17,9 @@ const Cadastro = () => {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
   const [error, setError] = useState('');
+  
+  // NOVO: Estado para controlar o carregamento
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (field) => (e) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
@@ -31,6 +34,9 @@ const Cadastro = () => {
       return;
     }
 
+    // NOVO: Ativa o carregamento
+    setIsLoading(true);
+
     try {
       
       // 2. Chama o Serviço (Conecta com o Java)
@@ -43,8 +49,11 @@ const Cadastro = () => {
     } catch (err) {
       console.error(err);
       const mensagem = getBackendErrorMessage(err);
-      // 4. Erro: Mostra a mensagem que veio do Backend (ex: "Email já existe")
+      // 4. Erro: Mostra a mensagem que veio do Backend
       setError(mensagem); 
+    } finally {
+      // NOVO: Desativa o carregamento (independente de sucesso ou erro)
+      setIsLoading(false);
     }
   };
 
@@ -135,7 +144,9 @@ const Cadastro = () => {
       {
         type: "submit",
         variant: "primary",
-        children: "Cadastrar"
+        // NOVO: Muda o texto e desabilita o botão enquanto carrega
+        children: isLoading ? "Cadastrando..." : "Cadastrar",
+        disabled: isLoading 
       }
     ],
     footer: {

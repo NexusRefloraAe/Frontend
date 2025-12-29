@@ -24,6 +24,8 @@ function ModalDetalheGenerico({
   mostrarAcoes = true,
   mostrarHistorico = true,
   mostrarExportar = true,
+  mostrarImagem = true, // <--- NOVA PROP (Padrão true para manter compatibilidade)
+  textoExclusao = "este item",
   children,
   onExportarPdf,
   onExportarCsv
@@ -59,28 +61,17 @@ function ModalDetalheGenerico({
         if (historicoSaida !== dadosSaida) setHistoricoSaida(dadosSaida);
       }
     } else {
-      // Resetar páginas ao fechar o modal
-      setPaginaEntrada(1);
-      setPaginaSaida(1);
+      setPaginaHistorico(1);
     }
-  }, [
-    isOpen,
-    item?.id,
-    item?._id,
-    onCarregarHistorico,
-    dadosEntrada,
-    dadosSaida,
-  ]);
+  }, [isOpen, item?.id, item?._id, onCarregarHistorico]);
 
   if (!isOpen || !item) return null;
 
-  // 2. Lógica de fatiamento (Slice) para ENTRADAS
-  const totalPaginasEntrada =
-    Math.ceil(historicoEntrada.length / ITENS_PAGINA) || 1;
-  const entradasPaginadas = historicoEntrada.slice(
-    (paginaEntrada - 1) * ITENS_PAGINA,
-    paginaEntrada * ITENS_PAGINA
-  );
+  const ITENS_PAGINA = 5;
+  const totalItens = Math.max(historicoEntrada.length, historicoSaida.length);
+  const totalPaginas = Math.ceil(totalItens / ITENS_PAGINA) || 1;
+  const idxInicio = (paginaHistorico - 1) * ITENS_PAGINA;
+  const idxFim = idxInicio + ITENS_PAGINA;
 
   // 3. Lógica de fatiamento (Slice) para SAÍDAS
   const totalPaginasSaida =
@@ -117,14 +108,24 @@ function ModalDetalheGenerico({
           <div className="modal-body-generico">
             {/* SEÇÃO TOPO: FOTO + DADOS (Mantido) */}
             <div className="detalhe-top-generico">
-              {/* ... seu código de imagem e info-grid ... */}
-              <div className="img-wrapper-generico">
-                {imagemUrl ? (
-                  <img src={imagemUrl} alt="Item" />
-                ) : (
-                  <span className="sem-foto-label">Sem Foto</span>
-                )}
-              </div>
+              
+              {/* --- AQUI ESTÁ A MUDANÇA: Verifica se deve mostrar a imagem --- */}
+              {mostrarImagem && (
+                <div className="img-wrapper-generico">
+                  {imagemUrl ? (
+                    <img
+                      src={imagemUrl}
+                      alt="Item"
+                      onError={(e) => (e.target.style.display = "none")}
+                    />
+                  ) : (
+                    <span style={{ color: "#ccc", fontWeight: "bold" }}>
+                      Sem Foto
+                    </span>
+                  )}
+                </div>
+              )}
+
               <div className="dados-acoes-wrapper">
                 <div className="info-grid-generico">
                   {camposDetalhes.map((campo, idx) => (
@@ -139,15 +140,17 @@ function ModalDetalheGenerico({
                   <div className="acoes-generico">
                     <button
                       className="btn-generico"
-                      onClick={() => setModalExcluirAberto(true)}
+                      onClick={() => onEditar && onEditar(item)}
+                      title="Editar"
                     >
-                      <img src={deleteIcon} alt="Excluir" />
+                      <img src={editIcon} alt="Editar" />
                     </button>
                     <button
                       className="btn-generico"
-                      onClick={() => onEditar && onEditar(item)}
+                      onClick={() => setModalExcluirAberto(true)}
+                      title="Excluir"
                     >
-                      <img src={editIcon} alt="Editar" />
+                      <img src={deleteIcon} alt="Excluir" />
                     </button>
                   </div>
                 )}

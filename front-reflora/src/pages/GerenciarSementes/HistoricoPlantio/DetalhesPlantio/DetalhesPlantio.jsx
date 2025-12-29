@@ -1,5 +1,4 @@
 import React from 'react';
-// import './DetalheVistoria.css'; 
 
 const DetalhesPlantio = ({ item }) => {
   return (
