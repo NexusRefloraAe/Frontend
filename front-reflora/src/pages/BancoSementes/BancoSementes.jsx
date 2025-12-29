@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom'; // Importação que faltava
 import ListaSementes from '../../components/ListaSementes/ListaSementes';
 import FormularioSemente from '../../components/FormularioSemente/FormularioSemente';
 import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus';
@@ -16,185 +17,53 @@ const menusNavegacao = [
 function BancoSementes() {
   const navigate = useNavigate();
 
-    const [abaAtiva, setAbaAtiva] = useState('listar');
-    
-    // Estados de Dados
-    const [sementes, setSementes] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [erro, setErro] = useState('');
-    const [sementeEditando, setSementeEditando] = useState(null);
+  // --- ESTADOS ---
+  const [abaAtiva, setAbaAtiva] = useState('listar');
+  
+  // Dados
+  const [sementes, setSementes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState('');
+  const [sementeEditando, setSementeEditando] = useState(null);
 
-    // Estados de Paginação e Busca
-    const [paginaAtual, setPaginaAtual] = useState(1);
-    const [totalPaginas, setTotalPaginas] = useState(1);
-    const [termoBusca, setTermoBusca] = useState('');
+  // Paginação e Busca
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
+  const [termoBusca, setTermoBusca] = useState('');
+  const ITENS_POR_PAGINA = 5;
 
-    // Estados de Ordenação
-    const [ordem, setOrdem] = useState('dataDeCadastro'); 
-    const [direcao, setDirecao] = useState('desc');      
+  // Ordenação
+  const [ordem, setOrdem] = useState('dataDeCadastro'); 
+  const [direcao, setDirecao] = useState('desc');       
 
-    // Estados Auxiliares (IBGE) - Centralizados aqui para não duplicar requisições
-    const [estados, setEstados] = useState([]);
-    const [cidades, setCidades] = useState([]);
-    // const [ufSelecionada, setUfSelecionada] = useState(''); // Não é estritamente necessário no pai se o filho gerencia o select, mas mantemos para carregar cidades
-
-    // Estados do Modal de Exclusão
-    const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
-    const [sementeParaExcluir, setSementeParaExcluir] = useState(null);
-
-    const ITENS_POR_PAGINA = 5;
-
-    // --- 1. BUSCAR ESTADOS (Carrega apenas uma vez) ---
-    useEffect(() => {
-        const fetchEstados = async () => {
-            try {
-                const response = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome');
-                const data = await response.json();
-                setEstados(data);
-            } catch (error) {
-                console.error("Erro ao buscar estados do IBGE:", error);
-            }
-        };
-        fetchEstados();
-    }, []);
-
-    // --- 2. BUSCAR CIDADES (Chamado quando o formulário solicita) ---
-    const handleEstadoChange = async (uf) => {
-        // setUfSelecionada(uf);
-        setCidades([]); 
-        if (uf) {
-            try {
-                const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
-                const data = await response.json();
-                setCidades(data);
-            } catch (error) {
-                console.error("Erro ao buscar cidades do IBGE:", error);
-            }
-        }
-    };
-
-    // --- 3. FETCH SEMENTES (Lista Principal) ---
-    const fetchSementes = useCallback(async () => {
-        setLoading(true);
-        try {
-            const data = await sementesService.getAll(termoBusca, paginaAtual - 1, ITENS_POR_PAGINA, ordem, direcao);
-            setSementes(data.content);
-            const total = data.totalPages || data.page?.totalPages || 1;
-            setTotalPaginas(total);
-            setErro('');
-        } catch (error) {
-            console.error("Erro ao buscar sementes:", error);
-            const message = getBackendErrorMessage(error);
-            setErro(message);
-        } finally {
-            setLoading(false);
-        }
-    }, [termoBusca, paginaAtual, ordem, direcao]);
-
-    useEffect(() => {
-        if (abaAtiva === 'listar') {
-            fetchSementes();
-        }
-    }, [abaAtiva, fetchSementes]);
-
-    // --- HANDLERS DE EXCLUSÃO ---
-    const handleSolicitarExclusao = (semente) => {
-        setSementeParaExcluir(semente);
-        setModalExcluirAberto(true);
-    };
-
-    const handleConfirmarExclusao = async () => {
-        if (!sementeParaExcluir) return;
-
-        try {
-            await sementesService.delete(sementeParaExcluir.id);
-            alert("Semente excluída com sucesso!");
-            
-            setModalExcluirAberto(false);
-            setSementeParaExcluir(null);
-
-            // Lógica inteligente de recarregamento
-            if (sementes.length === 1 && paginaAtual > 1) {
-                setPaginaAtual(paginaAtual - 1); // Volta uma página se apagou o último item
-            } else {
-                fetchSementes(); 
-            }
-        } catch (error) {
-            const msg = getBackendErrorMessage(error);
-            setModalExcluirAberto(false); 
-            alert(msg);
-        }
-    };
-
-    // --- HANDLERS GERAIS ---
-    const handleBusca = (novoTermo) => {
-        setTermoBusca(novoTermo);
-        setPaginaAtual(1);
-    };
-
-  // Estados para Ordenação
-  const [ordem, setOrdem] = useState("dataDeCadastro");
-  const [direcao, setDirecao] = useState("desc");
-
-  // Estados IBGE
+  // IBGE (Estados e Cidades)
   const [estados, setEstados] = useState([]);
   const [cidades, setCidades] = useState([]);
-  const [ufSelecionada, setUfSelecionada] = useState("");
 
-  // --- NOVOS ESTADOS PARA EXCLUSÃO CENTRALIZADA ---
+  // Modal de Exclusão
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
   const [sementeParaExcluir, setSementeParaExcluir] = useState(null);
 
-  const ITENS_POR_PAGINA = 5;
-
-  const handleIniciarCorrecao = (semente) => {
-    // Normalizamos o texto: remove espaços e coloca em maiúsculo
-    const finalidade = semente.finalidadeAtual
-      ? semente.finalidadeAtual.trim().toUpperCase()
-      : "";
-
-    // Se o texto contém "PLANTIO" (independente de ser 'Plantio' ou 'PLANTIO' no banco)
-    // ele deve ser enviado para a aba de TESTE para ser corrigido.
-    const abaDestino = finalidade.includes("PLANTIO")
-      ? "Cadastrar-Teste"
-      : "Cadastrar-Plantio";
-
-    console.log(`Dado Original: ${finalidade} | Indo para: ${abaDestino}`);
-
-    const handleEditar = async (sementeResumida) => {
-        setLoading(true); 
-        try {
-            // 1. Busca dados completos
-            const sementeCompleta = await sementesService.getById(sementeResumida.id);
-            setSementeEditando(sementeCompleta); 
-            
-            // 2. Pré-carrega as cidades do estado dessa semente para o select funcionar
-            if (sementeCompleta.estado) { 
-                await handleEstadoChange(sementeCompleta.estado);
-            }
-            
-            // 3. Troca a aba
-            setAbaAtiva('cadastrar');
-            setErro('');
-        } catch (error) {
-            console.error("Erro edição:", error);
-            setErro("Erro ao carregar semente para edição.");
-        } finally {
-            setLoading(false);
-        }
+  // --- 1. CARREGAR ESTADOS DO IBGE (Apenas na montagem) ---
+  useEffect(() => {
+    const fetchEstados = async () => {
+      try {
+        const response = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome');
+        const data = await response.json();
+        setEstados(data);
+      } catch (error) {
+        console.error("Erro ao buscar estados do IBGE:", error);
+      }
     };
     fetchEstados();
   }, []);
 
-  // --- 2. BUSCAR CIDADES ---
+  // --- 2. CARREGAR CIDADES DO IBGE ---
   const handleEstadoChange = async (uf) => {
-    setUfSelecionada(uf);
-    setCidades([]);
+    setCidades([]); 
     if (uf) {
       try {
-        const response = await fetch(
-          `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`
-        );
+        const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
         const data = await response.json();
         setCidades(data);
       } catch (error) {
@@ -203,21 +72,23 @@ function BancoSementes() {
     }
   };
 
-  // --- FETCH SEMENTES ---
+  // --- 3. BUSCAR SEMENTES (Backend) ---
   const fetchSementes = useCallback(async () => {
     setLoading(true);
     try {
+      // Ajuste os parâmetros conforme o seu sementesService espera
       const data = await sementesService.getAll(
-        termoBusca,
-        paginaAtual - 1,
-        ITENS_POR_PAGINA,
-        ordem,
-        direcao
+          termoBusca, 
+          paginaAtual - 1, 
+          ITENS_POR_PAGINA, 
+          ordem, 
+          direcao
       );
+      
       setSementes(data.content);
-      const total = data.totalPages || data.page?.totalPages || 1;
+      const total = data.totalPages || (data.page && data.page.totalPages) || 1;
       setTotalPaginas(total);
-      setErro("");
+      setErro('');
     } catch (error) {
       console.error("Erro ao buscar sementes:", error);
       const message = getBackendErrorMessage(error);
@@ -227,44 +98,77 @@ function BancoSementes() {
     }
   }, [termoBusca, paginaAtual, ordem, direcao]);
 
+  // Recarrega sempre que mudar aba (se for listar) ou filtros
   useEffect(() => {
-    if (abaAtiva === "listar") {
+    if (abaAtiva === 'listar') {
       fetchSementes();
     }
   }, [abaAtiva, fetchSementes]);
 
-  // 1. Função chamada pelos filhos para ABRIR o modal
+  // --- HANDLERS DE AÇÃO ---
+
+  const handleMenuClick = (menuId) => {
+    if (menuId === 'cadastrar') {
+      setSementeEditando(null); // Limpa edição ao clicar em cadastrar
+      setCidades([]); 
+    }
+    setAbaAtiva(menuId);
+    setErro('');
+  };
+
+  const handleEditar = async (sementeResumida) => {
+    setLoading(true);
+    try {
+      // 1. Busca dados completos pelo ID
+      const sementeCompleta = await sementesService.getById(sementeResumida.id);
+      setSementeEditando(sementeCompleta);
+      
+      // 2. Pré-carrega as cidades se houver estado salvo
+      if (sementeCompleta.estado) {
+         await handleEstadoChange(sementeCompleta.estado);
+      }
+      
+      // 3. Muda para a aba de cadastro/edição
+      setAbaAtiva('cadastrar');
+      setErro('');
+    } catch (error) {
+      console.error("Erro ao carregar edição:", error);
+      setErro("Não foi possível carregar os dados para edição.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Exclusão
   const handleSolicitarExclusao = (semente) => {
     setSementeParaExcluir(semente);
     setModalExcluirAberto(true);
   };
 
-  // 2. Função chamada pelo Modal para EXECUTAR a exclusão
   const handleConfirmarExclusao = async () => {
     if (!sementeParaExcluir) return;
 
     try {
       await sementesService.delete(sementeParaExcluir.id);
       alert("Semente excluída com sucesso!");
-
+      
       setModalExcluirAberto(false);
       setSementeParaExcluir(null);
 
-      // Lógica para recarregar a lista corretamente
+      // Volta uma página se apagou o último item da página atual
       if (sementes.length === 1 && paginaAtual > 1) {
         setPaginaAtual(paginaAtual - 1);
       } else {
-        fetchSementes();
+        fetchSementes(); 
       }
     } catch (error) {
       const msg = getBackendErrorMessage(error);
-      // Fecha o modal para mostrar o erro na tela ou alerta
       setModalExcluirAberto(false);
       alert(msg);
     }
   };
 
-  // Handlers
+  // Busca e Paginação
   const handleBusca = (novoTermo) => {
     setTermoBusca(novoTermo);
     setPaginaAtual(1);
@@ -274,116 +178,91 @@ function BancoSementes() {
     setPaginaAtual(novaPagina);
   };
 
-    const handleMenuClick = (menuId) => {
-        if (menuId === 'cadastrar') {
-            setSementeEditando(null);
-            setCidades([]); // Limpa cidades ao iniciar novo cadastro
-        }
-        setAbaAtiva(menuId);
-        setErro('');
+  const handleOrdenar = (novoCampo) => {
+    // Se clicar no mesmo campo, inverte a direção. Se for outro, reseta para asc ou desc.
+    if (novoCampo === ordem) {
+        setDirecao(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+        setOrdem(novoCampo);
+        setDirecao('asc');
     }
-    setPaginaAtual(1);
   };
 
-    return (
-        <div className="container-banco">
+  // Sucesso e Cancelamento do Formulário
+  const handleSucessoCadastro = () => {
+    setAbaAtiva('listar');
+    setSementeEditando(null);
+    fetchSementes(); // Recarrega a lista
+  };
 
-            {/* Modal Global de Exclusão */}
-            <ModalExcluir 
-                isOpen={modalExcluirAberto}
-                onClose={() => setModalExcluirAberto(false)}
-                onConfirm={handleConfirmarExclusao}
-                titulo="Excluir Semente"
-                mensagem={`Tem certeza que deseja excluir a semente "${sementeParaExcluir?.nomePopular}"?`}
-                nomeItem={sementeParaExcluir?.lote}
-            />
+  const handleCancelarCadastro = () => {
+    setAbaAtiva('listar');
+    setSementeEditando(null);
+  };
 
-            <div className="content-banco">
-                <div className="banco-navegacao"> 
-                    <BotaoSubmenus
-                        menus={menusNavegacao}
-                        activeMenuId={abaAtiva}
-                        onMenuClick={handleMenuClick} />
-                </div>
-                
-                <main>
-                    {erro && <div className="alert-error" style={{color: 'red', margin: '10px'}}>{erro}</div>}
-                    
-                    {abaAtiva === 'listar' ? (
-                        // WRAPPER LISTA (100% largura)
-                        <div className="content-lista-full">
-                            <ListaSementes 
-                                sementes={sementes} 
-                                loading={loading}
-                                paginaAtual={paginaAtual}
-                                totalPaginas={totalPaginas}
-                                onPageChange={handleTrocaPagina}
-                                termoBusca={termoBusca}
-                                onSearchChange={handleBusca}
-                                onRecarregar={fetchSementes}
-                                onEditar={handleEditar}   
-                                onSolicitarExclusao={handleSolicitarExclusao}
-                                ordemAtual={ordem}
-                                direcaoAtual={direcao}
-                                onOrdenar={handleOrdenar}
-                            />
-                        </div>
-                    ) : (
-                        // WRAPPER FORMULÁRIO (Largura controlada)
-                        <div className="content-semente-form">
-                            <FormularioSemente 
-                                onSuccess={handleSucessoCadastro}
-                                onCancel={handleCancelarCadastro} 
-                                sementeParaEditar={sementeEditando}
-                                
-                                // Passando dados do IBGE para o filho não precisar buscar de novo
-                                listaEstados={estados}
-                                listaCidades={cidades}
-                                onEstadoChange={handleEstadoChange}
-                            />
-                        </div>
-                    )}
-                </main>
-            </div>
+  // --- RENDERIZAÇÃO ---
+  return (
+    <div className="container-banco">
+      
+      {/* Modal de Exclusão Global */}
+      <ModalExcluir 
+        isOpen={modalExcluirAberto}
+        onClose={() => setModalExcluirAberto(false)}
+        onConfirm={handleConfirmarExclusao}
+        titulo="Excluir Semente"
+        mensagem={`Tem certeza que deseja excluir a semente "${sementeParaExcluir?.nomePopular}"?`}
+        nomeItem={sementeParaExcluir?.lote}
+      />
+
+      <div className="content-banco">
+        {/* Menu de Abas */}
+        <div className="banco-navegacao"> 
+          <BotaoSubmenus
+            menus={menusNavegacao}
+            activeMenuId={abaAtiva}
+            onMenuClick={handleMenuClick} 
+          />
         </div>
+        
         <main>
           {erro && (
-            <div
-              className="alert-error"
-              style={{ color: "red", margin: "10px" }}
-            >
+            <div className="alert-error" style={{ color: 'red', margin: '10px' }}>
               {erro}
             </div>
           )}
-
-          {/* AQUI ESTÁ A CORREÇÃO: Usamos classes diferentes para cada aba */}
-          {abaAtiva === "listar" ? (
-            // Container para a LISTA (Largura Total)
+          
+          {abaAtiva === 'listar' ? (
             <div className="content-lista-full">
-              <ListaSementes
-                sementes={sementes}
-                onIniciarCorrecao={handleIniciarCorrecao}
+              <ListaSementes 
+                sementes={sementes} 
                 loading={loading}
+                
+                // Props de Paginação e Busca
                 paginaAtual={paginaAtual}
                 totalPaginas={totalPaginas}
                 onPageChange={handleTrocaPagina}
                 termoBusca={termoBusca}
                 onSearchChange={handleBusca}
                 onRecarregar={fetchSementes}
-                onEditar={handleEditar}
+                
+                // Props de Ação
+                onEditar={handleEditar}   
                 onSolicitarExclusao={handleSolicitarExclusao}
+                
+                // Props de Ordenação
                 ordemAtual={ordem}
                 direcaoAtual={direcao}
                 onOrdenar={handleOrdenar}
               />
             </div>
           ) : (
-            // Container para o FORMULÁRIO (Largura Controlada e Bonita)
             <div className="content-semente-form">
-              <FormularioSemente
+              <FormularioSemente 
                 onSuccess={handleSucessoCadastro}
-                onCancel={handleCancelarCadastro}
+                onCancel={handleCancelarCadastro} 
                 sementeParaEditar={sementeEditando}
+                
+                // Props do IBGE
                 listaEstados={estados}
                 listaCidades={cidades}
                 onEstadoChange={handleEstadoChange}
