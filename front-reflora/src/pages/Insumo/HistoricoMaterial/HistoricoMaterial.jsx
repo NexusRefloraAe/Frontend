@@ -266,6 +266,7 @@ const HistoricoMaterial = () => {
         mostrarHistorico={false}
         mostrarExportar={false}
         mostrarAcoes={true}
+        mostrarImagem={false}
       >
         <DetalhesMaterial item={itemSelecionado} />
       </ModalDetalheGenerico>

@@ -24,6 +24,8 @@ function ModalDetalheGenerico({
   mostrarAcoes = true,
   mostrarHistorico = true,
   mostrarExportar = true,
+  mostrarImagem = true,
+  textoExclusao = "este item",
   children,
   onExportarPdf,
   onExportarCsv
@@ -36,10 +38,12 @@ function ModalDetalheGenerico({
   const [historicoSaida, setHistoricoSaida] = useState(dadosSaida);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
 
-  const ITENS_PAGINA = 5; // Quantidade de linhas por página no modal
-
   useEffect(() => {
     if (isOpen) {
+      // Reseta as páginas ao abrir
+      setPaginaEntrada(1);
+      setPaginaSaida(1);
+
       if (onCarregarHistorico && (item?.id || item?._id)) {
         const carregar = async () => {
           try {
@@ -54,37 +58,26 @@ function ModalDetalheGenerico({
         };
         carregar();
       } else {
-        if (historicoEntrada !== dadosEntrada)
-          setHistoricoEntrada(dadosEntrada);
+        // Atualiza apenas se os dados mudaram para evitar loops
+        if (historicoEntrada !== dadosEntrada) setHistoricoEntrada(dadosEntrada);
         if (historicoSaida !== dadosSaida) setHistoricoSaida(dadosSaida);
       }
-    } else {
-      // Resetar páginas ao fechar o modal
-      setPaginaEntrada(1);
-      setPaginaSaida(1);
     }
-  }, [
-    isOpen,
-    item?.id,
-    item?._id,
-    onCarregarHistorico,
-    dadosEntrada,
-    dadosSaida,
-  ]);
+  }, [isOpen, item, onCarregarHistorico, dadosEntrada, dadosSaida]);
 
   if (!isOpen || !item) return null;
 
-  // 2. Lógica de fatiamento (Slice) para ENTRADAS
-  const totalPaginasEntrada =
-    Math.ceil(historicoEntrada.length / ITENS_PAGINA) || 1;
+  const ITENS_PAGINA = 5;
+
+  // 2. Lógica de Paginação Independente (Entrada)
+  const totalPaginasEntrada = Math.ceil(historicoEntrada.length / ITENS_PAGINA) || 1;
   const entradasPaginadas = historicoEntrada.slice(
     (paginaEntrada - 1) * ITENS_PAGINA,
     paginaEntrada * ITENS_PAGINA
   );
 
-  // 3. Lógica de fatiamento (Slice) para SAÍDAS
-  const totalPaginasSaida =
-    Math.ceil(historicoSaida.length / ITENS_PAGINA) || 1;
+  // 3. Lógica de Paginação Independente (Saída)
+  const totalPaginasSaida = Math.ceil(historicoSaida.length / ITENS_PAGINA) || 1;
   const saidasPaginadas = historicoSaida.slice(
     (paginaSaida - 1) * ITENS_PAGINA,
     paginaSaida * ITENS_PAGINA
@@ -115,16 +108,24 @@ function ModalDetalheGenerico({
           </div>
 
           <div className="modal-body-generico">
-            {/* SEÇÃO TOPO: FOTO + DADOS (Mantido) */}
+            {/* SEÇÃO TOPO: FOTO + DADOS */}
             <div className="detalhe-top-generico">
-              {/* ... seu código de imagem e info-grid ... */}
-              <div className="img-wrapper-generico">
-                {imagemUrl ? (
-                  <img src={imagemUrl} alt="Item" />
-                ) : (
-                  <span className="sem-foto-label">Sem Foto</span>
-                )}
-              </div>
+              {mostrarImagem && (
+                <div className="img-wrapper-generico">
+                  {imagemUrl ? (
+                    <img
+                      src={imagemUrl}
+                      alt="Item"
+                      onError={(e) => (e.target.style.display = "none")}
+                    />
+                  ) : (
+                    <span style={{ color: "#ccc", fontWeight: "bold" }}>
+                      Sem Foto
+                    </span>
+                  )}
+                </div>
+              )}
+
               <div className="dados-acoes-wrapper">
                 <div className="info-grid-generico">
                   {camposDetalhes.map((campo, idx) => (
@@ -139,15 +140,17 @@ function ModalDetalheGenerico({
                   <div className="acoes-generico">
                     <button
                       className="btn-generico"
-                      onClick={() => setModalExcluirAberto(true)}
+                      onClick={() => onEditar && onEditar(item)}
+                      title="Editar"
                     >
-                      <img src={deleteIcon} alt="Excluir" />
+                      <img src={editIcon} alt="Editar" />
                     </button>
                     <button
                       className="btn-generico"
-                      onClick={() => onEditar && onEditar(item)}
+                      onClick={() => setModalExcluirAberto(true)}
+                      title="Excluir"
                     >
-                      <img src={editIcon} alt="Editar" />
+                      <img src={deleteIcon} alt="Excluir" />
                     </button>
                   </div>
                 )}
@@ -159,6 +162,7 @@ function ModalDetalheGenerico({
               <div className="hist-container-generico">
                 <h3>Histórico de Movimentação</h3>
                 <div className="hist-tabelas-generico">
+                  
                   {/* Tabela de Entradas */}
                   <div className="wrapper-tab-generico">
                     <div className="titulo-tab-generico bg-ent-gen">

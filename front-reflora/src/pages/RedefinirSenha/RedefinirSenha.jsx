@@ -19,12 +19,14 @@ const RedefinirSenha = () => {
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
   const [error, setError] = useState('');
 
+  // NOVO: Estado para controlar o carregamento
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (field) => (e) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
   };
 
-    const handleSubmit = async () => {
+  const handleSubmit = async () => {
     setError('');
 
     // Validações Básicas
@@ -37,27 +39,25 @@ const RedefinirSenha = () => {
       return;
     }
 
-    try {
+    // NOVO: Ativa o carregamento
+    setIsLoading(true);
 
-      // 2. Lógica de Detecção do Tipo de Identificador (A "Mágica")
+    try {
+      // 2. Lógica de Detecção do Tipo de Identificador
       const valor = formData.identificador;
       const payload = {
         novaSenha: formData.novaSenha,
         confirmarNovaSenha: formData.confirmarSenha
       };
 
-      // Regex simples para identificar se é email ou telefone
       const isEmail = /\S+@\S+\.\S+/.test(valor);
-      // Regex flexível para telefone (aceita com ou sem máscara)
       const looksLikePhone = /^\d{2}9\d{8}$/.test(valor);
 
       if (isEmail) {
         payload.email = valor;
       } else if (looksLikePhone) {
-        // Se for telefone, garante a formatação correta se seu backend exigir, ou envia limpo
         payload.numeroCelular = valor; 
       } else {
-        // Se não parece email nem telefone, assumimos que é nome de usuário
         payload.nomeUsuario = valor;
       }
 
@@ -71,16 +71,17 @@ const RedefinirSenha = () => {
       console.error(err);
       const mensagem = getBackendErrorMessage(err);
       setError(mensagem || "Erro ao redefinir senha.");
-    } 
+    } finally {
+      // NOVO: Desativa o carregamento (sempre executa)
+      setIsLoading(false);
+    }
   };
 
-  // Configuração específica da Redefinição de Senha
   const redefinirSenhaConfig = {
     title: "Redefinir Senha",
     subtitle: "Faça uma nova senha para acessar sua conta.",
     fields: [
       {
-        // 4. Novo Campo no Formulário
         label: "Nome Completo, Email ou número de celular",
         name: "identificador",
         type: "text",
@@ -88,7 +89,7 @@ const RedefinirSenha = () => {
         value: formData.identificador,
         onChange: handleChange('identificador'),
         required: true,
-        span: 2 // Ocupa largura total se estiver usando grid
+        span: 2 
       },
       {
         label: "Nova Senha",
@@ -117,7 +118,9 @@ const RedefinirSenha = () => {
       {
         type: "submit",
         variant: "primary",
-        children: "Redefinir Senha"
+        // NOVO: Feedback visual no botão
+        children: isLoading ? "Redefinindo..." : "Redefinir Senha",
+        disabled: isLoading
       }
     ],
     footer: {

@@ -248,6 +248,7 @@ const HistoricoInspecao = () => {
           mostrarHistorico={false}
           mostrarExportar={false}
           mostrarAcoes={true}
+          mostrarImagem={false}
         >
           <DetalheInspecao item={itemSelecionado} />
         </ModalDetalheGenerico>
