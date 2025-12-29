@@ -23,6 +23,36 @@ const HistoricoInspecao = () => {
   const [termoBusca, setTermoBusca] = useState('');
   const itensPorPagina = 5; 
 
+  // 2. Função para carregar dados reais da API
+  // 1. FUNÇÃO PARA CARREGAR DADOS (Sincronizada com busca e ordenação)
+  const carregarDados = useCallback(async (pagina = 0, ordemArg = ordem, direcaoArg = direcao, buscaArg = termoBusca) => {
+    setLoading(true);
+    try {
+        // CORREÇÃO: Passar todos os argumentos que o Service espera
+        const response = await inspecaoService.getAll(
+            pagina, 
+            itensPorPagina, 
+            buscaArg, // nomePopular
+            ordemArg, // campo de ordenação
+            direcaoArg // direção (asc/desc)
+        );
+        
+        console.log("Resposta API:", response);
+
+        // Ajuste de mapeamento baseado no retorno padrão do Spring Page
+        setDados(response.content || []); 
+        
+        if (response.page) {
+            setTotalPaginas(response.page.totalPages);
+            setPaginaAtual(response.page.number); 
+        }
+      } catch (error) {
+          console.error("Erro ao carregar inspeções:", error);
+      } finally {
+          setLoading(false);
+      }
+  }, [itensPorPagina, ordem, direcao, termoBusca]);
+
   useEffect(() => {
     // Simulação de filtro simples no front-end para o mock
     const dadosFiltrados = DADOS_INSPECAO_MOCK.filter(d => 
@@ -79,7 +109,7 @@ const HistoricoInspecao = () => {
         isOpen={modalExclusaoAberto}
         onClose={handleCancelarExclusao}
         onConfirm={handleConfirmarExclusao}
-        nomeItem={inspecaoExcluindo?.NomePopular}
+        nomeItem={inspecaoExcluindo?.nomePopular}
         titulo="Excluir Inspeção"
         mensagem="Tem certeza?"
       />

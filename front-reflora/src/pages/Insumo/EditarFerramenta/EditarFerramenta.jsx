@@ -1,20 +1,14 @@
-// components/EditarFerramenta/EditarFerramenta.jsx
 import React, { useState, useEffect } from 'react';
 import FormGeral from '../../../components/FormGeral/FormGeral';
 import Input from '../../../components/Input/Input';
+import insumoService from '../../../services/insumoService';
 import './EditarFerramenta.css';
 
-const EditarFerramenta = ({ 
-  isOpen, 
-  onClose, 
-  ferramenta, 
-  onSalvar 
-}) => {
+const EditarFerramenta = ({ isOpen, onClose, itemParaEditar, onSalvar }) => {
   const [formData, setFormData] = useState({
-    tipoInsumo: '',
     nomeInsumo: '',
     quantidade: '',
-    unidadeMedida: '',
+    unidadeMedida: 'UNIDADE',
     dataRegistro: '',
     responsavelEntrega: '',
     responsavelReceber: '',
@@ -22,40 +16,24 @@ const EditarFerramenta = ({
   });
 
   useEffect(() => {
-    if (ferramenta) {
+    if (itemParaEditar) {
       setFormData({
-        tipoInsumo: ferramenta.tipoInsumo || 'Ferramenta',
-        nomeInsumo: ferramenta.NomeInsumo || '',
-        quantidade: ferramenta.Quantidade || '',
-        unidadeMedida: ferramenta.UnidadeMedida || '',
-        dataRegistro: ferramenta.Data || '',
-        responsavelEntrega: ferramenta.ResponsavelEntrega || '',
-        responsavelReceber: ferramenta.ResponsavelRecebe || '',
-        status: ferramenta.Status || ''
+        nomeInsumo: itemParaEditar.NomeInsumo || '',
+        quantidade: itemParaEditar.Quantidade || '',
+        // Garante que tenha valor ou usa UNIDADE
+        unidadeMedida: itemParaEditar.UnidadeMedida || 'UNIDADE', 
+        dataRegistro: formatarDataParaInput(itemParaEditar.Data),
+        responsavelEntrega: itemParaEditar.ResponsavelEntrega || '',
+        responsavelReceber: itemParaEditar.ResponsavelRecebe || '',
+        status: itemParaEditar.Status || ''
       });
     }
-  }, [ferramenta]);
+  }, [itemParaEditar]);
 
-  const handleCancel = (confirmar = true) => {
-    const resetForm = () => {
-      setFormData({
-        tipoInsumo: '',
-        nomeInsumo: '',
-        quantidade: '',
-        unidadeMedida: '',
-        dataRegistro: '',
-        responsavelEntrega: '',
-        responsavelReceber: '',
-        status: ''
-      });
-      onClose();
-    };
-
-    if (confirmar && window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
-      resetForm();
-    } else if (!confirmar) {
-      resetForm();
-    }
+  const formatarDataParaInput = (dataBR) => {
+    if (!dataBR || dataBR.includes('-')) return dataBR;
+    const [dia, mes, ano] = dataBR.split('/');
+    return `${ano}-${mes}-${dia}`;
   };
 
   const handleChange = (field) => (e) => {
@@ -63,54 +41,63 @@ const EditarFerramenta = ({
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleQuantidadeInc = () => {
-    setFormData(prev => ({ 
-      ...prev, 
-      quantidade: Math.max(0, (prev.quantidade || 0) + 1) 
-    }));
-  };
+  const handleQuantidadeInc = () => setFormData(p => ({ ...p, quantidade: Number(p.quantidade) + 1 }));
+  const handleQuantidadeDec = () => setFormData(p => ({ ...p, quantidade: Math.max(0, Number(p.quantidade) - 1) }));
 
-  const handleQuantidadeDec = () => {
-    setFormData(prev => ({ 
-      ...prev, 
-      quantidade: Math.max(0, (prev.quantidade || 0) - 1) 
-    }));
-  };
-
-  const getUnidadesMedida = () => {
+  // --- NOVA FUNÇÃO DE OPÇÕES ---
+  const getUnidadesFerramenta = () => {
     return [
-      { value: 'Unidade', label: 'Unidade' },
-      { value: 'Peça', label: 'Peça' },
-      { value: 'Jogo', label: 'Jogo' },
-      { value: 'Conjunto', label: 'Conjunto' }
+      { value: 'UNIDADE', label: 'Unidade' },
+      { value: 'PECA', label: 'Peça' },
+      { value: 'JOGO', label: 'Jogo' },
+      { value: 'CONJUNTO', label: 'Conjunto' }
     ];
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!ferramenta) {
-      alert('Erro: Ferramenta não encontrada.');
-      return;
-    }
+    if (!itemParaEditar?.id) return alert('Erro: ID não encontrado.');
 
-    console.log('Ferramenta atualizada:', formData);
-    onSalvar(formData);
-    handleCancel(false);
+    let sucessoApi = false;
+
+    try {
+        const payload = {
+            insumoId: itemParaEditar.id,
+            nomeInsumo: formData.nomeInsumo,
+            status: formData.status.toUpperCase(),
+            quantidade: Number(formData.quantidade),
+            dataRegistro: formData.dataRegistro,
+            responsavelEntrega: formData.responsavelEntrega,
+            responsavelReceber: formData.responsavelReceber,
+            unidadeMedida: formData.unidadeMedida // Envia a nova unidade selecionada
+        };
+
+        await insumoService.atualizarMovimentacao(itemParaEditar.id, payload);
+        sucessoApi = true;
+
+        alert('Ferramenta atualizada com sucesso!');
+        
+        onSalvar({ 
+            id: itemParaEditar.id,
+            Data: formData.dataRegistro.split('-').reverse().join('/'),
+            NomeInsumo: formData.nomeInsumo,
+            Status: formData.status,
+            Quantidade: Number(formData.quantidade),
+            UnidadeMedida: formData.unidadeMedida,
+            ResponsavelEntrega: formData.responsavelEntrega,
+            ResponsavelRecebe: formData.responsavelReceber,
+            imagem: itemParaEditar.imagem
+        });
+
+    } catch (error) {
+        console.error("Erro:", error);
+        if(!sucessoApi) alert("Erro ao atualizar ferramenta.");
+    }
   };
 
   const actions = [
-    {
-      type: 'button',
-      variant: 'action-secondary',
-      children: 'Cancelar',
-      onClick: () => handleCancel(true),
-    },
-    {
-      type: 'submit',
-      variant: 'primary',
-      children: 'Salvar Edições',
-    },
+    { type: 'button', variant: 'action-secondary', children: 'Cancelar', onClick: () => onClose() },
+    { type: 'submit', variant: 'primary', children: 'Salvar Edições' },
   ];
 
   if (!isOpen) return null;
@@ -118,99 +105,44 @@ const EditarFerramenta = ({
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <button 
-          className="btn-fechar-modal"
-          onClick={() => handleCancel(true)}
-          title="Fechar"
-        >
-          ×
-        </button>
-        
+        <button className="btn-fechar-modal" onClick={onClose}>×</button>
         <FormGeral
-          title={`Editar Ferramenta - ${ferramenta?.NomeInsumo || ''}`}
+          title={`Editar Ferramenta - ${itemParaEditar?.NomeInsumo || ''}`}
           actions={actions}
           onSubmit={handleSubmit}
           useGrid={false}
         >
           <div className="input-row">
-            <Input
-              label="Nome da ferramenta"
-              name="nomeInsumo"
-              type="text"
-              value={formData.nomeInsumo}
-              onChange={handleChange('nomeInsumo')}
-              placeholder="Ex: Pá Grande"
-              required={true}
-            />
-            <Input
-              label="Quantidade"
-              name="quantidade"
-              type="number"
-              value={formData.quantidade}
-              onChange={handleChange('quantidade')}
-              onIncrement={handleQuantidadeInc}
-              onDecrement={handleQuantidadeDec}
-              placeholder="Ex: 10"
-              required={true}
-              min="0"
-            />
+            <Input label="Nome" name="nomeInsumo" type="text" value={formData.nomeInsumo} onChange={handleChange('nomeInsumo')} required />
+            <Input label="Qtd" name="quantidade" type="number" value={formData.quantidade} onChange={handleChange('quantidade')} onIncrement={handleQuantidadeInc} onDecrement={handleQuantidadeDec} />
           </div>
-
+          
           <div className="input-row">
-            <Input
-              label="Unidade de medida"
-              name="unidadeMedida"
-              type="select"
-              value={formData.unidadeMedida}
-              onChange={handleChange('unidadeMedida')}
-              required={true}
-              options={getUnidadesMedida()}
+            {/* INPUT ATUALIZADO PARA SELECT */}
+            <Input 
+                label="Unidade de Medida" 
+                name="unidadeMedida" 
+                type="select" 
+                value={formData.unidadeMedida} 
+                onChange={handleChange('unidadeMedida')}
+                options={getUnidadesFerramenta()} 
+                required
             />
-            <Input
-              label="Status"
-              name="status"
-              type="select"
-              value={formData.status}
-              onChange={handleChange('status')}
-              required={true}
-              options={[
-                { value: 'Entrada', label: 'Entrada' },
-                { value: 'Emprestada', label: 'Emprestada' },
-                { value: 'Devolvida', label: 'Devolvida' }
-              ]}
-            />
-          </div>
 
+            <Input label="Status" name="status" type="select" value={formData.status} onChange={handleChange('status')} required options={[
+                { value: 'EMPRESTADO', label: 'Emprestado' },
+                { value: 'DEVOLVIDO', label: 'Devolvido' },
+                { value: 'ENTRADA', label: 'Entrada' }
+            ]} />
+          </div>
+          
           <div className="input-row">
-            <Input
-              label="Data de Registro"
-              name="dataRegistro"
-              type="date"
-              value={formData.dataRegistro}
-              onChange={handleChange('dataRegistro')}
-              required={true}
-            />
-            <Input
-              label="Responsável pela Entrega"
-              name="responsavelEntrega"
-              type="text"
-              value={formData.responsavelEntrega}
-              onChange={handleChange('responsavelEntrega')}
-              placeholder="Ex: Arthur dos Santos Pereira"
-              required={true}
-            />
+            <Input label="Data" name="dataRegistro" type="date" value={formData.dataRegistro} onChange={handleChange('dataRegistro')} required />
           </div>
-
-          <div className="input-row input-row-single">
-            <Input
-              label="Responsável por Receber"
-              name="responsavelReceber"
-              type="text"
-              value={formData.responsavelReceber}
-              onChange={handleChange('responsavelReceber')}
-              placeholder="Ex: Ramil dos Santos Pereira"
-              required={true}
-            />
+          
+          <div className="input-row">
+            <Input label="Resp. Entrega" name="responsavelEntrega" type="text" value={formData.responsavelEntrega} onChange={handleChange('responsavelEntrega')} required />
+            <Input label="Resp. Recebe" name="responsavelReceber" type="text" value={formData.responsavelReceber} onChange={handleChange('responsavelReceber')} required />
           </div>
         </FormGeral>
       </div>

@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import FormGeral from '../../../components/FormGeral/FormGeral';
 import Input from '../../../components/Input/Input';
+import { plantioService } from '../../../services/plantioService';
+import { inspecaoService } from '../../../services/inspecaoMudaService';
 
 const CadastrarInspecaoMudas = () => {
+
+    const [lotesDisponiveis, setLotesDisponiveis] = useState([]);
+    const [canteirosDisponiveis, setCanteirosDisponiveis] = useState([]);
+    const [loading, setLoading] = useState(false);
+
     // 3. Atualizar o estado inicial para os campos da imagem
     const [formData, setFormData] = useState({
         lote: '',
         nomePopular: '',
+        nomeCanteiro:'',
         dataInspecao: '',
         tratosCulturais: '',
         estadoSaude: '',
@@ -16,11 +24,38 @@ const CadastrarInspecaoMudas = () => {
         observacoes: '',
     });
 
+    // 1. Carregar Lotes confirmados ao montar o componente
+    useEffect(() => {
+        const carregarLotes = async () => {
+            const dados = await plantioService.getLotesConfirmados();
+            setLotesDisponiveis(dados);
+        };
+        carregarLotes();
+    }, []);
+
+    // 2. Quando o Lote mudar, busca o Nome Popular e os Canteiros vinculados
+    const handleLoteChange = async (loteSelecionado) => {
+        const infoLote = lotesDisponiveis.find(item => item.loteMuda === loteSelecionado);
+        
+        setFormData(prev => ({
+            ...prev,
+            lote: loteSelecionado,
+            nomePopular: infoLote ? infoLote.nomePopular : '',
+            nomeCanteiro: '' // Reseta o canteiro ao mudar o lote
+        }));
+
+        if (loteSelecionado) {
+            const canteiros = await inspecaoService.getCanteirosPorLote(loteSelecionado);
+            setCanteirosDisponiveis(canteiros.map(c => ({ value: c, label: c })));
+        }
+    };
+
     const handleCancel = (confirmar = true) => {
         const resetForm = () => {
             // 4. Atualizar o reset para o novo estado
             setFormData({
                 lote: '',
+                nomeCanteiro:'',
                 nomePopular: '',
                 dataInspecao: '',
                 tratosCulturais: '',
@@ -43,15 +78,26 @@ const CadastrarInspecaoMudas = () => {
 
     // Handler 'onChange' genérico (reutilizado)
     const handleChange = (field) => (e) => {
-        const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
-        setFormData((prev) => ({ ...prev, [field]: value }));
+        const value = e.target.value;
+        if (field === 'lote') {
+            handleLoteChange(value);
+        } else {
+            setFormData((prev) => ({ ...prev, [field]: value }));
+        }
     };
 
-    const handleSubmit = (e) => {
-        // e.preventDefault() já é tratado no FormGeral
-        console.log('Dados da Inspeção de Mudas:', formData);
-        alert('Inspeção salva com sucesso!'); // 5. Mensagem atualizada
-        handleCancel(false);
+    const handleSubmit = async () => {
+        try {
+            setLoading(true);
+            await inspecaoService.create(formData);
+            alert('Inspeção salva com sucesso!');
+            handleCancel(false);
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao salvar inspeção: ' + (error.response?.data?.message || 'Erro desconhecido'));
+        } finally {
+            setLoading(false);
+        }
     };
 
     // Handlers do Stepper (reutilizados)
@@ -89,6 +135,7 @@ const CadastrarInspecaoMudas = () => {
                 actions={actions}
                 onSubmit={handleSubmit}
                 useGrid={true} // Mantido para layout lado a lado
+                isLoading={loading}
             >
                 {/* 9. Campos (Inputs) atualizados conforme a imagem */}
 
@@ -99,27 +146,30 @@ const CadastrarInspecaoMudas = () => {
                     value={formData.lote}
                     onChange={handleChange('lote')}
                     required={true}
+                    options={lotesDisponiveis.map(l => ({ value: l.loteMuda, label: l.loteMuda }))}
                     placeholder="Selecione o Lote"
-                    options={[
-                        { value: 'A001', label: 'A001' },
-                        { value: 'A002', label: 'A002' },
-                        { value: 'B001', label: 'B001' },
-                    ]}
                 />
 
                 <Input
-                    label="Nome Popular"
+                    label="Nome Popular (Espécie)"
                     name="nomePopular"
-                    type="select"
+                    type="text"
+                    placeholder="Preenchido automaticamente"
                     value={formData.nomePopular}
-                    onChange={handleChange('nomePopular')}
+                    readOnly={true} // Campo automático
+                    disabled={true}
+                />
+
+                <Input
+                    label="Canteiro Localizado"
+                    name="nomeCanteiro"
+                    type="select"
+                    value={formData.nomeCanteiro}
+                    onChange={handleChange('nomeCanteiro')}
                     required={true}
-                    placeholder="Selecione a espécie"
-                    options={[
-                        { value: 'ipe_amarelo', label: 'Ipê-amarelo' },
-                        { value: 'pau_brasil', label: 'Pau-brasil' },
-                        { value: 'sibipiruna', label: 'Sibipiruna' },
-                    ]}
+                    options={canteirosDisponiveis}
+                    disabled={!formData.lote}
+                    placeholder={formData.lote ? "Selecione o canteiro" : "Selecione um lote primeiro"}
                 />
 
                 <Input
@@ -140,10 +190,10 @@ const CadastrarInspecaoMudas = () => {
                     required={true}
                     placeholder="Selecione os tratos"
                     options={[
-                        { value: 'adubacao_regacao', label: 'Adubação, Regação' },
-                        { value: 'adubacao', label: 'Apenas Adubação' },
-                        { value: 'regacao', label: 'Apenas Regação' },
-                        { value: 'nenhum', label: 'Nenhum' },
+                        { value: 'Adubação e Regação', label: 'Adubação, Regação' },
+                        { value: 'Adubação', label: 'Apenas Adubação' },
+                        { value: 'Regação', label: 'Apenas Regação' },
+                        { value: 'Nenhum', label: 'Nenhum' },
                     ]}
                 />
 
@@ -156,12 +206,14 @@ const CadastrarInspecaoMudas = () => {
                     required={true}
                     placeholder="Selecione o estado"
                     options={[
-                        { value: 'boa', label: 'Boa' },
-                        { value: 'regular', label: 'Regular' },
-                        { value: 'ruim', label: 'Ruim' },
+                        { value: 'Ótima', label: 'Ótima' },
+                        { value: 'Boa', label: 'Boa' },
+                        { value: 'Regular', label: 'Regular' },
+                        { value: 'Ruim', label: 'Ruim' },
+                        { value: 'Péssima', label: 'Péssima' },
+                        { value: 'Em tratamento', label: 'Em tratamento' },
                     ]}
                 />
-
                 <Input
                     label="Pragas/Doenças"
                     name="pragasDoencas"
@@ -169,15 +221,14 @@ const CadastrarInspecaoMudas = () => {
                     value={formData.pragasDoencas}
                     onChange={handleChange('pragasDoencas')}
                     required={true}
-                    placeholder="Selecione"
+                    placeholder="Selecione o estado de saúde"
                     options={[
-                        { value: 'nenhuma', label: 'Nenhuma' },
-                        { value: 'formigas', label: 'Formigas' },
-                        { value: 'fungos', label: 'Fungos' },
-                        { value: 'outros', label: 'Outros' },
+                        { value: 'Nenhuma', label: 'Nenhuma' },
+                        { value: 'Formigas', label: 'Formigas' },
+                        { value: 'Fungos', label: 'Fungos' },
+                        { value: 'Outros', label: 'Outros' },
                     ]}
                 />
-
                 <Input
                     label="Estimativa de Mudas Prontas"
                     name="estimativaMudasProntas"
@@ -190,19 +241,18 @@ const CadastrarInspecaoMudas = () => {
                     onDecrement={handleDecrement('estimativaMudasProntas')}
                 />
 
-                <Input
-                    label="Nome Responsável"
-                    name="nomeResponsavel"
-                    type="select"
-                    value={formData.nomeResponsavel}
-                    onChange={handleChange('nomeResponsavel')}
-                    required={true}
-                    placeholder="Selecione o responsável"
-                    options={[
-                        { value: 'resp_1', label: 'Responsável 1 (XXXX)' },
-                        { value: 'resp_2', label: 'Responsável 2 (YYYY)' },
-                    ]}
-                />
+                {/* Campo de Nome Responsável ocupando 2 colunas */}
+                <div className="form-geral__campo--span-2">
+                    <Input
+                        label="Nome Responsável"
+                        name="nomeResponsavel"
+                        type="text"
+                        value={formData.nomeResponsavel}
+                        onChange={handleChange('nomeResponsavel')}
+                        required={true}
+                        placeholder="Informe o nome do responsável"
+                    />
+                </div>
 
                 {/* Campo de Observações ocupando 2 colunas */}
                 <div className="form-geral__campo--span-2">

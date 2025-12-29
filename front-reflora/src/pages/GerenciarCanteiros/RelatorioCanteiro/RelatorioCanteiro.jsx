@@ -27,6 +27,13 @@ const RelatorioCanteiro = () => {
   const handleFiltroChange = (name, value) => { setFiltros(prev => ({ ...prev, [name]: value })); };
   const handleGerarRelatorio = () => { /* lógica de filtro */ };
 
+  // --- CONFIGURAÇÃO DE UI ---
+  const painelItems = [
+    { id: 1, titulo: 'Total Entrada', valor: dadosPainel.totalEntrada.toLocaleString(), className: 'card-entrada' },
+    { id: 2, titulo: 'Total Saída', valor: dadosPainel.totalSaida.toLocaleString(), className: 'card-saida' },
+    { id: 3, titulo: 'Saldo Atual', valor: dadosPainel.totalAtual.toLocaleString(), className: 'card-atual' },
+  ];
+
   const colunas = [
     { key: "Lote", label: "Lote" },
     { key: "NomePopular", label: "Nome Popular" },

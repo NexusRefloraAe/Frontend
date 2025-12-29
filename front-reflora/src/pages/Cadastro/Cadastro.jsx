@@ -101,7 +101,7 @@ const Cadastro = () => {
         ]
       },
       {
-        label: "Empresa (Opcional)",
+        label: "Empresa",
         name: "empresa",
         placeholder: "Digite o nome da empresa",
         value: formData.empresa,

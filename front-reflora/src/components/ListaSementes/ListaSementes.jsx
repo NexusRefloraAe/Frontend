@@ -3,6 +3,7 @@ import ModalDetalheSemente from "../ModalDetalheSemente/ModalDetalheSemente";
 import { sementesService } from "../../services/sementesService";
 import editIcon from '../../assets/edit.svg';
 import deleteIcon from '../../assets/delete.svg';
+import { FaExchangeAlt } from "react-icons/fa";
 
 // --- ATENÇÃO: Importe o novo componente aqui ---
 import TabelaResponsiva from "../TabelaResponsiva/TabelaResponsiva"; // Ajuste o caminho conforme criou
@@ -11,7 +12,8 @@ import Paginacao from "../Paginacao/Paginacao";
 import ExportButton from "../ExportButton/ExportButton";
 
 function ListaSementes({ 
-    sementes, 
+    sementes,
+    onIniciarCorrecao,
     paginaAtual, 
     totalPaginas, 
     onPageChange, 
@@ -149,6 +151,15 @@ function ListaSementes({
                     <button onClick={() => onSolicitarExclusao(semente)} style={{ border: 'none', background: 'transparent', cursor: 'pointer' }} title="Excluir">
                         <img src={deleteIcon} alt="Excluir" style={{ width: '20px', height: '20px' }} />
                     </button>
+                    {semente.idUltimoMovimentacao && (
+                        <button 
+                            onClick={() => onIniciarCorrecao(semente)} 
+                            style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
+                            title={`Mudar de ${semente.finalidadeAtual} para ${semente.finalidadeAtual === 'Plantio' ? 'Teste' : 'Plantio'}`}
+                        >
+                            <FaExchangeAlt color="#fb8c00" size={18} /> 
+                        </button>
+                    )}
                 </div>
             )
         };

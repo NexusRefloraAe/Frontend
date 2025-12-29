@@ -27,6 +27,11 @@ export const canteiroService = {
         return data;
     },
 
+    getNomesCanteiros: async () => {
+        const response = await api.get('/canteiros/nomes');
+        return response.data; // Retorna ["Canteiro 1", "Canteiro 2", ...]
+    },
+
     getById: async (id) => {
         const response = await api.get(`/canteiros/${id}`);
         return response.data;
@@ -89,5 +94,17 @@ export const canteiroService = {
         };
         const response = await api.get(`/canteiros/${id}/historico-detalhado`, { params });
         return response.data;
-    }
+    },
+
+    exportarHistoricoPdf: (id) => {
+        return api.get(`/canteiros/${id}/historico/export/pdf`, {
+            responseType: 'blob'
+        });
+    },
+
+    exportarHistoricoCsv: (id) => {
+        return api.get(`/canteiros/${id}/historico/export/csv`, {
+            responseType: 'blob'
+        });
+    },
 };
