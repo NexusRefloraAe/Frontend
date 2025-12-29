@@ -49,7 +49,7 @@ function ListaSementes({
       sortKey: "quantidade",
     },
     { key: "quantidadeSaidaFormatada", label: "Qtd Saída", sortable: false },
-    { key: "finalidadeAtual", label: "Finalidade", sortable: false },
+    { key: "finalidadeAtual", label: "Status", sortable: false },
     { key: "acoesRenderizadas", label: "Ações", sortable: false },
   ];
 
@@ -59,7 +59,7 @@ function ListaSementes({
     { label: "Nome Popular", key: "nomePopular" },
     { label: "Qtd Atual", key: "quantidadeAtualFormatada" },
     { label: "Qtd Saída", key: "quantidadeSaidaFormatada" },
-    { label: "Finalidade", key: "finalidadeAtual" },
+    { label: "Status", key: "finalidadeAtual" },
   ];
 
   // Handlers de Detalhes e Exportação (Mantidos iguais ao seu código original...)
