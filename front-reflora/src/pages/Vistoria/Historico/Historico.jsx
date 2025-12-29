@@ -309,6 +309,7 @@ const Historico = () => {
           mostrarHistorico={false}
           mostrarExportar={false}
           mostrarAcoes={true}
+          mostrarImagem={true}
         >
           {/* Passa o componente customizado como 'children' */}
           <DetalheVistoria item={itemSelecionado} />
