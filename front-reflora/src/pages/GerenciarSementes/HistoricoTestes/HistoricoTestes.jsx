@@ -277,6 +277,7 @@ const HistoricoTestes = () => {
           mostrarHistorico={false}
           mostrarExportar={false}
           mostrarAcoes={true}
+          mostrarImagem={false}
         >
           <DetalhesTestes item={itemSelecionado} />
         </ModalDetalheGenerico>

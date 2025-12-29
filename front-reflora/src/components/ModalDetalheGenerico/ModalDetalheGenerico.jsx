@@ -24,6 +24,7 @@ function ModalDetalheGenerico({
   mostrarAcoes = true,
   mostrarHistorico = true,
   mostrarExportar = true,
+  mostrarImagem = true, // <--- NOVA PROP (Padrão true para manter compatibilidade)
   textoExclusao = "este item",
   children,
 }) {
@@ -33,7 +34,6 @@ function ModalDetalheGenerico({
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
 
   useEffect(() => {
-    // Só tentamos carregar ou resetar se o Modal estiver aberto
     if (isOpen) {
       if (onCarregarHistorico && (item?.id || item?._id)) {
         const carregar = async () => {
@@ -49,21 +49,17 @@ function ModalDetalheGenerico({
         };
         carregar();
       } else {
-        // Só atualiza se o estado atual for diferente das props para evitar o loop
         if (historicoEntrada !== dadosEntrada)
           setHistoricoEntrada(dadosEntrada);
         if (historicoSaida !== dadosSaida) setHistoricoSaida(dadosSaida);
       }
     } else {
-      // Quando o modal fecha, resetamos a página para 1
       setPaginaHistorico(1);
     }
-    // Remova dadosEntrada e dadosSaida das dependências se eles forem literais []
   }, [isOpen, item?.id, item?._id, onCarregarHistorico]);
 
   if (!isOpen || !item) return null;
 
-  // Paginação
   const ITENS_PAGINA = 5;
   const totalItens = Math.max(historicoEntrada.length, historicoSaida.length);
   const totalPaginas = Math.ceil(totalItens / ITENS_PAGINA) || 1;
@@ -100,19 +96,23 @@ function ModalDetalheGenerico({
           <div className="modal-body-generico">
             {/* SEÇÃO TOPO: FOTO + DADOS */}
             <div className="detalhe-top-generico">
-              <div className="img-wrapper-generico">
-                {imagemUrl ? (
-                  <img
-                    src={imagemUrl}
-                    alt="Item"
-                    onError={(e) => (e.target.style.display = "none")}
-                  />
-                ) : (
-                  <span style={{ color: "#ccc", fontWeight: "bold" }}>
-                    Sem Foto
-                  </span>
-                )}
-              </div>
+              
+              {/* --- AQUI ESTÁ A MUDANÇA: Verifica se deve mostrar a imagem --- */}
+              {mostrarImagem && (
+                <div className="img-wrapper-generico">
+                  {imagemUrl ? (
+                    <img
+                      src={imagemUrl}
+                      alt="Item"
+                      onError={(e) => (e.target.style.display = "none")}
+                    />
+                  ) : (
+                    <span style={{ color: "#ccc", fontWeight: "bold" }}>
+                      Sem Foto
+                    </span>
+                  )}
+                </div>
+              )}
 
               <div className="dados-acoes-wrapper">
                 <div className="info-grid-generico">
@@ -129,17 +129,17 @@ function ModalDetalheGenerico({
                   <div className="acoes-generico">
                     <button
                       className="btn-generico"
-                      onClick={() => setModalExcluirAberto(true)}
-                      title="Excluir"
-                    >
-                      <img src={deleteIcon} alt="Excluir" />
-                    </button>
-                    <button
-                      className="btn-generico"
                       onClick={() => onEditar && onEditar(item)}
                       title="Editar"
                     >
                       <img src={editIcon} alt="Editar" />
+                    </button>
+                    <button
+                      className="btn-generico"
+                      onClick={() => setModalExcluirAberto(true)}
+                      title="Excluir"
+                    >
+                      <img src={deleteIcon} alt="Excluir" />
                     </button>
                   </div>
                 )}
