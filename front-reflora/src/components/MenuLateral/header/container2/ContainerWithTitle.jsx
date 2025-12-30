@@ -9,17 +9,23 @@ const ContainerWithTitle = ({ onMenuClick, isMobile }) => {
   const titleMap = {
     "/home": "Menu Inicial",
     "/banco-sementes": "Banco de Sementes",
+    
     "/gerenciar-sementes": "Gerenciar Sementes",
     "/gerenciar-canteiros": "Gerenciar Canteiros",
-    "/distribuicao-mudas": "Distribuir Mudas",
-    "/termo-compromisso": "Distribuir Mudas",
+   
+    "/distribuicao-mudas": "Distribuir Mudas",  
+    "/termo-compromisso": "Distribuir Mudas", 
+    "/distribuicao-mudas/relatorio": "Relatório de Distribuição",
+   
     "/vistoria": "Vistoria das mudas",
     "/insumo": "Gestão de Insumo",
+
     "/relatorios": "Relatórios",
     "/gerenciar-canteiros/relatorio": "Relatório de Canteiros",
     "/vistoria/relatorio-vistoria": "Relatório de Vistorias",
     "/gerenciamento-sementes/relatorio": "Relatório de Sementes",
     "/insumo/relatorio-materiais": "Relatório de Materiais",
+   
     "/configuracoes": "Configurações",
     "/notificacoes": "Notificações",
   };

@@ -17,7 +17,8 @@ const TermoCompromisso = () => {
             cidadeDistribuicao: 'BAÍA DA TRAIÇÃO',
             estadoDistribuicao: 'PB',
             responsavelDistribuicao: 'MARCELO',      
-            responsavelRecebimento: 'THAIGO FARIAS'  
+            responsavelRecebimento: 'THAIGO FARIAS',
+            dataEntrega: '' 
         },
         mudas: [],
         totalMudas: 0
@@ -42,18 +43,57 @@ const TermoCompromisso = () => {
     const respDistribuicao = dadosRevisao.responsavelDistribuicao || '_______';
     const respRecebimento = dadosRevisao.responsavelRecebimento || '_______';
 
-    // Formata Cidade / UF Sede (Agora atribuído à AFINK)
     const cidadeSede = dadosRevisao.cidadeSede;
     const ufSede = dadosRevisao.estadoSede;
     const textoSede = (cidadeSede && ufSede) ? `${cidadeSede} - ${ufSede}` : (cidadeSede || '_______');
 
-    // Formata Cidade / UF Distribuição (Atribuído à Instituição/Plantio)
     const cidadeDist = dadosRevisao.cidadeDistribuicao;
     const ufDist = dadosRevisao.estadoDistribuicao;
     const textoDist = (cidadeDist && ufDist) ? `${cidadeDist} - ${ufDist}` : (cidadeDist || '_______');
 
+    let textoData = "_______";
+    if (dadosRevisao.dataEntrega) {
+        if (dadosRevisao.dataEntrega.includes('-')) {
+            const [ano, mes, dia] = dadosRevisao.dataEntrega.split('-');
+            textoData = `${dia}/${mes}/${ano}`;
+        } else {
+            textoData = dadosRevisao.dataEntrega;
+        }
+    }
+
     const handleEdit = () => navigate(-1);
-    const handleExport = () => window.print();
+
+    // --- AÇÃO DE EXPORTAR E SALVAR (SIMULAÇÃO) ---
+    const handleExport = () => {
+        // 1. Abre a janela de impressão do navegador
+        window.print();
+
+        // 2. Prepara os dados para enviar ao Relatório
+        const novaDistribuicao = {
+            id: new Date().getTime(), // Gera um ID temporário
+            instituicao: instituicao,
+            cidade: cidadeDist || "Cidade",
+            estado: ufDist || "UF",
+            dataEntrega: dadosRevisao.dataEntrega, // Mantém formato original para ordenação
+            quantidade: total,
+            responsavelRecebimento: respRecebimento,
+            mudasDetalhadas: mudas
+        };
+
+        // 3. Após fechar a impressão (ou imediato), navega para o Relatório
+        // IMPORTANTE: Ajuste a rota '/distribuicao-mudas' para a rota principal onde fica o Layout de Abas
+        // Enviamos 'activeTab' caso seu layout suporte troca automática de abas via state
+        setTimeout(() => {
+            if(window.confirm("Deseja confirmar a distribuição e ir para o relatório?")) {
+                navigate('/distribuicao-mudas', { 
+                    state: { 
+                        novaDistribuicao: novaDistribuicao,
+                        tabDestino: 'relatorio-distribuicao' // Dica para o TabsLayout abrir na aba certa
+                    } 
+                });
+            }
+        }, 500);
+    };
 
     return (
         <div className="termo-compromisso">
@@ -61,7 +101,7 @@ const TermoCompromisso = () => {
                 <h2>TERMO DE COMPROMISSO E RESPONSABILIDADE</h2>
 
                 <p className="termo-compromisso__texto">
-                    Este documento oficializa a entrega de <strong>{total}</strong> mudas realizada pela <strong>AFINK</strong>, 
+                    Este documento oficializa a entrega de <strong>{total}</strong> mudas, realizada em <strong>{textoData}</strong> pela <strong>AFINK</strong>, 
                     sediada em <strong>{textoSede}</strong> e representada neste ato pelo(a) Sr(a). <strong>{respDistribuicao}</strong>.
                     <br/><br/>
                     A doação é destinada à instituição <strong>{instituicao}</strong> e recebida pelo(a) Sr(a). <strong>{respRecebimento}</strong>, 
@@ -96,20 +136,15 @@ const TermoCompromisso = () => {
 
                 {totalPaginas > 1 && (
                     <div className="termo-compromisso__paginacao">
-                        <Paginacao
-                            paginaAtual={paginaAtual}
-                            totalPaginas={totalPaginas}
-                            onPaginaChange={setPaginaAtual}
-                        />
+                        <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onPaginaChange={setPaginaAtual} />
                     </div>
                 )}
 
-                {/* Área de Assinaturas */}
                 <div className="assinaturas-container" style={{ marginTop: '60px', display: 'flex', justifyContent: 'space-between', gap: '40px' }}>
                      <div style={{ textAlign: 'center', flex: 1 }}>
                         <div style={{ borderTop: '1px solid #333', margin: '0 20px', paddingTop: '10px' }}></div>
                         <strong>{respDistribuicao}</strong><br/>
-                        <small>Responsável AFINK</small> {/* REMOVIDO ({textoSede}) DAQUI */}
+                        <small>Responsável AFINK</small>
                      </div>
                      <div style={{ textAlign: 'center', flex: 1 }}>
                         <div style={{ borderTop: '1px solid #333', margin: '0 20px', paddingTop: '10px' }}></div>
@@ -119,18 +154,10 @@ const TermoCompromisso = () => {
                 </div>
 
                 <div className="termo-compromisso__actions">
-                    <button
-                        type="button"
-                        className="termo-compromisso__button termo-compromisso__button--secondary"
-                        onClick={handleEdit}
-                    >
+                    <button type="button" className="termo-compromisso__button termo-compromisso__button--secondary" onClick={handleEdit}>
                         <FaEdit /> Editar
                     </button>
-                    <button
-                        type="button"
-                        className="termo-compromisso__button termo-compromisso__button--primary"
-                        onClick={handleExport}
-                    >
+                    <button type="button" className="termo-compromisso__button termo-compromisso__button--primary" onClick={handleExport}>
                         <FaFileExport /> Exportar Termo
                     </button>
                 </div>

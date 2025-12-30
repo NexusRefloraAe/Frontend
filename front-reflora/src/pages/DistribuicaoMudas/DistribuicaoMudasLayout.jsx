@@ -4,6 +4,8 @@ import RevisaoDistribuicao from './RevisaoDistribuicao/RevisaoDistribuicao';
 import { FaClipboardCheck } from 'react-icons/fa'; // 1. Importando o ícone
 import './DistribuicaoMudasLayout.css'; // 2. Importando o CSS
 import TabsLayout from '../../components/TabsLayout/TabsLayout';
+import { FaFileAlt } from 'react-icons/fa';
+import RelatorioDistribuicao from './RelatorioDistribuicao/RelatorioDistribuicao';
 
 const DistribuicaoMudasLayout = () => {
     const [activeTab, setActiveTab] = useState('revisao-distribuicao');
@@ -15,6 +17,12 @@ const DistribuicaoMudasLayout = () => {
             icon: <FaClipboardCheck />,
             page: <RevisaoDistribuicao />,
         },
+        { 
+            id: 'relatorio-distribuicao',
+            label: "Relatório de Distribuição",
+            icon: <FaFileAlt />,
+            page: <RelatorioDistribuicao />,
+        }
     ];
 
     return <TabsLayout tabs={distribuicaoMenus} defaultTabId="revisao-distribuicao" />;

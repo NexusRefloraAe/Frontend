@@ -1,0 +1,122 @@
+/* src/pages/DistribuicaoMudas/RelatorioDistribuicao/RelatorioDistribuicao.css */
+
+.relatorio-distribuicao-container {
+  width: 100%;
+  padding: 2rem; /* Aumentei o padding geral */
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.relatorio-distribuicao-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem; /* AUMENTADO: Espaço maior entre Filtros, Cards e Tabela */
+}
+
+/* --- SEÇÃO DE FILTROS --- */
+.filtros-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  /* Garantia extra de espaçamento */
+  margin-bottom: 0.5rem; 
+}
+
+.filtros-section h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+/* --- SEÇÃO DE CARDS --- */
+.cards-section {
+  width: 100%;
+  /* Garantia extra de espaçamento */
+  margin-bottom: 0.5rem;
+}
+
+.cards-container-single {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1.5rem;
+}
+
+.card-total-distribuido {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border-left: 5px solid #2e7d32;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 280px;
+}
+
+.card-total-distribuido .card-titulo {
+  font-size: 1rem;
+  color: #6b7280;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card-total-distribuido .card-valor {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+/* --- SEÇÃO DA TABELA --- */
+.tabela-section {
+  background: white;
+  padding: 24px; /* Mais respiro interno */
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.tabela-footer-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 1024px) {
+  .relatorio-distribuicao-container {
+    padding: 1rem;
+  }
+  .card-total-distribuido {
+    width: 100%;
+    align-items: center;
+    border-left: none;
+    border-top: 5px solid #2e7d32;
+  }
+}
+
+@media (max-width: 768px) {
+  .relatorio-distribuicao-content {
+      gap: 1.5rem; /* Menor em mobile, mas ainda separado */
+  }
+  .tabela-footer-actions {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
