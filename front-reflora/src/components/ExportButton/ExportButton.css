@@ -42,9 +42,9 @@
   opacity: 0.6;
 }
 
-.export-menu {
+.export-dropdown .export-menu {
   position: relative;
-  background: #4ade80;
+  background: #f3f4f4;
   border-radius: 8px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
   margin-top: 6px;
@@ -53,7 +53,7 @@
   z-index: 10;
 }
 
-.export-menu button,
+.export-dropdown .export-menu button,
 .export-menu .csv-link {
   width: 100%;
   text-align: left;
@@ -66,6 +66,8 @@
   transition: background 0.2s;
   display: block;
   text-decoration: none; /* Remove sublinhado se for link */
+  font-weight:normal;
+  border-radius: 0px;
 }
 
 .export-menu button:hover,
