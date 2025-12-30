@@ -1,33 +1,103 @@
+/* src/pages/Relatorios/Relatorios.css */
+
 .relatorios-container {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  
+  min-height: 100vh;
+  background-color: #f8fafc;
 }
 
 .relatorios-titulo {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  color: #1f2937;
+  color: #070707;
   margin-bottom: 2rem;
   text-align: left;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
 }
 
 .relatorios-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
-  align-items: start;
+  align-items: stretch;
 }
 
-.relatorio-card {
+/* Wrapper do card */
+.relatorio-card-wrapper {
   cursor: pointer;
   transition: all 0.3s ease;
+  height: 100%;
 }
 
-.relatorio-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+.relatorio-card-wrapper:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Estrutura interna do card */
+.relatorio-card-wrapper > div {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden !important;
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+}
+
+/* --- VOLTANDO A COR DO TEXTO PARA VERDE --- */
+
+/* Ajuste do Texto "RELATÓRIO" */
+.relatorios-container .card-titulo {
+  font-size: 0.875rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #075525; /* Verde original */
+  margin-bottom: 0.5rem;
+}
+
+/* Ajuste do Nome do Relatório */
+.relatorios-container .card-valor {
+  font-size: 1.25rem !important;
+  line-height: 1.4;
+  font-weight: 600;
+  color: #075525; /* Verde original */
+  word-break: break-word;
+}
+
+/* --- CORES DE FUNDO CLARAS (MANTIDAS) --- */
+
+/* 1. Sementes (Azul Claro) */
+.relatorio-card-wrapper:nth-child(1) > div {
+    background-color: #4589e2; 
+    border: 1px solid #dbeafe;
+}
+
+/* 2. Canteiros (Verde Claro) */
+.relatorio-card-wrapper:nth-child(2) > div {
+    background-color: #41e672; 
+    border: 1px solid #dcfce7;
+}
+
+/* 3. Vistorias (Amarelo Claro) */
+.relatorio-card-wrapper:nth-child(3) > div {
+    background-color: #eccc4b; 
+    border: 1px solid #fef3c7;
+}
+
+/* 4. Insumos (Vermelho Claro) */
+.relatorio-card-wrapper:nth-child(4) > div {
+    background-color: #ee6b6b; 
+    border: 1px solid #fee2e2;
+}
+
+/* 5. Distribuição (Roxo Claro) */
+.relatorio-card-wrapper:nth-child(5) > div {
+    background-color: #ae6dee; 
+    border: 1px solid #f3e8ff;
 }
 
 /* Responsividade */
@@ -35,20 +105,15 @@
   .relatorios-container {
     padding: 1rem;
   }
-  
   .relatorios-titulo {
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
   }
-  
-  .relatorios-grid {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
   .relatorios-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .relatorios-container .card-valor {
+    font-size: 1.1rem !important;
   }
 }

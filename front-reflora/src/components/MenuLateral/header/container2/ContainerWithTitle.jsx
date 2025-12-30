@@ -12,11 +12,12 @@ const ContainerWithTitle = ({ onMenuClick, isMobile }) => {
     
     "/gerenciar-sementes": "Gerenciar Sementes",
     "/gerenciar-canteiros": "Gerenciar Canteiros",
-   
+    
+    // Rotas de Distribuição
     "/distribuicao-mudas": "Distribuir Mudas",  
     "/termo-compromisso": "Distribuir Mudas", 
-    "/distribuicao-mudas/relatorio": "Relatório de Distribuição",
-   
+    "/distribuicao-mudas/relatorio": "Relatório de Distribuição", // Rota específica
+    
     "/vistoria": "Vistoria das mudas",
     "/insumo": "Gestão de Insumo",
 
@@ -25,17 +26,22 @@ const ContainerWithTitle = ({ onMenuClick, isMobile }) => {
     "/vistoria/relatorio-vistoria": "Relatório de Vistorias",
     "/gerenciamento-sementes/relatorio": "Relatório de Sementes",
     "/insumo/relatorio-materiais": "Relatório de Materiais",
-   
+    
     "/configuracoes": "Configurações",
     "/notificacoes": "Notificações",
   };
 
-  // Encontra o título correspondente
-  let title = "";
-  for (const [route, routeTitle] of Object.entries(titleMap)) {
+  // LÓGICA DE CORREÇÃO:
+  // Ordena as chaves pelo tamanho (da maior para a menor string)
+  // Isso garante que "/distribuicao-mudas/relatorio" seja verificado ANTES de "/distribuicao-mudas"
+  const sortedRoutes = Object.keys(titleMap).sort((a, b) => b.length - a.length);
+
+  let title = ""; // Título padrão
+
+  for (const route of sortedRoutes) {
     if (path === route || path.startsWith(route)) {
-      title = routeTitle;
-      break;
+      title = titleMap[route];
+      break; // Para no primeiro match (o mais específico/longo)
     }
   }
 
