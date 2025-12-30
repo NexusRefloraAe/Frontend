@@ -37,7 +37,7 @@ const GerenciarCanteirosLayout = () => {
     },
     {
       id: "historico",
-      label: "Histórico Canteiro",
+      label: "Listar Canteiro",
       icon: <FaCheckCircle />,
       page: <Historico />,
     },
