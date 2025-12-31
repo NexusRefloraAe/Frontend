@@ -240,6 +240,7 @@ const Historico = () => {
   const colunas = [
     { key: "loteMuda", label: "Lote", sortable: true, sortKey: "plantioCanteiro.plantioOrigem.lote" },
     { key: "nomeCanteiro", label: "Nome do Local", sortable: true, sortKey: "plantioCanteiro.canteiro.nome" },
+    { key: "nomePopular", label: "Nome Popular", sortable: true, sortKey: "plantioCanteiro.plantioOrigem.sementes.nomePopular" },
     { key: "dataVistoria", label: "Data da Vistoria", sortable: true },
     { key: "tratosCulturais", label: "Tratos Culturais", sortable: true },
     { key: "doencasPragas", label: "Pragas/Doenças", sortable: true },

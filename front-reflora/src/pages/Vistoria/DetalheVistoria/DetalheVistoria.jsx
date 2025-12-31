@@ -7,6 +7,7 @@ const DetalheVistoria = ({ item }) => {
     <div className="detalhe-vistoria-info-custom">
       <p><strong>Lote da Muda:</strong> {item.loteMuda}</p>
       <p><strong>Local:</strong> {item.nomeCanteiro}</p>
+      <p><strong>Nome Popular:</strong> {item.nomePopular}</p>
       <p><strong>Data da vistoria:</strong> {item.dataVistoria}</p>
       <p><strong>Responsável:</strong> {item.nomeResponsavel}</p>
       <p><strong>Estimativa de Mudas prontas:</strong> {item.estimativaMudasProntas}</p>
