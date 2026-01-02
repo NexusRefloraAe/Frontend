@@ -240,12 +240,44 @@ function ModalDetalheSemente({
                       {dados.estahNaCamaraFria ? "Câm. Fria" : "Comum"}
                     </span>
                   </div>
-                  <div className="info-item" style={{ borderBottom: "none" }}>
+                  {/* ... trecho do Local que você já tem ... */}
+                  <div className="info-item">
                     <label>Local</label>{" "}
                     <span>
                       {dados.cidade ? `${dados.cidade}-${dados.estado}` : "-"}
                     </span>
                   </div>
+
+                  {/* --- ADICIONE ISTO ABAIXO --- */}
+
+                  <div className="info-item">
+                    <label>Latitude</label>{" "}
+                    <span>
+                      {dados.latitude ? dados.latitude : "-"}
+                    </span>
+                  </div>
+
+                  <div className="info-item" style={{ borderBottom: "none" }}>
+                    <label>Longitude</label>{" "}
+                    <span>
+                      {dados.longitude ? dados.longitude : "-"}
+                    </span>
+                  </div>
+
+                  {/* Link Opcional para o Google Maps (mantendo o estilo limpo) */}
+                  {dados.latitude && dados.longitude && (
+                    <div className="info-item" style={{ borderBottom: "none", paddingTop: "5px" }}>
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${dados.latitude},${dados.longitude}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: '#28a745', textDecoration: 'none', fontWeight: 'bold', fontSize: '0.9em' }}
+                      >
+                        📍 Ver no Mapa
+                      </a>
+                    </div>
+                  )}
+
                 </div>
 
                 {/* 3. Botões (Ficam abaixo da imagem no mobile via Grid CSS) */}
