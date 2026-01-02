@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react'
-import FormGeral from '../FormGeral/FormGeral'
-import ImageUpload from '../ImageUpload/ImageUpload'
-import Input from '../Input/Input'
-import { sementesService } from '../../services/sementesService'
-import { getBackendErrorMessage } from '../../utils/errorHandler'
-// 1. Importa a lista base (oficial)
-import bancoOficial from '../../assets/bancoDeEspecies.json'
+import React, { useState, useEffect } from 'react';
+import FormGeral from '../FormGeral/FormGeral';
+import ImageUpload from '../ImageUpload/ImageUpload';
+import Input from '../Input/Input';
+import { sementesService } from '../../services/sementesService';
+import { getBackendErrorMessage } from '../../utils/errorHandler';
+import bancoOficial from '../../assets/bancoDeEspecies.json';
 
-import { FaSave } from 'react-icons/fa'
-import locationIcon from '../../assets/locationicon.svg'
+// Ícones
+import { FaSave, FaMapMarkerAlt, FaSearchLocation } from 'react-icons/fa';
 
 const optionsUnidade = [
     { value: 'KG', label: 'Kg' },
@@ -23,10 +22,7 @@ const optionsCamaraFria = [
 function FormularioSemente({
     onSuccess,
     onCancel,
-    sementeParaEditar = null,
-    listaEstados = [],
-    listaCidades = [],
-    onEstadoChange
+    sementeParaEditar = null
 }) {
 
     const [formData, setFormData] = useState({
@@ -37,42 +33,42 @@ function FormularioSemente({
         dataCadastro: '',
         quantidade: '',
         unidadeMedida: 'KG',
+        // OS 4 CAMPOS DE LOCALIZAÇÃO
+        latitude: '',
+        longitude: '',
         estado: '',
-        cidade:'',
+        cidade: '',
         camaraFria: 'nao',
     });
 
     const [fotoSemente, setFotoSemente] = useState(null);
     const [loading, setLoading] = useState(false);
-
-    // ESTADO PARA A LISTA COMBINADA (Oficial + Aprendida)
+    const [buscandoEndereco, setBuscandoEndereco] = useState(false); // Loading específico do endereço
     const [listaCompleta, setListaCompleta] = useState([]);
 
-    // --- 1. CARREGAR LISTA AO INICIAR ---
+    // --- CARREGAR LISTA DE ESPÉCIES ---
     useEffect(() => {
-        // Pega o que já tem no arquivo JSON
         let lista = [...bancoOficial];
-
-        // Verifica se o navegador tem "memória" de sementes novas criadas pelo produtor
         const especiesAprendidas = localStorage.getItem('minhas_especies_customizadas');
         if (especiesAprendidas) {
             const novas = JSON.parse(especiesAprendidas);
-            // Junta as listas
             lista = [...lista, ...novas];
         }
-
-        // Ordena alfabeticamente para ficar bonito
         lista.sort((a, b) => a.popular.localeCompare(b.popular));
-
         setListaCompleta(lista);
     }, []);
 
+    // --- CARREGAR DADOS NA EDIÇÃO ---
     useEffect(() => {
         if (sementeParaEditar) {
             let dataInput = '';
             if (sementeParaEditar.dataDeCadastro) {
-                const [dia, mes, ano] = sementeParaEditar.dataDeCadastro.split('/');
-                dataInput = `${ano}-${mes}-${dia}`;
+                if (sementeParaEditar.dataDeCadastro.includes('/')) {
+                    const [dia, mes, ano] = sementeParaEditar.dataDeCadastro.split('/');
+                    dataInput = `${ano}-${mes}-${dia}`;
+                } else {
+                    dataInput = sementeParaEditar.dataDeCadastro;
+                }
             }
 
             setFormData({
@@ -83,39 +79,94 @@ function FormularioSemente({
                 dataCadastro: dataInput,
                 quantidade: sementeParaEditar.quantidade || '',
                 unidadeMedida: sementeParaEditar.unidadeDeMedida || 'KG',
+
+                latitude: sementeParaEditar.latitude || '',
+                longitude: sementeParaEditar.longitude || '',
                 estado: sementeParaEditar.estado || '',
                 cidade: sementeParaEditar.cidade || '',
-                // Backend manda Boolean, Input espera string 'sim'/'nao'
+
                 camaraFria: sementeParaEditar.estahNaCamaraFria ? 'sim' : 'nao'
             });
         }
     }, [sementeParaEditar]);
 
-    const optionsEstados = listaEstados.map(estado => ({
-        value: estado.sigla,
-        label: estado.nome
-    }));
+    // --- LÓGICA DE GEOCODING REVERSO (LAT/LONG -> ENDEREÇO) ---
+    const buscarEnderecoPorCoordenadas = async (lat, lon) => {
+        if (!lat || !lon) return;
 
-    const optionsCidades = listaCidades.map(cidade => ({
-        value: cidade.nome,
-        label: cidade.nome
-    }));
+        setBuscandoEndereco(true);
+        try {
+            // USANDO A API BIG DATA CLOUD (Funciona sem bloqueio de CORS)
+            const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=pt`;
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error('Erro ao conectar com o serviço de mapas');
+            }
+
+            const data = await response.json();
+
+            // Mapeamento dos dados da BigDataCloud
+            if (data) {
+                // A BigDataCloud retorna 'city' ou 'locality' e 'principalSubdivision' (Estado)
+                const cidadeEncontrada = data.city || data.locality || '';
+                const estadoEncontrado = data.principalSubdivision || ''; // Ex: "Paraíba"
+
+                // Só atualiza se encontrou algo útil
+                if (cidadeEncontrada || estadoEncontrado) {
+                    setFormData(prev => ({
+                        ...prev,
+                        cidade: cidadeEncontrada,
+                        estado: estadoEncontrado
+                    }));
+                }
+            }
+        } catch (error) {
+            console.error("Erro ao buscar endereço:", error);
+            // Falha silenciosa para não travar o fluxo do usuário
+        } finally {
+            setBuscandoEndereco(false);
+        }
+    };
+
+    // --- FUNÇÃO DO BOTÃO GPS ---
+    const handlePegarLocalizacao = () => {
+        if ("geolocation" in navigator) {
+            setBuscandoEndereco(true);
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+
+                    setFormData(prev => ({
+                        ...prev,
+                        latitude: lat,
+                        longitude: lon
+                    }));
+
+                    // Chama a função para preencher cidade/estado
+                    buscarEnderecoPorCoordenadas(lat, lon);
+                },
+                (error) => {
+                    console.error("Erro GPS:", error);
+                    alert("Ative o GPS para usar esta função.");
+                    setBuscandoEndereco(false);
+                }
+            );
+        } else {
+            alert("Navegador não suporta geolocalização.");
+        }
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prevData => ({ ...prevData, [name]: value }));
 
-        if (name === 'estado') {
-            setFormData(prev => ({ ...prev, cidade: '' }));
-            if (onEstadoChange) onEstadoChange(value);
-        }
-
-        // --- AUTOCOMPLETE USANDO A LISTA COMPLETA ---
         if (name === 'nomePopular') {
             const especieEncontrada = listaCompleta.find(item =>
                 item.popular.toLowerCase() === value.toLowerCase()
             );
-
             if (especieEncontrada) {
                 setFormData(prev => ({
                     ...prev,
@@ -128,13 +179,17 @@ function FormularioSemente({
         }
     };
 
-    // --- FUNÇÃO PARA "APRENDER" NOVA ESPÉCIE ---
+    // Quando o usuário termina de digitar a Longitude (sai do campo), busca o endereço
+    const handleBlurLongitude = () => {
+        if (formData.latitude && formData.longitude) {
+            buscarEnderecoPorCoordenadas(formData.latitude, formData.longitude);
+        }
+    };
+
     const aprenderNovaEspecie = (dados) => {
-        // Verifica se essa espécie já existe na lista atual
         const jaExiste = listaCompleta.some(item =>
             item.popular.toLowerCase() === dados.nomePopular.toLowerCase()
         );
-
         if (!jaExiste && dados.nomePopular) {
             const novaEspecie = {
                 popular: dados.nomePopular,
@@ -142,14 +197,10 @@ function FormularioSemente({
                 familia: dados.familia,
                 origem: dados.origem
             };
-
-            // 1. Salva no LocalStorage (Navegador)
             const salvosAntigos = localStorage.getItem('minhas_especies_customizadas');
             let arraySalvo = salvosAntigos ? JSON.parse(salvosAntigos) : [];
             arraySalvo.push(novaEspecie);
             localStorage.setItem('minhas_especies_customizadas', JSON.stringify(arraySalvo));
-
-            // 2. Atualiza a lista em tempo real na tela
             setListaCompleta(prev => [...prev, novaEspecie].sort((a, b) => a.popular.localeCompare(b.popular)));
         }
     };
@@ -159,14 +210,15 @@ function FormularioSemente({
         setLoading(true);
 
         try {
-            // --- CORREÇÃO AQUI ---
-            // O backend espera 'localizacaoDaColeta', então criamos esse campo juntando Cidade e UF
             const payload = {
                 ...formData,
-                localizacaoDaColeta: `${formData.cidade} - ${formData.uf}`
+                latitude: formData.latitude ? Number(formData.latitude) : null,
+                longitude: formData.longitude ? Number(formData.longitude) : null,
+                // Estado e Cidade vão como string normal
+                estado: formData.estado,
+                cidade: formData.cidade
             };
 
-            // Salva na memória local para o autocomplete aprender
             aprenderNovaEspecie(formData);
 
             if (sementeParaEditar && sementeParaEditar.id) {
@@ -215,7 +267,6 @@ function FormularioSemente({
                 onFileChange={(file) => setFotoSemente(file)}
             />
 
-            {/* --- CAMPO COM SUGESTÕES ATUALIZADAS --- */}
             <div>
                 <Input
                     label="Nome Popular"
@@ -223,112 +274,114 @@ function FormularioSemente({
                     name='nomePopular'
                     value={formData.nomePopular}
                     onChange={handleInputChange}
-                    placeholder="Digite para buscar ou cadastrar nova..."
+                    placeholder="Digite para buscar..."
                     list="lista-sementes-dinamica"
                 />
-
                 <datalist id="lista-sementes-dinamica">
                     {listaCompleta.map((especie, index) => (
-                        <option key={index} value={especie.popular}>
-                            {especie.cientifico}
-                        </option>
+                        <option key={index} value={especie.popular}>{especie.cientifico}</option>
                     ))}
                 </datalist>
             </div>
 
-            <Input
-                label="Nome Científico"
-                type='text'
-                name='nomeCientifico'
-                value={formData.nomeCientifico}
-                onChange={handleInputChange}
-                placeholder="Preenchido automaticamente"
-            />
+            <Input label="Nome Científico" type='text' name='nomeCientifico' value={formData.nomeCientifico} onChange={handleInputChange} placeholder="Automático" />
+            <Input label="Família" type='text' name='familia' value={formData.familia} onChange={handleInputChange} placeholder="Automático" />
+            <Input label="Origem" type='text' name='origem' value={formData.origem} onChange={handleInputChange} placeholder="Automático" />
 
-            <Input
-                label="Família"
-                type='text'
-                name='familia'
-                value={formData.familia}
-                onChange={handleInputChange}
-                placeholder="Preenchido automaticamente"
-            />
-
-            <Input
-                label="Origem"
-                type='text'
-                name='origem'
-                value={formData.origem}
-                onChange={handleInputChange}
-                placeholder="Preenchido automaticamente"
-            />
-
-            <Input
-                label="Data de Cadastro"
-                type='date'
-                name='dataCadastro'
-                value={formData.dataCadastro}
-                onChange={handleInputChange}
-            />
+            <Input label="Data de Cadastro" type='date' name='dataCadastro' value={formData.dataCadastro} onChange={handleInputChange} />
 
             <div className='campo-linha-combinada'>
                 <div className="campo-quantidade">
-                    <Input
-                        label="Quantidade"
-                        type='number'
-                        name='quantidade'
-                        value={formData.quantidade}
-                        onChange={handleInputChange}
-                        placeholder="0"
-                    />
+                    <Input label="Quantidade" type='number' name='quantidade' value={formData.quantidade} onChange={handleInputChange} placeholder="0" />
                 </div>
                 <div className="campo-unidade">
+                    <Input label="Unidade" type='select' name='unidadeMedida' value={formData.unidadeMedida} onChange={handleInputChange} options={optionsUnidade} />
+                </div>
+            </div>
+
+            {/* --- SEÇÃO DE LOCALIZAÇÃO INTELIGENTE --- */}
+            <h4 style={{ gridColumn: '1 / -1', margin: '10px 0 5px 0', color: '#666' }}>Localização da Coleta</h4>
+
+            <div className='campo-linha-combinada' style={{ alignItems: 'flex-end', gap: '10px' }}> {/* Adicionado gap */}
+                <div style={{ flex: 1 }}>
                     <Input
-                        label="Unidade de Medida"
-                        type='select'
-                        name='unidadeMedida'
-                        value={formData.unidadeMedida}
+                        label="Latitude"
+                        type='number'
+                        name='latitude'
+                        step="any"
+                        value={formData.latitude}
                         onChange={handleInputChange}
-                        options={optionsUnidade}
+                        placeholder="-15.79"
                     />
                 </div>
+                <div style={{ flex: 1 }}>
+                    <Input
+                        label="Longitude"
+                        type='number'
+                        name='longitude'
+                        step="any"
+                        value={formData.longitude}
+                        onChange={handleInputChange}
+                        onBlur={handleBlurLongitude}
+                        placeholder="-47.88"
+                    />
+                </div>
+
+                {/* Botão GPS Alinhado */}
+                <button
+                    type="button"
+                    onClick={handlePegarLocalizacao}
+                    disabled={buscandoEndereco}
+                    style={{
+                        height: '45px', // Altura fixa para alinhar com o input padrão
+                        marginBottom: '2px', // Ajuste fino para alinhar a base
+                        padding: '0 20px',
+                        backgroundColor: buscandoEndereco ? '#ccc' : '#28a745',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        fontWeight: 'bold',
+                        fontSize: '14px',
+                        minWidth: '130px'
+                    }}
+                    title="Preencher coordenadas e endereço automaticamente"
+                >
+                    {buscandoEndereco ? 'Buscando...' : <><FaMapMarkerAlt /> Usar GPS</>}
+                </button>
             </div>
 
             <div className='campo-linha-combinada'>
                 <div style={{ flex: 1 }}>
                     <Input
-                        label="Estado (UF)"
-                        type='select'
+                        label="Estado"
+                        type='text'
                         name='estado'
                         value={formData.estado}
-                        onChange={handleInputChange}
-                        options={optionsEstados}
-                        placeholder="UF"
+                        onChange={handleInputChange} // Mantemos onChange para evitar warning, mas é readOnly
+                        placeholder={buscandoEndereco ? "Carregando..." : "UF"}
+                        readOnly={true} // <--- BLOQUEADO PARA SEMPRE
+                        style={{ backgroundColor: '#e9ecef', cursor: 'not-allowed' }} // Estilo visual de bloqueado
                     />
                 </div>
                 <div style={{ flex: 2 }}>
                     <Input
                         label="Cidade"
-                        type='select'
+                        type='text'
                         name='cidade'
                         value={formData.cidade}
                         onChange={handleInputChange}
-                        options={optionsCidades}
-                        placeholder="Cidade"
-                        disabled={!formData.estado}
-                        icon={locationIcon}
+                        placeholder={buscandoEndereco ? "Buscando cidade..." : "Nome da Cidade"}
+                        readOnly={true} // <--- BLOQUEADO PARA SEMPRE
+                        style={{ backgroundColor: '#e9ecef', cursor: 'not-allowed' }} // Estilo visual de bloqueado
                     />
                 </div>
             </div>
-
-            <Input
-                label="Câmara Fria"
-                type='select'
-                name='camaraFria'
-                value={formData.camaraFria}
-                onChange={handleInputChange}
-                options={optionsCamaraFria}
-            />
+            <Input label="Câmara Fria" type='select' name='camaraFria' value={formData.camaraFria} onChange={handleInputChange} options={optionsCamaraFria} />
         </FormGeral>
     );
 }
