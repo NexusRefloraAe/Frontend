@@ -251,7 +251,13 @@ const HistoricoPlantio = () => {
       label: "Qtd. Sementes",
       sortable: true,
       sortKey: "qtdSemente",
-    }, // Java: setQtdSemente
+    },
+    {
+      key: "unidadeDeMedida",
+      label: "Und. de medida",
+      sortable: true,
+      sortKey: "sementes.unidadeDeMedida",
+    }, 
     {
       key: "quantidadePlantada",
       label: "Qtd. Plantada",
@@ -263,7 +269,7 @@ const HistoricoPlantio = () => {
       label: "Tipo de Plantio",
       sortable: true,
       sortKey: "tipoPlantio",
-    }, // Java: setTipoPlantioDescricao
+    }, 
   ];
 
   return (
