@@ -5,6 +5,7 @@ import Input from "../../../components/Input/Input";
 import { testeGerminacaoService } from "../../../services/testeGerminacaoService";
 import { plantioService } from "../../../services/plantioService";
 import { movimentacaoSementeService } from "../../../services/movimentacaoSementeService";
+import { getBackendErrorMessage } from "../../../utils/errorHandler";
 
 const CadastrarTestes = ({ dadosParaCorrecao }) => {
   const navigate = useNavigate();
@@ -22,17 +23,24 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
   const [loading, setLoading] = useState(false);
   const [sugestoes, setSugestoes] = useState([]);
   const [estoqueAtual, setEstoqueAtual] = useState(null);
+  const [unidadeMedida, setUnidadeMedida] = useState(""); // Novo estado
 
   // 1. Efeito para preencher dados ao vir de uma correção
   useEffect(() => {
     if (dadosParaCorrecao) {
-      // Extrai apenas o número da string "3000 und" -> 3000
+      // Extrai o número: "3000 und" -> 3000
       const qtdOriginal = dadosParaCorrecao.quantidadeSaidaFormatada
         ? parseFloat(
             dadosParaCorrecao.quantidadeSaidaFormatada.replace(/[^\d.]/g, "")
           )
         : 0;
 
+      // Extrai a unidade: "3000 und" -> "und"
+      const unidade = dadosParaCorrecao.quantidadeSaidaFormatada
+        ? dadosParaCorrecao.quantidadeSaidaFormatada.replace(/[0-9.\s]/g, "")
+        : "";
+
+      setUnidadeMedida(unidade);
       setFormData((prev) => ({
         ...prev,
         lote: dadosParaCorrecao.lote || "",
@@ -65,6 +73,10 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
 
   const selecionarSugestao = (semente) => {
     setEstoqueAtual(semente.quantidadeAtualFormatada);
+
+    const unidade = semente.quantidadeAtualFormatada.replace(/[0-9.\s]/g, "");
+    setUnidadeMedida(unidade);
+
     setFormData((prev) => ({
       ...prev,
       lote: semente.lote,
@@ -180,7 +192,7 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
       }
     } catch (error) {
       console.error(error);
-      const msg = error.response?.data?.message || "Erro ao salvar cadastro.";
+      const msg = getBackendErrorMessage(error);
       alert(`Erro: ${msg}`);
     } finally {
       setLoading(false);
@@ -296,13 +308,29 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
               onDecrement={() => handleDecrement("quantidade")}
               required={true}
               placeholder="0"
+              disabled={!!dadosParaCorrecao}
             />
           </div>
-          {estoqueAtual && (
-            <small style={{ color: "#666", marginTop: "15px" }}>
-              Disponível: <strong>{estoqueAtual}</strong>
-            </small>
-          )}
+          {/* EXIBIÇÃO DA UNIDADE AO LADO DO INPUT */}
+          {/* LÓGICA CONDICIONAL: Correção vs Disponibilidade */}
+          {dadosParaCorrecao
+            ? unidadeMedida && (
+                <span
+                  style={{
+                    marginTop: "15px",
+                    fontWeight: "bold",
+                    color: "#555",
+                    fontSize: "14px",
+                  }}
+                >
+                  Unidade de medida: {unidadeMedida}
+                </span>
+              )
+            : estoqueAtual && (
+                <span style={{ color: "#666", marginTop: "15px" }}>
+                  Disponível: <strong>{estoqueAtual}</strong>
+                </span>
+              )}
         </div>
 
         <Input
