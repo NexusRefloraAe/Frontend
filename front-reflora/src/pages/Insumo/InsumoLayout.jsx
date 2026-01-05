@@ -1,17 +1,18 @@
 import React from "react";
-// Adicionei FaThList para representar a lista de estoque
-import { FaPlusCircle, FaHistory, FaChartBar, FaThList } from "react-icons/fa"; 
+import { FaPlusCircle, FaHistory, FaChartBar, FaThList, FaExchangeAlt } from "react-icons/fa"; // Adicionei FaExchangeAlt para movimentação
 import TabsLayout from "../../components/TabsLayout/TabsLayout";
 
-// Imports das telas existentes
+// Imports existentes
 import Cadastrar from "./Cadastrar/Cadastrar";
-import CadastrarEmprestimo from "./CadastrarEmprestimo/CadastrarEmprestimo";
 import HistoricoMaterial from "./HistoricoMaterial/HistoricoMaterial";
 import HistoricoFerramenta from "./HistoricoFerramenta/HistoricoFerramenta";
 import GerarRelatorioInsumo from "./GerarRelatorioInsumo/GerarRelatorioInsumo";
+import GerenciarInsumos from "./GerenciarInsumos/GerenciarInsumos";
 
-// ✅ IMPORTAR A NOVA TELA (Ajuste o caminho se necessário)
-import GerenciarInsumos from "./GerenciarInsumos/GerenciarInsumos"; 
+// --- CORREÇÃO AQUI ---
+// Se você renomeou o arquivo, mude o import abaixo. 
+// Certifique-se que o arquivo 'RegistrarSaidaEmprestimo.jsx' existe na pasta 'CadastrarEmprestimo'
+import RegistrarSaidaEmprestimo from "./CadastrarEmprestimo/RegistrarSaidaEmprestimo"; 
 
 const InsumoLayout = () => {
   const tabs = [
@@ -22,19 +23,17 @@ const InsumoLayout = () => {
       page: <Cadastrar />,
     },
     {
-      id: "cadastrar-emprestimo",
-      label: "Cadastrar Empréstimo",
-      icon: <FaPlusCircle />,
-      page: <CadastrarEmprestimo />,
+      id: "registrar-saida", // Mudei o ID para ficar coerente
+      label: "Registrar Saída/Empréstimo", // Label atualizado
+      icon: <FaExchangeAlt />, // Ícone de troca/movimentação
+      page: <RegistrarSaidaEmprestimo />, // Componente novo
     },
-    // --- NOVA ABA ADICIONADA AQUI ---
     {
       id: "gerenciar-estoque",
-      label: "Gerenciar Estoque", // Ou "Lista de Insumos"
+      label: "Gerenciar Estoque",
       icon: <FaThList />,
-      page: <GerenciarInsumos />, // Essa tela terá a lista com Qtd Atual e botão Excluir Definitivo
+      page: <GerenciarInsumos />,
     },
-    // --------------------------------
     {
       id: "historico-material", 
       label: "Histórico Material",
