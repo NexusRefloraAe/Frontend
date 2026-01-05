@@ -1,0 +1,50 @@
+/* src/components/Painel/Painel.css */
+
+.content-painel {
+  padding: 2rem;
+  width: 100%;
+  max-width: 1400px; /* Limite para não ficar eterno em monitores 4k */
+  margin: 0 auto;
+  box-sizing: border-box; /* Garante que padding não estoure a tela */
+}
+
+/* Cabeçalho */
+.title-content {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 1rem;
+}
+
+.title-content h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #064e3b; /* Verde escuro institucional */
+  margin: 0;
+  text-align: left;
+}
+
+/* GRID RESPONSIVO ROBUSTO */
+.cards {
+  display: grid;
+  /* Cria colunas automaticamente. Se a tela for pequena, quebra linha. */
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Ajuste específico para Telas Médias (Tablets) e Pequenas (Celulares) */
+@media (max-width: 768px) {
+  .content-painel {
+    padding: 1rem;
+  }
+
+  .title-content h2 {
+    font-size: 1.25rem;
+  }
+
+  .cards {
+    /* No celular, força 1 coluna para não espremer o card */
+    grid-template-columns: 1fr; 
+    gap: 1rem;
+  }
+}
