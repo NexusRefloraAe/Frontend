@@ -8,12 +8,11 @@ import './RevisaoDistribuicao.css';
 const RevisaoDistribuicao = () => {
     const navigate = useNavigate();
 
-    // Estado inicial agora começa vazio (ou com valores padrão editáveis)
     const getInitialState = () => ({
-        responsavelDistribuicao: '', // Texto livre
+        responsavelDistribuicao: '', 
         dataEntrega: '',
-        responsavelRecebimento: '',  // Texto livre
-        instituicao: '',             // Texto livre
+        responsavelRecebimento: '',  
+        instituicao: '',             
         estadoSede: 'PB',           
         cidadeSede: '',           
         estadoDistribuicao: 'PB',  
@@ -26,13 +25,11 @@ const RevisaoDistribuicao = () => {
     const [estados, setEstados] = useState([]);
     const [cidadesSede, setCidadesSede] = useState([]);
     const [cidadesDistribuicao, setCidadesDistribuicao] = useState([]);
-    
-    // States Loading
     const [loadingEstados, setLoadingEstados] = useState(true);
     const [loadingCidadesSede, setLoadingCidadesSede] = useState(false);
     const [loadingCidadesDistribuicao, setLoadingCidadesDistribuicao] = useState(false);
 
-    // --- Buscas na API do IBGE (Mantidas iguais) ---
+    // --- Buscas na API do IBGE ---
     useEffect(() => {
         setLoadingEstados(true);
         fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome')
@@ -94,10 +91,8 @@ const RevisaoDistribuicao = () => {
         });
     };
 
-    const actions = [
-        { type: 'button', children: 'Cancelar', onClick: handleCancel },
-        { type: 'submit', children: 'Gerar Termo' },
-    ];
+    // Botões manuais para ter controle total do layout
+    const actions = [];
 
     return (
         <div className="revisao-distribuicao-pagina">
@@ -112,11 +107,12 @@ const RevisaoDistribuicao = () => {
                         Confira as mudas do pedido e preencha as informações da distribuição.
                     </p>
                     
+                    {/* Resumo ocupa largura total */}
                     <div className="form-geral__campo--span-2">
                         <ResumoMudas mudas={mudasDoPedido} total={totalMudas} />
                     </div>
 
-                    {/* CAMPO AGORA É TEXTO LIVRE */}
+                    {/* --- PAR 1: Responsável e Data --- */}
                     <Input
                         label="Responsável pela Distribuição"
                         name="responsavelDistribuicao"
@@ -134,7 +130,7 @@ const RevisaoDistribuicao = () => {
                         onChange={handleChange('dataEntrega')}
                     />
 
-                    {/* CAMPO AGORA É TEXTO LIVRE */}
+                    {/* --- PAR 2: Recebimento e Instituição --- */}
                     <Input
                         label="Responsável pelo recebimento"
                         name="responsavelRecebimento"
@@ -144,7 +140,6 @@ const RevisaoDistribuicao = () => {
                         placeholder="Digite quem irá receber"
                     />
 
-                    {/* CAMPO AGORA É TEXTO LIVRE */}
                     <Input
                         label="Instituição"
                         name="instituicao"
@@ -154,50 +149,57 @@ const RevisaoDistribuicao = () => {
                         placeholder="Nome da instituição"
                     />
 
-                    {/* ESTADOS E CIDADES CONTINUAM COMO SELECT (IBGE) */}
+                    {/* --- LOCALIZAÇÃO (Ocupa largura total, dividido internamente) --- */}
                     <div className="grupo-selects-grid-2">
-                    <Input
-                        label="Estado da Sede"
-                        name="estadoSede"
-                        type="select"
-                        value={formData.estadoSede}
-                        onChange={handleEstadoChange('estadoSede', 'cidadeSede')}
-                        options={estados}
-                        loading={loadingEstados}
-                    />
+                        <Input
+                            label="Estado da Sede"
+                            name="estadoSede"
+                            type="select"
+                            value={formData.estadoSede}
+                            onChange={handleEstadoChange('estadoSede', 'cidadeSede')}
+                            options={estados}
+                            loading={loadingEstados}
+                        />
 
-                    <Input
-                        label="Município da Sede"
-                        name="cidadeSede"
-                        type="select"
-                        value={formData.cidadeSede}
-                        onChange={handleChange('cidadeSede')}
-                        options={cidadesSede}
-                        loading={loadingCidadesSede}
-                        disabled={!formData.estadoSede}
-                    />
+                        <Input
+                            label="Município da Sede"
+                            name="cidadeSede"
+                            type="select"
+                            value={formData.cidadeSede}
+                            onChange={handleChange('cidadeSede')}
+                            options={cidadesSede}
+                            loading={loadingCidadesSede}
+                            disabled={!formData.estadoSede}
+                        />
 
-                    <Input
-                        label="Estado de Distribuição"
-                        name="estadoDistribuicao"
-                        type="select"
-                        value={formData.estadoDistribuicao}
-                        onChange={handleEstadoChange('estadoDistribuicao', 'cidadeDistribuicao')}
-                        options={estados}
-                        loading={loadingEstados}
-                    />
+                        <Input
+                            label="Estado de Distribuição"
+                            name="estadoDistribuicao"
+                            type="select"
+                            value={formData.estadoDistribuicao}
+                            onChange={handleEstadoChange('estadoDistribuicao', 'cidadeDistribuicao')}
+                            options={estados}
+                            loading={loadingEstados}
+                        />
 
-                    <Input
-                        label="Município de Distribuição"
-                        name="cidadeDistribuicao"
-                        type="select"
-                        value={formData.cidadeDistribuicao}
-                        onChange={handleChange('cidadeDistribuicao')}
-                        options={cidadesDistribuicao}
-                        loading={loadingCidadesDistribuicao}
-                        disabled={!formData.estadoDistribuicao}
-                    />
+                        <Input
+                            label="Município de Distribuição"
+                            name="cidadeDistribuicao"
+                            type="select"
+                            value={formData.cidadeDistribuicao}
+                            onChange={handleChange('cidadeDistribuicao')}
+                            options={cidadesDistribuicao}
+                            loading={loadingCidadesDistribuicao}
+                            disabled={!formData.estadoDistribuicao}
+                        />
                     </div>
+
+                    {/* Botões manuais para garantir alinhamento */}
+                    <div className="form-geral__campo--span-2 revisao-actions-container">
+                        <button type="button" onClick={handleCancel}>Cancelar</button>
+                        <button type="submit">Gerar Termo</button>
+                    </div>
+
                 </FormGeral>
             </div>
         </div>

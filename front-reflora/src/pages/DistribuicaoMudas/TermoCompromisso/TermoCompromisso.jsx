@@ -1,95 +1,103 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Paginacao from '../../../components/Paginacao/Paginacao';
-import { FaEdit, FaFileExport } from 'react-icons/fa'; 
+import Paginacao from '../../../components/Paginacao/Paginacao'; // Verifique se o caminho está correto
+import { FaEdit, FaFileExport } from 'react-icons/fa';
 import './TermoCompromisso.css';
 
 const TermoCompromisso = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // Fallback de dados para teste
-    const fallbackState = {
-        dadosRevisao: {
-            instituicao: 'SEMAS',
-            cidadeSede: 'ARARUNA',
-            estadoSede: 'PB',
-            cidadeDistribuicao: 'BAÍA DA TRAIÇÃO',
-            estadoDistribuicao: 'PB',
-            responsavelDistribuicao: 'MARCELO',      
-            responsavelRecebimento: 'THAIGO FARIAS',
-            dataEntrega: '' 
-        },
+    // 1. DADOS SEGUROS: Evita tela branca se 'location.state' falhar
+    const { dadosRevisao, mudas, totalMudas } = location.state || {
+        dadosRevisao: {},
         mudas: [],
         totalMudas: 0
     };
 
-    const { dadosRevisao, mudas, totalMudas } = location.state || fallbackState;
-
     // --- LÓGICA DE PAGINAÇÃO ---
     const [paginaAtual, setPaginaAtual] = useState(1);
     const ITENS_POR_PAGINA = 8;
-    const listaMudasCompleta = mudas || [];
-    const totalPaginas = Math.ceil(listaMudasCompleta.length / ITENS_POR_PAGINA);
+
+    // Garante que é array para não quebrar
+    const listaMudasCompleta = Array.isArray(mudas) ? mudas : [];
+
+    const totalPaginas = Math.ceil(listaMudasCompleta.length / ITENS_POR_PAGINA) || 1;
     const indiceUltimoItem = paginaAtual * ITENS_POR_PAGINA;
     const indicePrimeiroItem = indiceUltimoItem - ITENS_POR_PAGINA;
     const mudasPaginaAtual = listaMudasCompleta.slice(indicePrimeiroItem, indiceUltimoItem);
+
+    // Linhas vazias para manter o design fixo
     const linhasVaziasCount = Math.max(0, ITENS_POR_PAGINA - mudasPaginaAtual.length);
     const linhasVazias = Array(linhasVaziasCount).fill(null);
 
     // --- FORMATAÇÃO DOS DADOS ---
-    const instituicao = dadosRevisao.instituicao || '_______';
+    const instituicao = dadosRevisao?.instituicao || '____________________';
     const total = totalMudas || 0;
-    const respDistribuicao = dadosRevisao.responsavelDistribuicao || '_______';
-    const respRecebimento = dadosRevisao.responsavelRecebimento || '_______';
+    const respDistribuicao = dadosRevisao?.responsavelDistribuicao || '____________________';
+    const respRecebimento = dadosRevisao?.responsavelRecebimento || '____________________';
 
-    const cidadeSede = dadosRevisao.cidadeSede;
-    const ufSede = dadosRevisao.estadoSede;
-    const textoSede = (cidadeSede && ufSede) ? `${cidadeSede} - ${ufSede}` : (cidadeSede || '_______');
+    const cidadeSede = dadosRevisao?.cidadeSede;
+    const ufSede = dadosRevisao?.estadoSede;
+    const textoSede = (cidadeSede && ufSede) ? `${cidadeSede} - ${ufSede}` : '____________________';
 
-    const cidadeDist = dadosRevisao.cidadeDistribuicao;
-    const ufDist = dadosRevisao.estadoDistribuicao;
-    const textoDist = (cidadeDist && ufDist) ? `${cidadeDist} - ${ufDist}` : (cidadeDist || '_______');
+    const cidadeDist = dadosRevisao?.cidadeDistribuicao;
+    const ufDist = dadosRevisao?.estadoDistribuicao;
+    const textoDist = (cidadeDist && ufDist) ? `${cidadeDist} - ${ufDist}` : '____________________';
 
-    let textoData = "_______";
-    if (dadosRevisao.dataEntrega) {
-        if (dadosRevisao.dataEntrega.includes('-')) {
-            const [ano, mes, dia] = dadosRevisao.dataEntrega.split('-');
+    // === CORREÇÃO DO ERRO DA TELA BRANCA AQUI ===
+    let textoData = "___/___/_____";
+
+    if (dadosRevisao?.dataEntrega) {
+        const valorData = dadosRevisao.dataEntrega;
+
+        // Cenário 1: Se vier do input HTML (YYYY-MM-DD), ex: "2026-01-04"
+        if (typeof valorData === 'string' && valorData.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            const [ano, mes, dia] = valorData.split('-');
             textoData = `${dia}/${mes}/${ano}`;
-        } else {
-            textoData = dadosRevisao.dataEntrega;
+        }
+        // Cenário 2: Se vier como Objeto de Data ou Texto Longo (Sun Jan 04...)
+        else {
+            try {
+                const dataObj = new Date(valorData);
+                // Verifica se é uma data válida antes de formatar
+                if (!isNaN(dataObj.getTime())) {
+                    // toLocaleDateString('pt-BR') formata automaticamente para dd/mm/aaaa
+                    // O timeZone: 'UTC' evita que a data volte um dia por causa do fuso
+                    textoData = dataObj.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+                }
+            } catch (e) {
+                console.error("Erro data", e);
+                textoData = valorData; // Fallback se der erro
+            }
         }
     }
 
     const handleEdit = () => navigate(-1);
 
-    // --- AÇÃO DE EXPORTAR E SALVAR (SIMULAÇÃO) ---
+    // --- AÇÃO DE EXPORTAR ---
     const handleExport = () => {
-        // 1. Abre a janela de impressão do navegador
         window.print();
 
-        // 2. Prepara os dados para enviar ao Relatório
         const novaDistribuicao = {
-            id: new Date().getTime(), // Gera um ID temporário
+            id: new Date().getTime(),
             instituicao: instituicao,
-            cidade: cidadeDist || "Cidade",
+            cidade: cidadeDist || "N/A",
             estado: ufDist || "UF",
-            dataEntrega: dadosRevisao.dataEntrega, // Mantém formato original para ordenação
+            // Mantém o formato YYYY-MM-DD para o banco de dados/ordenação correta
+            dataEntrega: dadosRevisao?.dataEntrega || new Date().toISOString().split('T')[0],
             quantidade: total,
             responsavelRecebimento: respRecebimento,
-            mudasDetalhadas: mudas
+            mudasDetalhadas: listaMudasCompleta 
         };
 
-        // 3. Após fechar a impressão (ou imediato), navega para o Relatório
-        // IMPORTANTE: Ajuste a rota '/distribuicao-mudas' para a rota principal onde fica o Layout de Abas
-        // Enviamos 'activeTab' caso seu layout suporte troca automática de abas via state
         setTimeout(() => {
-            if(window.confirm("Deseja confirmar a distribuição e ir para o relatório?")) {
-                navigate('/distribuicao-mudas', { 
-                    state: { 
+            if (window.confirm("Deseja confirmar a distribuição e ir para o relatório?")) {
+                navigate('/distribuicao-mudas', {
+                    state: {
                         novaDistribuicao: novaDistribuicao,
-                        tabDestino: 'relatorio-distribuicao' // Dica para o TabsLayout abrir na aba certa
-                    } 
+                        tabDestino: 'relatorio-distribuicao'
+                    }
                 });
             }
         }, 500);
@@ -101,13 +109,13 @@ const TermoCompromisso = () => {
                 <h2>TERMO DE COMPROMISSO E RESPONSABILIDADE</h2>
 
                 <p className="termo-compromisso__texto">
-                    Este documento oficializa a entrega de <strong>{total}</strong> mudas, realizada em <strong>{textoData}</strong> pela <strong>AFINK</strong>, 
+                    Este documento oficializa a entrega de <strong>{total.toLocaleString()}</strong> mudas, realizada em <strong>{textoData}</strong> pela <strong>AFINK</strong>,
                     sediada em <strong>{textoSede}</strong> e representada neste ato pelo(a) Sr(a). <strong>{respDistribuicao}</strong>.
-                    <br/><br/>
-                    A doação é destinada à instituição <strong>{instituicao}</strong> e recebida pelo(a) Sr(a). <strong>{respRecebimento}</strong>, 
+                    <br /><br />
+                    A doação é destinada à instituição <strong>{instituicao}</strong> e recebida pelo(a) Sr(a). <strong>{respRecebimento}</strong>,
                     que destinará os exemplares para ações de plantio e distribuição no município de <strong>{textoDist}</strong>.
-                    <br/><br/>
-                    Ao aceitar esta doação, a instituição beneficiária compromete-se a assumir a gestão e o cuidado integral das 
+                    <br /><br />
+                    Ao aceitar esta doação, a instituição beneficiária compromete-se a assumir a gestão e o cuidado integral das
                     espécies abaixo relacionadas, assegurando sua preservação:
                 </p>
 
@@ -127,8 +135,8 @@ const TermoCompromisso = () => {
                         ))}
                         {linhasVazias.map((_, index) => (
                             <tr key={`vazio-${index}`}>
-                                <td>-</td>
-                                <td>0</td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
                             </tr>
                         ))}
                     </tbody>
@@ -140,28 +148,28 @@ const TermoCompromisso = () => {
                     </div>
                 )}
 
-                <div className="assinaturas-container" style={{ marginTop: '60px', display: 'flex', justifyContent: 'space-between', gap: '40px' }}>
-                     <div style={{ textAlign: 'center', flex: 1 }}>
-                        <div style={{ borderTop: '1px solid #333', margin: '0 20px', paddingTop: '10px' }}></div>
-                        <strong>{respDistribuicao}</strong><br/>
+                <div className="assinaturas-container" style={{ marginTop: 'auto', paddingTop: '40px', display: 'flex', justifyContent: 'space-between', gap: '40px' }}>
+                    <div style={{ textAlign: 'center', flex: 1 }}>
+                        <div style={{ borderTop: '1px solid #333', margin: '0 20px 5px 20px' }}></div>
+                        <strong>{respDistribuicao}</strong><br />
                         <small>Responsável AFINK</small>
-                     </div>
-                     <div style={{ textAlign: 'center', flex: 1 }}>
-                        <div style={{ borderTop: '1px solid #333', margin: '0 20px', paddingTop: '10px' }}></div>
-                        <strong>{respRecebimento}</strong><br/>
+                    </div>
+                    <div style={{ textAlign: 'center', flex: 1 }}>
+                        <div style={{ borderTop: '1px solid #333', margin: '0 20px 5px 20px' }}></div>
+                        <strong>{respRecebimento}</strong><br />
                         <small>Responsável {instituicao}</small>
-                     </div>
+                    </div>
                 </div>
 
                 <div className="termo-compromisso__actions">
                     <button type="button" className="termo-compromisso__button termo-compromisso__button--secondary" onClick={handleEdit}>
-                        <FaEdit /> Editar
+                        <FaEdit /> Voltar / Editar
                     </button>
                     <button type="button" className="termo-compromisso__button termo-compromisso__button--primary" onClick={handleExport}>
-                        <FaFileExport /> Exportar Termo
+                        <FaFileExport /> Confirmar e Imprimir
                     </button>
                 </div>
-            </div> 
+            </div>
         </div>
     );
 };
