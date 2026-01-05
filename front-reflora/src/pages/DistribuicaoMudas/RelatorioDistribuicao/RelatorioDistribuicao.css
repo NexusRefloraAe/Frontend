@@ -1,10 +1,21 @@
 /* src/pages/DistribuicaoMudas/RelatorioDistribuicao/RelatorioDistribuicao.css */
 
 .relatorio-distribuicao-container {
-  width: 100%;
-  padding: 2rem; /* Aumentei o padding geral */
-  background-color: #f8fafc;
-  min-height: 100vh;
+    width: 100%;
+    height: 100%; 
+    
+    /* AQUI A MÁGICA: Só esse elemento tem permissão para rolar */
+    overflow-y: auto !important; 
+    overflow-x: hidden;
+    
+    /* Padding gigante no final para o conteúdo subir acima da barra do iPhone */
+    padding-bottom: 200px !important; 
+    
+    background-color: #f8fafc;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 1rem;
+    -webkit-overflow-scrolling: touch;
 }
 
 .relatorio-distribuicao-content {

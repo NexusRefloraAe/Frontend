@@ -14,9 +14,12 @@ const GerarRelatorio = () => {
   
   // Estado dos Cards (Totais vindos do Backend)
   const [totais, setTotais] = useState({
-      totalEntrada: 0,
-      totalSaida: 0,
-      saldoDoPeriodo: 0
+      totalEntradaUnd: 0,
+      totalEntradaKg: 0,
+      totalSaidaUnd: 0,
+      totalSaidaKg: 0,
+      saldoDoPeriodoUnd: 0,
+      saldoDoPeriodoKg: 0
   });
 
   // Estado de Paginação
@@ -59,9 +62,12 @@ const GerarRelatorio = () => {
           const data = await relatorioMovimentacaoSementeService.getPainel(filtros, pagina, 9, ordemArg, direcaoArg);
 
           setTotais({
-              totalEntrada: data.totalEntrada,
-              totalSaida: data.totalSaida,
-              saldoDoPeriodo: data.saldoDoPeriodo
+              totalEntradaUnd: data.totalEntradaUnd,
+              totalEntradaKg: data.totalEntradaKg,
+              totalSaidaUnd: data.totalSaidaUnd,
+              totalSaidaKg: data.totalSaidaKg,
+              saldoDoPeriodoUnd: data.saldoDoPeriodoUnd,
+              saldoDoPeriodoKg: data.saldoDoPeriodoKg
           });
 
           // CORREÇÃO AQUI: Acessando a estrutura correta baseada no seu Postman
@@ -138,24 +144,46 @@ const GerarRelatorio = () => {
       }
   };
 
+  // Função utilitária para formatar números (ex: 1000 -> 1.000)
+  const formatarNumero = (valor) => {
+    return new Intl.NumberFormat('pt-BR').format(valor);
+  };
+
   // Cards Dinâmicos baseados no Estado 'totais'
   const painelItems = [
     { 
       id: 1, 
-      titulo: 'Total Entrada', 
-      valor: totais.totalEntrada, 
+      titulo: 'Total Entrada (Und)', 
+      valor: formatarNumero(totais.totalEntradaUnd), 
+      className: 'card-entrada'
+    },{ 
+      id: 2, 
+      titulo: 'Total Entrada (Kg)', 
+      valor: formatarNumero(totais.totalEntradaKg), 
       className: 'card-entrada'
     },
     { 
-      id: 2, 
-      titulo: 'Total Saída', 
-      valor: totais.totalSaida, 
+      id: 3, 
+      titulo: 'Total Saída (Und)', 
+      valor: formatarNumero(totais.totalSaidaUnd), 
       className: 'card-saida'
     },
     { 
-      id: 3, 
-      titulo: 'Saldo do Período', 
-      valor: totais.saldoDoPeriodo, 
+      id: 4, 
+      titulo: 'Total Saída (Kg)', 
+      valor: formatarNumero(totais.totalSaidaKg), 
+      className: 'card-saida'
+    },
+    { 
+      id: 5, 
+      titulo: 'Saldo do Período (Und)', 
+      valor: formatarNumero(totais.saldoDoPeriodoUnd), 
+      className: 'card-atual'
+    },
+    { 
+      id: 6, 
+      titulo: 'Saldo do Período (Kg)', 
+      valor: formatarNumero(totais.saldoDoPeriodoKg), 
       className: 'card-atual'
     },
   ];
@@ -183,6 +211,7 @@ const GerarRelatorio = () => {
     },
     { key: "tipoMovimento", label: "Tipo", sortable: true },
     { key: "quantidade", label: "Quantidade", sortable: true },
+    { key: "unidadeDeMedida", label: "Und. de medida", sortable: true }
   ];
 
   return (

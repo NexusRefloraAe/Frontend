@@ -1,7 +1,12 @@
 import React from "react";
+import DatePicker, { registerLocale } from "react-datepicker";
+import ptBR from 'date-fns/locale/pt-BR'; // Importa idioma português
+import "react-datepicker/dist/react-datepicker.css"; // Estilos padrão
 import "./Input.css";
 import CustomSelect from "../CustomSelect/CustomSelect";
-import CustomDate from "../CustomDate/CustomDate";
+
+// Registra o idioma
+registerLocale('pt-BR', ptBR);
 
 const Input = ({
   label,
@@ -22,6 +27,19 @@ const Input = ({
   const isSelect = type === "select";
   const isStepper = type === "number" && onIncrement && onDecrement;
   const isDate = type === "date";
+
+  // Função para converter o evento do DatePicker para o padrão do HTML
+  // Isso garante que seus formulários (AuthForm/FormGeral) continuem funcionando sem alterações
+  const handleDateChange = (date) => {
+    if (onChange) {
+      onChange({
+        target: {
+          name: name,
+          value: date // Retorna o objeto Date ou null
+        }
+      });
+    }
+  };
 
   return (
     <div className="input-component-wrapper">
@@ -57,13 +75,24 @@ const Input = ({
         />
 
       ) : isDate ? (
-        <CustomDate
-          name={name}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          disabled={readOnly || rest.disabled}
-        />
+        <div className="input-field-container date-picker-container">
+           <DatePicker
+              selected={value ? new Date(value) : null} // Converte string para Date se necessário
+              onChange={handleDateChange}
+              dateFormat="dd/MM/yyyy"
+              locale="pt-BR"
+              placeholderText={placeholder || "dd/mm/aaaa"}
+              className="input-field" // Reusa sua classe CSS existente
+              id={name}
+              name={name}
+              disabled={readOnly || rest.disabled}
+              autoComplete="off"
+              required={required}
+              showPopperArrow={false} // Remove a setinha do balão
+              {...rest}
+           />
+           
+        </div>
 
       ) : (
         <div className="input-field-container">

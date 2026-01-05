@@ -22,9 +22,12 @@ export const relatorioMovimentacaoSementeService = {
             // O Java retorna: totalEntradaKg, totalSaidaUnd, totalAtualKg, historico
             // O React espera: totalEntrada, totalSaida, saldoDoPeriodo, pageTabela
             return {
-                totalEntrada: data.totalEntradaKg,
-                totalSaida: data.totalSaidaUnd,
-                saldoDoPeriodo: data.totalAtualKg, // Mapeando TotalAtual para Saldo
+                totalEntradaUnd: data.totalEntradaUnd,
+                totalEntradaKg: data.totalEntradaKg,
+                totalSaidaUnd: data.totalSaidaUnd,
+                totalSaidaKg: data.totalSaidaKg,
+                saldoDoPeriodoUnd: data.totalAtualUnd,
+                saldoDoPeriodoKg: data.totalAtualKg, // Mapeando TotalAtual para Saldo
                 pageTabela: data.historico         // Mapeando historico para pageTabela
             };
         } catch (error) {

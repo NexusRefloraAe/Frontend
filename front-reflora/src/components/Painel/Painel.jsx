@@ -17,7 +17,8 @@ function Painel() {
   // Estado para armazenar os dados vindos da API
   // Inicializamos com 0 ou '-' para não quebrar a tela enquanto carrega
   const [dadosDashboard, setDadosDashboard] = useState({
-    totalSementes: 0,
+    totalSementesUnd: 0,
+    totalSementesKg: 0,
     totalCanteiros: 0,
     totalMudas: 0
   });
@@ -51,17 +52,22 @@ function Painel() {
     { 
       id: 1, 
       titulo: 'Total Sementes (unid)', 
-      valor: loading ? '...' : formatarNumero(dadosDashboard.totalSementes), 
+      valor: loading ? '...' : formatarNumero(dadosDashboard.totalSementesUnd), 
+      icone: card1 
+    },{ 
+      id: 2, 
+      titulo: 'Total Sementes (Kg)', 
+      valor: loading ? '...' : formatarNumero(dadosDashboard.totalSementesKg), 
       icone: card1 
     },
     { 
-      id: 2, 
+      id: 3, 
       titulo: 'Total Canteiros', 
       valor: loading ? '...' : formatarNumero(dadosDashboard.totalCanteiros), 
       icone: card2 
     },
     { 
-      id: 3, 
+      id: 4, 
       titulo: 'Total Mudas', 
       valor: loading ? '...' : formatarNumero(dadosDashboard.totalMudas), 
       icone: card3 

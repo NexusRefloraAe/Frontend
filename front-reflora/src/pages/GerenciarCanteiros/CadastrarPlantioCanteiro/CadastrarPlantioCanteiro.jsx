@@ -125,7 +125,7 @@ const CadastrarPlantioCanteiro = () => {
           placeholder="Selecione um lote disponível"
           options={mudasDisponiveis.map(muda => ({
             value: muda.id,
-            label: `${muda.lote} - ${muda.nomePopular} (${muda.quantidadeDisponivel} un. disponíveis)`
+            label: `${muda.lote} - ${muda.nomePopular} (${muda.quantidadePlantada} un. disponíveis)`, // Se der erro, altere para quantidadeDisponivel
           }))}
         />
         
