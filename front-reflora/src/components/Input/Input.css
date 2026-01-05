@@ -159,6 +159,28 @@
   appearance: none;
 }
 
+/* Novas modificações */
+/* Estilo para os botões do stepper quando desabilitados */
+.stepper-controls button:disabled {
+  background-color: var(--cor-fundo-cinza, #f4f4f4); /* Fundo cinza suave */
+  color: #a0a0a0; /* Cor do texto/ícone mais clara */
+  cursor: not-allowed; /* Cursor de "proibido" */
+  opacity: 0.7; /* Leve transparência para indicar inatividade */
+  border-color: var(--cor-borda-cinza);
+}
+
+/* Garante que o efeito de hover (ao passar o mouse) não mude a cor se estiver desabilitado */
+.stepper-controls button:disabled:hover {
+  background-color: var(--cor-fundo-cinza, #f4f4f4);
+}
+
+/* Opcional: Estilo visual para o input de número quando desabilitado */
+.input-stepper-layout .input-field:disabled {
+  background-color: var(--cor-fundo-cinza, #f4f4f4);
+  color: var(--cor-texto-secundario);
+  cursor: not-allowed;
+}
+
 /* ---------------------------------------------
 --- INTEGRAÇÃO REACT DATEPICKER (NOVO) ---
 ---------------------------------------------

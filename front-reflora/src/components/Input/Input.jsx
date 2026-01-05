@@ -27,21 +27,15 @@ const Input = ({
   const isStepper = type === "number" && onIncrement && onDecrement;
   const isDate = type === "date";
 
-  // --- TRATAMENTO ADICIONADO AQUI ---
   const handleDateChange = (date) => {
     if (onChange) {
       let formattedValue = "";
-
-      // Verifica se a data é válida antes de formatar
       if (date instanceof Date && !isNaN(date)) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, "0");
         const day = String(date.getDate()).padStart(2, "0");
-
-        // Formato esperado pelo Spring Boot (LocalDate): YYYY-MM-DD
         formattedValue = `${year}-${month}-${day}`;
       }
-
       onChange({
         target: {
           name: name,
@@ -51,17 +45,12 @@ const Input = ({
     }
   };
 
-  // Função auxiliar para garantir que o DatePicker receba um objeto Date válido
   const getValidDate = (val) => {
     if (!val) return null;
-
-    // Se o valor for uma string (YYYY-MM-DD), trocamos o '-' por '/'
-    // Isso força o JavaScript a tratar a data como Local em vez de UTC
     if (typeof val === "string" && val.includes("-")) {
       const [year, month, day] = val.split("-");
-      return new Date(year, month - 1, day); // month - 1 porque Janeiro é 0
+      return new Date(year, month - 1, day);
     }
-
     const date = new Date(val);
     return isNaN(date.getTime()) ? null : date;
   };
@@ -80,14 +69,24 @@ const Input = ({
             onChange={onChange}
             required={required}
             readOnly={readOnly}
+            disabled={rest.disabled} // Garante que o input respeite o estado desabilitado
             className="input-field"
             {...rest}
           />
           <div className="stepper-controls">
-            <button type="button" onClick={onDecrement}>
+            {/* Botões agora respeitam o estado desabilitado ou somente leitura */}
+            <button 
+              type="button" 
+              onClick={onDecrement}
+              disabled={rest.disabled || readOnly} 
+            >
               -
             </button>
-            <button type="button" onClick={onIncrement}>
+            <button 
+              type="button" 
+              onClick={onIncrement}
+              disabled={rest.disabled || readOnly}
+            >
               +
             </button>
           </div>
@@ -104,7 +103,7 @@ const Input = ({
       ) : isDate ? (
         <div className="input-field-container date-picker-container">
           <DatePicker
-            selected={getValidDate(value)} // Uso da função auxiliar
+            selected={getValidDate(value)}
             onChange={handleDateChange}
             dateFormat="dd/MM/yyyy"
             locale="pt-BR"
@@ -130,6 +129,7 @@ const Input = ({
             onChange={onChange}
             required={required}
             readOnly={readOnly}
+            disabled={rest.disabled}
             className="input-field"
             {...rest}
           />
