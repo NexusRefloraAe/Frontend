@@ -27,6 +27,7 @@
   box-sizing: border-box;
   min-height: 0;
   font-family: inherit;
+  background-color: #fff; /* Garante fundo branco base */
 }
 
 .input-field:focus {
@@ -89,7 +90,7 @@
 }
 
 /* ---------------------------------------------
---- NOVO: ESTILOS PARA O CAMPO DE QUANTIDADE (STEPPER) ---
+--- ESTILOS PARA O CAMPO DE QUANTIDADE (STEPPER) ---
 ---------------------------------------------
 */
 
@@ -97,17 +98,16 @@
 .input-stepper-layout {
   display: flex;
   width: 100%;
-  /* A borda fica no container, não no input */
   border: 1px solid var(--cor-borda-cinza);
   border-radius: var(--raio-borda-xs);
-  overflow: hidden; /* Para os cantos arredondados funcionarem */
+  overflow: hidden;
 }
 
 /* O input dentro do stepper NÃO tem borda */
 .input-stepper-layout .input-field {
   border: none;
-  flex-grow: 1; /* Ocupa o espaço disponível */
-  min-width: 0; /* Correção de bug do flexbox */
+  flex-grow: 1;
+  min-width: 0;
 }
 
 /* Quando o conjunto recebe foco, a borda do container muda */
@@ -118,16 +118,16 @@
 /* Container dos botões + e - */
 .stepper-controls {
   display: flex;
-  flex-direction: column; /* Botões empilhados verticalmente */
-  flex-shrink: 0; /* Não deixa os botões encolherem */
-  width: 2.5rem; /* Largura da coluna de botões */
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 2.5rem;
   border-left: 1px solid var(--cor-borda-cinza);
 }
 
 .stepper-controls button {
   width: 100%;
-  height: 1.25rem; /* Metade da altura total do input */
-  flex-grow: 1; /* Divide o espaço igualmente */
+  height: 1.25rem;
+  flex-grow: 1;
   background-color: var(--cor-fundo-cinza, #f4f4f4);
   border: none;
   color: var(--cor-texto-secundario);
@@ -141,22 +141,107 @@
   transition: background-color 0.2s ease;
 }
 
-/* Linha que divide os botões + e - */
 .stepper-controls button:first-child {
   border-bottom: 1px solid var(--cor-borda-cinza);
 }
 
 .stepper-controls button:hover {
-  background-color: #e0e0e0; /* Cor de hover */
+  background-color: #e0e0e0;
 }
 
-/* Esconde as setas padrão do input[type=number] */
 .input-stepper-layout .input-field::-webkit-inner-spin-button,
 .input-stepper-layout .input-field::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 .input-stepper-layout .input-field {
-  -moz-appearance: textfield; /* Para Firefox */
+  -moz-appearance: textfield;
   appearance: none;
+}
+
+/* ---------------------------------------------
+--- INTEGRAÇÃO REACT DATEPICKER (NOVO) ---
+---------------------------------------------
+*/
+
+/* Wrapper para posicionar o ícone sobre o input */
+.date-picker-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Força os containers internos do DatePicker a ocuparem 100% da largura */
+.react-datepicker-wrapper,
+.react-datepicker__input-container {
+  display: block;
+  width: 100%;
+}
+
+/* Ícone de calendário sobreposto à direita */
+.input-icon-overlay {
+  position: absolute;
+  top: 50%;
+  right: var(--espacamento-sm);
+  transform: translateY(-50%);
+  pointer-events: none; /* O clique passa através do ícone para o input */
+  font-size: 1.1rem;
+  color: var(--cor-texto-secundario);
+  opacity: 0.7;
+  z-index: 1;
+}
+
+/* --- Estilização do Pop-up do Calendário --- */
+
+/* Container principal do calendário */
+.react-datepicker {
+  font-family: inherit !important;
+  border: 1px solid var(--cor-borda-cinza) !important;
+  border-radius: var(--raio-borda-xs) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+/* Cabeçalho (Mês/Ano) */
+.react-datepicker__header {
+  background-color: var(--cor-fundo-cinza, #f4f4f4) !important;
+  border-bottom: 1px solid var(--cor-borda-cinza) !important;
+  padding-top: 10px !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker-time__header,
+.react-datepicker-year-header {
+  color: var(--cor-texto-secundario) !important;
+  font-weight: 600 !important;
+}
+
+.react-datepicker__day-name {
+  color: var(--cor-texto-secundario) !important;
+  opacity: 0.8;
+}
+
+/* Dias normais */
+.react-datepicker__day {
+  color: #333;
+  transition: background-color 0.2s ease;
+}
+
+.react-datepicker__day:hover {
+  background-color: #e6e6e6 !important;
+  border-radius: 50%;
+}
+
+/* Dia Selecionado */
+.react-datepicker__day--selected, 
+.react-datepicker__day--keyboard-selected {
+  /* Usa a mesma cor de foco dos seus inputs para manter identidade visual */
+  background-color: var(--cor-borda-foco, #007bff) !important; 
+  color: white !important;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+/* Remove outline azul padrão do navegador ao clicar nos dias */
+.react-datepicker__day:focus {
+  outline: none !important;
 }
