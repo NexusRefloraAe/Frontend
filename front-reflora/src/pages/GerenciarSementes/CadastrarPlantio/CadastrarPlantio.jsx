@@ -4,6 +4,7 @@ import FormGeral from "../../../components/FormGeral/FormGeral";
 import Input from "../../../components/Input/Input";
 import { plantioService } from "../../../services/plantioService";
 import { movimentacaoSementeService } from "../../../services/movimentacaoSementeService";
+import { getBackendErrorMessage } from "../../../utils/errorHandler";
 
 const CadastrarPlantio = ({ dadosParaCorrecao }) => {
   const navigate = useNavigate();
@@ -19,17 +20,22 @@ const CadastrarPlantio = ({ dadosParaCorrecao }) => {
   const [loading, setLoading] = useState(false);
   const [sugestoes, setSugestoes] = useState([]);
   const [estoqueAtual, setEstoqueAtual] = useState(null);
+  const [unidadeMedida, setUnidadeMedida] = useState("");
 
   // 1. Efeito para preencher dados ao vir de uma correção
   useEffect(() => {
     if (dadosParaCorrecao) {
-      // Extrai apenas o número da string "1500 g" -> 1500
       const qtdOriginal = dadosParaCorrecao.quantidadeSaidaFormatada
         ? parseFloat(
             dadosParaCorrecao.quantidadeSaidaFormatada.replace(/[^\d.]/g, "")
           )
         : 0;
 
+      const unidade = dadosParaCorrecao.quantidadeSaidaFormatada
+        ? dadosParaCorrecao.quantidadeSaidaFormatada.replace(/[0-9.\s]/g, "")
+        : "";
+
+      setUnidadeMedida(unidade);
       setFormData((prev) => ({
         ...prev,
         lote: dadosParaCorrecao.lote || "",
@@ -62,6 +68,10 @@ const CadastrarPlantio = ({ dadosParaCorrecao }) => {
 
   const selecionarSugestao = (semente) => {
     setEstoqueAtual(semente.quantidadeAtualFormatada);
+
+    const unidade = semente.quantidadeAtualFormatada.replace(/[0-9.\s]/g, "");
+    setUnidadeMedida(unidade);
+
     setFormData((prev) => ({
       ...prev,
       lote: semente.lote,
@@ -167,8 +177,7 @@ const CadastrarPlantio = ({ dadosParaCorrecao }) => {
       }
     } catch (error) {
       console.error(error);
-      const msg =
-        error.response?.data?.message || "Erro ao processar a solicitação.";
+      const msg = getBackendErrorMessage(error);
       alert(`Erro: ${msg}`);
     } finally {
       setLoading(false);
@@ -279,13 +288,31 @@ const CadastrarPlantio = ({ dadosParaCorrecao }) => {
             onIncrement={() => handleIncrement("qtdSemente")}
             onDecrement={() => handleDecrement("qtdSemente")}
             required={true}
+            disabled={!!dadosParaCorrecao}
           />
         </div>
-        {estoqueAtual && (
-          <small style={{ color: "#666", marginTop: "15px" }}>
-            Disponível: <strong>{estoqueAtual}</strong>
-          </small>
-        )}
+        {/* UNIDADE EXIBIDA AQUI */}
+        {/* LÓGICA CONDICIONAL: Correção vs Disponibilidade */}
+        {dadosParaCorrecao
+          ? // Se for correção, exibe apenas a unidade de medida
+            unidadeMedida && (
+              <span
+                style={{
+                  marginTop: "15px",
+                  fontWeight: "bold",
+                  color: "#555",
+                  fontSize: "14px",
+                }}
+              >
+                Unidade de medida: {unidadeMedida}
+              </span>
+            )
+          : // Se for cadastro normal, exibe o estoque disponível
+            estoqueAtual && (
+              <span style={{ color: "#666", marginTop: "15px" }}>
+                Disponível: <strong>{estoqueAtual}</strong>
+              </span>
+            )}
       </div>
 
       <Input
