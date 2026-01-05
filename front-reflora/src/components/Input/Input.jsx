@@ -1,12 +1,11 @@
 import React from "react";
 import DatePicker, { registerLocale } from "react-datepicker";
-import ptBR from 'date-fns/locale/pt-BR'; // Importa idioma português
-import "react-datepicker/dist/react-datepicker.css"; // Estilos padrão
+import ptBR from "date-fns/locale/pt-BR";
+import "react-datepicker/dist/react-datepicker.css";
 import "./Input.css";
 import CustomSelect from "../CustomSelect/CustomSelect";
 
-// Registra o idioma
-registerLocale('pt-BR', ptBR);
+registerLocale("pt-BR", ptBR);
 
 const Input = ({
   label,
@@ -28,17 +27,43 @@ const Input = ({
   const isStepper = type === "number" && onIncrement && onDecrement;
   const isDate = type === "date";
 
-  // Função para converter o evento do DatePicker para o padrão do HTML
-  // Isso garante que seus formulários (AuthForm/FormGeral) continuem funcionando sem alterações
+  // --- TRATAMENTO ADICIONADO AQUI ---
   const handleDateChange = (date) => {
     if (onChange) {
+      let formattedValue = "";
+
+      // Verifica se a data é válida antes de formatar
+      if (date instanceof Date && !isNaN(date)) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+
+        // Formato esperado pelo Spring Boot (LocalDate): YYYY-MM-DD
+        formattedValue = `${year}-${month}-${day}`;
+      }
+
       onChange({
         target: {
           name: name,
-          value: date // Retorna o objeto Date ou null
-        }
+          value: formattedValue,
+        },
       });
     }
+  };
+
+  // Função auxiliar para garantir que o DatePicker receba um objeto Date válido
+  const getValidDate = (val) => {
+    if (!val) return null;
+
+    // Se o valor for uma string (YYYY-MM-DD), trocamos o '-' por '/'
+    // Isso força o JavaScript a tratar a data como Local em vez de UTC
+    if (typeof val === "string" && val.includes("-")) {
+      const [year, month, day] = val.split("-");
+      return new Date(year, month - 1, day); // month - 1 porque Janeiro é 0
+    }
+
+    const date = new Date(val);
+    return isNaN(date.getTime()) ? null : date;
   };
 
   return (
@@ -59,11 +84,14 @@ const Input = ({
             {...rest}
           />
           <div className="stepper-controls">
-            <button type="button" onClick={onDecrement}>-</button>
-            <button type="button" onClick={onIncrement}>+</button>
+            <button type="button" onClick={onDecrement}>
+              -
+            </button>
+            <button type="button" onClick={onIncrement}>
+              +
+            </button>
           </div>
         </div>
-
       ) : isSelect ? (
         <CustomSelect
           name={name}
@@ -73,27 +101,24 @@ const Input = ({
           placeholder={placeholder}
           disabled={readOnly || rest.disabled}
         />
-
       ) : isDate ? (
         <div className="input-field-container date-picker-container">
-           <DatePicker
-              selected={value ? new Date(value) : null} // Converte string para Date se necessário
-              onChange={handleDateChange}
-              dateFormat="dd/MM/yyyy"
-              locale="pt-BR"
-              placeholderText={placeholder || "dd/mm/aaaa"}
-              className="input-field" // Reusa sua classe CSS existente
-              id={name}
-              name={name}
-              disabled={readOnly || rest.disabled}
-              autoComplete="off"
-              required={required}
-              showPopperArrow={false} // Remove a setinha do balão
-              {...rest}
-           />
-           
+          <DatePicker
+            selected={getValidDate(value)} // Uso da função auxiliar
+            onChange={handleDateChange}
+            dateFormat="dd/MM/yyyy"
+            locale="pt-BR"
+            placeholderText={placeholder || "dd/mm/aaaa"}
+            className="input-field"
+            id={name}
+            name={name}
+            disabled={readOnly || rest.disabled}
+            autoComplete="off"
+            required={required}
+            showPopperArrow={false}
+            {...rest}
+          />
         </div>
-
       ) : (
         <div className="input-field-container">
           <input

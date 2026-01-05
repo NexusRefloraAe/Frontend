@@ -15,6 +15,8 @@ const DetalhesTestes = ({ item }) => {
       {/* Ajustado para 'qtdSemente' */}
       <p><strong>Quantidade:</strong> {item.qtdSemente}</p>
       
+      <p><strong>Unidade de Medida:</strong> {item.unidadeDeMedida}</p>
+      
       {/* Ajustado para 'estahNaCamaraFria' (já vem como "Sim"/"Não" do back) */}
       <p><strong>Câmara Fria:</strong> {item.estahNaCamaraFria}</p>
       
