@@ -28,7 +28,7 @@ const ContainerWithTitle = ({ onMenuClick, isMobile }) => {
     "/insumo/relatorio-materiais": "Relatório de Materiais",
     
     "/configuracoes": "Configurações",
-    "/notificacoes": "Notificações",
+    // "/notificacoes": "Notificações",
   };
 
   // LÓGICA DE CORREÇÃO:

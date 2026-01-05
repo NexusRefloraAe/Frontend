@@ -1,7 +1,7 @@
 import './container2Styler.css';
 import { Link } from 'react-router-dom';
 import { FaBars } from 'react-icons/fa';
-import bell from '../../../../assets/bell.svg';
+// import bell from '../../../../assets/bell.svg';
 
 function Container2({ Text, onMenuClick, isMobile }) {
     return (
@@ -14,9 +14,9 @@ function Container2({ Text, onMenuClick, isMobile }) {
 
             <span title={Text}>{Text}</span>
 
-            <Link to='/notificacoes'>
+            {/* <Link to='/notificacoes'>
                 <img src={bell} alt='Notificações' className='bell' />
-            </Link>
+            </Link> */}
         </div>
     );
 }

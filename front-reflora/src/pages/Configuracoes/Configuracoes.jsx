@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PerfilUsuario from '../../components/PerfilUsuario/PerfilUsuario';
-import ConfigSistema from '../../components/ConfigSistema/ConfigSistema';
+// import ConfigSistema from '../../components/ConfigSistema/ConfigSistema';
 import './Configuracoes.css';
 import TabsLayout from "../../components/TabsLayout/TabsLayout";
 
@@ -16,12 +16,12 @@ const Configuracoes = () => {
       icon: <CgProfile />,
       page: <PerfilUsuario />,
     },
-    {
-      id: 'system',
-      label: 'Configuração do Sistema',
-      icon: <GrConfigure />,
-      page: <ConfigSistema />,
-    },
+    // {
+    //   id: 'system',
+    //   label: 'Configuração do Sistema',
+    //   icon: <GrConfigure />,
+    //   page: <ConfigSistema />,
+    // },
   ];
 
   return <TabsLayout tabs={configMenus} defaultTabId="profile" />;

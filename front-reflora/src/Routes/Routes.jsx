@@ -9,7 +9,7 @@ import RedefinirSenha from '../pages/RedefinirSenha/RedefinirSenha';
 /* === LAYOUTS E COMPONENTES === */
 import Layout from "../components/MenuLateral/Layout";
 import LayoutScroll from "../components/LayoutScroll/LayoutScroll";
-import Notificacoes from '../components/Notificacoes/Notificacoes';
+// import Notificacoes from '../components/Notificacoes/Notificacoes';
 
 /* === PÁGINAS DO SISTEMA === */
 import Home from "../pages/Home/Home";
@@ -84,7 +84,7 @@ const AppRoutes = () => {
           </Route>
 
           <Route path="/configuracoes" element={<Configuracoes />} />
-          <Route path="/notificacoes" element={<Notificacoes />} />
+          {/* <Route path="/notificacoes" element={<Notificacoes />} /> */}
         </Route>
       </Routes>
     </Router>
