@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-// Adicione useLocation para pegar os dados vindos do termo
 import { useLocation } from "react-router-dom"; 
 import TabelaResponsiva from "../../../components/TabelaResponsiva/TabelaResponsiva";
 import PainelCard from "../../../components/PainelCard/PainelCard";
@@ -44,7 +43,7 @@ const distribuicaoService = {
 };
 
 const RelatorioDistribuicao = () => {
-  const location = useLocation(); // Hook para ler os dados enviados pelo Termo
+  const location = useLocation(); 
   const [loading, setLoading] = useState(false);
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
@@ -64,7 +63,6 @@ const RelatorioDistribuicao = () => {
 
   const ITENS_POR_PAGINA = 10;
 
-  // Carregamento inicial do Mock
   const fetchDados = useCallback(async (pagina = 1) => {
       setLoading(true);
       try {
@@ -84,31 +82,25 @@ const RelatorioDistribuicao = () => {
     fetchDados(1);
   }, [fetchDados]);
 
-  // --- EFEITO PARA ADICIONAR DADO NOVO VINDO DO TERMO ---
+  // Adiciona dado novo vindo do Termo
   useEffect(() => {
-    // Verifica se veio uma "novaDistribuicao" no state da navegação
     if (location.state && location.state.novaDistribuicao) {
         const novoItem = location.state.novaDistribuicao;
         
         setDadosRelatorio(prev => {
-            // Evita duplicar se o ID já existir (opcional, mas bom pra evitar bugs de react strict mode)
             if (prev.tabela.content.find(item => item.id === novoItem.id)) {
                 return prev;
             }
 
             return {
                 ...prev,
-                // Soma ao total
                 totalDistribuido: prev.totalDistribuido + novoItem.quantidade,
                 tabela: {
                     ...prev.tabela,
-                    // Adiciona o novo item no topo da lista
                     content: [novoItem, ...prev.tabela.content]
                 }
             };
         });
-        
-        // Limpa o state para não adicionar novamente se der refresh (opcional)
         window.history.replaceState({}, document.title);
     }
   }, [location.state]);
@@ -135,6 +127,8 @@ const RelatorioDistribuicao = () => {
   return (
     <div className="relatorio-distribuicao-container auth-scroll-fix">
       <div className="relatorio-distribuicao-content">
+        
+        {/* Filtros */}
         <section className="filtros-section">
           <h1>Relatório de Distribuição</h1>
           <FiltrosRelatorio 
@@ -146,16 +140,20 @@ const RelatorioDistribuicao = () => {
           />
         </section>
 
+        {/* Cards */}
         <section className="cards-section">
             <div className="cards-container-single">
                  <PainelCard 
-                    id={1} titulo="Total Distribuído" 
+                    id={1} 
+                    titulo="Total Distribuído" 
                     valor={dadosRelatorio.totalDistribuido.toLocaleString()} 
+                    // Passamos a classe para controlar o tamanho via CSS
                     className="card-total-distribuido" 
-                 />
+                  />
             </div>
         </section>
 
+        {/* Tabela */}
         <section className="tabela-section">
           <TabelaResponsiva
             dados={dadosRelatorio.tabela.content}
