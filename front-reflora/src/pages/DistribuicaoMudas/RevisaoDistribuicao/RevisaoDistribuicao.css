@@ -1,177 +1,248 @@
 /* =========================================================
-   CONTAINER E CARD
+   CONTAINER GERAL (Mais compacto)
    ========================================================= */
 .revisao-distribuicao-pagina {
-    width: 100%;
-    padding-bottom: 40px;
+  width: 100%;
+  padding-bottom: 40px;
+  font-family: inherit; 
 }
 
 .revisao-distribuicao-pagina .content-revisao {
-    background-color: #ffffff;
-    border-radius: 8px;
-    padding: 24px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e5e7eb;
-    max-width: 1200px;
-    margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  /* Padding reduzido para ficar mais compacto */
+  padding: 24px 32px; 
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  /* Largura máxima reduzida para leitura mais confortável */
+  max-width: 900px; 
+  margin: 0 auto;
+}
+
+.revisao-distribuicao-pagina h1 {
+    font-size: 1.25rem; /* Título levemente menor */
+    color: #111827;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    border-bottom: 1px solid #f3f4f6;
+    padding-bottom: 16px;
 }
 
 /* =========================================================
-   GRID DO FORMULÁRIO (2 COLUNAS)
+   GRID DO FORMULÁRIO (Gaps menores)
    ========================================================= */
-
-/* Força o grid de 2 colunas para colocar inputs lado a lado */
 .revisao-distribuicao-pagina .form-geral__campos--grid {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 20px !important;
-    align-items: start !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  /* Espaçamento reduzido entre colunas/linhas */
+  gap: 16px !important; 
+  align-items: start !important;
 }
 
-/* Elementos que devem ocupar a largura total (Resumo, Títulos, Footer) */
+/* Elementos Full Width */
 .revisao-distribuicao-pagina .form-geral__campo--span-2,
 .revisao-distribuicao-pagina .revisao-distribuicao__description,
 .revisao-distribuicao-pagina .grupo-selects-grid-2 {
-    grid-column: 1 / -1 !important;
-    width: 100%;
+  grid-column: 1 / -1 !important;
+  width: 100%;
+}
+
+/* Descrição mais discreta */
+.revisao-distribuicao__description {
+    margin-bottom: 16px;
+    color: #6b7280;
+    font-size: 0.9rem;
 }
 
 /* =========================================================
-   ESTILO DOS CAMPOS (BRANCO E LIMPO)
+   INPUTS E SELECTS (Altura Compacta: 40px)
    ========================================================= */
-
-/* Labels */
 .revisao-distribuicao-pagina label {
-    display: block;
-    color: #374151;
-    font-weight: 600;
-    font-size: 0.9rem;
-    margin-bottom: 6px;
+  display: block;
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.85rem; /* Fonte do label um pouco menor */
+  margin-bottom: 4px; /* Menos espaço entre label e input */
 }
 
-/* Estilo unificado para Input e Select (Remove o cinza escuro) */
+/* Estilo Base Compacto */
 .revisao-distribuicao-pagina input,
-.revisao-distribuicao-pagina select {
-    width: 100%;
-    height: 45px !important;
-    padding: 8px 12px !important;
-    
-    background-color: #ffffff !important; /* Branco Puro */
-    border: 1px solid #d1d5db !important; /* Borda Cinza Clara */
-    border-radius: 6px !important;
-    
-    font-size: 0.95rem !important;
-    color: #1f2937 !important;
-    
-    /* Remove estilos nativos "feios" */
-    appearance: none !important; 
-    -webkit-appearance: none !important;
-    
-    transition: all 0.2s ease;
+.revisao-distribuicao-pagina select,
+.revisao-distribuicao-pagina .react-datepicker__input-container input {
+  width: 100% !important;
+  height: 40px !important; /* COMPACTO: Altura ideal para sistemas */
+  padding: 0 12px !important;
+  
+  background-color: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  
+  font-size: 0.9rem !important; /* Texto interno ajustado */
+  color: #1f2937 !important;
+  font-family: inherit !important;
+  
+  box-sizing: border-box !important;
+  transition: all 0.2s ease;
+  appearance: none !important;
 }
 
 /* Foco */
 .revisao-distribuicao-pagina input:focus,
 .revisao-distribuicao-pagina select:focus {
-    border-color: #2e7d32 !important;
-    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1) !important;
-    outline: none !important;
+  border-color: #15803d !important;
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.1) !important;
+  outline: none !important;
 }
 
 /* Seta do Select */
 .revisao-distribuicao-pagina select {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 1rem center;
-    background-repeat: no-repeat;
-    background-size: 1.2rem;
-    padding-right: 40px !important;
-    cursor: pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+  padding-right: 30px !important;
+  cursor: pointer;
 }
 
-/* Campos Desabilitados */
+/* =========================================================
+   CAMPOS DESABILITADOS (DARK STYLE)
+   ========================================================= */
 .revisao-distribuicao-pagina select:disabled,
 .revisao-distribuicao-pagina input:disabled {
-    background-color: #f9fafb !important; /* Cinza bem clarinho */
-    color: #9ca3af !important;
-    border-color: #e5e7eb !important;
-    cursor: not-allowed;
+  display: block !important;
+  width: 100% !important; 
+  height: 40px !important; /* Mantém compacto */
+  
+  background-color: #1f2937 !important; /* Cinza Escuro */
+  color: #ffffff !important; /* Branco */
+  border: 1px solid #374151 !important;
+  font-weight: 500 !important;
+  opacity: 1 !important;
+  
+  /* Seta Branca */
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
 }
 
 /* =========================================================
    GRUPO DE ESTADOS E CIDADES
    ========================================================= */
-
 .grupo-selects-grid-2 {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important; /* 2 Colunas */
-    gap: 20px !important;
-    row-gap: 16px !important;
-    
-    margin-top: 10px;
-    padding-top: 20px;
-    border-top: 1px dashed #e5e7eb; /* Separação visual */
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 16px !important; /* Gap consistente com o resto */
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
 }
 
 /* =========================================================
-   BOTÕES
+   CALENDÁRIO (Datepicker Clean)
    ========================================================= */
-
-.revisao-actions-container {
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid #f0f0f0;
-}
-
-.revisao-distribuicao-pagina button {
-    height: 45px;
-    padding: 0 24px !important;
-    border-radius: 6px !important;
-    font-weight: 600 !important;
-    font-size: 0.95rem !important;
-    cursor: pointer;
+.react-datepicker__header button.react-datepicker__navigation {
+    width: 28px !important;
+    height: 28px !important;
+    padding: 0 !important;
+    background: transparent !important;
     border: none !important;
-    display: inline-flex;
+    top: 8px !important;
+    display: flex !important;
     align-items: center;
     justify-content: center;
-    text-transform: uppercase;
 }
 
-/* Cancelar */
-.revisao-distribuicao-pagina button[type="button"] {
-    background-color: #f3f4f6 !important;
-    color: #4b5563 !important;
-    border: 1px solid #e5e7eb !important;
-}
-.revisao-distribuicao-pagina button[type="button"]:hover {
-    background-color: #e5e7eb !important;
+.react-datepicker__navigation-icon::before {
+    border-color: #374151 !important;
+    border-width: 2px 2px 0 0 !important;
+    top: 8px !important;
 }
 
-/* Confirmar */
-.revisao-distribuicao-pagina button[type="submit"] {
-    background-color: #2e7d32 !important;
-    color: #ffffff !important;
+.react-datepicker__header {
+    background-color: #f8fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding-top: 8px !important;
 }
-.revisao-distribuicao-pagina button[type="submit"]:hover {
-    background-color: #1b5e20 !important;
+
+.react-datepicker {
+    border: 1px solid #e2e8f0 !important;
+    font-family: inherit !important;
+    font-size: 0.85rem !important; /* Calendário levemente menor */
+}
+
+.react-datepicker__day--selected {
+    background-color: #15803d !important;
+    color: white !important;
+    border-radius: 50%;
 }
 
 /* =========================================================
-   MOBILE
+   BOTÕES DE AÇÃO (Compactos)
+   ========================================================= */
+.revisao-actions-container {
+  display: flex;
+  justify-content: flex-end !important;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.revisao-distribuicao-pagina button:not(.react-datepicker__navigation) {
+  height: 38px !important; /* Botão compacto */
+  padding: 0 20px !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+  font-family: inherit !important;
+  cursor: pointer;
+  color: white !important;
+  border: none !important;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.revisao-distribuicao-pagina button:not(.react-datepicker__navigation):hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Cores dos Botões */
+.revisao-distribuicao-pagina button.btn-cancelar,
+.revisao-distribuicao-pagina button[type="button"]:not(.react-datepicker__navigation) {
+  background-color: #2e2e2e !important;
+}
+
+.revisao-distribuicao-pagina button.btn-confirmar,
+.revisao-distribuicao-pagina button[type="submit"] {
+  background-color: #15803d !important;
+}
+
+/* =========================================================
+   RESPONSIVIDADE (MOBILE OTIMIZADO)
    ========================================================= */
 @media (max-width: 768px) {
-    .revisao-distribuicao-pagina .form-geral__campos--grid,
-    .grupo-selects-grid-2 {
-        grid-template-columns: 1fr !important; /* Tudo em 1 coluna no celular */
-    }
-    
-    .revisao-actions-container {
-        flex-direction: column-reverse;
-    }
-    
-    .revisao-distribuicao-pagina button {
-        width: 100%;
-    }
+  .revisao-distribuicao-pagina .content-revisao {
+      padding: 20px; /* Padding menor no celular */
+      margin: 10px; /* Margem da borda da tela */
+  }
+  
+  /* Grid vira coluna única */
+  .revisao-distribuicao-pagina .form-geral__campos--grid,
+  .grupo-selects-grid-2 {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important; /* Gap menor no mobile */
+  }
+  
+  .revisao-actions-container {
+    flex-direction: column-reverse;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  /* Botões ocupam largura total no mobile para facilitar toque */
+  .revisao-distribuicao-pagina button:not(.react-datepicker__navigation) {
+    width: 100% !important;
+    height: 44px !important; /* Levemente maior no touch */
+  }
 }
