@@ -24,7 +24,7 @@ const InsumoLayout = () => {
     },
     {
       id: "registrar-saida", // Mudei o ID para ficar coerente
-      label: "Registrar Empréstimo", // Label atualizado
+      label: "Registrar Movimentação", // Label atualizado
       icon: <FaExchangeAlt />, // Ícone de troca/movimentação
       page: <RegistrarSaidaEmprestimo />, // Componente novo
     },

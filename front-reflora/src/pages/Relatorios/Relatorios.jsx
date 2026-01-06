@@ -40,7 +40,7 @@ function Relatorios() {
     {
       id: "insumos",
       titulo: "Relatório",
-      valor: "Movimentações de Materiais",
+      valor: "Movimentações de Insumos",
       icone: "🛠️",
       // Vermelho Suave
       corFundo: "#fee2e2",
@@ -50,7 +50,7 @@ function Relatorios() {
     {
       id: "distribuicao",
       titulo: "Relatório",
-      valor: "Movimentações de Distribuição",
+      valor: "Movimentações de Distribuição de Mudas",
       icone: "🚚",
       // Roxo
       corFundo: "#f3e8ff",

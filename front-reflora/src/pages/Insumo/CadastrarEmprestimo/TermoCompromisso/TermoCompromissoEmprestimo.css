@@ -12,7 +12,7 @@
 /* Container do termo */
 .termo-container {
   background-color: #fff;
-  padding: 30px;
+  padding: 40px;
   max-width: 700px;
   width: 100%;
   border: 1px solid #ccc;
@@ -27,39 +27,97 @@
   text-transform: uppercase;
   font-size: 24px;
   margin-bottom: 30px;
+  border-bottom: 2px solid #2e7d32;
+  padding-bottom: 10px;
 }
 
 /* Seções do termo */
 .termo-section {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  padding: 15px;
+  background-color: #fafafa;
+  border-radius: 5px;
+  border-left: 3px solid #2e7d32;
 }
 
 .termo-section p {
-  margin: 5px 0;
+  margin: 8px 0;
   line-height: 1.6;
+}
+
+.termo-section strong {
+  color: #333;
+  min-width: 150px;
+  display: inline-block;
+}
+
+/* Seção da declaração */
+.termo-section:nth-child(3) {
+  background-color: #f0f7f0;
+  border-left-color: #4caf50;
+  font-style: italic;
 }
 
 /* Área de assinatura */
 .signature {
   display: flex;
   justify-content: space-between;
-  margin-top: 50px;
+  margin-top: 60px;
+  gap: 40px;
 }
 
 .signature div {
   text-align: center;
+  flex: 1;
 }
 
 .signature-line {
-  border-top: 1px solid #333;
-  width: 200px;
-  margin: 60px auto 0;
+  border-top: 2px solid #333;
+  width: 100%;
+  margin: 40px auto 10px;
+  height: 1px;
 }
 
-/* Botão exportar */
+.signature p:first-child {
+  font-weight: bold;
+  margin-bottom: 5px;
+  min-height: 24px;
+}
+
+.signature p:last-child {
+  color: #666;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+/* Container dos botões */
+.termo-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  gap: 15px;
+}
+
+/* Botões */
+.btn-voltar {
+  padding: 10px 25px;
+  background-color: #9ca3af;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  min-width: 120px;
+  transition: background-color 0.3s;
+}
+
+.btn-voltar:hover {
+  background-color: #6b7280;
+}
+
 .btn-export {
-  display: block;
-  margin: 30px auto 0;
   padding: 10px 25px;
   background-color: #2e7d32;
   color: #fff;
@@ -67,37 +125,73 @@
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
+  min-width: 180px;
+  transition: background-color 0.3s;
 }
 
-/* Estilos para impressão */
+.btn-export:hover {
+  background-color: #1b5e20;
+}
+
 @media print {
-  /* Esconde tudo */
-  body * {
-    visibility: hidden !important;
+  /* 1. Define margens da página no navegador */
+  @page {
+    margin: 1cm;
+    size: auto;
   }
 
-  /* Mostra apenas o termo */
-  .termo-compromisso,
-  .termo-compromisso * {
-    visibility: visible !important;
+  /* 2. Esconde TUDO na tela primeiro */
+  body {
+    visibility: hidden;
+    height: auto;
+    background-color: white;
   }
 
-  /* Esconde botões no print */
-  .btn-export {
-    display: none !important;
-  }
-
-  /* Ajusta o termo para ocupar a página toda no print */
+  /* 3. Pega o container do termo e força a aparecer */
   .termo-compromisso {
-    position: absolute !important;
+    visibility: visible !important;
+    
+    /* Posiciona fixo no topo da folha, ignorando o resto do site */
+    position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     width: 100% !important;
     height: auto !important;
+    
+    /* Remove bordas e sombras para economizar tinta e limpar visual */
     margin: 0 !important;
-    padding: 20px !important;
-    background: white !important;
-    box-shadow: none !important;
+    padding: 0 !important;
     border: none !important;
+    box-shadow: none !important;
+    background-color: white !important;
+    
+    /* Garante que fique na frente de qualquer menu que possa ter sobrado */
+    z-index: 99999 !important;
+  }
+
+  /* 4. Garante que todo o TEXTO dentro do termo seja visível */
+  .termo-compromisso * {
+    visibility: visible !important;
+  }
+
+  /* 5. Remove explicitamente os botões */
+  .termo-actions {
+    display: none !important;
+  }
+
+  /* 6. Força as Assinaturas lado a lado */
+  .signature {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+    gap: 40px !important;
+    margin-top: 50px !important;
+    width: 100% !important;
+  }
+
+  .signature-block {
+    width: 45% !important;
+    float: left; /* Fallback antigo pra garantir */
   }
 }
