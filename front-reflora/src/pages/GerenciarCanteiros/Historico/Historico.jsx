@@ -266,6 +266,12 @@ const Historico = () => {
       sortKey: "quantidadePlantada",
     },
     {
+      key: "capacidadeMaxima",
+      label: "Capacidade Máxima",
+      sortable: true,
+      sortKey: "capacidadeMaxima",
+    },
+    {
       key: "qtdSaida",
       label: "Qtd Saída",
       width: "140px",

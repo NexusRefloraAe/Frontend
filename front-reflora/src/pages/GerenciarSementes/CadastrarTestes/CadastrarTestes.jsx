@@ -16,7 +16,8 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
     quantidade: 0, // Qtd amostra
     camaraFria: "",
     dataGerminacao: "",
-    qntdGerminou: 0,
+    numSementesPlantadas: 0, // NOVO: Amostra técnica
+    numSementesGerminaram: 0, // NOVO: Antigo qntdGerminou
     taxaGerminou: "",
   });
 
@@ -86,19 +87,18 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
   };
 
   // --- Cálculo automático da Taxa ---
+  // No carregarDados, atualize o cálculo:
   useEffect(() => {
-    const total = Number(formData.quantidade);
-    const germinou = Number(formData.qntdGerminou);
+    const totalAmostra = Number(formData.numSementesPlantadas);
+    const germinou = Number(formData.numSementesGerminaram);
 
-    if (total > 0 && germinou >= 0) {
-      const taxa = ((germinou / total) * 100).toFixed(2);
-      if (formData.taxaGerminou !== taxa) {
-        setFormData((prev) => ({ ...prev, taxaGerminou: taxa }));
-      }
+    if (totalAmostra > 0 && germinou >= 0) {
+      const taxa = ((germinou / totalAmostra) * 100).toFixed(2);
+      setFormData((prev) => ({ ...prev, taxaGerminou: taxa }));
     } else {
       setFormData((prev) => ({ ...prev, taxaGerminou: "" }));
     }
-  }, [formData.quantidade, formData.qntdGerminou]);
+  }, [formData.numSementesPlantadas, formData.numSementesGerminaram]);
 
   // 2. Função de Cancelar para voltar ao Banco
   const handleCancel = (confirmar = true) => {
@@ -115,7 +115,8 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
           quantidade: 0,
           camaraFria: "",
           dataGerminacao: "",
-          qntdGerminou: 0,
+          numSementesPlantadas: 0, // NOVO: Amostra técnica
+          numSementesGerminaram: 0, // NOVO: Antigo qntdGerminou
           taxaGerminou: "",
         });
         setSugestoes([]);
@@ -357,15 +358,22 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
         />
 
         <Input
-          label="Qtd Germinou (und)"
-          name="qntdGerminou"
+          label="Qtd Amostra para o Teste (unidades)"
           type="number"
-          value={formData.qntdGerminou}
-          onChange={handleChange("qntdGerminou")}
-          onIncrement={() => handleIncrement("qntdGerminou")}
-          onDecrement={() => handleDecrement("qntdGerminou")}
-          required={false}
-          placeholder="0"
+          value={formData.numSementesPlantadas}
+          onChange={handleChange("numSementesPlantadas")}
+          onIncrement={() => handleIncrement("numSementesPlantadas")}
+          onDecrement={() => handleDecrement("numSementesPlantadas")}
+          required={true}
+        />
+        
+        <Input
+          label="Qtd que Germinou (unidades)"
+          type="number"
+          value={formData.numSementesGerminaram}
+          onChange={handleChange("numSementesGerminaram")}
+          onIncrement={() => handleIncrement("numSementesGerminaram")}
+          onDecrement={() => handleDecrement("numSementesGerminaram")}
         />
 
         <Input

@@ -22,8 +22,10 @@ const DetalhesTestes = ({ item }) => {
       
       <p><strong>Data Germinação:</strong> {item.dataGerminacao}</p>
       
-      {/* Ajustado para 'qtdGerminou' (sem 'n' no meio) */}
-      <p><strong>Qntd Germinou(und):</strong> {item.qtdGerminou}</p>
+      {/* Ajustado para 'numSementesPlantadas' */}
+      <p><strong>Qtd de Sementes Plantadas (em unidade):</strong> {item.numSementesPlantadas}</p>
+
+      <p><strong>Qtd de sementes que Germinaram (em unidade):</strong> {item.numSementesGerminaram}</p>
       
       {/* Ajustado para 'taxaGerminacao' */}
       <p><strong>Taxa Germinou %:</strong> {item.taxaGerminacao}</p>

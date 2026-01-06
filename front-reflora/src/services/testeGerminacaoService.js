@@ -1,15 +1,23 @@
-import api from './api';
+import api from "./api";
 
 export const testeGerminacaoService = {
   // GET: Listar Testes
-  getAll: async (termoBusca = '', pagina = 0, itensPorPagina = 5, ordem = 'dataPlantio', direcao = 'desc') => {
+  getAll: async (
+    termoBusca = "",
+    pagina = 0,
+    itensPorPagina = 5,
+    ordem = "dataPlantio",
+    direcao = "desc"
+  ) => {
     const params = {
       searchTerm: termoBusca,
       page: pagina,
       size: itensPorPagina,
-      sort: `${ordem},${direcao}`
+      sort: `${ordem},${direcao}`,
     };
-    const response = await api.get('/movimentacoes/testeGerminacao', { params });
+    const response = await api.get("/movimentacoes/testeGerminacao", {
+      params,
+    });
     return response.data;
   },
 
@@ -21,49 +29,47 @@ export const testeGerminacaoService = {
   // POST: Criar Teste
   create: async (formData) => {
     const testeDTO = {
-      // 1. Discriminador
-      tipo_movimentacao: 'germinacao',
-
-      // 2. Campos da Pai (Obrigatórios por herança no Java)
-      finalidade: 'TESTE_DE_GERMINACAO',
+      tipo_movimentacao: "germinacao",
+      finalidade: "TESTE_DE_GERMINACAO",
       loteSemente: formData.lote,
-      dataPlantio: formatarDataParaJava(formData.dataTeste), // Front chama de dataTeste
-      
-      // (!) HACK: Valores padrão para passar na validação @NotNull/@Min da classe pai
-      tipoPlantio: 'Sementeira', 
-      quantidadePlantada: 1, 
+      dataPlantio: formatarDataParaJava(formData.dataTeste),
+      tipoPlantio: "Sementeira",
+      quantidadePlantada: 1, // Campo da classe pai (pode ser fixo ou ignorado)
 
-      // 3. Campos Específicos
-      qtdSemente: Number(formData.quantidade),
-      estahNaCamaraFria: formData.camaraFria === 'Sim',
-      
-      // Resultados (podem ser nulos no cadastro inicial, verifique seu backend)
-      dataGerminacao: formData.dataGerminacao ? formatarDataParaJava(formData.dataGerminacao) : null,
-      qtdGerminou: formData.qntdGerminou ? Number(formData.qntdGerminou) : 0,
-      // taxaGerminacao: Backend calcula sozinho ou recebe? No DTO tem o campo?
-      // O RequestDTO tem, então enviamos se houver.
+      // --- NOVOS CAMPOS SINCRONIZADOS ---
+      qtdSemente: Number(formData.quantidade), // Peso/Total que sai do estoque
+      numSementesPlantadas: Number(formData.numSementesPlantadas), // Quantidade da amostra (ex: 100)
+      numSementesGerminaram: Number(formData.numSementesGerminaram), // Quantidade que nasceu (ex: 85)
+
+      estahNaCamaraFria: formData.camaraFria === "Sim",
+      dataGerminacao: formData.dataGerminacao
+        ? formatarDataParaJava(formData.dataGerminacao)
+        : null,
     };
 
-    const response = await api.post('/movimentacoes', testeDTO);
+    const response = await api.post("/movimentacoes", testeDTO);
     return response.data;
   },
 
   // PUT: Atualizar Teste
   update: async (id, formData) => {
     const testeDTO = {
-      tipo_movimentacao: 'germinacao',
-      finalidade: 'TESTE_DE_GERMINACAO',
+      tipo_movimentacao: "germinacao",
+      finalidade: "TESTE_DE_GERMINACAO",
       loteSemente: formData.lote,
       dataPlantio: formatarDataParaJava(formData.dataTeste),
-      
+
       // Valores padrão novamente
-      tipoPlantio: 'Sementeira',
+      tipoPlantio: "Sementeira",
       quantidadePlantada: 1,
 
       qtdSemente: Number(formData.quantidade),
-      estahNaCamaraFria: formData.camaraFria === 'Sim',
-      dataGerminacao: formData.dataGerminacao ? formatarDataParaJava(formData.dataGerminacao) : null,
-      qtdGerminou: formData.qntdGerminou ? Number(formData.qntdGerminou) : 0
+      numSementesPlantadas: Number(formData.numSementesPlantadas),
+      numSementesGerminaram: Number(formData.numSementesGerminaram),
+      estahNaCamaraFria: formData.camaraFria === "Sim",
+      dataGerminacao: formData.dataGerminacao
+        ? formatarDataParaJava(formData.dataGerminacao)
+        : null,
     };
 
     const response = await api.put(`/movimentacoes/${id}`, testeDTO);
@@ -76,21 +82,25 @@ export const testeGerminacaoService = {
 
   exportarPdf: (termoBusca) => {
     // URL baseada no seu controller: /movimentacoes/testeGerminacao/export/pdf
-    const url = `/movimentacoes/testeGerminacao/export/pdf${termoBusca ? `?searchTerm=${termoBusca}` : ''}`;
-    return api.get(url, { responseType: 'blob' });
+    const url = `/movimentacoes/testeGerminacao/export/pdf${
+      termoBusca ? `?searchTerm=${termoBusca}` : ""
+    }`;
+    return api.get(url, { responseType: "blob" });
   },
 
   exportarCsv: (termoBusca) => {
-    const url = `/movimentacoes/testeGerminacao/export/csv${termoBusca ? `?searchTerm=${termoBusca}` : ''}`;
-    return api.get(url, { responseType: 'blob' });
-  }
+    const url = `/movimentacoes/testeGerminacao/export/csv${
+      termoBusca ? `?searchTerm=${termoBusca}` : ""
+    }`;
+    return api.get(url, { responseType: "blob" });
+  },
 };
 
 const formatarDataParaJava = (dataStr) => {
-    if (!dataStr) return null;
-    if (dataStr.includes('-')) {
-       const parts = dataStr.split('-');
-       return `${parts[2]}/${parts[1]}/${parts[0]}`;
-    }
-    return dataStr;
+  if (!dataStr) return null;
+  if (dataStr.includes("-")) {
+    const parts = dataStr.split("-");
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+  return dataStr;
 };
