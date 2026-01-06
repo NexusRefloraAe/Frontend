@@ -4,7 +4,6 @@
 .container-banco {
   display: flex;
   flex-direction: column;
- 
 }
 
 .content-banco > main {
@@ -195,5 +194,60 @@
   /* Wrapper do Formulário no Mobile */
   .content-semente-form {
     max-width: 100%; /* Garante que o form use 100% */
+  }
+}
+
+/* =========================================
+   AJUSTE DE BOTÕES (CORREÇÃO SOLICITADA)
+   Menores e alinhados à direita
+   ========================================= */
+
+/* 1. Alinha o container dos botões à direita */
+/* Seleciona a última div dentro do form, que é onde os botões costumam ficar */
+.content-semente-form form > div:last-child {
+  display: flex;
+  justify-content: flex-end !important; /* Força alinhamento à direita */
+  gap: 12px; /* Espaço entre os botões */
+  margin-top: 2rem;
+  width: 100%;
+}
+
+/* 2. Estilo base para REDUZIR o tamanho e manter as cores */
+.content-semente-form button {
+  width: auto !important; /* Remove largura total (100%) */
+  padding: 10px 24px !important; /* Padding compacto */
+  font-size: 0.95rem !important; /* Fonte ajustada */
+  border-radius: 5px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  transition: opacity 0.2s;
+}
+
+/* Botão Salvar (Verde) - Usando seletor para pegar o botão de submit */
+.content-semente-form button[type="submit"],
+.content-semente-form button.btn-salvar {
+  background-color: #15803d; /* Verde da imagem */
+}
+
+/* Botão Cancelar (Cinza Escuro) - Usando seletor para pegar o botão normal */
+.content-semente-form button[type="button"],
+.content-semente-form button.btn-cancelar {
+  background-color: #2e2e2e; /* Cinza escuro da imagem */
+}
+
+/* Hover simples */
+.content-semente-form button:hover {
+  opacity: 0.9;
+}
+
+/* MOBILE: No celular, eles voltam a preencher a largura para facilitar o toque */
+@media (max-width: 600px) {
+  .content-semente-form form > div:last-child {
+    flex-direction: column-reverse; /* Cancelar embaixo */
+  }
+  .content-semente-form button {
+    width: 100% !important;
   }
 }
