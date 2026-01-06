@@ -1,63 +1,61 @@
-/* --- CONTAINER PRINCIPAL (Fundo da Tela) --- */
+/* src/pages/TermoCompromisso/TermoCompromisso.css */
+
+/* --- CONTAINER PRINCIPAL --- */
 .termo-compromisso {
     width: 100%;
-    padding: 40px 20px;
+    min-height: 100vh;
+    padding: 30px 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    background-color: #f4f4f4; /* Fundo levemente cinza para destacar o papel */
-height: calc(100vh - 80px); /* ajuste se tiver header fixo */
-    overflow-y: auto;
+    background-color: #ffffff; /* Fundo Branco */
     overflow-x: hidden;
-    padding: 15px 8px; /* opcional */
 }
 
 /* --- O "PAPEL" (DOCUMENTO) --- */
 .termo-compromisso__documento {
     width: 100%;
-    max-width: 850px; /* Largura padrão A4 aproximada */
+    max-width: 850px; /* Largura A4 */
     background-color: white;
-    padding: 60px; /* Margem interna generosa como um documento real */
+    border: 1px solid #e5e7eb;
+    padding: 60px;
     border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    
+    margin-bottom: 30px;
 }
 
-/* Título do Documento */
+/* Título */
 .termo-compromisso__documento h2 {
     text-align: center;
     margin-bottom: 40px;
     font-size: 24px;
     font-weight: 700;
-    color: #333;
-    text-decoration: underline; /* Padrão de documentos oficiais */
+    color: #000;
+    text-decoration: underline;
     text-transform: uppercase;
 }
 
-/* Texto do Contrato */
+/* Texto */
 .termo-compromisso__texto {
     margin-bottom: 30px;
     font-size: 16px;
-    line-height: 1.8; /* Espaçamento bom para leitura */
-    color: #333;
-    text-align: justify; /* Texto justificado fica mais formal */
+    line-height: 1.8;
+    color: #000;
+    text-align: justify;
 }
 
-.termo-compromisso__texto strong {
-    font-weight: 700;
-}
+.termo-compromisso__texto strong { font-weight: 700; }
 
-/* --- TABELA DE MUDAS (Estilo Banco de Sementes) --- */
+/* --- TABELA DE MUDAS --- */
 .termo-compromisso__tabela {
-    width: 100%; 
-    border-collapse: separate; /* Necessário para border-radius funcionar */
+    width: 100%;
+    border-collapse: separate;
     border-spacing: 0;
     margin-bottom: 30px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px; /* Cantos arredondados na tabela */
+    border: 1px solid #000;
+    border-radius: 8px;
     overflow: hidden;
 }
 
@@ -65,27 +63,20 @@ height: calc(100vh - 80px); /* ajuste se tiver header fixo */
 .termo-compromisso__tabela td {
     padding: 12px 15px;
     text-align: center;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #000;
+    font-size: 15px;
+    color: #000;
 }
 
-/* Cabeçalho Verde Transparente */
 .termo-compromisso__tabela th {
-    background-color: #25702480; /* Verde com transparência */
+    background-color: #2e7d32;
     color: white;
     font-weight: 600;
-    font-size: 16px;
     text-transform: uppercase;
 }
 
-/* Zebra nas linhas */
-.termo-compromisso__tabela tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-/* Remove borda da última linha */
-.termo-compromisso__tabela tbody tr:last-child td {
-    border-bottom: none;
-}
+.termo-compromisso__tabela tbody tr:nth-child(even) { background-color: transparent; }
+.termo-compromisso__tabela tbody tr:last-child td { border-bottom: none; }
 
 /* --- PAGINAÇÃO --- */
 .termo-compromisso__paginacao {
@@ -95,110 +86,161 @@ height: calc(100vh - 80px); /* ajuste se tiver header fixo */
     margin-bottom: 20px;
 }
 
-/* --- ÁREA DOS BOTÕES (ACTIONS) --- */
-.termo-compromisso__actions {
+/* --- ASSINATURAS (LIMPEZA TOTAL DE LINHAS DUPLICADAS) --- */
+.assinaturas-container {
+    margin-top: auto;
+    padding-top: 50px;
     display: flex;
-    justify-content: center; /* Centraliza os botões */
-    gap: 20px; /* Espaço entre eles */
-    width: 100%;
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid #eee; /* Linha sutil separando o termo dos botões */
+    justify-content: space-between;
+    gap: 40px;
+    page-break-inside: avoid;
 }
 
-/* Estilo Base do Botão */
+.assinatura-box {
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    /* REMOVE QUALQUER BORDA ANTIGA */
+    border: none !important;
+    border-top: none !important;
+    text-decoration: none !important;
+    position: relative;
+}
+
+/* Remove linhas fantasmas (::before/::after) */
+.assinatura-box::before,
+.assinatura-box::after {
+    content: none !important;
+    display: none !important;
+}
+
+/* A ÚNICA LINHA VÁLIDA */
+.assinatura-linha {
+    border-top: 1px solid #000 !important;
+    margin: 0 auto 8px auto;
+    width: 100%;    
+    max-width: 200px; /* Tamanho controlado no PC */
+    height: 0px !important;
+}
+
+/* --- BOTÕES --- */
+.termo-compromisso__actions {
+    display: flex;
+    justify-content: flex-end; /* Direita no PC */
+    gap: 15px;
+    width: 100%;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #eee;
+}
+
 .termo-compromisso__button {
-    /* Layout Flex para o ícone e texto */
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    
-    /* Tamanho */
-    padding: 12px 30px;
-    min-width: 160px;
-    
-    /* Visual */
-    border-radius: 10px; /* Arredondado padrão do sistema */
+    padding: 0 24px;
+    height: 48px;
+    border-radius: 6px;
     border: none;
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-    transition: all 0.3s ease;
-    
-    /* Tipografia */
-    font-size: 16px;
-    font-weight: bold;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    font-weight: 700;
     color: white;
-    text-transform: uppercase; /* Opcional: deixa mais imponente */
+    text-transform: uppercase;
+    font-family: inherit;
+    min-width: 140px;
 }
 
-/* Efeito de Hover Geral */
 .termo-compromisso__button:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
-/* Botão Exportar (VERDE) */
-.termo-compromisso__button--primary {
-    background-color: #257024;
-}
-.termo-compromisso__button--primary:hover {
-    background-color: #1e5c1d;
-}
-
-/* Botão Editar (CINZA) */
 .termo-compromisso__button--secondary {
-    background-color: #66605F;
+    background-color: #212529; 
 }
-.termo-compromisso__button--secondary:hover {
-    background-color: #4a4645;
+.termo-compromisso__button--secondary:hover { background-color: #343a40; }
+
+.termo-compromisso__button--primary {
+    background-color: #15803d; 
 }
+.termo-compromisso__button--primary:hover { background-color: #166534; }
 
-/* --- MODO DE IMPRESSÃO (CTRL+P ou Exportar) --- */
-@media print {
-    /* Esconde tudo que não é o termo */
-    body * {
-        visibility: hidden !important;
-    }
 
-    /* Mostra só o container do documento e seus filhos */
-    .termo-compromisso,
-    .termo-compromisso__documento,
-    .termo-compromisso__documento * {
-        visibility: visible !important;
-    }
+/* =========================================================
+   MOBILE (LADO A LADO E COMPACTO)
+   ========================================================= */
+@media (max-width: 768px) {
+    .termo-compromisso { padding: 15px 10px; }
+    .termo-compromisso__documento { padding: 25px 15px; }
+    
+    .termo-compromisso__documento h2 { font-size: 18px; margin-bottom: 20px; }
+    .termo-compromisso__texto { font-size: 13px; line-height: 1.5; text-align: left; }
+    .termo-compromisso__tabela th, .termo-compromisso__tabela td { padding: 6px 3px; font-size: 12px; }
 
-    /* Esconde os botões e a paginação na hora de imprimir */
-    .termo-compromisso__actions,
-    .termo-compromisso__paginacao {
-        display: none !important;
-    }
-
-    /* Ajusta o layout para preencher a folha A4 */
-    .termo-compromisso {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        height: auto !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: white !important;
-    }
-
-    .termo-compromisso__documento {
-        box-shadow: none !important;
-        border: none !important;
-        margin: 0 !important;
-        padding: 20px !important; /* Margem da folha */
-        max-width: 100% !important;
+    /* --- ASSINATURAS LADO A LADO --- */
+    .assinaturas-container {
+        flex-direction: row !important; /* Lado a lado */
+        justify-content: space-between;
+        gap: 10px; /* Espaço pequeno */
+        padding-top: 30px;
+        align-items: flex-end;
     }
     
-    /* Garante que as cores de fundo (tabela verde) saiam na impressão */
-    .termo-compromisso__tabela th {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        background-color: #25702480 !important;
-        color: black !important; /* Melhora contraste na impressão p/b */
+    .assinatura-box {
+        width: 48%; /* Metade da tela para cada */
     }
+
+    .assinatura-linha {
+        max-width: 100%; /* Linha ocupa toda a largura da caixa */
+        margin-bottom: 5px;
+    }
+    
+    /* Fonte menor para caber */
+    .assinatura-box strong { font-size: 11px; }
+    .assinatura-box small { font-size: 10px; }
+
+    /* Botões */
+    .termo-compromisso__actions {
+        flex-direction: column-reverse;
+        gap: 12px;
+        justify-content: center;
+    }
+    .termo-compromisso__button {
+        width: 100%;
+        height: 50px;
+    }
+}
+
+/* =========================================================
+   IMPRESSÃO
+   ========================================================= */
+@media print {
+    body * { visibility: hidden !important; }
+    .termo-compromisso, .termo-compromisso__documento, .termo-compromisso__documento * {
+        visibility: visible !important;
+    }
+    .termo-compromisso__actions, .termo-compromisso__paginacao { display: none !important; }
+    .termo-compromisso {
+        position: absolute !important; top: 0 !important; left: 0 !important;
+        width: 100% !important; margin: 0 !important; padding: 0 !important; background: white !important;
+    }
+    .termo-compromisso__documento {
+        box-shadow: none !important; border: none !important; margin: 0 !important;
+        padding: 2cm !important; max-width: 100% !important;
+    }
+    .termo-compromisso__tabela th {
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+        background-color: #2e7d32 !important; color: white !important;
+    }
+    .termo-compromisso__texto { font-size: 12pt; text-align: justify; }
+    .assinaturas-container { flex-direction: row !important; gap: 50px !important; justify-content: space-between !important; }
+    .assinatura-box { flex: 1 !important; }
+    .assinatura-linha { max-width: 250px !important; margin: 0 auto 5px auto !important; }
 }

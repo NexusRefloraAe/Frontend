@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Paginacao from '../../../components/Paginacao/Paginacao'; // Verifique se o caminho está correto
+import Paginacao from '../../../components/Paginacao/Paginacao';
 import { FaEdit, FaFileExport } from 'react-icons/fa';
 import './TermoCompromisso.css';
 
@@ -8,7 +8,7 @@ const TermoCompromisso = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // 1. DADOS SEGUROS: Evita tela branca se 'location.state' falhar
+    // 1. DADOS SEGUROS
     const { dadosRevisao, mudas, totalMudas } = location.state || {
         dadosRevisao: {},
         mudas: [],
@@ -18,16 +18,11 @@ const TermoCompromisso = () => {
     // --- LÓGICA DE PAGINAÇÃO ---
     const [paginaAtual, setPaginaAtual] = useState(1);
     const ITENS_POR_PAGINA = 8;
-
-    // Garante que é array para não quebrar
     const listaMudasCompleta = Array.isArray(mudas) ? mudas : [];
-
     const totalPaginas = Math.ceil(listaMudasCompleta.length / ITENS_POR_PAGINA) || 1;
     const indiceUltimoItem = paginaAtual * ITENS_POR_PAGINA;
     const indicePrimeiroItem = indiceUltimoItem - ITENS_POR_PAGINA;
     const mudasPaginaAtual = listaMudasCompleta.slice(indicePrimeiroItem, indiceUltimoItem);
-
-    // Linhas vazias para manter o design fixo
     const linhasVaziasCount = Math.max(0, ITENS_POR_PAGINA - mudasPaginaAtual.length);
     const linhasVazias = Array(linhasVaziasCount).fill(null);
 
@@ -45,30 +40,21 @@ const TermoCompromisso = () => {
     const ufDist = dadosRevisao?.estadoDistribuicao;
     const textoDist = (cidadeDist && ufDist) ? `${cidadeDist} - ${ufDist}` : '____________________';
 
-    // === CORREÇÃO DO ERRO DA TELA BRANCA AQUI ===
     let textoData = "___/___/_____";
-
     if (dadosRevisao?.dataEntrega) {
         const valorData = dadosRevisao.dataEntrega;
-
-        // Cenário 1: Se vier do input HTML (YYYY-MM-DD), ex: "2026-01-04"
         if (typeof valorData === 'string' && valorData.match(/^\d{4}-\d{2}-\d{2}$/)) {
             const [ano, mes, dia] = valorData.split('-');
             textoData = `${dia}/${mes}/${ano}`;
-        }
-        // Cenário 2: Se vier como Objeto de Data ou Texto Longo (Sun Jan 04...)
-        else {
+        } else {
             try {
                 const dataObj = new Date(valorData);
-                // Verifica se é uma data válida antes de formatar
                 if (!isNaN(dataObj.getTime())) {
-                    // toLocaleDateString('pt-BR') formata automaticamente para dd/mm/aaaa
-                    // O timeZone: 'UTC' evita que a data volte um dia por causa do fuso
                     textoData = dataObj.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
                 }
             } catch (e) {
                 console.error("Erro data", e);
-                textoData = valorData; // Fallback se der erro
+                textoData = valorData;
             }
         }
     }
@@ -84,7 +70,6 @@ const TermoCompromisso = () => {
             instituicao: instituicao,
             cidade: cidadeDist || "N/A",
             estado: ufDist || "UF",
-            // Mantém o formato YYYY-MM-DD para o banco de dados/ordenação correta
             dataEntrega: dadosRevisao?.dataEntrega || new Date().toISOString().split('T')[0],
             quantidade: total,
             responsavelRecebimento: respRecebimento,
@@ -148,15 +133,14 @@ const TermoCompromisso = () => {
                     </div>
                 )}
 
-                <div className="assinaturas-container" style={{ marginTop: 'auto', paddingTop: '40px', display: 'flex', justifyContent: 'space-between', gap: '40px' }}>
-                    <div style={{ textAlign: 'center', flex: 1 }}>
-                        <div style={{ borderTop: '1px solid #333', margin: '0 20px 5px 20px' }}></div>
-                        <strong>{respDistribuicao}</strong><br />
+                {/* === ASSINATURAS === */}
+                <div className="assinaturas-container">
+                    <div className="assinatura-box">
+                        <div className="assinatura-linha"></div>
                         <small>Responsável AFINK</small>
                     </div>
-                    <div style={{ textAlign: 'center', flex: 1 }}>
-                        <div style={{ borderTop: '1px solid #333', margin: '0 20px 5px 20px' }}></div>
-                        <strong>{respRecebimento}</strong><br />
+                    <div className="assinatura-box">
+                        <div className="assinatura-linha"></div>  
                         <small>Responsável {instituicao}</small>
                     </div>
                 </div>
