@@ -1,7 +1,6 @@
 .layout-scroll {
   width: 100%;
-  max-width: 1200px;
-  height: calc(97vh - 80px); /* ajuste se tiver header fixo */
+  height: calc(85vh - 80px); /* ajuste se tiver header fixo */
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0 8px; /* opcional */

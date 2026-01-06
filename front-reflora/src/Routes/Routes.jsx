@@ -26,6 +26,7 @@ import RelatorioCanteiro from "../pages/GerenciarCanteiros/RelatorioCanteiro/Rel
 /* === DISTRIBUIÇÃO DE MUDAS (CORRIGIDO) === */
 import DistribuicaoMudasLayout from "../pages/DistribuicaoMudas/DistribuicaoMudasLayout";
 import TermoCompromisso from "../pages/DistribuicaoMudas/TermoCompromisso/TermoCompromisso";
+import TermoCompromissoEmprestimo from "../pages/Insumo/CadastrarEmprestimo/TermoCompromisso/TermoCompromissoEmprestimo";
 
 // AQUI ESTAVA O ERRO: Importando o componente correto que criamos
 import RelatorioDistribuicao from "../pages/DistribuicaoMudas/RelatorioDistribuicao/RelatorioDistribuicao";
@@ -51,7 +52,7 @@ const AppRoutes = () => {
 
         {/* Rotas Protegidas (Com Sidebar) */}
         <Route element={<Layout />}>
-          
+
           <Route path="/home" element={<Home />} />
           <Route path="/banco-sementes" element={<BancoSementes />} />
 
@@ -62,25 +63,28 @@ const AppRoutes = () => {
           {/* --- DISTRIBUIÇÃO DE MUDAS --- */}
           {/* Tela Principal (Abas: Revisão e Relatório) */}
           <Route path="/distribuicao-mudas" element={<DistribuicaoMudasLayout />} />
-          
-          {/* Rota Específica do Relatório (IMPORTANTE: O nome deve bater com ContainerWithTitle) */}
-          <Route path="/distribuicao-mudas/relatorio" element={<RelatorioDistribuicao />} />
-          
+
+
+
           {/* Tela do Termo (Para onde o botão 'Gerar Termo' envia) */}
           <Route path="/termo-compromisso" element={<TermoCompromisso />} />
+          
 
           {/* Outros Módulos */}
           <Route path="/vistoria" element={<VistoriaLayout />} />
           <Route path="/insumo" element={<InsumoLayout />} />
+          <Route path="/termo-compromisso-emprestimo" element={<TermoCompromissoEmprestimo />} />
 
           {/* Rotas com Scroll Layout (Relatórios Gerais) */}
           <Route element={<LayoutScroll />}>
             <Route path="/relatorios" element={<Relatorios />} />
-            
+
             <Route path="/vistoria/relatorio-vistoria" element={<RelatorioVistoria />} />
             <Route path="/insumo/relatorio-materiais" element={<GerarRelatorioInsumo tipo="materiais" />} />
             <Route path="/gerenciamento-sementes/relatorio" element={<GerarRelatorio />} />
             <Route path="/gerenciar-canteiros/relatorio" element={<RelatorioCanteiro />} />
+            {/* Rota Específica do Relatório (IMPORTANTE: O nome deve bater com ContainerWithTitle) */}
+            <Route path="/distribuicao-mudas/relatorio" element={<RelatorioDistribuicao />} />
           </Route>
 
           <Route path="/configuracoes" element={<Configuracoes />} />

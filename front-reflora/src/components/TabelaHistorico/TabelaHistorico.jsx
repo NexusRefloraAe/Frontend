@@ -13,6 +13,7 @@ function TabelaHistorico({ colunas = [], dados = [], variant = 'default' }) {
     const variantClass = ['entrada', 'saida'].includes(variant) ? variant : 'default';
 
     return (
+        
         <div className="tabela-historico-container">
             <table className={`tabela-historico tabela-historico--${variantClass}`}>
                 <thead>

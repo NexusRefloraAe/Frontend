@@ -13,7 +13,8 @@ const FiltrosRelatorio = ({
   // Novas props opcionais para relatório de insumos
   mostrarTipoInsumo = false,
   tipoInsumo = 'Material',
-  mostrarNomeInsumo = false
+  mostrarNomeInsumo = false,
+  mostrarNomeDestino = false,
 }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,14 +37,14 @@ const FiltrosRelatorio = ({
         <div className="filtro-group">
           <label className="filtro-label">Tipo de Insumo</label>
           <div className="tipo-insumo-buttons">
-            <button 
+            <button
               type="button"
               className={tipoInsumo === 'Material' ? 'active' : ''}
               onClick={() => handleTipoInsumoChange('Material')}
             >
               Material
             </button>
-            <button 
+            <button
               type="button"
               className={tipoInsumo === 'Ferramenta' ? 'active' : ''}
               onClick={() => handleTipoInsumoChange('Ferramenta')}
@@ -67,8 +68,19 @@ const FiltrosRelatorio = ({
             className="filtro-input"
           />
         </div>
+      ) : mostrarNomeDestino ? (
+        <div className="filtro-group">
+          <label className="filtro-label">Destino</label>
+          <Input
+            name="destino"
+            type="text"
+            value={filtros.destino || ''}
+            onChange={handleChange}
+            placeholder="Digite o destino"
+            className="filtro-input"
+          />
+        </div>
       ) : (
-        /* Campo Nome Popular padrão - mantém compatibilidade */
         <div className="filtro-group">
           <label className="filtro-label">Nome Popular</label>
           <Input

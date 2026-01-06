@@ -6,7 +6,7 @@
     height: 100%;
     
     /* Permite scroll apenas neste container */
-    overflow-y: auto !important;
+    
     overflow-x: hidden;
     
     /* Espaço extra no final para mobile (evita barra do navegador tapar conteúdo) */
@@ -20,7 +20,6 @@
 }
 
 .relatorio-distribuicao-content {
-    max-width: 1200px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;

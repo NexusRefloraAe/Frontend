@@ -135,8 +135,7 @@ const RelatorioDistribuicao = () => {
             filtros={filtros} 
             onFiltroChange={handleFiltroChange} 
             onPesquisar={handleGerarRelatorio} 
-            placeholderBusca="Filtrar por Destino (Cidade)..."
-            campoBusca="destino" 
+            mostrarNomeDestino={true}
           />
         </section>
 

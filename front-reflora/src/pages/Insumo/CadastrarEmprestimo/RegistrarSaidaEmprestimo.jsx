@@ -1,30 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import FormGeral from '../../../components/FormGeral/FormGeral';
 import Input from '../../../components/Input/Input';
 import insumoService from '../../../services/insumoService';
 import { FaTools, FaBoxOpen, FaArrowLeft } from 'react-icons/fa';
 import './CadastrarEmprestimo.css';
 
-const RegistrarSaidaEmprestimo = ({
-  onSalvar,
-  onCancelar
-}) => {
+const RegistrarSaidaEmprestimo = ({ onSalvar, onCancelar }) => {
   const hoje = new Date().toISOString().split('T')[0];
+  const navigate = useNavigate();
 
-  // --- ESTADOS DE CONTROLE ---
-  const [tipoSelecionado, setTipoSelecionado] = useState(null); 
-  
-  // Listas de dados
+  const [tipoSelecionado, setTipoSelecionado] = useState(null);
   const [listaInsumos, setListaInsumos] = useState([]);
-  const [sugestoes, setSugestoes] = useState([]); 
+  const [sugestoes, setSugestoes] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Formulário
   const [formData, setFormData] = useState({
     insumoId: '',
     nomeInsumo: '',
-    status: '', 
-    quantidade: '', // Mantemos como string durante a digitação
+    status: '',
+    quantidade: '',
     unidadeMedida: '',
     dataRegistro: hoje,
     responsavelEntrega: '',
@@ -32,7 +27,7 @@ const RegistrarSaidaEmprestimo = ({
     finalidade: ''
   });
 
-  // --- 1. CARREGAR DADOS AO SELECIONAR O TIPO ---
+  // Carregar insumos quando tipo mudar
   useEffect(() => {
     if (tipoSelecionado) {
       const carregarDados = async () => {
@@ -40,7 +35,7 @@ const RegistrarSaidaEmprestimo = ({
           setLoading(true);
           const dados = await insumoService.listarInsumos(tipoSelecionado);
           setListaInsumos(dados);
-          
+
           setFormData(prev => ({
             ...prev,
             insumoId: '',
@@ -51,7 +46,7 @@ const RegistrarSaidaEmprestimo = ({
             finalidade: ''
           }));
         } catch (error) {
-          console.error("Erro ao carregar lista:", error);
+          console.error(error);
           alert("Erro ao buscar itens do estoque.");
         } finally {
           setLoading(false);
@@ -61,14 +56,13 @@ const RegistrarSaidaEmprestimo = ({
     }
   }, [tipoSelecionado]);
 
-  // --- HANDLERS DE FORMULÁRIO ---
-
-  const handleNomeChange = (e) => {
+  // Handlers
+  const handleNomeChange = e => {
     const valor = e.target.value;
     setFormData(prev => ({ ...prev, nomeInsumo: valor, insumoId: '' }));
 
     if (valor.length > 0) {
-      const filtrados = listaInsumos.filter(item => 
+      const filtrados = listaInsumos.filter(item =>
         item.nome.toLowerCase().includes(valor.toLowerCase())
       );
       setSugestoes(filtrados);
@@ -77,7 +71,7 @@ const RegistrarSaidaEmprestimo = ({
     }
   };
 
-  const selecionarItem = (item) => {
+  const selecionarItem = item => {
     setFormData(prev => ({
       ...prev,
       insumoId: item.id,
@@ -89,80 +83,80 @@ const RegistrarSaidaEmprestimo = ({
 
   const handleBlurNome = () => setTimeout(() => setSugestoes([]), 200);
 
-  // CORREÇÃO: Mantém como string para permitir digitar ponto/vírgula
-  const handleChange = (field) => (e) => {
-    const value = e.target.value; 
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleChange = field => e => {
+    setFormData(prev => ({ ...prev, [field]: e.target.value }));
   };
 
-  // Funções de incremento convertem, somam e voltam para string
   const handleQuantidadeInc = () => {
     setFormData(prev => {
-        const val = parseFloat(prev.quantidade) || 0;
-        return { ...prev, quantidade: (val + 1).toString() };
+      const val = parseFloat(prev.quantidade) || 0;
+      return { ...prev, quantidade: (val + 1).toString() };
     });
   };
 
   const handleQuantidadeDec = () => {
     setFormData(prev => {
-        const val = parseFloat(prev.quantidade) || 0;
-        return { ...prev, quantidade: Math.max(0, val - 1).toString() };
+      const val = parseFloat(prev.quantidade) || 0;
+      return { ...prev, quantidade: Math.max(0, val - 1).toString() };
     });
   };
 
-  // --- SUBMIT ---
-  const handleSubmit = async (e) => {
+  // --- Função de gerar termo ---
+  const gerarTermo = () => {
+    if (!formData.insumoId) return alert('Selecione um item da lista.');
+    let qtdNumerica = parseFloat(formData.quantidade.toString().replace(',', '.'));
+    if (!qtdNumerica || qtdNumerica <= 0) return alert('Informe uma quantidade válida.');
+
+    const dadosTermo = {
+      nomeResponsavel: formData.responsavelReceber,
+      cargoResponsavel: formData.responsavelEntrega,
+      nomeMaterial: formData.nomeInsumo,
+      quantidade: qtdNumerica,
+      unidade: formData.unidadeMedida,
+      finalidade: formData.finalidade,
+      dataRegistro: formData.dataRegistro
+    };
+
+    // Navega para a tela do termo, passando dados pelo state
+    navigate('/termo-compromisso-emprestimo', { state: { dadosTermo } });
+  };
+
+  const handleSubmit = async e => {
     e.preventDefault();
 
     if (!formData.insumoId) return alert('Selecione um item da lista.');
-    
-    // CORREÇÃO: Tratamento numérico robusto (troca vírgula por ponto)
-    let qtdString = formData.quantidade.toString().replace(',', '.');
-    let qtdNumerica = parseFloat(qtdString);
+    let qtdNumerica = parseFloat(formData.quantidade.toString().replace(',', '.'));
+    if (!qtdNumerica || qtdNumerica <= 0) return alert('Informe uma quantidade válida.');
 
-    if (!qtdNumerica || isNaN(qtdNumerica) || qtdNumerica <= 0) {
-        return alert('Informe uma quantidade válida maior que zero.');
-    }
-    
-    // Validação de Estoque
     const itemSelecionado = listaInsumos.find(i => i.id === formData.insumoId);
-    if (itemSelecionado && formData.status !== 'DEVOLVIDO') { 
-        if (qtdNumerica > itemSelecionado.quantidadeAtual) {
-            return alert(`Estoque insuficiente! Disponível: ${itemSelecionado.quantidadeAtual} ${itemSelecionado.unidadeMedida}`);
-        }
+    if (itemSelecionado && formData.status !== 'DEVOLVIDO') {
+      if (qtdNumerica > itemSelecionado.quantidadeAtual) {
+        return alert(`Estoque insuficiente! Disponível: ${itemSelecionado.quantidadeAtual} ${itemSelecionado.unidadeMedida}`);
+      }
     }
 
     try {
       const payload = {
         insumoId: formData.insumoId,
         nomeInsumo: formData.nomeInsumo,
-        status: formData.status, 
-        quantidade: qtdNumerica, // Envia o número tratado
+        status: formData.status,
+        quantidade: qtdNumerica,
         dataRegistro: formData.dataRegistro,
         responsavelEntrega: formData.responsavelEntrega,
         responsavelReceber: formData.responsavelReceber,
-        observacao: formData.finalidade 
+        observacao: formData.finalidade
       };
 
       await insumoService.registrarMovimentacao(payload);
-      
       alert("Movimentação registrada com sucesso!");
-      
       if (onSalvar) onSalvar();
-      
-      // Limpa o form
-      setFormData(prev => ({ 
-          ...prev, 
-          insumoId: '', nomeInsumo: '', quantidade: '', finalidade: '' 
-      }));
 
+      setFormData(prev => ({ ...prev, insumoId: '', nomeInsumo: '', quantidade: '', finalidade: '' }));
     } catch (error) {
       console.error(error);
       alert("Erro ao registrar movimentação.");
     }
   };
-
-  // --- RENDERIZAÇÃO ---
 
   // TELA 1: SELEÇÃO DE TIPO
   if (!tipoSelecionado) {
@@ -205,15 +199,11 @@ const RegistrarSaidaEmprestimo = ({
   const tituloForm = tipoSelecionado === 'MATERIAL' ? "Registrar Saída de Material" : "Movimentação de Ferramenta";
   const labelQuantidade = tipoSelecionado === 'MATERIAL' ? "Quantidade Utilizada" : (formData.status === 'EMPRESTADO' ? "Qtd a Retirar" : "Qtd a Devolver");
 
+  
   const actions = [
-    { 
-        type: 'button', 
-        variant: 'action-secondary', 
-        children: 'Voltar', 
-        onClick: () => setTipoSelecionado(null),
-        icon: <FaArrowLeft />
-    },
-    { type: 'submit', variant: 'primary', children: 'Confirmar Registro' },
+    { type: 'button', variant: 'action-secondary', children: 'Voltar', onClick: () => setTipoSelecionado(null), icon: <FaArrowLeft /> },
+    { type: 'button', variant: 'primary', children: 'Gerar Termo', onClick: gerarTermo },
+    { type: 'submit', variant: 'success', children: 'Confirmar Registro' }
   ];
 
   return (

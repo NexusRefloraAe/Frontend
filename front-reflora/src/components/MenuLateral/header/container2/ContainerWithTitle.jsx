@@ -20,13 +20,15 @@ const ContainerWithTitle = ({ onMenuClick, isMobile }) => {
     
     "/vistoria": "Vistoria das mudas",
     "/insumo": "Gestão de Insumo",
+     "/termo-compromisso-emprestimo": "Gestão de Insumo",
 
     "/relatorios": "Relatórios",
     "/gerenciar-canteiros/relatorio": "Relatório de Canteiros",
     "/vistoria/relatorio-vistoria": "Relatório de Vistorias",
     "/gerenciamento-sementes/relatorio": "Relatório de Sementes",
     "/insumo/relatorio-materiais": "Relatório de Materiais",
-    
+   
+
     "/configuracoes": "Configurações",
     // "/notificacoes": "Notificações",
   };

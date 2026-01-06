@@ -2,9 +2,6 @@
 
 .relatorios-container {
   padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  min-height: 100vh;
   background-color: #f8fafc;
 }
 
@@ -20,7 +17,7 @@
 
 .relatorios-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
   align-items: stretch;
 }
@@ -104,6 +101,9 @@
 @media (max-width: 768px) {
   .relatorios-container {
     padding: 1rem;
+   
+    overflow-y: auto;
+    
   }
   .relatorios-titulo {
     font-size: 1.5rem;

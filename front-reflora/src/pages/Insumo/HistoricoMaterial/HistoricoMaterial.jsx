@@ -217,6 +217,7 @@ const HistoricoMaterial = () => {
   ];
 
   return (
+    <div className="layout-scroll">
     <div className="historico-material-container">
       <div className="header-filtros">
         <h1>Histórico de Movimentação</h1>
@@ -289,6 +290,7 @@ const HistoricoMaterial = () => {
         textoConfirmar="Excluir"
         textoCancelar="Cancelar"
       />
+    </div>
     </div>
   );
 };

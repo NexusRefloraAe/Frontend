@@ -14,7 +14,7 @@ function TabelaComBuscaPaginacao({
   onEditar,
   onVisualizar,
   onExcluir,
-  itensPorPagina = 1,
+  itensPorPagina = 5,
   habilitarBusca = true,
   modoBusca = "auto",
   onExportPDF,
