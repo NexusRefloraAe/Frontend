@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Importado para navegação
+import { useNavigate } from "react-router-dom";
 import FormGeral from "../../../components/FormGeral/FormGeral";
 import Input from "../../../components/Input/Input";
 import { testeGerminacaoService } from "../../../services/testeGerminacaoService";
 import { plantioService } from "../../../services/plantioService";
 import { movimentacaoSementeService } from "../../../services/movimentacaoSementeService";
 import { getBackendErrorMessage } from "../../../utils/errorHandler";
+
+// Importando o novo CSS
+import "./CadastrarTestes.css";
 
 const CadastrarTestes = ({ dadosParaCorrecao }) => {
   const navigate = useNavigate();
@@ -24,19 +27,17 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
   const [loading, setLoading] = useState(false);
   const [sugestoes, setSugestoes] = useState([]);
   const [estoqueAtual, setEstoqueAtual] = useState(null);
-  const [unidadeMedida, setUnidadeMedida] = useState(""); // Novo estado
+  const [unidadeMedida, setUnidadeMedida] = useState(""); 
 
   // 1. Efeito para preencher dados ao vir de uma correção
   useEffect(() => {
     if (dadosParaCorrecao) {
-      // Extrai o número: "3000 und" -> 3000
       const qtdOriginal = dadosParaCorrecao.quantidadeSaidaFormatada
         ? parseFloat(
             dadosParaCorrecao.quantidadeSaidaFormatada.replace(/[^\d.]/g, "")
           )
         : 0;
 
-      // Extrai a unidade: "3000 und" -> "und"
       const unidade = dadosParaCorrecao.quantidadeSaidaFormatada
         ? dadosParaCorrecao.quantidadeSaidaFormatada.replace(/[0-9.\s]/g, "")
         : "";
@@ -74,7 +75,6 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
 
   const selecionarSugestao = (semente) => {
     setEstoqueAtual(semente.quantidadeAtualFormatada);
-
     const unidade = semente.quantidadeAtualFormatada.replace(/[0-9.\s]/g, "");
     setUnidadeMedida(unidade);
 
@@ -87,7 +87,6 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
   };
 
   // --- Cálculo automático da Taxa ---
-  // No carregarDados, atualize o cálculo:
   useEffect(() => {
     const totalAmostra = Number(formData.numSementesPlantadas);
     const germinou = Number(formData.numSementesGerminaram);
@@ -100,14 +99,12 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
     }
   }, [formData.numSementesPlantadas, formData.numSementesGerminaram]);
 
-  // 2. Função de Cancelar para voltar ao Banco
+  // 2. Função de Cancelar
   const handleCancel = (confirmar = true) => {
     const resetForm = () => {
-      // Se estivermos em modo de correção, voltamos para a listagem
       if (dadosParaCorrecao) {
         navigate("/banco-sementes");
       } else {
-        // Se for cadastro comum, apenas limpamos os campos e ficamos na tela
         setFormData({
           lote: "",
           nomePopular: "",
@@ -115,8 +112,8 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
           quantidade: 0,
           camaraFria: "",
           dataGerminacao: "",
-          numSementesPlantadas: 0, // NOVO: Amostra técnica
-          numSementesGerminaram: 0, // NOVO: Antigo qntdGerminou
+          numSementesPlantadas: 0,
+          numSementesGerminaram: 0,
           taxaGerminou: "",
         });
         setSugestoes([]);
@@ -125,11 +122,7 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
     };
 
     if (confirmar) {
-      if (
-        window.confirm(
-          "Deseja cancelar? As alterações não salvas serão perdidas."
-        )
-      ) {
+      if (window.confirm("Deseja cancelar? As alterações não salvas serão perdidas.")) {
         resetForm();
       }
     } else {
@@ -170,7 +163,6 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
       setLoading(true);
 
       if (dadosParaCorrecao?.idUltimoMovimentacao) {
-        // ✅ MODO CORREÇÃO: Converte o registro e volta para o banco
         await movimentacaoSementeService.corrigir(
           dadosParaCorrecao.idUltimoMovimentacao,
           formData,
@@ -179,7 +171,6 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
         alert("Movimentação corrigida para Teste com sucesso!");
         navigate("/banco-sementes");
       } else {
-        // ✅ MODO CADASTRO NORMAL: Cria o registro e permanece na tela
         const payload = { ...formData };
         if (payload.dataTeste && payload.dataTeste.includes("-")) {
           const [ano, mes, dia] = payload.dataTeste.split("-");
@@ -187,8 +178,6 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
         }
         await testeGerminacaoService.create(payload);
         alert("Teste cadastrado com sucesso!");
-
-        // Limpa o formulário para o próximo teste sem sair da página
         handleCancel(false);
       }
     } catch (error) {
@@ -200,31 +189,17 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
     }
   };
 
-  const actions = [
-    {
-      type: "button",
-      variant: "action-secondary",
-      children: "Cancelar",
-      onClick: () => handleCancel(true),
-      disabled: loading,
-    },
-    {
-      type: "submit",
-      variant: "primary",
-      children: loading ? "Salvando..." : "Salvar Cadastro",
-      disabled: loading,
-    },
-  ];
+  // REMOVIDO: const actions = [...]
 
   return (
-    <div className="">
+    <div className="cadastro-testes-container">
       <FormGeral
         title={
           dadosParaCorrecao
             ? "Corrigir para Teste de Germinação"
             : "Cadastro Teste de Germinação"
         }
-        actions={actions}
+        // actions={actions} REMOVIDO
         onSubmit={handleSubmit}
         useGrid={true}
       >
@@ -239,7 +214,7 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
             required={true}
             placeholder="Digite para buscar..."
             autoComplete="off"
-            disabled={!!dadosParaCorrecao} // Bloqueia o lote se for correção
+            disabled={!!dadosParaCorrecao}
           />
 
           {sugestoes.length > 0 && (
@@ -312,8 +287,6 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
               disabled={!!dadosParaCorrecao}
             />
           </div>
-          {/* EXIBIÇÃO DA UNIDADE AO LADO DO INPUT */}
-          {/* LÓGICA CONDICIONAL: Correção vs Disponibilidade */}
           {dadosParaCorrecao
             ? unidadeMedida && (
                 <span
@@ -384,6 +357,26 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
           disabled={true}
           placeholder="Calculado automaticamente..."
         />
+
+        {/* --- BOTÕES MANUAIS ALINHADOS À DIREITA --- */}
+        <div className="testes-actions">
+          <button 
+            type="button" 
+            className="testes-btn btn-cancelar" 
+            onClick={() => handleCancel(true)}
+            disabled={loading}
+          >
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            className="testes-btn btn-salvar"
+            disabled={loading}
+          >
+            {loading ? "Salvando..." : "Salvar Cadastro"}
+          </button>
+        </div>
+
       </FormGeral>
     </div>
   );
