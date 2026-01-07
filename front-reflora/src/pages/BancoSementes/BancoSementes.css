@@ -198,12 +198,10 @@
 }
 
 /* =========================================
-   AJUSTE DE BOTÕES (CORREÇÃO SOLICITADA)
-   Menores e alinhados à direita
+   AJUSTE DE BOTÕES DO FORMULÁRIO
    ========================================= */
 
 /* 1. Alinha o container dos botões à direita */
-/* Seleciona a última div dentro do form, que é onde os botões costumam ficar */
 .content-semente-form form > div:last-child {
   display: flex;
   justify-content: flex-end !important; /* Força alinhamento à direita */
@@ -213,7 +211,8 @@
 }
 
 /* 2. Estilo base para REDUZIR o tamanho e manter as cores */
-.content-semente-form button {
+/* Usamos :not(.react-datepicker__navigation) para NÃO afetar o calendário */
+.content-semente-form button:not(.react-datepicker__navigation) {
   width: auto !important; /* Remove largura total (100%) */
   padding: 10px 24px !important; /* Padding compacto */
   font-size: 0.95rem !important; /* Fonte ajustada */
@@ -225,29 +224,98 @@
   transition: opacity 0.2s;
 }
 
-/* Botão Salvar (Verde) - Usando seletor para pegar o botão de submit */
+/* Botão Salvar (Verde) */
 .content-semente-form button[type="submit"],
 .content-semente-form button.btn-salvar {
-  background-color: #15803d; /* Verde da imagem */
+  background-color: #15803d; 
 }
 
-/* Botão Cancelar (Cinza Escuro) - Usando seletor para pegar o botão normal */
-.content-semente-form button[type="button"],
+/* Botão Cancelar (Cinza Escuro) */
+.content-semente-form button[type="button"]:not(.react-datepicker__navigation),
 .content-semente-form button.btn-cancelar {
-  background-color: #2e2e2e; /* Cinza escuro da imagem */
+  background-color: #2e2e2e; 
 }
 
 /* Hover simples */
-.content-semente-form button:hover {
+.content-semente-form button:not(.react-datepicker__navigation):hover {
   opacity: 0.9;
 }
 
-/* MOBILE: No celular, eles voltam a preencher a largura para facilitar o toque */
+/* MOBILE: Botões full width */
 @media (max-width: 600px) {
   .content-semente-form form > div:last-child {
     flex-direction: column-reverse; /* Cancelar embaixo */
   }
-  .content-semente-form button {
+  .content-semente-form button:not(.react-datepicker__navigation) {
     width: 100% !important;
   }
+}
+
+/* =========================================
+   FIX DO CALENDÁRIO (DATEPICKER)
+   Reseta cores para Branco e Cinza Claro
+   ========================================= */
+
+/* Fundo do calendário e borda */
+.react-datepicker {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    font-family: inherit !important;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1) !important;
+}
+
+/* Cabeçalho (Mês/Ano) */
+.react-datepicker__header {
+    background-color: #f8fafc !important; /* Cinza bem claro */
+    border-bottom: 1px solid #e5e7eb !important;
+    padding-top: 8px !important;
+}
+
+.react-datepicker__current-month, 
+.react-datepicker__day-name {
+    color: #374151 !important; /* Texto escuro */
+}
+
+/* SETAS DE NAVEGAÇÃO: Remove fundo preto */
+.react-datepicker__header button.react-datepicker__navigation {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: 30px !important;
+    height: 30px !important;
+    top: 8px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Cor da seta (ícone) */
+.react-datepicker__navigation-icon::before {
+    border-color: #374151 !important; /* Cinza escuro */
+    border-width: 2px 2px 0 0 !important;
+    height: 7px !important;
+    width: 7px !important;
+    top: 10px !important;
+}
+
+/* Hover na seta */
+.react-datepicker__header button.react-datepicker__navigation:hover {
+    background-color: #e5e7eb !important;
+    border-radius: 50% !important;
+}
+
+/* Dia Selecionado: Verde (Tema do App) */
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+    background-color: #15803d !important;
+    color: white !important;
+    border-radius: 50% !important;
+}
+
+/* Hover no dia */
+.react-datepicker__day:hover {
+    background-color: #f0fdf4 !important; /* Verde bem clarinho */
+    color: #15803d !important;
+    border-radius: 50% !important;
 }
