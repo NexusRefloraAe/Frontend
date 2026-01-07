@@ -96,6 +96,7 @@ const RevisaoDistribuicao = () => {
 
     return (
         <div className="revisao-distribuicao-pagina">
+            
             <div className="content-revisao">
                 <FormGeral
                     title="Revisão da Distribuição de Mudas"

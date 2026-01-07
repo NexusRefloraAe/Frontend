@@ -1,24 +1,42 @@
-/* =========================================================
-   CONTAINER GERAL (Mais compacto)
-   ========================================================= */
+/* Removemos qualquer fundo, borda ou padding do nível superior */
 .revisao-distribuicao-pagina {
   width: 100%;
-  padding-bottom: 40px;
-  font-family: inherit; 
+  padding: 0 !important;
+  background-color: transparent !important;
+  background: none !important;
 }
 
+/* Forçamos o FormGeral (que está vindo com fundo cinza nas imagens) 
+   a ficar transparente para não "duplicar" o container
+*/
+.revisao-distribuicao-pagina .form-geral,
+.revisao-distribuicao-pagina .form-geral-form--default,
+.revisao-distribuicao-pagina .tabs-layout-content {
+  background-color: transparent !important;
+  background: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+/* Este é o ÚNICO container que deve ter cor. 
+   Ajustamos a margem para ele não colar no topo.
+*/
 .revisao-distribuicao-pagina .content-revisao {
-  background-color: #ffffff;
+  background-color: #ffffff !important;
   border-radius: 8px;
-  /* Padding reduzido para ficar mais compacto */
   padding: 24px 32px; 
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Sombra suave para destacar do fundo */
   border: 1px solid #e5e7eb;
-  /* Largura máxima reduzida para leitura mais confortável */
   max-width: 900px; 
-  margin: 0 auto;
+  margin: 20px auto; /* Margem superior e inferior para centralizar verticalmente */
 }
 
+/* Removemos a linha inferior do título se ele estiver dentro do FormGeral */
+.revisao-distribuicao-pagina .form-geral__header {
+  border-bottom: none !important;
+  margin-bottom: 10px;
+}
 .revisao-distribuicao-pagina h1 {
     font-size: 1.25rem; /* Título levemente menor */
     color: #111827;
