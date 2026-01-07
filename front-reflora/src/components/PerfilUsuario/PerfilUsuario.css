@@ -1,122 +1,153 @@
-/* src/components/PerfilUsuario/PerfilUsuario.css */
-.perfil-usuario {
-  width: 100%;
-  margin: 0 auto;
-  padding: 0 auto; /* Remove padding externo */
- 
-}
-.perfil-usuario .form-geral {
-  height: calc(80vh - 80px); /* sobrescreve só aqui */
+/* 1. Container Principal (Limita a largura no Web para não esticar) */
+.perfil-compact-container {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto;
 }
 
-
-.perfil-usuario__avatar-section {
-  display: flex;
-  justify-content: center;
-  margin: 0;
-  padding: 0;
-}
-.perfil-usuario .form-geral__campos--grid {
-  grid-template-columns: 1fr;
-}
-.grupo-selects-grid-2-perfil {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  grid-column: span 1; /* ocupa largura total do form */
+/* 2. Layout Horizontal (Foto ao lado dos campos) */
+.perfil-form-wrapper {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 10px 0;
 }
 
-/* Mobile */
+/* 3. Seção da Foto */
+.perfil-side-photo {
+    flex-shrink: 0;
+    margin-top: 5px;
+}
+
+.avatar-mini-wrapper {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid #15803d;
+    background: #fff;
+    padding: 2px;
+}
+
+.avatar-mini-wrapper img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.btn-upload-overlay {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #15803d;
+    border: none;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.btn-upload-overlay img { width: 14px; }
+
+/* 4. Grid de Campos (Compacto igual Vistoria) */
+.perfil-fields-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px 15px; /* Espaçamento reduzido */
+}
+
+.field-full-row { grid-column: span 2; }
+
+/* 5. Inputs e Labels (Tamanho reduzido) */
+.perfil-fields-grid label {
+    font-size: 0.80rem !important;
+    margin-bottom: 2px !important;
+}
+
+.perfil-fields-grid input, 
+.perfil-fields-grid select {
+    height: 30px !important; /* Altura compacta */
+    padding: 4px 10px !important;
+    font-size: 0.82rem !important;
+    border-radius: 4px !important;
+    border: 1px solid #ccc !important;
+}
+
+/* 6. BOTÕES: Alinhados à Direita e Compactos */
+/* Alvo: container de ações gerado pelo FormGeral */
+.perfil-compact-container .form-geral__actions {
+    display: flex !important;
+    justify-content: flex-end !important; /* Alinha os botões à direita da tela */
+    gap: 12px !important;
+    margin-top: 20px !important;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+    width: 100%;
+}
+
+/* Estilo base dos Botões (Menores e sem largura total) */
+.perfil-compact-container .form-geral__actions button {
+    width: auto !important;         /* Remove o comportamento de ocupar a tela toda */
+    min-width: 130px;               /* Garante um tamanho mínimo legível */
+    height: 36px !important;        /* Altura reduzida igual ao Banco de Sementes */
+    font-size: 0.88rem !important;  /* Fonte levemente menor */
+    padding: 0 20px !important;     /* Espaçamento interno lateral */
+    border-radius: 5px !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none !important;        /* Remove bordas indesejadas */
+}
+
+/* Cores específicas solicitadas */
+
+/* Botão Salvar / Primário (Verde) */
+.perfil-compact-container .form-geral__actions button.button--variant-primary {
+    background-color: #15803d !important; 
+    color: white !important;
+}
+
+/* Botão Cancelar / Secundário (Cinza Escuro) */
+.perfil-compact-container .form-geral__actions button.button--variant-secondary {
+    background-color: #2e2e2e !important; /* Cinza idêntico ao Banco de Sementes */
+    color: white !important;
+}
+
+/* Botão Excluir / Danger (Vermelho) */
+.perfil-compact-container .form-geral__actions button.button--variant-danger {
+    background-color: #d32f2f !important;
+    color: white !important;
+}
+
+/* Efeito de Hover */
+.perfil-compact-container .form-geral__actions button:hover {
+    opacity: 0.9;
+    filter: brightness(1.1);
+}
+
+/* 7. Responsividade Mobile */
 @media (max-width: 768px) {
-  .grupo-selects-grid-2-perfil {
-    grid-template-columns: 1fr;
-  }
-}
-
-
-/* --- ESTILOS ANTIGOS REMOVIDOS ---
-  .perfil-usuario__avatar,
-  .perfil-usuario__avatar img,
-  .perfil-usuario__avatar-overlay 
-  ...NÃO SÃO MAIS USADOS
-*/
-
-/* --- NOVOS ESTILOS ADICIONADOS --- */
-
-/* Wrapper para centralizar o container */
-.image-upload-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-/* O container do upload de imagem, estilizado
-  exatamente como o avatar antigo.
-*/
-.image-upload-container {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%; /* <-- AQUI FICA REDONDO */
-  background-color: var(--cor-fundo-cinza, #f5f5f5);
-  border: 2px solid var(--cor-verde-primario, #2e7d32);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden; /* Mantém a imagem dentro do círculo */
-  cursor: default; /* Cursor padrão (JS muda para 'pointer' se editando) */
-  transition: border-color 0.2s;
-}
-
-/* Hover (só terá efeito se o cursor for 'pointer') */
-.image-upload-container:hover {
-  border-color: #257024; /* Verde mais escuro no hover */
-}
-
-/* A imagem de pré-visualização (foto do usuário) */
-.image-preview {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Garante que a foto cubra o círculo */
-}
-
-/* O ícone de placeholder (avatar padrão) */
-.image-placeholder-icon {
-  width: 90%; /* Mesmo estilo do img antigo */
-  height: 90%; /* Mesmo estilo do img antigo */
-  object-fit: contain;
-}
-
-/* --- ESTILOS DO FORM GERAL (permanecem) --- */
-
-/* Remove qualquer estilo que crie container duplicado */
-.perfil-usuario .form-geral {
-  border: none;
-  box-shadow: none;
-  border-radius: 0;
-}
-
-/* Garante que o FormGeral ocupe toda a largura */
-.perfil-usuario .form-geral--wide {
-  max-width: 100%;
-}
-
-/* Responsividade (AJUSTADA) */
-@media (max-width: 768px) {
-  .perfil-usuario__avatar-section {
-    padding: var(--espacamento-lg, 10px) var(--espacamento-lg, 10px) 0;
-    margin-bottom: var(--espacamento-lg, 10px);
-  }
-  
-  /* Ajusta o tamanho do novo container no mobile */
-  .image-upload-container {
-    width: 50px;
-    height: 50px;
-  }
-}
-
-/* Fallback para variáveis */
-:root {
-  --cor-fundo-cinza: #f5f5f5;
-  --cor-verde-primario: #2e7d32;
+    .perfil-form-wrapper {
+        flex-direction: column;
+        align-items: center;
+    }
+    .perfil-fields-grid {
+        grid-template-columns: 1fr;
+        width: 100%;
+    }
+    .field-full-row { grid-column: span 1; }
+    .perfil-compact-container .form-geral__actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+    .perfil-compact-container .form-geral__actions button {
+        width: 100% !important;
+    }
 }

@@ -1,30 +1,28 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PerfilUsuario from '../../components/PerfilUsuario/PerfilUsuario';
-// import ConfigSistema from '../../components/ConfigSistema/ConfigSistema';
-import './Configuracoes.css';
 import TabsLayout from "../../components/TabsLayout/TabsLayout";
-
 import { CgProfile } from 'react-icons/cg';
-import { GrConfigure } from 'react-icons/gr';
+import './Configuracoes.css';
 
 const Configuracoes = () => {
-
   const configMenus = [
     {
       id: 'profile',
       label: 'Perfil do Usuário',
       icon: <CgProfile />,
-      page: <PerfilUsuario />,
+      page: (
+        <div className="config-content-container">
+          <PerfilUsuario />
+        </div>
+      ),
     },
-    // {
-    //   id: 'system',
-    //   label: 'Configuração do Sistema',
-    //   icon: <GrConfigure />,
-    //   page: <ConfigSistema />,
-    // },
   ];
 
-  return <TabsLayout tabs={configMenus} defaultTabId="profile" />;
+  return (
+    <div className="config-page-layout">
+      <TabsLayout tabs={configMenus} defaultTabId="profile" />
+    </div>
+  );
 };
 
 export default Configuracoes;
