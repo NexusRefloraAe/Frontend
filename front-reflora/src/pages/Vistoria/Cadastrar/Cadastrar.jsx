@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import FormGeral from '../../../components/FormGeral/FormGeral';
 import Input from '../../../components/Input/Input';
-import './Cadastrar.css';
 import { plantioService } from '../../../services/plantioService';
 import { vistoriaService } from '../../../services/vistoriaService';
+import './Cadastrar.css';
 
 const Cadastrar = () => {
   const [lotesDisponiveis, setLotesDisponiveis] = useState([]);
   const [canteirosDisponiveis, setCanteirosDisponiveis] = useState([]);
   const [loading, setLoading] = useState(false);
-  // const hoje = new Date().toISOString().split('T')[0];
 
   const [formData, setFormData] = useState({
     lote: '',
@@ -46,32 +45,33 @@ const Cadastrar = () => {
     }
   };
 
-  // 1. Carregar Lotes confirmados ao montar o componente
   useEffect(() => {
-      const carregarLotes = async () => {
-          const dados = await plantioService.getLotesConfirmados();
-          setLotesDisponiveis(dados);
-      };
-      carregarLotes();
+    const carregarLotes = async () => {
+      try {
+        const dados = await plantioService.getLotesConfirmados();
+        setLotesDisponiveis(dados);
+      } catch (error) {
+        console.error("Erro ao carregar lotes:", error);
+      }
+    };
+    carregarLotes();
   }, []);
 
-  // 2. Lógica ao mudar o Lote (busca canteiros e preenche espécie)
   const handleLoteChange = async (loteSelecionado) => {
     const infoLote = lotesDisponiveis.find(item => item.loteMuda === loteSelecionado);
-    
     setFormData(prev => ({
       ...prev,
       lote: loteSelecionado,
       nomePopular: infoLote ? infoLote.nomePopular : '',
-      nomeCanteiro: '' 
+      nomeCanteiro: ''
     }));
 
     if (loteSelecionado) {
       try {
-          const canteiros = await vistoriaService.getCanteirosPorLote(loteSelecionado);
-          setCanteirosDisponiveis(canteiros.map(c => ({ value: c, label: c })));
+        const canteiros = await vistoriaService.getCanteirosPorLote(loteSelecionado);
+        setCanteirosDisponiveis(canteiros.map(c => ({ value: c, label: c })));
       } catch (error) {
-          console.error("Erro ao buscar canteiros:", error);
+        console.error("Erro ao buscar canteiros:", error);
       }
     }
   };
@@ -79,57 +79,45 @@ const Cadastrar = () => {
   const handleChange = (field) => (e) => {
     const value = e.target.value;
     if (field === 'lote') {
-        handleLoteChange(value);
+      handleLoteChange(value);
     } else {
-        setFormData(prev => ({ ...prev, [field]: value }));
+      setFormData(prev => ({ ...prev, [field]: value }));
     }
   };
 
   const handleEstimativaInc = () => {
-    setFormData(prev => ({ ...prev, estimativaMudas: prev.estimativaMudas + 1 }));
+    setFormData(prev => ({ ...prev, estimativaMudasProntas: Number(prev.estimativaMudasProntas) + 1 }));
   };
 
   const handleEstimativaDec = () => {
-    setFormData(prev => ({ ...prev, estimativaMudas: Math.max(0, prev.estimativaMudas - 1) }));
+    setFormData(prev => ({ ...prev, estimativaMudasProntas: Math.max(0, Number(prev.estimativaMudasProntas) - 1) }));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
     try {
-        setLoading(true);
-        await vistoriaService.create(formData);
-        alert('Vistoria cadastrada com sucesso!');
-        // Reset ou redirecionamento aqui
+      setLoading(true);
+      await vistoriaService.create(formData);
+      alert('Vistoria cadastrada com sucesso!');
+      handleCancel(false);
     } catch (error) {
-        alert('Erro ao salvar: ' + (error.response?.data?.message || 'Erro no servidor'));
+      alert('Erro ao salvar: ' + (error.response?.data?.message || 'Erro no servidor'));
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
-  const actions = [
-    {
-      type: 'button',
-      variant: 'action-secondary',
-      children: 'Cancelar',
-      onClick: () => handleCancel(true),
-    },
-    {
-      type: 'submit',
-      variant: 'primary',
-      children: 'Salvar Cadastro',
-    },
-  ];
-
   return (
-    <div className="cadastrar-vistoria">
+    <div className="cadastro-vistoria-container">
       <FormGeral
         title="Cadastrar Vistoria"
-        actions={actions}
+        actions={[]}
         onSubmit={handleSubmit}
         useGrid={false}
-        isLoading={loading}
       >
-        <div className="input-row">
+
+        <div className="insumo-grid">
+          {/* Campos de seleção e dados iniciais */}
           <Input
             label="Lote"
             type="select"
@@ -137,115 +125,121 @@ const Cadastrar = () => {
             onChange={handleChange('lote')}
             options={lotesDisponiveis.map(l => ({ value: l.loteMuda, label: l.loteMuda }))}
             placeholder="Selecione o Lote"
+            required
           />
           <Input
-              label="Espécie (Nome Popular)"
-              value={formData.nomePopular}
-              placeholder="Preenchido automaticamente"
-              readOnly={true}
-              disabled={true}
+            label="Espécie (Nome Popular)"
+            value={formData.nomePopular}
+            placeholder="Preenchido automaticamente"
+            readOnly
           />
+
           <Input
-              label="Canteiro"
-              type="select"
-              value={formData.nomeCanteiro}
-              onChange={handleChange('nomeCanteiro')}
-              options={canteirosDisponiveis}
-              placeholder={formData.lote ? "Selecione o canteiro" : "Selecione um lote primeiro"}
-              disabled={!formData.lote}
-              required={true}
+            label="Canteiro"
+            type="select"
+            value={formData.nomeCanteiro}
+            onChange={handleChange('nomeCanteiro')}
+            options={canteirosDisponiveis}
+            placeholder={formData.lote ? "Selecione o canteiro" : "Selecione um lote"}
+            disabled={!formData.lote}
+            required
           />
           <Input
             label="Data da Vistoria"
             type="date"
             value={formData.dataVistoria}
             onChange={handleChange('dataVistoria')}
-            required={true}
+            required
           />
-        </div>
 
-        <div className="input-row">
           <Input
             label="Estado de Saúde"
             type="select"
             value={formData.estadoSaude}
             onChange={handleChange('estadoSaude')}
-            required={true}
-            placeholder="Selecione o estado de saúde"
+            required
             options={[
-                { value: 'Ótima', label: 'Ótima' },
-                { value: 'Boa', label: 'Boa' },
-                { value: 'Regular', label: 'Regular' },
-                { value: 'Ruim', label: 'Ruim' },
-                { value: 'Péssima', label: 'Péssima' }
+              { value: 'Ótima', label: 'Ótima' },
+              { value: 'Boa', label: 'Boa' },
+              { value: 'Regular', label: 'Regular' },
+              { value: 'Ruim', label: 'Ruim' },
+              { value: 'Péssima', label: 'Péssima' }
             ]}
           />
-
           <Input
             label="Tratos Culturais"
-            name="tratosCulturais"
             type="select"
             value={formData.tratosCulturais}
             onChange={handleChange('tratosCulturais')}
-            required={true}
-            placeholder="Selecione os tratos"
+            required
             options={[
-                { value: 'Adubação e Regação', label: 'Adubação, Regação' },
-                { value: 'Adubação', label: 'Apenas Adubação' },
-                { value: 'Regação', label: 'Apenas Regação' },
-                { value: 'Nenhum', label: 'Nenhum' },
+              { value: 'Adubação e Regação', label: 'Adubação, Regação' },
+              { value: 'Adubação', label: 'Apenas Adubação' },
+              { value: 'Regação', label: 'Apenas Regação' },
+              { value: 'Nenhum', label: 'Nenhum' },
             ]}
           />
-        </div>
 
-        <div className="input-row">
           <Input
             label="Estimativa de Mudas"
-            name="estimativaMudasProntas"
             type="number"
             value={formData.estimativaMudasProntas}
             onChange={handleChange('estimativaMudasProntas')}
             onIncrement={handleEstimativaInc}
             onDecrement={handleEstimativaDec}
-            required={true}
+            required
           />
           <Input
-              label="Pragas/Doenças"
-              name="pragasDoencas"
-              type="select"
-              value={formData.doencasPragas}
-              onChange={handleChange('doencasPragas')}
-              required={true}
-              placeholder="Selecione o estado de saúde"
-              options={[
-                  { value: 'Nenhuma', label: 'Nenhuma' },
-                  { value: 'Formigas', label: 'Formigas' },
-                  { value: 'Fungos', label: 'Fungos' },
-                  { value: 'Outros', label: 'Outros' },
-              ]}
+            label="Pragas/Doenças"
+            type="select"
+            value={formData.doencasPragas}
+            onChange={handleChange('doencasPragas')}
+            required
+            options={[
+              { value: 'Nenhuma', label: 'Nenhuma' },
+              { value: 'Formigas', label: 'Formigas' },
+              { value: 'Fungos', label: 'Fungos' },
+              { value: 'Outros', label: 'Outros' },
+            ]}
           />
-        </div>
-        
-        <Input
-          label="Nome do Responsável"
-          name="nomeResponsavel"
-          type="text"
-          value={formData.nomeResponsavel}
-          onChange={handleChange('nomeResponsavel')}
-          placeholder="Informe o nome do responsável"
-          required={true}
-        />
 
-        <Input
-          label="Observações"
-          name="observacoes"
-          type="textarea"
-          value={formData.observacoes}
-          onChange={handleChange('observacoes')}
-          placeholder="Insira observações adicionais..."
-          required={false}
-          rows={4}
-        />
+          {/* Agora estes dois campos ficam um ao lado do outro no Desktop */}
+          <Input
+            label="Nome do Responsável"
+            type="text"
+            value={formData.nomeResponsavel}
+            onChange={handleChange('nomeResponsavel')}
+            placeholder="Informe o nome"
+            required
+          />
+          <Input
+            label="Observações"
+            type="textarea"
+            value={formData.observacoes}
+            onChange={handleChange('observacoes')}
+            placeholder="Observações adicionais..."
+            rows={3}
+          />
+
+          {/* Botões alinhados à direita */}
+          <div className="grid-span-2 insumo-actions">
+            <button
+              type="button"
+              className="insumo-btn btn-cancelar"
+              onClick={() => handleCancel(true)}
+              disabled={loading}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="insumo-btn btn-salvar"
+              disabled={loading}
+            >
+              {loading ? 'Salvando...' : 'Salvar Cadastro'}
+            </button>
+          </div>
+        </div>
       </FormGeral>
     </div>
   );
