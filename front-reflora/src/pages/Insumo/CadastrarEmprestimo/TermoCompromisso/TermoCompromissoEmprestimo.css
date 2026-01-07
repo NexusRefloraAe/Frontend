@@ -1,307 +1,215 @@
-/* src/pages/TermoCompromisso/TermoCompromissoEmprestimo.css */
-
 /* --- ESTILOS GERAIS (TELA) --- */
 .termo-wrapper {
   display: flex;
   justify-content: center;
-  padding: 1rem;
+  padding: 2rem 1rem;
   background-color: #f3f4f6;
   min-height: 100vh;
   box-sizing: border-box;
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Container Compacto para Tela */
 .termo-container {
   background-color: #fff;
-  padding: 1.5rem;
-  max-width: 650px; /* Trava visual na tela */
+  padding: 2rem;
+  max-width: 750px;
   width: 100%;
   border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   border: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
-/* Cabeçalho Compacto */
 .termo-header {
   text-align: center;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #2e7d32;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #2e7d32;
   padding-bottom: 0.5rem;
 }
 
 .termo-header h1 {
   color: #2e7d32;
   text-transform: uppercase;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   margin: 0;
   font-weight: 800;
 }
 
-.sub-header {
-  color: #6b7280;
-  font-size: 0.8rem;
-  margin-top: 0.2rem;
-}
-
-/* Seção de Dados (Visual Tela) */
 .termo-section {
-  margin-bottom: 0.8rem;
-  padding: 0.8rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
   background-color: #f9fafb;
   border-radius: 6px;
-  border-left: 3px solid #2e7d32;
+  border-left: 4px solid #2e7d32;
 }
 
 .termo-dados-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
-.termo-section p {
-  margin: 0 0 0.5rem 0;
-  line-height: 1.2;
-  color: #1f2937;
-  font-size: 0.9rem;
-  font-weight: 500;
-  word-break: break-word;
-}
-
-.termo-section strong {
-  display: block;
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  color: #6b7280;
-  font-weight: 700;
-  margin-bottom: 1px;
-  letter-spacing: 0.02em;
-}
-
-.termo-section p:last-child {
-  margin-bottom: 0;
-}
-
-/* Declaração */
 .declaracao {
-  background-color: #f0fdf4; /* Verde bem clarinho */
-  border-left-color: #16a34a; /* Verde destaque lateral */
-  padding: 0.8rem;
+  background-color: #f0fdf4;
+  border-left-color: #16a34a;
 }
 
-/* Texto introdutório ("Declaro que recebi...") */
-.declaracao p {
-  font-size: 0.9rem;
-  margin: 0 0 0.5rem 0;
-  color: #1f2937;
-  font-weight: 500;
-}
-
-/* Lista (ul) dentro da declaração */
 .declaracao ul {
-  margin: 0;
-  padding-left: 1.2rem; /* Espaço para os bullets */
-  list-style-type: disc; /* Garante as bolinhas */
+  padding-left: 1.5rem;
+  list-style-type: disc;
 }
 
-/* Itens da lista (li) */
-.declaracao li {
-  margin-bottom: 4px; /* Espaço pequeno entre itens */
-  line-height: 1.3;
-  font-size: 0.85rem; /* Fonte compacta */
-  color: #4b5563;
-}
-
-.lista-compromisso {
-  margin-top: 5px;
-  padding-left: 18px;
-  color: #4b5563;
-  margin-bottom: 0;
-}
-
-.lista-compromisso li {
-  margin-bottom: 4px;
-  line-height: 1.3;
-  font-size: 0.8rem;
-}
-
-/* Data */
-.data-extenso {
-  text-align: right;
-  margin-top: 1rem;
-  color: #4b5563;
-  font-weight: 500;
-  font-size: 0.8rem;
-}
-
-/* Assinaturas (Base) */
-.signature {
+/* Contêiner pai das assinaturas */
+.signature-container {
   display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
+  justify-content: space-between; /* Espalha as assinaturas para as extremidades */
+  align-items: flex-end;
+  margin-top: 4rem; /* Espaço para o texto não encostar nas assinaturas */
+  padding: 0 2rem;  /* Margem interna nas laterais */
+  gap: 2rem;       /* Espaço entre os dois blocos */
 }
 
+/* Bloco individual de cada assinatura */
 .signature-block {
-  flex: 1;
+  flex: 1;         /* Faz ambos ocuparem o mesmo espaço */
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+/* Linha de assinatura */
 .signature-line {
-  border-top: 1px solid #374151;
-  width: 90%;
-  margin-bottom: 5px;
-  height: 1px;
+  border-top: 1px solid #000;
+  width: 80%;      /* Ajuste o tamanho da linha aqui */
+  margin-bottom: 8px;
 }
 
 .signer-name {
   font-weight: 700;
   text-transform: uppercase;
-  font-size: 0.75rem;
-  color: #111827;
+  font-size: 0.85rem;
   margin: 0;
 }
 
 .signer-role {
-  font-size: 0.7rem;
-  color: #6b7280;
-  margin-top: 2px;
+  font-size: 0.75rem;
+  color: #666;
+  margin: 0;
 }
 
-/* Rodapé */
-.system-footer {
-  text-align: center;
-  font-size: 0.65rem;
-  color: #9ca3af;
-  margin-top: auto;
-  border-top: 1px solid #e5e7eb;
-  padding-top: 0.5rem;
+/* Ajuste específico para Impressão */
+@media print {
+  .signature-container {
+    margin-top: 5rem; /* Mais espaço no papel */
+    display: flex !important;
+    flex-direction: row !important; /* Garante que fiquem lado a lado no PDF */
+  }
 }
-
-/* Botões */
+/* --- BOTÕES (VISÍVEIS NA TELA) --- */
 .termo-actions {
-  display: flex;
-  gap: 0.8rem;
-  margin-top: 1.5rem;
-  padding-top: 1rem;
+  display: flex !important;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
   justify-content: center;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid #e5e7eb;
+  background-color: white;
 }
 
 .termo-actions button {
-  padding: 10px 20px;
+  padding: 12px 24px;
   border-radius: 6px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 1rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   border: none;
+  transition: all 0.2s;
+  min-width: 180px;
 }
 
-.btn-voltar { background-color: #d1d5db; color: #1f2937; }
-.btn-voltar:hover { background-color: #9ca3af; }
+.btn-voltar { background-color: #374151; color: white; }
+.btn-voltar:hover { background-color: #1f2937; }
 
-.btn-export { background-color: #2e7d32; color: white; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-.btn-export:hover { background-color: #1b5e20; transform: translateY(-1px); }
+.btn-export { background-color: #2e7d32; color: white; }
+.btn-export:hover { background-color: #1b5e20; }
 
-/* --- MOBILE (Ajustes de Tela Pequena) --- */
+/* --- RESPONSIVIDADE (MOBILE) --- */
 @media (max-width: 768px) {
-  .termo-wrapper { padding: 0; background-color: #fff; }
-  .termo-container { padding: 1rem 0.8rem; box-shadow: none; border: none; border-radius: 0; max-width: 100%; }
-  
-  .termo-header h1 { font-size: 1.2rem; }
-  .termo-dados-grid { grid-template-columns: 1fr 1fr; column-gap: 1rem; }
-  
-  /* Assinaturas lado a lado no mobile */
-  .signature { flex-direction: row; gap: 10px; margin-top: 1.5rem; }
-  .signer-name { font-size: 0.65rem; word-wrap: break-word; }
-  .signer-role { font-size: 0.6rem; }
-  
-  .termo-actions { flex-direction: column-reverse; gap: 0.8rem; margin-top: 1rem; }
-  .termo-actions button { width: 100%; padding: 12px; }
-}
-
-/* --- IMPRESSÃO (PDF / A4) - AQUI ESTÁ A MÁGICA --- */
-@media print {
-  @page { margin: 1.5cm; size: A4; } /* Margens padrão de documento */
-  
-  body { 
-    visibility: hidden; 
-    background: white; 
-    -webkit-print-color-adjust: exact; /* Garante cores de fundo (verde claro) */
-    print-color-adjust: exact;
-  }
-
   .termo-wrapper { 
-    padding: 0; 
-    margin: 0; 
-    background: white; 
     display: block; 
+    padding: 0.5rem; 
+    height: auto;
+    overflow-y: auto;
+  }
+  
+  .termo-container { 
+    padding: 1rem; 
+    margin-bottom: 2rem; /* Espaço simples no final */
+  }
+  
+  .termo-dados-grid { grid-template-columns: 1fr; }
+  
+  /* Mantém as assinaturas profissionais no mobile */
+  .signature-container { 
+    flex-direction: column; 
+    align-items: center;
+    gap: 3rem; 
+    padding: 0;
   }
 
+  .signature-block {
+    width: 100%;
+  }
+
+  /* BOTÕES SEGUINDO O FLUXO (SEM POSIÇÃO FIXA) */
+  .termo-actions { 
+    flex-direction: column-reverse; 
+    position: static; /* Remove o 'fixed' */
+    padding: 1.5rem 0 0 0;
+    margin-top: 2rem;
+    box-shadow: none; /* Remove a sombra do modo fixo */
+    z-index: auto;
+  }
+  
+  .termo-actions button { 
+    width: 100%; 
+    min-width: unset; /* Permite que o botão se ajuste à largura da tela */
+  }
+}
+/* --- REGRAS DE IMPRESSÃO (PDF) --- */
+@media print {
+  @page { margin: 1.5cm; size: A4; }
+  
+  body * { visibility: hidden; }
+  .termo-wrapper, .termo-container, .termo-container * { visibility: visible !important; }
+  
+  .termo-wrapper { 
+    position: absolute; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    padding: 0; 
+    margin: 0;
+    background: white;
+  }
+  
   .termo-container {
-    visibility: visible !important;
-    position: relative;
-    left: 0; top: 0;
-    
-    /* REMOVE A TRAVA DE LARGURA E OCUPA TUDO */
-    width: 100% !important;
-    max-width: none !important;
-    
-    padding: 0 !important;
     border: none !important;
     box-shadow: none !important;
+    max-width: none !important;
+    width: 100% !important;
   }
 
-  .termo-container * { visibility: visible !important; }
+  .signature-line {
+    border-top: 1pt solid black !important;
+  }
+
   .termo-actions { display: none !important; }
-
-  /* --- AUMENTA TUDO PARA PARECER DOCUMENTO OFICIAL --- */
-
-  /* Cabeçalho Grande */
-  .termo-header { margin-bottom: 2rem !important; padding-bottom: 1rem !important; }
-  .termo-header h1 { font-size: 24pt !important; letter-spacing: 1px !important; }
-  .sub-header { font-size: 12pt !important; }
-
-  /* Seções com Espaço de Respiro */
-  .termo-section {
-    padding: 1.5rem !important; /* Mais padding interno */
-    margin-bottom: 2rem !important; /* Mais espaço entre blocos */
-    border-left-width: 6px !important; /* Tarja verde mais grossa */
-  }
-
-  /* Fontes Legíveis de Documento (12pt) */
-  .termo-section p { font-size: 12pt !important; margin-bottom: 1rem !important; line-height: 1.5 !important; }
-  .termo-section strong { font-size: 10pt !important; margin-bottom: 0.3rem !important; color: #4b5563 !important; }
-  
-  .termo-dados-grid { grid-template-columns: 1fr 1fr !important; column-gap: 3rem !important; }
-  
-  .declaracao p, .lista-compromisso li { font-size: 12pt !important; line-height: 1.6 !important; }
-  .lista-compromisso { margin-top: 1rem !important; }
-
-  /* Data e Assinaturas */
-  .data-extenso { font-size: 12pt !important; margin-top: 2rem !important; }
-  
-  .signature {
-    margin-top: 4rem !important; /* Joga assinatura lá pra baixo */
-    gap: 4rem !important;
-  }
-  
-  .signer-name { font-size: 11pt !important; margin-top: 1rem !important; }
-  .signer-role { font-size: 10pt !important; }
-  
-  .signature-line { width: 100% !important; margin-bottom: 10px !important; }
-  
-  .system-footer { margin-top: 3rem !important; font-size: 9pt !important; }
 }

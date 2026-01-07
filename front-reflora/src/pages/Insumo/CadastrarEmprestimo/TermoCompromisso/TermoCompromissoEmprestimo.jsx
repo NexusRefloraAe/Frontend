@@ -7,12 +7,8 @@ const TermoCompromissoEmprestimo = () => {
   const navigate = useNavigate();
   const { dadosTermo } = location.state || {};
 
-  // Caso não tenha dados, exibe mensagem simples
   if (!dadosTermo) return <div className="termo-wrapper"><p>Nenhum termo selecionado.</p></div>;
 
-  // --- Lógica de Datas ---
-  
-  // 1. Função auxiliar para formatar Date -> dd/mm/aaaa
   const formatarDataBr = (data) => {
     return data.toLocaleDateString('pt-BR', {
       day: '2-digit',
@@ -21,13 +17,8 @@ const TermoCompromissoEmprestimo = () => {
     });
   };
 
-  // 2. Processamento das datas (useMemo evita recálculo desnecessário)
   const datasCalculadas = useMemo(() => {
-    // Tenta criar uma data a partir do registro (aceita Date object ou string ISO/BR se formatada)
-    // Assumindo que dadosTermo.dataRegistro venha como string ou Date válido
-    const dataInicial = new Date(); // Fallback para hoje
-    
-    // Calcula prazo de devolução (10 dias)
+    const dataInicial = new Date();
     const dataDevolucao = new Date(dataInicial);
     dataDevolucao.setDate(dataDevolucao.getDate() + 10);
 
@@ -38,60 +29,45 @@ const TermoCompromissoEmprestimo = () => {
     };
   }, [dadosTermo.dataRegistro]);
 
-
-  // --- Ações ---
-
   const handleBack = () => {
-    if(window.confirm("Tem certeza que deseja cancelar? Os dados não salvos serão perdidos.")) {
-        navigate('/registrar-emprestimo');
+    if (window.confirm("Tem certeza que deseja cancelar? Os dados não salvos serão perdidos.")) {
+      navigate('/registrar-emprestimo');
     }
   };
 
   const handleExport = () => {
-    // Escuta o evento "afterprint" para redirecionar após fechar a janela de impressão
     const onPrintClosed = () => {
-       // Limpa o listener para não acumular
-       window.removeEventListener('afterprint', onPrintClosed);
-       
-       // Confirmação final opcional ou redirecionamento direto
-       navigate('/insumo'); 
+      window.removeEventListener('afterprint', onPrintClosed);
+      navigate('/insumo');
     };
-
     window.addEventListener('afterprint', onPrintClosed);
     window.print();
   };
 
   return (
     <div className="termo-wrapper">
-      <div className="termo-container termo-compromisso">
-        
-        {/* Cabeçalho */}
+      <div className="termo-container">
+
         <header className="termo-header">
-            <h1>Termo de Empréstimo</h1>
-            <p className="sub-header">Comprovante de Responsabilidade</p>
+          <h1>Termo de Empréstimo</h1>
+          <p className="sub-header">Comprovante de Responsabilidade</p>
         </header>
 
-        {/* Dados do Empréstimo */}
         <div className="termo-section">
-          {/* Grid para organizar melhor visualmente */}
           <div className="termo-dados-grid">
-              <div>
-                  <p><strong>Ferramenta:</strong><br/> {dadosTermo.nomeMaterial}</p>
-                  <p><strong>Quantidade:</strong><br/> {dadosTermo.quantidade} {dadosTermo.unidade}</p>
-              </div>
-              <div>
-                  <p><strong>Data de Empréstimo:</strong><br/> {datasCalculadas.dataRegistroFmt}</p>
-                  <p><strong>Prazo de Devolução:</strong><br/> <span style={{color: '#d32f2f'}}>{datasCalculadas.dataDevolucaoFmt} (10 dias)</span></p>
-              </div>
+            <div>
+              <p><strong>Ferramenta:</strong><br /> {dadosTermo.nomeMaterial}</p>
+              <p><strong>Quantidade:</strong><br /> {dadosTermo.quantidade} {dadosTermo.unidade}</p>
+            </div>
+            <div>
+              <p><strong>Data de Empréstimo:</strong><br /> {datasCalculadas.dataRegistroFmt}</p>
+              <p><strong>Prazo de Devolução:</strong><br /> <span style={{ color: '#d32f2f' }}>{datasCalculadas.dataDevolucaoFmt} (10 dias)</span></p>
+            </div>
           </div>
-          
         </div>
 
-        {/* Declaração */}
         <div className="termo-section declaracao">
-          <p>
-          Declaro que recebi a ferramenta descrito acima, comprometendo-me a:
-          </p>
+          <p>Declaro que recebi a ferramenta descrito acima, comprometendo-me a:</p>
           <ul>
             <li>Utilizá-lo conforme as normas estabelecidas;</li>
             <li>Devolvê-lo em perfeito estado de conservação;</li>
@@ -102,38 +78,34 @@ const TermoCompromissoEmprestimo = () => {
           </ul>
         </div>
 
-        {/* Local e Data */}
         <div className="data-extenso">
-            <p>João Pessoa - PB, {datasCalculadas.hojeExtenso}.</p>
+          <p>João Pessoa - PB, {datasCalculadas.hojeExtenso}.</p>
         </div>
 
-        {/* Assinaturas */}
-        <div className="signature">
+        {/* Seção de Assinaturas */}
+        <div className="signature-container">
           <div className="signature-block">
             <div className="signature-line"></div>
-            <p className="signer-name">{dadosTermo.nomeResponsavel || "Nome do Solicitante"}</p>
+            <p className="signer-name">{dadosTermo.responsavelReceber || "JOSÉ"}</p>
             <p className="signer-role">Responsável pela Retirada</p>
           </div>
-          
+
           <div className="signature-block">
             <div className="signature-line"></div>
-            <p className="signer-name">{dadosTermo.cargoResponsavel || "Gestor do Almoxarifado"}</p>
+            <p className="signer-name">{dadosTermo.responsavelEntrega || "MARCELO"}</p>
             <p className="signer-role">Responsável pela Entrega</p>
           </div>
         </div>
-
-        {/* Rodapé Sistema */}
         <div className="system-footer">
-            <p>Documento gerado pelo Sistema Reflora_aê | ID: {new Date().getTime()}</p>
+          <p>Documento gerado pelo Sistema Reflora_aê | ID: {new Date().getTime()}</p>
         </div>
 
-        {/* Botões de Ação */}
         <div className="termo-actions">
           <button className="btn-voltar" onClick={handleBack}>
-             ✖ Cancelar
+            ✖ Cancelar
           </button>
           <button className="btn-export" onClick={handleExport}>
-             🖨️ Confirmar e Imprimir
+            🖨️ Confirmar e Imprimir
           </button>
         </div>
 
