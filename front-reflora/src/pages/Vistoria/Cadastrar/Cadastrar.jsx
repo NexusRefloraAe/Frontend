@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import FormGeral from '../../../components/FormGeral/FormGeral';
-import Input from '../../../components/Input/Input';
-import { plantioService } from '../../../services/plantioService';
-import { vistoriaService } from '../../../services/vistoriaService';
-import './Cadastrar.css';
+import React, { useState, useEffect } from "react";
+import FormGeral from "../../../components/FormGeral/FormGeral";
+import Input from "../../../components/Input/Input";
+import { plantioService } from "../../../services/plantioService";
+import { vistoriaService } from "../../../services/vistoriaService";
+import "./Cadastrar.css";
 
 const Cadastrar = () => {
   const [lotesDisponiveis, setLotesDisponiveis] = useState([]);
@@ -11,34 +11,39 @@ const Cadastrar = () => {
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    lote: '',
-    nomePopular: '',
-    nomeCanteiro: '',
-    dataVistoria: '',
-    estadoSaude: '',
-    tratosCulturais: '',
-    doencasPragas: '',
+    lote: "",
+    nomePopular: "",
+    nomeCanteiro: "",
+    dataVistoria: "",
+    estadoSaude: "",
+    tratosCulturais: "",
+    doencasPragas: "",
     estimativaMudasProntas: 0,
-    nomeResponsavel: '',
-    observacoes: ''
+    nomeResponsavel: "",
+    observacoes: "",
   });
 
   const handleCancel = (confirmar = true) => {
     const resetForm = () => {
       setFormData({
-        lote: '',
-        nomePopular: '',
-        nomeCanteiro: '',
-        dataVistoria: '',
-        estadoSaude: '',
-        tratosCulturais: '',
-        doencasPragas: '',
+        lote: "",
+        nomePopular: "",
+        nomeCanteiro: "",
+        dataVistoria: "",
+        estadoSaude: "",
+        tratosCulturais: "",
+        doencasPragas: "",
         estimativaMudasProntas: 0,
-        nomeResponsavel: '',
-        observacoes: ''
+        nomeResponsavel: "",
+        observacoes: "",
       });
     };
-    if (confirmar && window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
+    if (
+      confirmar &&
+      window.confirm(
+        "Deseja cancelar? As alterações não salvas serão perdidas."
+      )
+    ) {
       resetForm();
     } else if (!confirmar) {
       resetForm();
@@ -58,18 +63,22 @@ const Cadastrar = () => {
   }, []);
 
   const handleLoteChange = async (loteSelecionado) => {
-    const infoLote = lotesDisponiveis.find(item => item.loteMuda === loteSelecionado);
-    setFormData(prev => ({
+    const infoLote = lotesDisponiveis.find(
+      (item) => item.loteMuda === loteSelecionado
+    );
+    setFormData((prev) => ({
       ...prev,
       lote: loteSelecionado,
-      nomePopular: infoLote ? infoLote.nomePopular : '',
-      nomeCanteiro: ''
+      nomePopular: infoLote ? infoLote.nomePopular : "",
+      nomeCanteiro: "",
     }));
 
     if (loteSelecionado) {
       try {
-        const canteiros = await vistoriaService.getCanteirosPorLote(loteSelecionado);
-        setCanteirosDisponiveis(canteiros.map(c => ({ value: c, label: c })));
+        const canteiros = await vistoriaService.getCanteirosPorLote(
+          loteSelecionado
+        );
+        setCanteirosDisponiveis(canteiros.map((c) => ({ value: c, label: c })));
       } catch (error) {
         console.error("Erro ao buscar canteiros:", error);
       }
@@ -78,19 +87,28 @@ const Cadastrar = () => {
 
   const handleChange = (field) => (e) => {
     const value = e.target.value;
-    if (field === 'lote') {
+    if (field === "lote") {
       handleLoteChange(value);
     } else {
-      setFormData(prev => ({ ...prev, [field]: value }));
+      setFormData((prev) => ({ ...prev, [field]: value }));
     }
   };
 
   const handleEstimativaInc = () => {
-    setFormData(prev => ({ ...prev, estimativaMudasProntas: Number(prev.estimativaMudasProntas) + 1 }));
+    setFormData((prev) => ({
+      ...prev,
+      estimativaMudasProntas: Number(prev.estimativaMudasProntas) + 1,
+    }));
   };
 
   const handleEstimativaDec = () => {
-    setFormData(prev => ({ ...prev, estimativaMudasProntas: Math.max(0, Number(prev.estimativaMudasProntas) - 1) }));
+    setFormData((prev) => ({
+      ...prev,
+      estimativaMudasProntas: Math.max(
+        0,
+        Number(prev.estimativaMudasProntas) - 1
+      ),
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -98,10 +116,13 @@ const Cadastrar = () => {
     try {
       setLoading(true);
       await vistoriaService.create(formData);
-      alert('Vistoria cadastrada com sucesso!');
+      alert("Vistoria cadastrada com sucesso!");
       handleCancel(false);
     } catch (error) {
-      alert('Erro ao salvar: ' + (error.response?.data?.message || 'Erro no servidor'));
+      alert(
+        "Erro ao salvar: " +
+          (error.response?.data?.message || "Erro no servidor")
+      );
     } finally {
       setLoading(false);
     }
@@ -115,15 +136,17 @@ const Cadastrar = () => {
         onSubmit={handleSubmit}
         useGrid={false}
       >
-
         <div className="insumo-grid">
           {/* Campos de seleção e dados iniciais */}
           <Input
             label="Lote"
             type="select"
             value={formData.lote}
-            onChange={handleChange('lote')}
-            options={lotesDisponiveis.map(l => ({ value: l.loteMuda, label: l.loteMuda }))}
+            onChange={handleChange("lote")}
+            options={lotesDisponiveis.map((l) => ({
+              value: l.loteMuda,
+              label: l.loteMuda,
+            }))}
             placeholder="Selecione o Lote"
             required
           />
@@ -138,9 +161,11 @@ const Cadastrar = () => {
             label="Canteiro"
             type="select"
             value={formData.nomeCanteiro}
-            onChange={handleChange('nomeCanteiro')}
+            onChange={handleChange("nomeCanteiro")}
             options={canteirosDisponiveis}
-            placeholder={formData.lote ? "Selecione o canteiro" : "Selecione um lote"}
+            placeholder={
+              formData.lote ? "Selecione o canteiro" : "Selecione um lote"
+            }
             disabled={!formData.lote}
             required
           />
@@ -148,7 +173,7 @@ const Cadastrar = () => {
             label="Data da Vistoria"
             type="date"
             value={formData.dataVistoria}
-            onChange={handleChange('dataVistoria')}
+            onChange={handleChange("dataVistoria")}
             required
           />
 
@@ -156,27 +181,27 @@ const Cadastrar = () => {
             label="Estado de Saúde"
             type="select"
             value={formData.estadoSaude}
-            onChange={handleChange('estadoSaude')}
+            onChange={handleChange("estadoSaude")}
             required
             options={[
-              { value: 'Ótima', label: 'Ótima' },
-              { value: 'Boa', label: 'Boa' },
-              { value: 'Regular', label: 'Regular' },
-              { value: 'Ruim', label: 'Ruim' },
-              { value: 'Péssima', label: 'Péssima' }
+              { value: "Ótima", label: "Ótima" },
+              { value: "Boa", label: "Boa" },
+              { value: "Regular", label: "Regular" },
+              { value: "Ruim", label: "Ruim" },
+              { value: "Péssima", label: "Péssima" },
             ]}
           />
           <Input
             label="Tratos Culturais"
             type="select"
             value={formData.tratosCulturais}
-            onChange={handleChange('tratosCulturais')}
+            onChange={handleChange("tratosCulturais")}
             required
             options={[
-              { value: 'Adubação e Regação', label: 'Adubação, Regação' },
-              { value: 'Adubação', label: 'Apenas Adubação' },
-              { value: 'Regação', label: 'Apenas Regação' },
-              { value: 'Nenhum', label: 'Nenhum' },
+              { value: "Adubação e Regação", label: "Adubação, Regação" },
+              { value: "Adubação", label: "Apenas Adubação" },
+              { value: "Regação", label: "Apenas Regação" },
+              { value: "Nenhum", label: "Nenhum" },
             ]}
           />
 
@@ -184,22 +209,27 @@ const Cadastrar = () => {
             label="Estimativa de Mudas"
             type="number"
             value={formData.estimativaMudasProntas}
-            onChange={handleChange('estimativaMudasProntas')}
+            onChange={handleChange("estimativaMudasProntas")}
             onIncrement={handleEstimativaInc}
             onDecrement={handleEstimativaDec}
+            onKeyDown={(e) => {
+              if (["e", "E", ",", "."].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
             required
           />
           <Input
             label="Pragas/Doenças"
             type="select"
             value={formData.doencasPragas}
-            onChange={handleChange('doencasPragas')}
+            onChange={handleChange("doencasPragas")}
             required
             options={[
-              { value: 'Nenhuma', label: 'Nenhuma' },
-              { value: 'Formigas', label: 'Formigas' },
-              { value: 'Fungos', label: 'Fungos' },
-              { value: 'Outros', label: 'Outros' },
+              { value: "Nenhuma", label: "Nenhuma" },
+              { value: "Formigas", label: "Formigas" },
+              { value: "Fungos", label: "Fungos" },
+              { value: "Outros", label: "Outros" },
             ]}
           />
 
@@ -208,7 +238,7 @@ const Cadastrar = () => {
             label="Nome do Responsável"
             type="text"
             value={formData.nomeResponsavel}
-            onChange={handleChange('nomeResponsavel')}
+            onChange={handleChange("nomeResponsavel")}
             placeholder="Informe o nome"
             required
           />
@@ -216,7 +246,7 @@ const Cadastrar = () => {
             label="Observações"
             type="textarea"
             value={formData.observacoes}
-            onChange={handleChange('observacoes')}
+            onChange={handleChange("observacoes")}
             placeholder="Observações adicionais..."
             rows={3}
           />
@@ -236,7 +266,7 @@ const Cadastrar = () => {
               className="insumo-btn btn-salvar"
               disabled={loading}
             >
-              {loading ? 'Salvando...' : 'Salvar Cadastro'}
+              {loading ? "Salvando..." : "Salvar Cadastro"}
             </button>
           </div>
         </div>

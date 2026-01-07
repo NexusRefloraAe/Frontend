@@ -39,11 +39,11 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
 
       setFormData({
         lote: plantio.lote || plantio.loteSemente || "",
-        nomePopular: 
-        plantio.sementes?.nomePopular || // Estrutura do getById
-        plantio.nomePopularSemente ||    // Estrutura da lista da tabela
-        plantio.nomePopular ||           // Fallback
-        "",
+        nomePopular:
+          plantio.sementes?.nomePopular || // Estrutura do getById
+          plantio.nomePopularSemente || // Estrutura da lista da tabela
+          plantio.nomePopular || // Fallback
+          "",
         qtdSemente: plantio.qtdSemente || 0,
         dataPlantio: formatarDataInput(plantio.dataPlantio),
 
@@ -71,6 +71,13 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
   };
 
   const handleSubmit = () => {
+    // ✅ NOVA VALIDAÇÃO: Impede decimais em quantidadePlantada (unidades de mudas)
+    if (formData.quantidadePlantada % 1 !== 0) {
+      return alert(
+        "A quantidade de Mudas/Buracos deve ser um número inteiro (sem casa decimal)."
+      );
+    }
+
     // --- 3. TRATAMENTO NO ENVIO ---
     // Garante que enviamos "CHAO" sem acento para o Java não dar erro 500
     const dadosSalvos = {
@@ -179,6 +186,11 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
             onChange={handleChange("quantidadePlantada")}
             onIncrement={handleIncrement("quantidadePlantada")}
             onDecrement={handleDecrement("quantidadePlantada")}
+            onKeyDown={(e) => {
+              if (["e", "E", ",", "."].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
             required={true}
           />
 

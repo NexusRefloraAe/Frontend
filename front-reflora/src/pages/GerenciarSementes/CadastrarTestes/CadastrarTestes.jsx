@@ -185,6 +185,15 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
     if (!formData.lote || !formData.nomePopular) {
       return alert("Por favor, selecione um Lote válido da lista.");
     }
+    // ✅ NOVA VALIDAÇÃO: Impede decimais em quantidadePlantada (unidades de mudas)
+    if (
+      formData.numSementesPlantadas % 1 !== 0 ||
+      formData.numSementesGerminaram % 1 !== 0
+    ) {
+      return alert(
+        "A quantidade de Mudas/Buracos deve ser um número inteiro (sem casa decimal)."
+      );
+    }
 
     try {
       setLoading(true);
@@ -364,6 +373,11 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
           onChange={handleChange("numSementesPlantadas")}
           onIncrement={() => handleIncrement("numSementesPlantadas")}
           onDecrement={() => handleDecrement("numSementesPlantadas")}
+          onKeyDown={(e) => {
+            if (["e", "E", ",", "."].includes(e.key)) {
+              e.preventDefault();
+            }
+          }}
           required={true}
         />
 
@@ -374,6 +388,11 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
           onChange={handleChange("numSementesGerminaram")}
           onIncrement={() => handleIncrement("numSementesGerminaram")}
           onDecrement={() => handleDecrement("numSementesGerminaram")}
+          onKeyDown={(e) => {
+            if (["e", "E", ",", "."].includes(e.key)) {
+              e.preventDefault();
+            }
+          }}
         />
 
         <Input

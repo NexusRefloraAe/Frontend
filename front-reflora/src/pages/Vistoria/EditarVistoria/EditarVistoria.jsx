@@ -205,6 +205,11 @@ const EditarVistoria = ({ isOpen, onClose, onSave, itemParaEditar }) => {
                 onChange={handleChange("estimativaMudasProntas")}
                 onIncrement={handleEstimativaInc}
                 onDecrement={handleEstimativaDec}
+                onKeyDown={(e) => {
+                  if (["e", "E", ",", "."].includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
                 required={true}
               />
               <Input

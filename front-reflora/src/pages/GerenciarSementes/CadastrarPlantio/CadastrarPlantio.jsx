@@ -114,7 +114,11 @@ const CadastrarPlantio = ({ dadosParaCorrecao }) => {
     };
 
     if (confirmar) {
-      if (window.confirm("Deseja cancelar? As alterações não salvas serão perdidas.")) {
+      if (
+        window.confirm(
+          "Deseja cancelar? As alterações não salvas serão perdidas."
+        )
+      ) {
         resetForm();
       }
     } else {
@@ -123,8 +127,11 @@ const CadastrarPlantio = ({ dadosParaCorrecao }) => {
   };
 
   const handleChange = (field) => (e) => {
-    const value = e.target.type === "number"
-        ? e.target.value === "" ? "" : Number(e.target.value)
+    const value =
+      e.target.type === "number"
+        ? e.target.value === ""
+          ? ""
+          : Number(e.target.value)
         : e.target.value;
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -142,6 +149,13 @@ const CadastrarPlantio = ({ dadosParaCorrecao }) => {
     if (e) e.preventDefault();
     if (!formData.lote || !formData.nomePopular) {
       return alert("Selecione um Lote válido.");
+    }
+
+    // ✅ NOVA VALIDAÇÃO: Impede decimais em quantidadePlantada (unidades de mudas)
+    if (formData.quantidadePlantada % 1 !== 0) {
+      return alert(
+        "A quantidade de Mudas/Buracos deve ser um número inteiro (sem casa decimal)."
+      );
     }
 
     try {
@@ -272,19 +286,26 @@ const CadastrarPlantio = ({ dadosParaCorrecao }) => {
               disabled={!!dadosParaCorrecao}
             />
           </div>
-          {dadosParaCorrecao ? (
-            unidadeMedida && (
-              <span style={{ marginTop: "15px", fontWeight: "bold", color: "#555", fontSize: "13px" }}>
-                Unid: {unidadeMedida}
-              </span>
-            )
-          ) : (
-            estoqueAtual && (
-              <span style={{ color: "#666", marginTop: "15px", fontSize: "13px" }}>
-                Disp: <strong>{estoqueAtual}</strong>
-              </span>
-            )
-          )}
+          {dadosParaCorrecao
+            ? unidadeMedida && (
+                <span
+                  style={{
+                    marginTop: "15px",
+                    fontWeight: "bold",
+                    color: "#555",
+                    fontSize: "13px",
+                  }}
+                >
+                  Unid: {unidadeMedida}
+                </span>
+              )
+            : estoqueAtual && (
+                <span
+                  style={{ color: "#666", marginTop: "15px", fontSize: "13px" }}
+                >
+                  Disp: <strong>{estoqueAtual}</strong>
+                </span>
+              )}
         </div>
 
         <Input
@@ -295,6 +316,11 @@ const CadastrarPlantio = ({ dadosParaCorrecao }) => {
           onChange={handleChange("quantidadePlantada")}
           onIncrement={() => handleIncrement("quantidadePlantada")}
           onDecrement={() => handleDecrement("quantidadePlantada")}
+          onKeyDown={(e) => {
+            if (["e", "E", ",", "."].includes(e.key)) {
+              e.preventDefault();
+            }
+          }}
           required={true}
           placeholder="Ex: 100"
         />
@@ -316,23 +342,22 @@ const CadastrarPlantio = ({ dadosParaCorrecao }) => {
 
         {/* --- BOTÕES ALINHADOS À DIREITA --- */}
         <div className="plantio-actions">
-          <button 
-            type="button" 
-            className="plantio-btn btn-cancelar" 
+          <button
+            type="button"
+            className="plantio-btn btn-cancelar"
             onClick={() => handleCancel(true)}
             disabled={loading}
           >
             Cancelar
           </button>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="plantio-btn btn-salvar"
             disabled={loading}
           >
             {loading ? "Salvando..." : "Salvar Cadastro"}
           </button>
         </div>
-
       </FormGeral>
     </div>
   );

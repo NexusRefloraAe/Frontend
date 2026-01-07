@@ -72,6 +72,16 @@ const EditarTeste = ({ isOpen, onSalvar, onCancelar, teste }) => {
 
   // 3. SUBMIT LIMPO (O Segredo do PUT)
   const handleSubmit = () => {
+    // ✅ NOVA VALIDAÇÃO: Impede decimais em quantidadePlantada (unidades de mudas)
+    if (
+      formData.numSementesPlantadas % 1 !== 0 ||
+      formData.numSementesGerminaram % 1 !== 0
+    ) {
+      return alert(
+        "A quantidade de Mudas/Buracos deve ser um número inteiro (sem casa decimal)."
+      );
+    }
+
     // Enviamos o ID e os dados do Form sem formatar.
     // O Service fará a conversão para o DTO do Java.
     const dadosParaSalvar = {
@@ -186,6 +196,11 @@ const EditarTeste = ({ isOpen, onSalvar, onCancelar, teste }) => {
             onChange={handleChange("numSementesPlantadas")}
             onIncrement={() => handleIncrement("numSementesPlantadas")}
             onDecrement={() => handleDecrement("numSementesPlantadas")}
+            onKeyDown={(e) => {
+              if (["e", "E", ",", "."].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
             required={true}
           />
 
@@ -196,6 +211,11 @@ const EditarTeste = ({ isOpen, onSalvar, onCancelar, teste }) => {
             onChange={handleChange("numSementesGerminaram")}
             onIncrement={() => handleIncrement("numSementesGerminaram")}
             onDecrement={() => handleDecrement("numSementesGerminaram")}
+            onKeyDown={(e) => {
+              if (["e", "E", ",", "."].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
           />
           {/* Campo Calculado (Read Only) */}
           <Input

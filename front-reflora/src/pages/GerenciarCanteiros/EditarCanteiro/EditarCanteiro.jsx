@@ -101,6 +101,11 @@ const EditarCanteiro = ({ itemParaEditar, aoSalvarSucesso, aoCancelar }) => {
           onChange={handleChange('quantidade')}
           onIncrement={() => setFormData(p => ({...p, quantidade: p.quantidade + 1}))}
           onDecrement={() => setFormData(p => ({...p, quantidade: p.quantidade > 0 ? p.quantidade - 1 : 0}))}
+          onKeyDown={(e) => {
+            if (["e", "E", ",", "."].includes(e.key)) {
+              e.preventDefault();
+            }
+          }}
           required={true}
         />
       </FormGeral>
