@@ -21,13 +21,12 @@ const RegistrarSaidaEmprestimo = ({ onSalvar, onCancelar }) => {
     status: '',
     quantidade: '',
     unidadeMedida: '',
-    dataRegistro: hoje,
+    dataRegistro: '',
     responsavelEntrega: '',
     responsavelReceber: '',
     finalidade: ''
   });
 
-  // ... (USEEFFECT DE CARREGAMENTO MANTIDO IGUAL) ...
   useEffect(() => {
     if (tipoSelecionado) {
       const carregarDados = async () => {
@@ -55,7 +54,6 @@ const RegistrarSaidaEmprestimo = ({ onSalvar, onCancelar }) => {
     }
   }, [tipoSelecionado]);
 
-  // ... (HANDLERS MANTIDOS IGUAIS) ...
   const handleNomeChange = e => {
     const valor = e.target.value;
     setFormData(prev => ({ ...prev, nomeInsumo: valor, insumoId: '' }));
@@ -112,10 +110,10 @@ const RegistrarSaidaEmprestimo = ({ onSalvar, onCancelar }) => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    // Validações
     if (!formData.insumoId) return alert('Selecione um item da lista.');
     let qtdNumerica = parseFloat(formData.quantidade.toString().replace(',', '.'));
     if (!qtdNumerica || qtdNumerica <= 0) return alert('Informe uma quantidade válida.');
+    
     const itemSelecionado = listaInsumos.find(i => i.id === formData.insumoId);
     if (itemSelecionado && formData.status !== 'DEVOLVIDO') {
       if (qtdNumerica > itemSelecionado.quantidadeAtual) {
@@ -124,6 +122,7 @@ const RegistrarSaidaEmprestimo = ({ onSalvar, onCancelar }) => {
     }
 
     try {
+      setLoading(true); // Ativa o estado de aguardando
       const payload = {
         insumoId: formData.insumoId,
         nomeInsumo: formData.nomeInsumo,
@@ -141,10 +140,11 @@ const RegistrarSaidaEmprestimo = ({ onSalvar, onCancelar }) => {
     } catch (error) {
       console.error(error);
       alert("Erro ao registrar movimentação.");
+    } finally {
+      setLoading(false); // Desativa o estado de aguardando
     }
   };
 
-  // TELA 1: SELEÇÃO (MANTIDA IGUAL)
   if (!tipoSelecionado) {
     return (
       <div className="selecao-tipo-container" style={{ padding: '20px', textAlign: 'center' }}>
@@ -170,55 +170,39 @@ const RegistrarSaidaEmprestimo = ({ onSalvar, onCancelar }) => {
             <p style={{ color: '#666', fontSize: '0.9em' }}>Empréstimos e Devoluções</p>
           </button>
         </div>
-        {onCancelar && (
-          <button onClick={onCancelar} style={{ marginTop: '30px', background: 'transparent', border: 'none', textDecoration: 'underline', cursor: 'pointer' }}>
-            Cancelar
-          </button>
-        )}
       </div>
     );
   }
 
   const tituloForm = tipoSelecionado === 'MATERIAL' ? "Registrar Saída de Material" : "Movimentação de Ferramenta";
-  const labelQuantidade = tipoSelecionado === 'MATERIAL' ? "Quantidade Utilizada" : (formData.status === 'EMPRESTADO' ? "Qtd a Retirar" : "Qtd a Devolver");
+  const labelQuantidade = tipoSelecionado === 'MATERIAL' ? "Quantidade Utilizada" : "Qtd a Retirar";
 
-  // DEFINIÇÃO DOS BOTÕES
+  // Actions customizadas para bater com o visual da imagem
   const actions = [
-    // 1. Botão VOLTAR (Sempre o primeiro)
     { 
       type: 'button', 
-      children: 'Voltar', 
-      onClick: () => setTipoSelecionado(null), 
-      icon: <FaArrowLeft />
-      // O CSS irá estilizar este como CINZA por ser o :first-child
+      children: 'Cancelar', 
+      onClick: () => setTipoSelecionado(null),
+      disabled: loading 
     },
-
-    // 2. Botão AÇÃO (Sempre o segundo)
     ...(tipoSelecionado === 'FERRAMENTA' ? [{ 
       type: 'button', 
-      // Sem Confirmar Registro, apenas Gerar Termo
-      children: 'Gerar Termo', 
-      onClick: gerarTermo
-      // O CSS irá estilizar este como VERDE por ser o :nth-child(2)
+      children: loading ? 'Gerando...' : 'Gerar Termo', 
+      onClick: gerarTermo,
+      disabled: loading 
     }] : []),
-
     ...(tipoSelecionado === 'MATERIAL' ? [{ 
       type: 'submit', 
-      children: 'Confirmar Registro'
-      // O CSS irá estilizar este como VERDE por ser o :nth-child(2)
+      children: loading ? 'Salvando...' : 'Confirmar Registro',
+      disabled: loading 
     }] : [])
   ];
 
   return (
     <div className="cadastrar-emprestimo">
-      <FormGeral
-        title={tituloForm}
-        actions={actions}
-        onSubmit={handleSubmit}
-        useGrid={false}
-      >
+      <FormGeral title={tituloForm} actions={actions} onSubmit={handleSubmit} useGrid={false}>
         <div className="input-row">
-            <div style={{ position: 'relative', flex: 1 }}>
+            <div style={{ position: 'relative' }}>
                 <Input
                     label={tipoSelecionado === 'MATERIAL' ? "Qual material saiu?" : "Qual ferramenta?"}
                     name="nomeInsumo"
@@ -227,53 +211,28 @@ const RegistrarSaidaEmprestimo = ({ onSalvar, onCancelar }) => {
                     onChange={handleNomeChange}
                     onBlur={handleBlurNome}
                     required
-                    placeholder="Digite para buscar no estoque..."
+                    placeholder="Digite para buscar..."
                     autoComplete="off"
                 />
-                
                 {sugestoes.length > 0 && (
-                    <ul className="autocomplete-lista" style={{
-                        position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 1000,
-                        backgroundColor: 'white', border: '1px solid #ccc', borderRadius: '4px',
-                        maxHeight: '200px', overflowY: 'auto', listStyle: 'none', padding: 0, margin: 0
-                    }}>
+                    <ul className="autocomplete-lista">
                         {sugestoes.map((f) => (
-                            <li key={f.id} onClick={() => selecionarItem(f)} 
-                                style={{ padding: '10px', cursor: 'pointer', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between' }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
-                            >
+                            <li key={f.id} onClick={() => selecionarItem(f)}>
                                 <strong>{f.nome}</strong>
-                                <span style={{ fontSize: '0.85em', color: f.quantidadeAtual > 0 ? 'green' : 'red', backgroundColor: '#eef', padding: '2px 6px', borderRadius: '4px' }}>
-                                    Disp: {f.quantidadeAtual} {f.unidadeMedida}
-                                </span>
+                                <span>Disp: {f.quantidadeAtual} {f.unidadeMedida}</span>
                             </li>
                         ))}
                     </ul>
                 )}
             </div>
 
-            {tipoSelecionado === 'FERRAMENTA' ? (
-                <Input
-                    label="Tipo de Ação"
-                    name="status"
-                    type="select"
-                    value={formData.status}
-                    onChange={handleChange('status')}
-                    required
-                    options={[
-                        { value: 'EMPRESTADO', label: 'Emprestar (Saída)' },
-                    ]}
-                />
-            ) : (
-                <Input
-                    label="Tipo de Movimento"
-                    name="status"
-                    type="text"
-                    value="SAÍDA (Consumo)"
-                    readOnly
-                />
-            )}
+            <Input
+                label="Tipo de Ação"
+                name="status"
+                type="text"
+                value={tipoSelecionado === 'MATERIAL' ? "SAÍDA (Consumo)" : "EMPRÉSTIMO"}
+                readOnly
+            />
         </div>
 
         <div className="input-row">
@@ -291,7 +250,7 @@ const RegistrarSaidaEmprestimo = ({ onSalvar, onCancelar }) => {
                 placeholder="0.00"
             />
              <Input
-                label="Unidade"
+                label="Unidade de medida"
                 name="unidadeMedida"
                 type="text"
                 value={formData.unidadeMedida}
@@ -307,19 +266,19 @@ const RegistrarSaidaEmprestimo = ({ onSalvar, onCancelar }) => {
                     type="text"
                     value={formData.finalidade}
                     onChange={handleChange('finalidade')}
-                    placeholder="Ex: Adubação do canteiro de Alface"
+                    placeholder="Ex: Adubação do canteiro"
                     required
                 />
              </div>
         )}
 
         <div className="input-row">
-            <Input label="Data do Registro" name="dataRegistro" type="date" value={formData.dataRegistro} onChange={handleChange('dataRegistro')} required />
+            <Input label="Data de Registro" name="dataRegistro" type="date" value={formData.dataRegistro} onChange={handleChange('dataRegistro')} required />
         </div>
 
         <div className="input-row">
             <Input
-                label={tipoSelecionado === 'MATERIAL' ? "Responsável Almoxarifado" : (formData.status === 'EMPRESTADO' ? "Quem Entregou?" : "Quem Recebeu?")}
+                label={tipoSelecionado === 'MATERIAL' ? "Responsável Almoxarifado" : "Responsável pela Entrega"}
                 name="responsavelEntrega"
                 type="text"
                 value={formData.responsavelEntrega}
@@ -327,7 +286,7 @@ const RegistrarSaidaEmprestimo = ({ onSalvar, onCancelar }) => {
                 required
             />
             <Input
-                label={tipoSelecionado === 'MATERIAL' ? "Quem Retirou?" : (formData.status === 'EMPRESTADO' ? "Quem Retirou?" : "Quem Devolveu?")}
+                label={tipoSelecionado === 'MATERIAL' ? "Quem Retirou?" : "Responsável por Receber"}
                 name="responsavelReceber"
                 type="text"
                 value={formData.responsavelReceber}
@@ -335,7 +294,6 @@ const RegistrarSaidaEmprestimo = ({ onSalvar, onCancelar }) => {
                 required
             />
         </div>
-
       </FormGeral>
     </div>
   );
