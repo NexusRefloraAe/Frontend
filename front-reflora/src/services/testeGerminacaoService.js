@@ -34,7 +34,6 @@ export const testeGerminacaoService = {
       loteSemente: formData.lote,
       dataPlantio: formatarDataParaJava(formData.dataTeste),
       tipoPlantio: "Sementeira",
-      quantidadePlantada: 1, // Campo da classe pai (pode ser fixo ou ignorado)
 
       // --- NOVOS CAMPOS SINCRONIZADOS ---
       qtdSemente: Number(formData.quantidade), // Peso/Total que sai do estoque
@@ -61,7 +60,6 @@ export const testeGerminacaoService = {
 
       // Valores padrão novamente
       tipoPlantio: "Sementeira",
-      quantidadePlantada: 1,
 
       qtdSemente: Number(formData.quantidade),
       numSementesPlantadas: Number(formData.numSementesPlantadas),
