@@ -10,7 +10,6 @@ export const movimentacaoSementeService = {
             loteSemente: formData.lote,
             dataPlantio: formatarDataParaJava(formData.dataPlantio || formData.dataTeste),
             tipoPlantio: formData.tipoPlantio || 'Sementeira', // Valor padrão se necessário
-            quantidadePlantada: Number(formData.quantidadePlantada || formData.quantidade),
             qtdSemente: Number(formData.qtdSemente || 0),
             
             // PROPRIEDADE MÁGICA: Define se o Java criará um PlantioMuda ou TesteGerminacao
@@ -21,7 +20,11 @@ export const movimentacaoSementeService = {
         if (tipo === 'germinacao') {
             payload.estahNaCamaraFria = formData.camaraFria === 'Sim';
             payload.dataGerminacao = formatarDataParaJava(formData.dataGerminacao);
-            payload.qtdGerminou = Number(formData.qntdGerminou);
+            payload.numSementesPlantadas = Number(formData.numSementesPlantadas);
+            payload.numSementesGerminaram = Number(formData.numSementesGerminaram)
+        } 
+        else if (tipo === 'muda') {
+            payload.quantidadePlantada = Number(formData.quantidadePlantada || formData.quantidade);
         }
 
         // 3. Chamada ao endpoint de correção
