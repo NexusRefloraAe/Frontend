@@ -260,7 +260,7 @@ const HistoricoPlantio = () => {
     }, 
     {
       key: "quantidadePlantada",
-      label: "Qtd. Plantada",
+      label: "Qtd. Plantada (und)",
       sortable: true,
       sortKey: "quantidade",
     },
