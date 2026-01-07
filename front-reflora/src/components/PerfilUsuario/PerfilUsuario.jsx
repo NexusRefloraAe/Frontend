@@ -8,7 +8,6 @@ import perfilusuarioIcon from '../../assets/perfilusuario.svg';
 import { FaEdit, FaSave } from 'react-icons/fa';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import './PerfilUsuario.css';
-import importarfotoIcon from '../../assets/importarfoto.svg';
 import { getBackendErrorMessage } from '../../utils/errorHandler';
 
 const PerfilUsuario = () => {
@@ -32,10 +31,8 @@ const PerfilUsuario = () => {
         const user = authService.getCurrentUser();
         if (!user || !user.id) { navigate('/login'); return; }
         setCurrentUser(user);
-
         const data = await usuarioService.getUsuario(user.id);
 
-        // Tratamento de data para input type="date"
         let dataNascFormatada = '';
         if (data.dataNascimento) {
           if (data.dataNascimento.includes('T') || data.dataNascimento.includes(' ')) {
@@ -47,9 +44,7 @@ const PerfilUsuario = () => {
         }
 
         let rawUrl = data.fotoUsuario?.url || data.fotoUsuarioResponseDTO?.url || data.fotoUrl || null;
-        if (rawUrl) {
-          rawUrl = rawUrl.replace(/reflora-minio|minio/g, "localhost");
-        }
+        if (rawUrl) { rawUrl = rawUrl.replace(/reflora-minio|minio/g, "localhost"); }
 
         setUserData({
           nomeCompleto: data.nomeCompleto || '',
@@ -119,7 +114,7 @@ const PerfilUsuario = () => {
     ? [
       {
         type: 'button',
-        variant: 'secondary',
+        variant: 'secondary', // Certifique-se de que este nome é idêntico ao do CSS
         children: 'Cancelar',
         onClick: handleCancel,
         disabled: isLoading,
@@ -150,7 +145,7 @@ const PerfilUsuario = () => {
     ];
 
   return (
-    <div className="perfil-compact-container"> {/* IMPORTANTE: Esta classe precisa ser igual ao CSS */}
+    <div className="perfil-compact-container">
       <FormGeral
         title={isEditing ? 'Editar Perfil' : 'Gerencie suas informações pessoais'}
         actions={actionsConfig}
@@ -160,55 +155,30 @@ const PerfilUsuario = () => {
         layout="wide"
       >
         <div className="perfil-form-wrapper">
-          {/* Lado Esquerdo: Foto */}
           <div className="perfil-side-photo">
-            <div className="avatar-mini-wrapper">
+            <div
+              className={`avatar-mini-wrapper ${isEditing ? 'editable' : ''}`}
+              onClick={isEditing ? handleTrocarFoto : null}
+              title={isEditing ? "Clique para trocar a foto" : ""}
+            >
               <img
                 src={fotoPreview || userData.fotoUrl || perfilusuarioIcon}
                 alt="Avatar"
                 onError={(e) => { e.target.src = perfilusuarioIcon; }}
               />
               {isEditing && (
-                <button type="button" className="btn-upload-overlay" onClick={handleTrocarFoto}>
-                  <img src={importarfotoIcon} alt="Trocar" />
-                </button>
+                <div className="photo-edit-label">Trocar Foto</div>
               )}
             </div>
           </div>
 
-          {/* Lado Direito: Campos */}
           <div className="perfil-fields-grid">
             <div className="field-full-row">
-              <Input
-                label="Nome Completo"
-                value={userData.nomeCompleto}
-                onChange={handleChange('nomeCompleto')}
-                readOnly={!isEditing || isLoading}
-              />
+              <Input label="Nome Completo" value={userData.nomeCompleto} onChange={handleChange('nomeCompleto')} readOnly={!isEditing || isLoading} />
             </div>
-
-            <Input
-              label="E-mail"
-              value={userData.email}
-              onChange={handleChange('email')}
-              readOnly={!isEditing || isLoading}
-            />
-
-            <Input
-              label="Telefone"
-              value={userData.telefone}
-              onChange={handleChange('telefone')}
-              readOnly={!isEditing || isLoading}
-            />
-
-            <Input
-              label="Data de Nascimento"
-              type="date"
-              value={userData.dataNascimento}
-              onChange={handleChange('dataNascimento')}
-              readOnly={!isEditing || isLoading}
-            />
-
+            <Input label="E-mail" value={userData.email} onChange={handleChange('email')} readOnly={!isEditing || isLoading} />
+            <Input label="Telefone" value={userData.telefone} onChange={handleChange('telefone')} readOnly={!isEditing || isLoading} />
+            <Input label="Data de Nascimento" type="date" value={userData.dataNascimento} onChange={handleChange('dataNascimento')} readOnly={!isEditing || isLoading} />
             <Input
               label="Gênero"
               type="select"
@@ -222,29 +192,17 @@ const PerfilUsuario = () => {
                 { value: 'NAO_INFORMAR', label: 'Prefiro não informar' },
               ]}
             />
-
             <div className="field-full-row">
-              <Input
-                label="Empresa"
-                value={userData.empresa}
-                onChange={handleChange('empresa')}
-                readOnly={!isEditing || isLoading}
-              />
+              <Input label="Empresa" value={userData.empresa} onChange={handleChange('empresa')} readOnly={!isEditing || isLoading} />
             </div>
-
             <div className="field-full-row">
-              <Input
-                label="Endereço"
-                value={userData.endereco}
-                onChange={handleChange('endereco')}
-                readOnly={!isEditing || isLoading}
-              />
+              <Input label="Endereço" value={userData.endereco} onChange={handleChange('endereco')} readOnly={!isEditing || isLoading} />
             </div>
           </div>
         </div>
       </FormGeral>
     </div>
   );
-}
+};
 
 export default PerfilUsuario;

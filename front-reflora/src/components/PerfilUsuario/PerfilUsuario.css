@@ -5,7 +5,7 @@
     margin: 0 auto;
 }
 
-/* 2. Layout Horizontal (Foto ao lado dos campos) */
+/* 2. Layout Horizontal (Desktop) */
 .perfil-form-wrapper {
     display: flex;
     gap: 20px;
@@ -13,7 +13,7 @@
     padding: 10px 0;
 }
 
-/* 3. Seção da Foto */
+/* 3. Seção da Foto Clicável */
 .perfil-side-photo {
     flex-shrink: 0;
     margin-top: 5px;
@@ -21,13 +21,18 @@
 
 .avatar-mini-wrapper {
     position: relative;
-    width: 80px;
-    height: 80px;
+    width: 85px;
+    height: 85px;
     border-radius: 50%;
     border: 2px solid #15803d;
     background: #fff;
     padding: 2px;
+    overflow: hidden;
+    transition: all 0.3s ease;
 }
+
+.avatar-mini-wrapper.editable { cursor: pointer; }
+.avatar-mini-wrapper.editable:hover { border-color: #166534; opacity: 0.9; }
 
 .avatar-mini-wrapper img {
     width: 100%;
@@ -36,134 +41,123 @@
     object-fit: cover;
 }
 
-.btn-upload-overlay {
+.photo-edit-label {
     position: absolute;
     bottom: 0;
-    right: 0;
-    background: #15803d;
-    border: none;
-    border-radius: 50%;
-    width: 26px;
-    height: 26px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+    left: 0;
+    width: 100%;
+    background: rgba(21, 128, 61, 0.9);
+    color: white;
+    font-size: 10px;
+    text-align: center;
+    padding: 4px 0;
+    font-weight: bold;
 }
 
-.btn-upload-overlay img { width: 14px; }
-
-/* 4. Grid de Campos (Compacto igual Vistoria) */
+/* 4. Grid de Campos Compactos */
 .perfil-fields-grid {
     flex: 1;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 6px 15px;
+    gap: 8px 16px;
 }
 
 .field-full-row { grid-column: span 2; }
 
 /* 5. Inputs e Labels */
 .perfil-fields-grid label {
-    font-size: 0.80rem !important;
+    font-size: 0.82rem !important;
     margin-bottom: 2px !important;
+    display: block;
+    color: #333;
 }
 
 .perfil-fields-grid input, 
 .perfil-fields-grid select {
-    height: 30px !important;
+    height: 32px !important;
     padding: 4px 10px !important;
-    font-size: 0.82rem !important;
+    font-size: 0.85rem !important;
     border-radius: 4px !important;
     border: 1px solid #ccc !important;
+    background-color: #ffffff !important; 
+    color: #333333 !important;
+    width: 100% !important;
 }
 
-/* 6. BOTÕES: Alinhados à Direita e Compactos */
-
-/* Alinhamento do container pai à direita */
-.perfil-compact-container .form-geral__actions {
+/* 6. BOTÕES: Alinhamento e Cores */
+.perfil-compact-container .form-geral__actions,
+.perfil-compact-container form > div:last-child {
     display: flex !important;
     flex-direction: row !important;
-    justify-content: flex-end !important; /* Move para a direita */
+    justify-content: flex-end !important;
+    align-items: center !important;
     gap: 12px !important;
     margin-top: 20px !important;
     padding-top: 15px !important;
     border-top: 1px solid #f0f0f0 !important;
     width: 100% !important;
-    box-sizing: border-box !important;
 }
 
-/* Estilo base dos Botões (Pequenos e Simétricos) */
-.perfil-compact-container .form-geral__actions button {
-    /* TRAVAMENTO DE TAMANHO: Impede que o botão estique */
-    width: auto !important;           
-    flex: none !important;            
-    max-width: fit-content !important; 
-    min-width: 120px !important;      
-    
-    height: 34px !important;          /* Altura compacta conforme Banco de Sementes */
-    font-size: 0.88rem !important;    
-    padding: 0 20px !important;       
+.perfil-compact-container button {
+    width: auto !important;
+    min-width: 130px !important;
+    height: 36px !important;
+    font-size: 0.88rem !important;
     border-radius: 5px !important;
     font-weight: 600 !important;
-    cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     border: none !important;
-    transition: opacity 0.2s ease !important;
+    cursor: pointer;
 }
 
-/* CORES ESPECÍFICAS (Sincronizadas com Banco de Sementes) */
+/* --- CORES ESPECÍFICAS --- */
 
-/* Botão Salvar / Primário (Verde) */
-.perfil-compact-container .form-geral__actions button.button--variant-primary,
-.perfil-compact-container .form-geral__actions button[type="submit"] {
+/* Botão Salvar (Verde) */
+.perfil-compact-container button.button--variant-primary { 
     background-color: #15803d !important; 
-    color: #ffffff !important;
+    color: #fff !important; 
 }
 
-/* Botão Cancelar / Secundário (Cinza Escuro) */
-.perfil-compact-container .form-geral__actions button.button--variant-secondary,
-.perfil-compact-container .form-geral__actions button:not([type="submit"]):not(.button--variant-danger) {
-    background-color: #2e2e2e !important; 
-    color: #ffffff !important;
+/* CORREÇÃO DEFINITIVA: Botão Cancelar em cinza escuro (Igual ao Cadastro Canteiro) */
+.perfil-compact-container button.button--variant-secondary { 
+    background-color: #333333 !important; /* Cinza escuro idêntico às imagens de referência */
+    color: #ffffff !important; 
 }
 
 /* Botão Excluir (Vermelho) */
-.perfil-compact-container .form-geral__actions button.button--variant-danger {
-    background-color: #d32f2f !important;
-    color: #ffffff !important;
+.perfil-compact-container button.button--variant-danger { 
+    background-color: #d32f2f !important; 
+    color: #fff !important; 
 }
 
-.perfil-compact-container .form-geral__actions button:hover {
-    opacity: 0.9;
-}
-
-/* 7. Responsividade Unificada (Tablet e Mobile) */
+/* 7. Responsividade Mobile CORRIGIDA */
 @media (max-width: 768px) {
     .perfil-form-wrapper {
-        flex-direction: column;
-        align-items: center;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 20px;
     }
     
     .perfil-fields-grid {
-        grid-template-columns: 1fr;
-        width: 100%;
-    }
-
-    .field-full-row { 
-        grid-column: span 1; 
-    }
-
-    .perfil-compact-container .form-geral__actions {
-        flex-direction: column-reverse;
-        align-items: stretch;
-        justify-content: center !important;
-    }
-
-    .perfil-compact-container .form-geral__actions button {
+        display: flex !important;
+        flex-direction: column !important;
         width: 100% !important;
-        margin-bottom: 10px;
+    }
+
+    /* Força os botões a ocuparem 100% da largura e ficarem um sobre o outro no mobile */
+    .perfil-compact-container .form-geral__actions,
+    .perfil-compact-container form > div:last-child {
+        flex-direction: column-reverse !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+
+    .perfil-compact-container button {
+        width: 100% !important;
+        min-width: unset !important;
+        height: 44px !important;
+        margin: 0 !important;
     }
 }
