@@ -23,21 +23,42 @@ const CadastrarPlantio = ({ dadosParaCorrecao }) => {
   const [estoqueAtual, setEstoqueAtual] = useState(null);
   const [unidadeMedida, setUnidadeMedida] = useState("");
 
+  const converterParaDataInput = (dataStr) => {
+    if (!dataStr || dataStr === "-" || !dataStr.includes("/")) return "";
+    const [dia, mes, ano] = dataStr.split("/");
+    return `${ano}-${mes}-${dia}`; // Converte para yyyy-MM-dd
+  };
+
+  // 1. Efeito para preencher dados ao vir de uma correção
   useEffect(() => {
     if (dadosParaCorrecao) {
-      const qtdOriginal = dadosParaCorrecao.quantidadeSaidaFormatada
-        ? parseFloat(dadosParaCorrecao.quantidadeSaidaFormatada.replace(/[^\d.]/g, ""))
-        : 0;
-      const unidade = dadosParaCorrecao.quantidadeSaidaFormatada
-        ? dadosParaCorrecao.quantidadeSaidaFormatada.replace(/[0-9.\s]/g, "")
-        : "";
+      const textoQtd = dadosParaCorrecao.quantidadeSaidaFormatada || "";
+      const qtdNumerica = parseFloat(textoQtd.replace(/[^\d.]/g, "")) || 0;
 
+      // Extrai a unidade (ex: "kg" ou "und")
+      const unidade = textoQtd.replace(/[0-9.\s]/g, "");
       setUnidadeMedida(unidade);
+
       setFormData((prev) => ({
         ...prev,
         lote: dadosParaCorrecao.lote || "",
         nomePopular: dadosParaCorrecao.nomePopular || "",
-        qtdSemente: qtdOriginal,
+        qtdSemente: qtdNumerica,
+
+        dataPlantio: converterParaDataInput(
+          dadosParaCorrecao.dataTeste ||
+            dadosParaCorrecao.dataPlantio ||
+            dadosParaCorrecao.dataDeCadastro
+        ),
+
+        tipoPlantio: dadosParaCorrecao.tipoPlantio || "Sementeira",
+
+        // MAPEAMENTO ESSENCIAL:
+        // O que germinou no teste vira a 'quantidadePlantada' no plantio
+        quantidadePlantada:
+          dadosParaCorrecao.quantidadePlantada ||
+          dadosParaCorrecao.numSementesGerminaram ||
+          0,
       }));
     }
   }, [dadosParaCorrecao]);

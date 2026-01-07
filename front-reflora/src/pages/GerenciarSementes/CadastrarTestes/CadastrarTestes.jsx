@@ -27,27 +27,50 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
   const [loading, setLoading] = useState(false);
   const [sugestoes, setSugestoes] = useState([]);
   const [estoqueAtual, setEstoqueAtual] = useState(null);
-  const [unidadeMedida, setUnidadeMedida] = useState(""); 
+  const [unidadeMedida, setUnidadeMedida] = useState(""); // Novo estado
 
-  // 1. Efeito para preencher dados ao vir de uma correção
+  const converterParaDataInput = (dataStr) => {
+    if (!dataStr || dataStr === "-" || !dataStr.includes("/")) return "";
+    const [dia, mes, ano] = dataStr.split("/");
+    return `${ano}-${mes}-${dia}`; // Converte para yyyy-MM-dd
+  };
+
   useEffect(() => {
     if (dadosParaCorrecao) {
-      const qtdOriginal = dadosParaCorrecao.quantidadeSaidaFormatada
-        ? parseFloat(
-            dadosParaCorrecao.quantidadeSaidaFormatada.replace(/[^\d.]/g, "")
-          )
-        : 0;
+      const textoQtd = dadosParaCorrecao.quantidadeSaidaFormatada || "";
+      const qtdNumerica = parseFloat(textoQtd.replace(/[^\d.]/g, "")) || 0;
 
-      const unidade = dadosParaCorrecao.quantidadeSaidaFormatada
-        ? dadosParaCorrecao.quantidadeSaidaFormatada.replace(/[0-9.\s]/g, "")
-        : "";
-
+      // Extrai a unidade (ex: "kg" ou "und")
+      const unidade = textoQtd.replace(/[0-9.\s]/g, "");
       setUnidadeMedida(unidade);
+
       setFormData((prev) => ({
         ...prev,
         lote: dadosParaCorrecao.lote || "",
         nomePopular: dadosParaCorrecao.nomePopular || "",
-        quantidade: qtdOriginal,
+        quantidade: qtdNumerica,
+
+        // Busca a data em qualquer campo disponível (Cadastro ou Movimentação)
+        dataTeste: converterParaDataInput(
+          dadosParaCorrecao.dataPlantio ||
+            dadosParaCorrecao.dataTeste ||
+            dadosParaCorrecao.dataDeCadastro
+        ),
+
+        // MAPEAMENTO ESSENCIAL:
+        // Puxa 'quantidadePlantada' (do Plantio) para o campo 'numSementesPlantadas' (do Teste)
+        numSementesPlantadas:
+          dadosParaCorrecao.numSementesPlantadas ||
+          dadosParaCorrecao.quantidadePlantada ||
+          0,
+
+        numSementesGerminaram: dadosParaCorrecao.numSementesGerminaram || 0,
+
+        camaraFria:
+          dadosParaCorrecao.estahNaCamaraFria === true ||
+          dadosParaCorrecao.estahNaCamaraFria === "Sim"
+            ? "Sim"
+            : "Não",
       }));
     }
   }, [dadosParaCorrecao]);
@@ -122,7 +145,11 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
     };
 
     if (confirmar) {
-      if (window.confirm("Deseja cancelar? As alterações não salvas serão perdidas.")) {
+      if (
+        window.confirm(
+          "Deseja cancelar? As alterações não salvas serão perdidas."
+        )
+      ) {
         resetForm();
       }
     } else {
@@ -339,7 +366,7 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
           onDecrement={() => handleDecrement("numSementesPlantadas")}
           required={true}
         />
-        
+
         <Input
           label="Qtd que Germinou (unidades)"
           type="number"
@@ -360,23 +387,22 @@ const CadastrarTestes = ({ dadosParaCorrecao }) => {
 
         {/* --- BOTÕES MANUAIS ALINHADOS À DIREITA --- */}
         <div className="testes-actions">
-          <button 
-            type="button" 
-            className="testes-btn btn-cancelar" 
+          <button
+            type="button"
+            className="testes-btn btn-cancelar"
             onClick={() => handleCancel(true)}
             disabled={loading}
           >
             Cancelar
           </button>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="testes-btn btn-salvar"
             disabled={loading}
           >
             {loading ? "Salvando..." : "Salvar Cadastro"}
           </button>
         </div>
-
       </FormGeral>
     </div>
   );
