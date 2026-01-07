@@ -7,20 +7,21 @@ import { plantioCanteiroService } from '../../../services/plantioCanteiroService
 import { canteiroService } from '../../../services/canteiroService';
 import { getBackendErrorMessage } from '../../../utils/errorHandler';
 
+// Importando o CSS
+import './CadastrarPlantioCanteiro.css';
+
 const CadastrarPlantioCanteiro = () => {
 
   const [mudasDisponiveis, setMudasDisponiveis] = useState([]);
   const [nomesCanteiros, setNomesCanteiros] = useState([]);
 
-  // Ajustamos o formData para os nomes que o seu service/DTO esperam
   const [formData, setFormData] = useState({
-    plantioMudaId: '', // ID do plantio de origem (UUID)
-    quantidade: 0,     // Quantidade a ser movida
-    dataPlantio: '',   // Data da mudança
-    nomeCanteiro: '',  // Nome do canteiro de destino
+    plantioMudaId: '',
+    quantidade: 0,    
+    dataPlantio: '',  
+    nomeCanteiro: '', 
   });
 
-  // 1. Carrega as mudas disponíveis ao montar o componente
   useEffect(() => {
     const carregarDadosIniciais = async () => {
       try {
@@ -55,20 +56,16 @@ const CadastrarPlantioCanteiro = () => {
     }
   };
 
-  // 3. Handler 'onChange' que entende 'number'
   const handleChange = (field) => (e) => {
     const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // 2. Chama o Service para salvar no Banco de Dados
   const handleSubmit = async () => {
     try {
-      // O service já faz a formatação da data e a conversão de tipos
       await plantioCanteiroService.create(formData);
-      
       alert('Movimentação para canteiro salva com sucesso!');
-      handleCancel(false); // Reseta o form sem perguntar
+      handleCancel(false); 
     } catch (error) {
       console.error("Erro ao salvar:", error);
       const msg = getBackendErrorMessage(error)
@@ -76,7 +73,6 @@ const CadastrarPlantioCanteiro = () => {
     }
   };
 
-  // 4. Handlers do Stepper (simplificados, pois o estado já é 'number')
   const handleIncrement = (field) => () => {
     setFormData((prev) => ({ ...prev, [field]: prev[field] + 1 }));
   };
@@ -84,98 +80,92 @@ const CadastrarPlantioCanteiro = () => {
   const handleDecrement = (field) => () => {
     setFormData((prev) => ({
       ...prev,
-      [field]: Math.max(0, prev[field] - 1), // Garante que não seja negativo
+      [field]: Math.max(0, prev[field] - 1), 
     }));
   };
 
-  // 5. O array 'fields' foi REMOVIDO.
-
-  const actions = [
-    {
-      type: 'button',
-      variant: 'action-secondary',
-      children: 'Cancelar',
-      onClick: () => handleCancel(true),
-    },
-    {
-      type: 'submit',
-      variant: 'primary',
-      children: 'Salvar Cadastro',
-    },
-  ];
-
   return (
-    <div className="cadastrar-plantio-canteiro-pagina">
+    <div className="cadastro-plantio-canteiro-container">
       <FormGeral
         title="Cadastrar Plantio no Canteiro"
-        // 6. Prop 'fields' removida
-        actions={actions}
         onSubmit={handleSubmit}
-        useGrid={true} // <-- 7. ATIVADO para layout lado a lado
+        useGrid={false} // Grid manual
       >
-        {/* 8. Inputs renderizados como 'children' e organizados em grid */}
-
-        <Input
-          label="Lote (Mudas disponíveis)"
-          name="plantioMudaId"
-          type="select"
-          value={formData.plantioMudaId}
-          onChange={handleChange('plantioMudaId')}
-          required={true}
-          placeholder="Selecione um lote disponível"
-          options={mudasDisponiveis.map(muda => ({
-            value: muda.id,
-            label: `${muda.lote} - ${muda.nomePopular} (${muda.quantidadePlantada} un. disponíveis)`, // Se der erro, altere para quantidadeDisponivel
-          }))}
-        />
         
-        {/* <Input
-          label="Nome Popular"
-          name="nomePopular"
-          type="text"
-          value={formData.nomePopular}
-          onChange={handleChange('nomePopular')}
-          required={true}
-          placeholder="Ex: Ipê"
-        /> */}
+        {/* Grid Customizado */}
+        <div className="plantio-canteiro-grid">
+            
+            {/* Lote ocupa a linha toda */}
+            <div className="span-full">
+                <Input
+                  label="Lote (Mudas disponíveis)"
+                  name="plantioMudaId"
+                  type="select"
+                  value={formData.plantioMudaId}
+                  onChange={handleChange('plantioMudaId')}
+                  required={true}
+                  placeholder="Selecione um lote disponível"
+                  options={mudasDisponiveis.map(muda => ({
+                    value: muda.id,
+                    label: `${muda.lote} - ${muda.nomePopular} (${muda.quantidadePlantada} un. disponíveis)`, 
+                  }))}
+                />
+            </div>
 
-        <Input
-          label="Quantidade para mover (und)"
-          name="quantidade"
-          type="number" 
-          value={formData.quantidade}
-          onChange={handleChange('quantidade')}
-          required={true}
-          onIncrement={handleIncrement('quantidade')}
-          onDecrement={handleDecrement('quantidade')}
-        />
-        
-        <Input
-          label="Data de envio p/ canteiro"
-          name="dataPlantio"
-          type="date"
-          value={formData.dataPlantio}
-          onChange={handleChange('dataPlantio')}
-          required={true}
-          placeholder="dd/mm/aaaa"
-        />
+            <Input
+              label="Quantidade para mover (und)"
+              name="quantidade"
+              type="number" 
+              value={formData.quantidade}
+              onChange={handleChange('quantidade')}
+              required={true}
+              onIncrement={handleIncrement('quantidade')}
+              onDecrement={handleDecrement('quantidade')}
+            />
+            
+            <Input
+              label="Data de envio p/ canteiro"
+              name="dataPlantio"
+              type="date"
+              value={formData.dataPlantio}
+              onChange={handleChange('dataPlantio')}
+              required={true}
+              placeholder="dd/mm/aaaa"
+            />
 
-        {/* 9. Este 'div' usa a classe do CSS do FormGeral
-               para fazer este campo ocupar 2 colunas */}
-        <div className="form-geral__campo--span-2">
-          <Input
-            label="Local do plantio"
-            name="nomeCanteiro"
-            type="select"
-            value={formData.nomeCanteiro}
-            onChange={handleChange('nomeCanteiro')}
-            required={true}
-            placeholder="Selecione o local" // Usando placeholder
-            options={nomesCanteiros.map(nome => ({
-              value: nome,
-              label: nome
-            }))}
-          />
+            {/* Local ocupa a linha toda */}
+            <div className="span-full">
+                <Input
+                  label="Local do plantio (Canteiro)"
+                  name="nomeCanteiro"
+                  type="select"
+                  value={formData.nomeCanteiro}
+                  onChange={handleChange('nomeCanteiro')}
+                  required={true}
+                  placeholder="Selecione o local"
+                  options={nomesCanteiros.map(nome => ({
+                    value: nome,
+                    label: nome
+                  }))}
+                />
+            </div>
+        </div>
+
+        {/* Botões Manuais */}
+        <div className="plantio-canteiro-actions">
+            <button 
+                type="button" 
+                className="plantio-canteiro-btn btn-cancelar"
+                onClick={() => handleCancel(true)}
+            >
+                Cancelar
+            </button>
+            <button 
+                type="submit" 
+                className="plantio-canteiro-btn btn-salvar"
+            >
+                Salvar Cadastro
+            </button>
         </div>
 
       </FormGeral>
