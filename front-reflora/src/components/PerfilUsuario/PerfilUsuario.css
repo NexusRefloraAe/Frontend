@@ -1,4 +1,4 @@
-/* 1. Container Principal (Limita a largura no Web para não esticar) */
+/* 1. Container Principal */
 .perfil-compact-container {
     width: 100%;
     max-width: 850px;
@@ -58,12 +58,12 @@
     flex: 1;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 6px 15px; /* Espaçamento reduzido */
+    gap: 6px 15px;
 }
 
 .field-full-row { grid-column: span 2; }
 
-/* 5. Inputs e Labels (Tamanho reduzido) */
+/* 5. Inputs e Labels */
 .perfil-fields-grid label {
     font-size: 0.80rem !important;
     margin-bottom: 2px !important;
@@ -71,7 +71,7 @@
 
 .perfil-fields-grid input, 
 .perfil-fields-grid select {
-    height: 30px !important; /* Altura compacta */
+    height: 30px !important;
     padding: 4px 10px !important;
     font-size: 0.82rem !important;
     border-radius: 4px !important;
@@ -79,75 +79,91 @@
 }
 
 /* 6. BOTÕES: Alinhados à Direita e Compactos */
-/* Alvo: container de ações gerado pelo FormGeral */
+
+/* Alinhamento do container pai à direita */
 .perfil-compact-container .form-geral__actions {
     display: flex !important;
-    justify-content: flex-end !important; /* Alinha os botões à direita da tela */
+    flex-direction: row !important;
+    justify-content: flex-end !important; /* Move para a direita */
     gap: 12px !important;
     margin-top: 20px !important;
-    padding-top: 15px;
-    border-top: 1px solid #f0f0f0;
-    width: 100%;
+    padding-top: 15px !important;
+    border-top: 1px solid #f0f0f0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
-/* Estilo base dos Botões (Menores e sem largura total) */
+/* Estilo base dos Botões (Pequenos e Simétricos) */
 .perfil-compact-container .form-geral__actions button {
-    width: auto !important;         /* Remove o comportamento de ocupar a tela toda */
-    min-width: 130px;               /* Garante um tamanho mínimo legível */
-    height: 36px !important;        /* Altura reduzida igual ao Banco de Sementes */
-    font-size: 0.88rem !important;  /* Fonte levemente menor */
-    padding: 0 20px !important;     /* Espaçamento interno lateral */
+    /* TRAVAMENTO DE TAMANHO: Impede que o botão estique */
+    width: auto !important;           
+    flex: none !important;            
+    max-width: fit-content !important; 
+    min-width: 120px !important;      
+    
+    height: 34px !important;          /* Altura compacta conforme Banco de Sementes */
+    font-size: 0.88rem !important;    
+    padding: 0 20px !important;       
     border-radius: 5px !important;
     font-weight: 600 !important;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none !important;        /* Remove bordas indesejadas */
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: none !important;
+    transition: opacity 0.2s ease !important;
 }
 
-/* Cores específicas solicitadas */
+/* CORES ESPECÍFICAS (Sincronizadas com Banco de Sementes) */
 
 /* Botão Salvar / Primário (Verde) */
-.perfil-compact-container .form-geral__actions button.button--variant-primary {
+.perfil-compact-container .form-geral__actions button.button--variant-primary,
+.perfil-compact-container .form-geral__actions button[type="submit"] {
     background-color: #15803d !important; 
-    color: white !important;
+    color: #ffffff !important;
 }
 
 /* Botão Cancelar / Secundário (Cinza Escuro) */
-.perfil-compact-container .form-geral__actions button.button--variant-secondary {
-    background-color: #2e2e2e !important; /* Cinza idêntico ao Banco de Sementes */
-    color: white !important;
+.perfil-compact-container .form-geral__actions button.button--variant-secondary,
+.perfil-compact-container .form-geral__actions button:not([type="submit"]):not(.button--variant-danger) {
+    background-color: #2e2e2e !important; 
+    color: #ffffff !important;
 }
 
-/* Botão Excluir / Danger (Vermelho) */
+/* Botão Excluir (Vermelho) */
 .perfil-compact-container .form-geral__actions button.button--variant-danger {
     background-color: #d32f2f !important;
-    color: white !important;
+    color: #ffffff !important;
 }
 
-/* Efeito de Hover */
 .perfil-compact-container .form-geral__actions button:hover {
     opacity: 0.9;
-    filter: brightness(1.1);
 }
 
-/* 7. Responsividade Mobile */
+/* 7. Responsividade Unificada (Tablet e Mobile) */
 @media (max-width: 768px) {
     .perfil-form-wrapper {
         flex-direction: column;
         align-items: center;
     }
+    
     .perfil-fields-grid {
         grid-template-columns: 1fr;
         width: 100%;
     }
-    .field-full-row { grid-column: span 1; }
+
+    .field-full-row { 
+        grid-column: span 1; 
+    }
+
     .perfil-compact-container .form-geral__actions {
         flex-direction: column-reverse;
         align-items: stretch;
+        justify-content: center !important;
     }
+
     .perfil-compact-container .form-geral__actions button {
         width: 100% !important;
+        margin-bottom: 10px;
     }
 }

@@ -116,7 +116,7 @@ const PerfilUsuario = () => {
   };
 
   const actionsConfig = isEditing
-  ? [
+    ? [
       {
         type: 'button',
         variant: 'secondary',
@@ -132,7 +132,7 @@ const PerfilUsuario = () => {
         disabled: isLoading,
       },
     ]
-  : [
+    : [
       {
         type: 'button',
         variant: 'primary',
@@ -150,7 +150,7 @@ const PerfilUsuario = () => {
     ];
 
   return (
-    <div className="perfil-compact-container">
+    <div className="perfil-compact-container"> {/* IMPORTANTE: Esta classe precisa ser igual ao CSS */}
       <FormGeral
         title={isEditing ? 'Editar Perfil' : 'Gerencie suas informações pessoais'}
         actions={actionsConfig}
