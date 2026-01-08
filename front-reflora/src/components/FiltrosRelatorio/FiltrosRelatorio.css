@@ -1,113 +1,142 @@
-/* FiltrosRelatorio.css atualizado */
+/* FiltrosRelatorio.css */
 .filtros-relatorio {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto;
-  gap: 1rem;
-  align-items: end;
+  /* No web, vamos deixar os campos com tamanhos mais equilibrados */
+  grid-template-columns: 1.5fr 1fr 1fr auto; 
+  gap: 1.25rem;
+  align-items: flex-end;
+  background-color: #ffffff;
+  padding: 1rem 0;
 }
 
-/* Layout quando tem tipo de insumo */
 .filtros-relatorio.com-tipo-insumo {
-  grid-template-columns: 1fr 1fr 1fr 1fr auto;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
 }
 
 .filtro-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  width: 100%;
 }
 
 .filtro-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4b5563; /* Cinza médio profissional */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.filtro-input .input-container {
-  margin-bottom: 0;
+/* INPUTS: Equilíbrio entre compacto e usável */
+.filtro-input input,
+.filtros-relatorio input[type="text"],
+.filtros-relatorio input[type="date"] {
+  height: 40px !important; /* Altura padrão de mercado para inputs "clean" */
+  padding: 0 0.8rem !important;
+  font-size: 0.9rem !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  background-color: #fff !important;
+  color: #1f2937 !important;
+  box-sizing: border-box !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
 }
 
-.filtro-input input {
-  height: 40px;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  width: 100%;
-  box-sizing: border-box;
+.filtro-input input:focus {
+  outline: none !important;
+  border-color: #2e7d32 !important;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1) !important;
 }
 
-/* Estilos para os botões de tipo de insumo */
+/* SELETOR TIPO DE INSUMO (Estilo moderno) */
 .tipo-insumo-buttons {
   display: flex;
-  gap: 0.5rem;
+  background: #f3f4f6;
+  padding: 4px;
+  border-radius: 8px;
   height: 40px;
+  border: 1px solid #e5e7eb;
 }
 
 .tipo-insumo-buttons button {
   flex: 1;
-  padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db;
+  border: none;
   border-radius: 6px;
-  background: white;
-  color: #374151;
+  background: transparent;
+  color: #6b7280;
   cursor: pointer;
+  font-weight: 600;
+  font-size: 0.8rem;
   transition: all 0.2s;
-  font-size: 0.875rem;
 }
 
 .tipo-insumo-buttons button.active {
-  background: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
+  background: #ffffff;
+  color: #2e7d32;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.tipo-insumo-buttons button:hover:not(.active) {
-  background: #f3f4f6;
-}
-
-.botoes-container {
+/* BOTÃO PESQUISAR */
+.btn-pesquisar {
+  min-width: 130px;
+  height: 40px !important;
+  padding: 0 1.5rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  background-color: #2e7d32 !important;
+  color: white !important;
+  border: none !important;
+  cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
+  transition: filter 0.2s !important;
 }
 
-.btn-pesquisar {
-  min-width: 140px;
-  height: 40px;
-  padding: 0.5rem 1.5rem;
-  white-space: nowrap;
+.btn-pesquisar:hover {
+  filter: brightness(1.1);
 }
 
-/* Responsividade */
+/* --- RESPONSIVIDADE CORRIGIDA --- */
+
+/* Tablets e Telas Médias */
 @media (max-width: 1024px) {
-  .filtros-relatorio {
-    grid-template-columns: 1fr 1fr;
-  }
-
+  .filtros-relatorio,
   .filtros-relatorio.com-tipo-insumo {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr; /* Quebra em 2 colunas para não espremer */
+    gap: 1rem;
   }
 
   .botoes-container {
-    grid-column: 1 / -1;
+    grid-column: 1 / -1; /* Botão ocupa a largura total ou alinha à direita */
+    display: flex;
     justify-content: flex-end;
   }
 }
 
-@media (max-width: 768px) {
-  .filtros-relatorio {
-    grid-template-columns: 1fr;
+/* Mobile (Ajuste fino para não bugar) */
+@media (max-width: 640px) {
+  .filtros-relatorio,
+  .filtros-relatorio.com-tipo-insumo {
+    grid-template-columns: 1fr; /* Uma única coluna no mobile */
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid #eee; /* Leve borda para separar o formulário do resto */
+    border-radius: 8px;
   }
 
-  .filtros-relatorio.com-tipo-insumo {
-    grid-template-columns: 1fr;
+  .filtro-group {
+    gap: 0.4rem;
+  }
+
+  .btn-pesquisar {
+    width: 100%; /* Botão largo no mobile é melhor para o polegar */
+    height: 44px !important; /* Um pouco maior no mobile para facilitar o clique */
   }
 
   .tipo-insumo-buttons {
-    height: auto;
-  }
-
-  .tipo-insumo-buttons button {
-    padding: 0.75rem 1rem;
+    height: 44px;
   }
 }

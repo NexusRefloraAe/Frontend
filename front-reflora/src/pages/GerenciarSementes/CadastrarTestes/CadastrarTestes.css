@@ -1,0 +1,143 @@
+/* src/pages/Testes/CadastrarTestes/CadastrarTestes.css */
+
+/* =========================================================
+   CONTAINER GERAL (Compacto)
+   ========================================================= */
+.cadastro-testes-container {
+  width: 100%;
+  max-width: 850px; /* Largura controlada */
+  margin: 0 auto;   /* Centralizado */
+  padding-bottom: 20px;
+  font-family: inherit;
+}
+
+/* =========================================================
+   INPUTS E SELECTS
+   ========================================================= */
+.cadastro-testes-container label {
+  display: block;
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 5px;
+}
+
+.cadastro-testes-container input,
+.cadastro-testes-container select {
+  height: 40px !important; /* Altura compacta padrão */
+  padding: 0 12px !important;
+  font-size: 0.9rem !important;
+  border-radius: 6px !important;
+  border: 1px solid #d1d5db !important;
+  color: #1f2937;
+  transition: border-color 0.2s;
+}
+
+.cadastro-testes-container input:focus,
+.cadastro-testes-container select:focus {
+  border-color: #15803d !important;
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.1) !important;
+  outline: none !important;
+}
+
+.cadastro-testes-container input:disabled {
+  background-color: #f9fafb !important;
+  color: #6b7280 !important;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   FIX DO CALENDÁRIO (Branco e Limpo)
+   ========================================================= */
+.react-datepicker {
+    border: 1px solid #e5e7eb !important;
+    font-family: inherit !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
+}
+.react-datepicker__header {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #f3f4f6 !important;
+    padding-top: 10px !important;
+}
+.react-datepicker__navigation {
+    top: 10px !important;
+    background: transparent !important;
+    border-radius: 50% !important;
+}
+.react-datepicker__navigation:hover {
+    background-color: #f3f4f6 !important;
+}
+.react-datepicker__navigation-icon::before {
+    border-color: #374151 !important;
+}
+.react-datepicker__day--selected {
+    background-color: #15803d !important;
+    color: white !important;
+    border-radius: 50% !important;
+}
+
+/* =========================================================
+   BOTÕES DE AÇÃO (Alinhados à Direita)
+   ========================================================= */
+.testes-actions {
+  display: flex;
+  justify-content: flex-end; /* Direita */
+  gap: 12px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #f3f4f6;
+  width: 100%;
+  
+  /* Garante que ocupe a linha toda no Grid */
+  grid-column: 1 / -1 !important; 
+}
+
+.testes-btn {
+  height: 40px;
+  padding: 0 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: white;
+  border: none;
+  transition: opacity 0.2s, transform 0.1s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.testes-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-cancelar {
+  background-color: #2e2e2e !important; /* Cinza Escuro */
+}
+
+.btn-salvar {
+  background-color: #15803d !important; /* Verde */
+}
+
+/* =========================================================
+   RESPONSIVIDADE (MOBILE)
+   ========================================================= */
+@media (max-width: 768px) {
+  .cadastro-testes-container {
+    padding: 10px;
+    margin: 0;
+  }
+
+  .testes-actions {
+    flex-direction: column-reverse;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .testes-btn {
+    width: 100%;
+    height: 48px;
+    font-size: 1rem;
+  }
+}

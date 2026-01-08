@@ -1,0 +1,266 @@
+/* Removemos qualquer fundo, borda ou padding do nível superior */
+.revisao-distribuicao-pagina {
+  width: 100%;
+  padding: 0 !important;
+  background-color: transparent !important;
+  background: none !important;
+}
+
+/* Forçamos o FormGeral (que está vindo com fundo cinza nas imagens) 
+   a ficar transparente para não "duplicar" o container
+*/
+.revisao-distribuicao-pagina .form-geral,
+.revisao-distribuicao-pagina .form-geral-form--default,
+.revisao-distribuicao-pagina .tabs-layout-content {
+  background-color: transparent !important;
+  background: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+/* Este é o ÚNICO container que deve ter cor. 
+   Ajustamos a margem para ele não colar no topo.
+*/
+.revisao-distribuicao-pagina .content-revisao {
+  background-color: #ffffff !important;
+  border-radius: 8px;
+  padding: 24px 32px; 
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Sombra suave para destacar do fundo */
+  border: 1px solid #e5e7eb;
+  max-width: 900px; 
+  margin: 20px auto; /* Margem superior e inferior para centralizar verticalmente */
+}
+
+/* Removemos a linha inferior do título se ele estiver dentro do FormGeral */
+.revisao-distribuicao-pagina .form-geral__header {
+  border-bottom: none !important;
+  margin-bottom: 10px;
+}
+.revisao-distribuicao-pagina h1 {
+    font-size: 1.25rem; /* Título levemente menor */
+    color: #111827;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    border-bottom: 1px solid #f3f4f6;
+    padding-bottom: 16px;
+}
+
+/* =========================================================
+   GRID DO FORMULÁRIO (Gaps menores)
+   ========================================================= */
+.revisao-distribuicao-pagina .form-geral__campos--grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  /* Espaçamento reduzido entre colunas/linhas */
+  gap: 16px !important; 
+  align-items: start !important;
+}
+
+/* Elementos Full Width */
+.revisao-distribuicao-pagina .form-geral__campo--span-2,
+.revisao-distribuicao-pagina .revisao-distribuicao__description,
+.revisao-distribuicao-pagina .grupo-selects-grid-2 {
+  grid-column: 1 / -1 !important;
+  width: 100%;
+}
+
+/* Descrição mais discreta */
+.revisao-distribuicao__description {
+    margin-bottom: 16px;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+/* =========================================================
+   INPUTS E SELECTS (Altura Compacta: 40px)
+   ========================================================= */
+.revisao-distribuicao-pagina label {
+  display: block;
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.85rem; /* Fonte do label um pouco menor */
+  margin-bottom: 4px; /* Menos espaço entre label e input */
+}
+
+/* Estilo Base Compacto */
+.revisao-distribuicao-pagina input,
+.revisao-distribuicao-pagina select,
+.revisao-distribuicao-pagina .react-datepicker__input-container input {
+  width: 100% !important;
+  height: 40px !important; /* COMPACTO: Altura ideal para sistemas */
+  padding: 0 12px !important;
+  
+  background-color: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  
+  font-size: 0.9rem !important; /* Texto interno ajustado */
+  color: #1f2937 !important;
+  font-family: inherit !important;
+  
+  box-sizing: border-box !important;
+  transition: all 0.2s ease;
+  appearance: none !important;
+}
+
+/* Foco */
+.revisao-distribuicao-pagina input:focus,
+.revisao-distribuicao-pagina select:focus {
+  border-color: #15803d !important;
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.1) !important;
+  outline: none !important;
+}
+
+/* Seta do Select */
+.revisao-distribuicao-pagina select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+  padding-right: 30px !important;
+  cursor: pointer;
+}
+
+/* =========================================================
+   CAMPOS DESABILITADOS (DARK STYLE)
+   ========================================================= */
+.revisao-distribuicao-pagina select:disabled,
+.revisao-distribuicao-pagina input:disabled {
+  display: block !important;
+  width: 100% !important; 
+  height: 40px !important; /* Mantém compacto */
+  
+  background-color: #1f2937 !important; /* Cinza Escuro */
+  color: #ffffff !important; /* Branco */
+  border: 1px solid #374151 !important;
+  font-weight: 500 !important;
+  opacity: 1 !important;
+  
+  /* Seta Branca */
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+}
+
+/* =========================================================
+   GRUPO DE ESTADOS E CIDADES
+   ========================================================= */
+.grupo-selects-grid-2 {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 16px !important; /* Gap consistente com o resto */
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+}
+
+/* =========================================================
+   CALENDÁRIO (Datepicker Clean)
+   ========================================================= */
+.react-datepicker__header button.react-datepicker__navigation {
+    width: 28px !important;
+    height: 28px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    top: 8px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+.react-datepicker__navigation-icon::before {
+    border-color: #374151 !important;
+    border-width: 2px 2px 0 0 !important;
+    top: 8px !important;
+}
+
+.react-datepicker__header {
+    background-color: #f8fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding-top: 8px !important;
+}
+
+.react-datepicker {
+    border: 1px solid #e2e8f0 !important;
+    font-family: inherit !important;
+    font-size: 0.85rem !important; /* Calendário levemente menor */
+}
+
+.react-datepicker__day--selected {
+    background-color: #15803d !important;
+    color: white !important;
+    border-radius: 50%;
+}
+
+/* =========================================================
+   BOTÕES DE AÇÃO (Compactos)
+   ========================================================= */
+.revisao-actions-container {
+  display: flex;
+  justify-content: flex-end !important;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.revisao-distribuicao-pagina button:not(.react-datepicker__navigation) {
+  height: 38px !important; /* Botão compacto */
+  padding: 0 20px !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+  font-family: inherit !important;
+  cursor: pointer;
+  color: white !important;
+  border: none !important;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.revisao-distribuicao-pagina button:not(.react-datepicker__navigation):hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Cores dos Botões */
+.revisao-distribuicao-pagina button.btn-cancelar,
+.revisao-distribuicao-pagina button[type="button"]:not(.react-datepicker__navigation) {
+  background-color: #2e2e2e !important;
+}
+
+.revisao-distribuicao-pagina button.btn-confirmar,
+.revisao-distribuicao-pagina button[type="submit"] {
+  background-color: #15803d !important;
+}
+
+/* =========================================================
+   RESPONSIVIDADE (MOBILE OTIMIZADO)
+   ========================================================= */
+@media (max-width: 768px) {
+  .revisao-distribuicao-pagina .content-revisao {
+      padding: 20px; /* Padding menor no celular */
+      margin: 10px; /* Margem da borda da tela */
+  }
+  
+  /* Grid vira coluna única */
+  .revisao-distribuicao-pagina .form-geral__campos--grid,
+  .grupo-selects-grid-2 {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important; /* Gap menor no mobile */
+  }
+  
+  .revisao-actions-container {
+    flex-direction: column-reverse;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  /* Botões ocupam largura total no mobile para facilitar toque */
+  .revisao-distribuicao-pagina button:not(.react-datepicker__navigation) {
+    width: 100% !important;
+    height: 44px !important; /* Levemente maior no touch */
+  }
+}

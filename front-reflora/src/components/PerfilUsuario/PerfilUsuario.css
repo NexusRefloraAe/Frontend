@@ -1,101 +1,163 @@
-/* src/components/PerfilUsuario/PerfilUsuario.css */
-.perfil-usuario {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 auto; /* Remove padding externo */
-  overflow: hidden;
+/* 1. Container Principal */
+.perfil-compact-container {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto;
 }
 
-.perfil-usuario__avatar-section {
-  display: flex;
-  justify-content: center;
-  margin: 0;
-  padding: 0;
+/* 2. Layout Horizontal (Desktop) */
+.perfil-form-wrapper {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 10px 0;
 }
 
-/* --- ESTILOS ANTIGOS REMOVIDOS ---
-  .perfil-usuario__avatar,
-  .perfil-usuario__avatar img,
-  .perfil-usuario__avatar-overlay 
-  ...NÃO SÃO MAIS USADOS
-*/
-
-/* --- NOVOS ESTILOS ADICIONADOS --- */
-
-/* Wrapper para centralizar o container */
-.image-upload-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
+/* 3. Seção da Foto Clicável */
+.perfil-side-photo {
+    flex-shrink: 0;
+    margin-top: 5px;
 }
 
-/* O container do upload de imagem, estilizado
-  exatamente como o avatar antigo.
-*/
-.image-upload-container {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%; /* <-- AQUI FICA REDONDO */
-  background-color: var(--cor-fundo-cinza, #f5f5f5);
-  border: 2px solid var(--cor-verde-primario, #2e7d32);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden; /* Mantém a imagem dentro do círculo */
-  cursor: default; /* Cursor padrão (JS muda para 'pointer' se editando) */
-  transition: border-color 0.2s;
+.avatar-mini-wrapper {
+    position: relative;
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    border: 2px solid #15803d;
+    background: #fff;
+    padding: 2px;
+    overflow: hidden;
+    transition: all 0.3s ease;
 }
 
-/* Hover (só terá efeito se o cursor for 'pointer') */
-.image-upload-container:hover {
-  border-color: #257024; /* Verde mais escuro no hover */
+.avatar-mini-wrapper.editable { cursor: pointer; }
+.avatar-mini-wrapper.editable:hover { border-color: #166534; opacity: 0.9; }
+
+.avatar-mini-wrapper img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
-/* A imagem de pré-visualização (foto do usuário) */
-.image-preview {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Garante que a foto cubra o círculo */
+.photo-edit-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(21, 128, 61, 0.9);
+    color: white;
+    font-size: 10px;
+    text-align: center;
+    padding: 4px 0;
+    font-weight: bold;
 }
 
-/* O ícone de placeholder (avatar padrão) */
-.image-placeholder-icon {
-  width: 90%; /* Mesmo estilo do img antigo */
-  height: 90%; /* Mesmo estilo do img antigo */
-  object-fit: contain;
+/* 4. Grid de Campos Compactos */
+.perfil-fields-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px 16px;
 }
 
-/* --- ESTILOS DO FORM GERAL (permanecem) --- */
+.field-full-row { grid-column: span 2; }
 
-/* Remove qualquer estilo que crie container duplicado */
-.perfil-usuario .form-geral {
-  border: none;
-  box-shadow: none;
-  border-radius: 0;
+/* 5. Inputs e Labels */
+.perfil-fields-grid label {
+    font-size: 0.82rem !important;
+    margin-bottom: 2px !important;
+    display: block;
+    color: #333;
 }
 
-/* Garante que o FormGeral ocupe toda a largura */
-.perfil-usuario .form-geral--wide {
-  max-width: 100%;
+.perfil-fields-grid input, 
+.perfil-fields-grid select {
+    height: 32px !important;
+    padding: 4px 10px !important;
+    font-size: 0.85rem !important;
+    border-radius: 4px !important;
+    border: 1px solid #ccc !important;
+    background-color: #ffffff !important; 
+    color: #333333 !important;
+    width: 100% !important;
 }
 
-/* Responsividade (AJUSTADA) */
+/* 6. BOTÕES: Alinhamento e Cores */
+.perfil-compact-container .form-geral__actions,
+.perfil-compact-container form > div:last-child {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-top: 20px !important;
+    padding-top: 15px !important;
+    border-top: 1px solid #f0f0f0 !important;
+    width: 100% !important;
+}
+
+.perfil-compact-container button {
+    width: auto !important;
+    min-width: 130px !important;
+    height: 36px !important;
+    font-size: 0.88rem !important;
+    border-radius: 5px !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: none !important;
+    cursor: pointer;
+}
+
+/* --- CORES ESPECÍFICAS --- */
+
+/* Botão Salvar (Verde) */
+.perfil-compact-container button.button--variant-primary { 
+    background-color: #15803d !important; 
+    color: #fff !important; 
+}
+
+/* CORREÇÃO DEFINITIVA: Botão Cancelar em cinza escuro (Igual ao Cadastro Canteiro) */
+.perfil-compact-container button.button--variant-secondary { 
+    background-color: #333333 !important; /* Cinza escuro idêntico às imagens de referência */
+    color: #ffffff !important; 
+}
+
+/* Botão Excluir (Vermelho) */
+.perfil-compact-container button.button--variant-danger { 
+    background-color: #d32f2f !important; 
+    color: #fff !important; 
+}
+
+/* 7. Responsividade Mobile CORRIGIDA */
 @media (max-width: 768px) {
-  .perfil-usuario__avatar-section {
-    padding: var(--espacamento-lg, 10px) var(--espacamento-lg, 10px) 0;
-    margin-bottom: var(--espacamento-lg, 10px);
-  }
-  
-  /* Ajusta o tamanho do novo container no mobile */
-  .image-upload-container {
-    width: 50px;
-    height: 50px;
-  }
-}
+    .perfil-form-wrapper {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 20px;
+    }
+    
+    .perfil-fields-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+    }
 
-/* Fallback para variáveis */
-:root {
-  --cor-fundo-cinza: #f5f5f5;
-  --cor-verde-primario: #2e7d32;
+    /* Força os botões a ocuparem 100% da largura e ficarem um sobre o outro no mobile */
+    .perfil-compact-container .form-geral__actions,
+    .perfil-compact-container form > div:last-child {
+        flex-direction: column-reverse !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+
+    .perfil-compact-container button {
+        width: 100% !important;
+        min-width: unset !important;
+        height: 44px !important;
+        margin: 0 !important;
+    }
 }

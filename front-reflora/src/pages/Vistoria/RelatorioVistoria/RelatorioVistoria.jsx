@@ -1,95 +1,132 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
 import PainelCard from "../../../components/PainelCard/PainelCard"; // 1. Importado
 import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio";
 import './RelatorioVistoria.css'; // 2. CSS será atualizado
+import { vistoriaService } from "../../../services/vistoriaService";
 
 const RelatorioVistoria = () => {
-  const DADOS_RELATORIO_VISTORIA_MOCK = [
-    { DataColeta: '01/01/2025', Especie: 'Eucalipto', Quantidade: 750, Data: '01/01/2025', LocalBeneficiario: 'AFINK' },
-    { DataColeta: '01/05/2025', Especie: 'Eucalipto', Quantidade: 750, Data: '01/05/2025', LocalBeneficiario: 'AFINK' },
-    { DataColeta: '31/03/2025', Especie: 'Eucalipto', Quantidade: 2250, Data: '31/03/2025', LocalBeneficiario: 'AFINK' },
-    { DataColeta: '01/01/2025', Especie: 'Pinus', Quantidade: 500, Data: '01/01/2025', LocalBeneficiario: 'CIFOR' },
-    { DataColeta: '02/01/2025', Especie: 'Pinus', Quantidade: 500, Data: '02/01/2025', LocalBeneficiario: 'CIFOR' },
-    { DataColeta: '05/01/2025', Especie: 'Mogno', Quantidade: 300, Data: '05/01/2025', LocalBeneficiario: 'FUNDAÇÃO VERDE' },
-    { DataColeta: '10/01/2025', Especie: 'Mogno', Quantidade: 300, Data: '10/01/2025', LocalBeneficiario: 'FUNDAÇÃO VERDE' },
-    { DataColeta: '15/01/2025', Especie: 'Ipê-amarelo', Quantidade: 200, Data: '15/01/2025', LocalBeneficiario: 'AFINK' },
-  ];
-
   const [relatorios, setRelatorios] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [totalVistoriasGeral, setTotalVistoriasGeral] = useState(0);
+  const [ordem, setOrdem] = useState('dataVistoria'); // Campo inicial de ordenação
+  const [direcao, setDirecao] = useState('desc'); // Direção inicial
+  
+  // Estados de Paginação
+  const [paginaAtual, setPaginaAtual] = useState(0);
+  const [totalPaginas, setTotalPaginas] = useState(0);
+  const [itensPorPagina, setItensPorPagina] = useState(5);
+
   const [filtros, setFiltros] = useState({
-    loteMuda: '',
     dataInicio: '',
     dataFim: '',
     beneficiario: ''
   });
 
-  // 3. Dados para os cards de resumo (Mockados)
-  const painelItems = [
-    { 
-      id: 1, 
-      titulo: 'Total Vistorias', 
-      valor: '10', // Valor mockado
-      className: 'card-total' // Classe CSS
-    },
-    { 
-      id: 2, 
-      titulo: 'Vistorias Finalizadas', 
-      valor: '3', // Valor mockado
-      className: 'card-finalizadas' // Classe CSS
-    },
-    { 
-      id: 3, 
-      titulo: 'Vistorias Cadastradas', 
-      valor: '7', // Valor mockado
-      className: 'card-cadastradas' // Classe CSS
-    },
-  ];
+  // --- FUNÇÃO PARA CARREGAR DADOS ---
+  const carregarDadosRelatorio = useCallback(async (pagina = 0, ordemArg = ordem, direcaoArg = direcao) => {
+    setLoading(true);
+    try {
+      // O Back-end espera a página começando em 0
+      const data = await vistoriaService.getRelatorio(filtros, pagina, itensPorPagina, ordemArg, direcaoArg);
+      
+      // Mapeamento baseado na sua resposta do Postman
+      setRelatorios(data.itens.content || []);
+      setTotalVistoriasGeral(data.totalVistorias);
+      
+      if (data.itens.page) {
+        setTotalPaginas(data.itens.page?.totalPages);
+        setPaginaAtual(data.itens.page?.number || 0); // Volta para base 1 para o Front
+      }
+    } catch (error) {
+      console.error("Erro ao carregar relatório:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [filtros, itensPorPagina, ordem, direcao]);
 
+  // useEffect monitora a paginaAtual. 
+  // Sempre que ela mudar (via paginação ou reset do botão pesquisar), carrega os dados.
   useEffect(() => {
-    setRelatorios(DADOS_RELATORIO_VISTORIA_MOCK);
+    carregarDadosRelatorio(0);
   }, []);
+
+  const handleOrdenar = (novoCampo) => {
+    let novaDirecao = 'asc';
+    
+    // Se clicar na mesma coluna que já está ordenada, inverte a direção
+    if (novoCampo === ordem) {
+        novaDirecao = direcao === 'asc' ? 'desc' : 'asc';
+    }
+
+    setOrdem(novoCampo);
+    setDirecao(novaDirecao);
+    setPaginaAtual(0); // Volta para a primeira página ao reordenar
+    
+    // Chama a busca imediatamente com os novos valores
+    carregarDadosRelatorio(0, novoCampo, novaDirecao);
+  };
+
+  // --- LÓGICA DE EXPORTAÇÃO ---
+  const realizarDownload = (response, defaultName) => {
+      const disposition = response.headers['content-disposition'];
+      let fileName = defaultName;
+      if (disposition) {
+          const filenameRegex = /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
+          const matches = filenameRegex.exec(disposition);
+          if (matches && matches[1]) { 
+              fileName = decodeURIComponent(matches[1].replace(/['"]/g, '')); 
+          }
+      }
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+  };
+
+  const handleExportarPDF = async () => {
+      try {
+          const response = await vistoriaService.exportarRelatorioPdf(filtros);
+          realizarDownload(response, 'relatorio_vistorias.pdf');
+      } catch (error) {
+          alert("Erro ao exportar PDF.");
+      }
+  };
+
+  const handleExportarCsv = async () => {
+    try{
+      const response = await vistoriaService.exportarRelatorioCsv(filtros);
+      realizarDownload(response, 'relatorio_vistorias.csv')
+    } catch (error) {
+      alert("Erro ao exportar CSV.")
+    }
+  }
 
   const handleFiltroChange = (name, value) => {
     setFiltros(prev => ({ ...prev, [name]: value }));
   };
 
+// --- BOTÃO PESQUISAR ---
   const handleGerarRelatorio = () => {
-    const { loteMuda, dataInicio, dataFim, beneficiario } = filtros;
-
-    const dadosFiltrados = DADOS_RELATORIO_VISTORIA_MOCK.filter(item => {
-      const matchesLote = !loteMuda || item.Lote === loteMuda;
-      const matchesBeneficiario = !beneficiario ||
-        item.LocalBeneficiario.toLowerCase().includes(beneficiario.toLowerCase());
-
-      let matchesData = true;
-      if (dataInicio || dataFim) {
-        const [day, month, year] = item.DataColeta.split('/');
-        const itemDate = new Date(`${year}-${month}-${day}`);
-        const startDate = dataInicio ? new Date(dataInicio) : null;
-        const endDate = dataFim ? new Date(dataFim) : null;
-        if (startDate && (isNaN(itemDate) || itemDate < startDate)) matchesData = false;
-        if (endDate && (isNaN(itemDate) || itemDate > endDate)) matchesData = false;
-      }
-      return matchesLote && matchesBeneficiario && matchesData;
-    });
-
-    setRelatorios(dadosFiltrados);
-    // 4. Remove o reset de página, já que a tabela não tem mais busca/paginação externa
+    carregarDadosRelatorio(0);
   };
 
   // 5. Remove 'handleBuscaChange' e estados de paginação/busca
 
   const colunas = [
-    { key: "DataColeta", label: "Data Coleta" },
-    { key: "Especie", label: "Espécie" },
-    { key: "Quantidade", label: "Quantidade" },
-    { key: "Data", label: "Data" },
-    { key: "LocalBeneficiario", label: "Local / Beneficiário" }
+    { key: "local", label: "Local / Canteiro", sortable: true, sortKey: "plantioCanteiro.canteiro.nome" },
+    { key: "especie", label: "Espécie", sortable: true, sortKey: "plantioCanteiro.plantioOrigem.sementes.nomePopular" },
+    { key: "quantidade", label: "Quantidade", sortable: true, sortKey: "estimativaMudasProntas" },
+    { key: "data", label: "Data", sortable: true, sortKey: "dataVistoria" },
+    { key: "nomeResponsavel", label: "Nome do Responsável", sortable: true }
   ];
 
   return (
-    <div className="relatorio-vistoria-container">
+    <div className="relatorio-vistoria-container auth-scroll-fix">
       <div className="relatorio-vistoria-content">
         
         {/* Seção de Filtros */}
@@ -101,20 +138,24 @@ const RelatorioVistoria = () => {
             onPesquisar={handleGerarRelatorio}
             buttonText="Pesquisar"
             buttonVariant="success" 
+            campoTexto={{
+              label: "Local / Canteiro",
+              name: "local",
+              placeholder: "Digite o local ou canteiro",
+
+            }}
           />
         </section>
 
         {/* 6. Seção de Cards de Resumo (Adicionada) */}
         <section className="cards-section">
           <div className="cards-container">
-            {painelItems.map(item => (
-              <PainelCard 
-                key={item.id}
-                titulo={item.titulo} 
-                valor={item.valor}
-                className={item.className}
-              />
-            ))}
+            {/* O valor agora vem do totalVistoriasGeral do Back-end */}
+            <PainelCard 
+              titulo="Total Vistorias" 
+              valor={totalVistoriasGeral}
+              className="card-total"
+            />
           </div>
         </section>
 
@@ -124,22 +165,24 @@ const RelatorioVistoria = () => {
             titulo="Relatório de Vistorias"
             dados={relatorios}
             colunas={colunas}
+            isLoading={loading}
+
+            onPesquisar={handleGerarRelatorio}
+
             chaveBusca="Especie"
             habilitarBusca={false} // 7. Alterado para false
             mostrarAcoes={false}
             // 8. Remove props de paginação e busca externa
+            paginaAtual={paginaAtual + 1}
+            totalPaginas={totalPaginas}
+            onPaginaChange={(p) => carregarDadosRelatorio(p - 1)}
+
+            onOrdenar={handleOrdenar}
+            ordemAtual={ordem}
+            direcaoAtual={direcao}
             
-            // 9. Adiciona footer com botão de exportar
-            footerContent={
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
-                <button 
-                  className="btn-exportar"
-                  onClick={() => alert('Relatório exportado com sucesso!')}
-                >
-                  Exportar ↑
-                </button>
-              </div>
-            }
+            onExportPDF={handleExportarPDF}
+            onExportCSV={handleExportarCsv}
           />
         </section>
       </div>

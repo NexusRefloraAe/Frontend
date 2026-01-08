@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import './Paginacao.css';
 
 const gerarPaginasVisiveis = (paginaAtual, totalPaginas, siblings = 1) => {
   // ✅ Caso simples: poucas páginas (não precisa de "...")
@@ -74,21 +75,35 @@ function Paginacao({ paginaAtual, totalPaginas, onPaginaChange }) {
     }
 
     return (
-        <nav>
-            <ul>
-                <li><a href="#" onClick={handlePrevious} className={paginaAtual === 1 ? 'disabled' : ''}>Anterior</a></li>
+        <nav className="paginacao-container"> {/* 2. Adicione a classe */}
+            <ul className="paginacao-list">    {/* 3. Adicione a classe */}
+                <li className="paginacao-item">
+                    <a href="#" onClick={handlePrevious} className={paginaAtual === 1 ? 'disabled' : ''}>
+                        Anterior
+                    </a>
+                </li>
+
                 {paginas.map((pagina, index) => (
-                    <li key={index}>
+                    <li key={index} className="paginacao-item">
                         {pagina === '...' ? (
-                            <span>...</span>
+                            <span className="paginacao-ellipsis">...</span>
                         ) : (
-                            <a href="#" onClick={(e) => handlePaginaClick(e, pagina)} className={paginaAtual === pagina ? 'active' : ''}>
+                            <a 
+                                href="#" 
+                                onClick={(e) => handlePaginaClick(e, pagina)} 
+                                className={paginaAtual === pagina ? 'active' : ''}
+                            >
                                 {pagina}
                             </a>
                         )}
                     </li>
                 ))}
-                <li><a href="#" onClick={handleNext} className={paginaAtual === totalPaginas ? 'disabled' : ''}>Próxima</a></li>
+
+                <li className="paginacao-item">
+                    <a href="#" onClick={handleNext} className={paginaAtual === totalPaginas ? 'disabled' : ''}>
+                        Próxima
+                    </a>
+                </li>
             </ul>
         </nav>
     );

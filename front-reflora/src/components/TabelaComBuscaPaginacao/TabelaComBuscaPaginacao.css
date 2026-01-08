@@ -1,356 +1,372 @@
+/* ==========================================================
+   AÇÕES (BOTÕES DE ÍCONE)
+   ========================================================== */
+
 .acoes {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  align-items: center;
-  padding: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
 }
 
 .btn-icone {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 35px;
-  height: 35px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.2s ease;
-  position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    position: relative;
 }
 
 .btn-icone .icone {
-  font-size: 1rem;
+    font-size: 1rem;
 }
 
-/* Tooltip nativo do browser */
+/* Tooltip simples */
 .btn-icone:hover::after {
-  content: attr(title);
-  position: absolute;
-  bottom: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #333;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  white-space: nowrap;
-  z-index: 1000;
+    content: attr(title);
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    z-index: 1000;
 }
 
 /* Botão Editar */
 .btn-editar {
-  background-color: #fef3c7;
-  color: #d97706;
+    background-color: #fef3c7;
+    color: #d97706;
 }
 
 .btn-editar:hover {
-  background-color: #f59e0b;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+    background-color: #f59e0b;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
 }
 
-/* Botão Visualizar/Confirmar */
+/* Botão Confirmar / Visualizar */
 .btn-confirmar {
-  background-color: #dbeafe;
-  color: #1d4ed8;
+    background-color: #dbeafe;
+    color: #1d4ed8;
 }
 
 .btn-confirmar:hover {
-  background-color: #3b82f6;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+    background-color: #3b82f6;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
 }
 
 /* Botão Excluir */
 .btn-excluir {
-  background-color: #fee2e2;
-  color: #dc2626;
+    background-color: #fee2e2;
+    color: #dc2626;
 }
 
 .btn-excluir:hover {
-  background-color: #ef4444;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+    background-color: #ef4444;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
 }
 
-/* Efeito de clique */
 .btn-icone:active {
-  transform: translateY(0);
+    transform: translateY(0);
 }
 
-/* Responsividade para ações */
-@media (max-width: 768px) {
-  .acoes {
-    gap: 0.3rem;
-    flex-direction: column;
-    padding: 0.3rem;
-  }
-  
-  .btn-icone {
-    width: 30px;
-    height: 30px;
-    font-size: 0.9rem;
-  }
-}
+/* Responsividade ações */
 
+
+/* ==========================================================
+   CONTAINER HISTÓRICO
+   ========================================================== */
 
 .historico-container-banco {
     display: flex;
     flex-direction: column;
     background-color: var(--cor-fundo-branco);
-    border-radius: var(--raio-borda-lg, 10px);
-    box-shadow: 0 2px 8px var(--cor-sombra-forte, rgba(0, 0, 0, 0.1));
-    border: 1px solid var(--cor-borda-verde, #e0e0e0);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    overflow-y: auto;
+
 }
 
-.historico-bottons-banco ul li.historico-botton-active {
-    background-color: #257024;
-}
-
+/* Header */
 .historico-title-content-banco {
     padding: 10px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+
 }
 
 .historico-title-content-banco img {
     width: 40px;
-    height: auto;
     cursor: pointer;
 }
 
-.historico-content-banco {
-    background-color: var(--cor-fundo-branco);
-    height: 100%;
-}
-
+/* Botões topo */
 .historico-bottons-banco ul {
     display: flex;
     gap: 10px;
     padding: 20px 10px;
     justify-content: center;
+    list-style: none;
 }
 
 .historico-bottons-banco button {
     background-color: #25702475;
     border: none;
-    padding: 5px 20px;
+    padding: 6px 20px;
     border-radius: 10px;
     color: white;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 16px;
     cursor: pointer;
-    align-items: center;
     display: flex;
-    gap: 5px;
-    justify-content: space-between;
+    gap: 6px;
 }
 
-.historico-bottons-banco button:hover {
+.historico-bottons-banco button:hover,
+.historico-bottons-banco ul li.historico-botton-active {
     background-color: #257024;
 }
 
-.historico-bottons-banco ul li {
-    list-style: none;
-}
-
+/* Conteúdo */
 .historico-content-semente {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    border-radius: 20px;
-    padding: 30px;
-    margin: 0px 30px 30px 30px;
     background-color: white;
-    height: 100%;
+    padding: 24px;
+    margin: 0 20px 20px;
+    border-radius: 16px;
 }
 
+/* Header interno */
 .historico-header-content-semente {
     display: flex;
     justify-content: space-between;
-    padding: var(--espacamento-xl, 24px);
+    padding: 15px 20px
 }
 
 .historico-header-content-semente h1 {
-    text-decoration: underline;
-    font-size: 25px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2e7d32;
+    align-self: center;
+    margin: 0;
+    flex: 1;
+    /* Ocupa espaço disponível */
+    min-width: 200px;
+    padding-left: 15px;
+    /* Mais espaçamento lateral */
+
 }
 
-.historico-infos-sementes-card table {
+/* --- ÁREA DE SCROLL --- */
+.tabela-scroll-area-historico {
     width: 100%;
-    border-collapse: collapse;
+    overflow-x: auto;
+    /* Rolagem horizontal se necessário */
+    -webkit-overflow-scrolling: touch;
 }
 
-.historico-infos-sementes-card table tr th {
-    background-color: #25702480;
-    padding: 12px 8px;
-    color: white;
-    font-size: 15px;
-    text-align: center;
-}
-
-.historico-infos-sementes-card table tr td {
-    text-align: center;
-    padding: 12px 8px;
-    background-color: #74748015;
-    color: #00000080;
-}
-
-.historico-infos-sementes-card table tr td input {
-    width: 100%;
-    padding: 3px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    text-align: center;
-}
-
-.historico-infos-sementes-card table tr td select {
-    width: 100%;
-    padding: 3px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    text-align: center;
-    background-color: white;
-}
-
-.historico-infos-sementes-card table tr th img {
-    width: 15px;
-    cursor: pointer;
-}
-
+/* Busca */
 .historico-input-search {
-    background-color: white;
-    border: black 1px solid;
-    border-radius: 10px;
-    padding: 10px;
     display: flex;
     align-items: center;
-    gap: 20px;
-}
+    gap: 12px;
+    border: 1px solid #000;
+    border-radius: 10px;
 
-.historico-input-search img {
-    width: 20px;
-    cursor: pointer;
-    height: auto;
 }
 
 .historico-input-search input {
     border: none;
     outline: none;
     font-size: 16px;
+
 }
+
+/* ==========================================================
+   TABELA (DESKTOP)
+   ========================================================== */
+
+.historico-infos-sementes-card table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.historico-infos-sementes-card th {
+    background-color: #8FBC8F;
+    color: #ffffff;
+    text-align: left;
+    padding: 14px 16px;
+    /* Mais espaçamento interno (padding) */
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    font-weight: 700;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.historico-infos-sementes-card td {
+    padding: 14px 16px;
+    /* Mais espaçamento para parecer mais largo */
+    color: #333;
+    vertical-align: middle;
+    border-right: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 0.9rem;
+}
+
+.historico-infos-sementes-card tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+.historico-infos-sementes-card tr:hover {
+    background-color: #f0f7f0;
+}
+
+
+.historico-infos-sementes-card td input,
+.historico-infos-sementes-card td select {
+    width: 100%;
+    padding: 4px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+
+/* ==========================================================
+   FOOTER / PAGINAÇÃO
+   ========================================================== */
 
 .historico-footer-content {
     display: flex;
     justify-content: space-between;
-    padding: 15px;
+    padding: 16px;
     align-items: center;
 }
 
 .historico-footer-content button {
     background-color: #257024;
     border: none;
-    padding: 10px;
+    padding: 10px 14px;
     border-radius: 10px;
     color: white;
     font-weight: bold;
-    font-size: 18px;
     cursor: pointer;
 }
 
-.historico-footer-content button img {
-    width: 20px;
-    height: auto;
-}
-
-.historico-footer-content ul {
+.historico-footer-content nav ul {
     display: flex;
-    gap: 20px;
+    gap: 10px;
     list-style: none;
-    color: #66605F;
 }
 
-.historico-footer-content ul li a {
-    text-decoration: none;
-    color: #66605F;
-}
-
-/* Estiliza os links da paginação */
 .historico-footer-content nav ul li a {
-    text-decoration: none;
-    color: #66605F;
-    font-weight: bold;
     padding: 8px 12px;
-    border-radius: 5px;
-    display: block;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 6px;
+    color: #66605F;
 }
 
-/* Estilo do link 'disabled' */
-.historico-footer-content nav ul li a.disabled {
-    color: #CCCCCC;
-    pointer-events: none;
-    cursor: default;
-}
-
-/* Estilo do link 'active' */
 .historico-footer-content nav ul li a.active {
     background-color: #257024;
     color: white;
 }
 
-/* Estilo do '...' (span não clicável) */
-.historico-footer-content nav ul li span {
-    padding: 8px 12px;
-    color: #66605F;
-    font-weight: bold;
+.historico-footer-content nav ul li a.disabled {
+    color: #ccc;
+    pointer-events: none;
 }
 
-.historico-active span {
-    background-color: #66605F;
-    padding: 8px;
-    border-radius: 5px;
-    color: white;
-}
+/* ==========================================================
+   TABELA RESPONSIVA – MOBILE (CARDS)
+   ========================================================== */
 
-.loading-text,
-.no-results {
-  text-align: center;
-  padding: 20px;
-  color: #555;
-  font-style: italic;
-}
-
-.no-results {
-  color: #b91c1c;
-  font-weight: 500;
-}
-
-/* Garantir que a tabela seja responsiva */
 @media (max-width: 768px) {
     .historico-header-content-semente {
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1rem;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 15px 20px !important;
+        border-bottom: 1px solid #e0e0e0 !important;
+        display: flex !important;
+        gap: 15px !important;
+
     }
-    
-    .historico-content-semente {
-        padding: 1rem;
-        margin: 0px 10px 10px 10px;
+
+    .historico-header-content-semente h1 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #2e7d32;
+        margin: 0;
+        flex: 1;
+        min-width: 200px;
     }
-    
+
     .historico-footer-content {
+        display: flex;
         flex-direction: column;
-        gap: 1rem;
-        padding: 1rem;
+        /* Empilha elementos */
+        justify-content: center;
+        align-items: stretch;
+        /* Elementos ocupam toda largura disponível */
+        gap: 12px;
+        /* Espaço entre botão e paginação */
+        padding: 12px;
     }
-    
-    .historico-infos-sementes-card {
-        overflow-x: auto;
+
+    .historico-footer-content button {
+        width: 100%;
+        /* Botão ocupa toda a largura */
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 8px;
     }
+
+    .historico-footer-content nav ul {
+        display: flex;
+        justify-content: center;
+        /* Centraliza paginação */
+        flex-wrap: wrap;
+        /* Quebra linhas se necessário */
+        gap: 8px;
+        padding: 0;
+    }
+
+    .historico-footer-content nav ul li a {
+        padding: 6px 10px;
+        font-size: 14px;
+        border-radius: 6px;
+    }
+
+    .historico-footer-content nav ul li a.active {
+        background-color: #257024;
+        color: white;
+    }
+
+    .historico-footer-content nav ul li a.disabled {
+        color: #ccc;
+        pointer-events: none;
+    }
+
 }

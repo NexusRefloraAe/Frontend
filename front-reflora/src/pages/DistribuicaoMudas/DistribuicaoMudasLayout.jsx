@@ -1,32 +1,44 @@
-import React, { useState } from 'react';
+import React from 'react';
+// IMPORTANTE: Adicione useLocation
+import { useLocation } from 'react-router-dom'; 
+
 import BotaoSubmenus from '../../components/BotaoSubmenus/BotaoSubmenus';
 import RevisaoDistribuicao from './RevisaoDistribuicao/RevisaoDistribuicao';
+import RelatorioDistribuicao from './RelatorioDistribuicao/RelatorioDistribuicao';
+import TabsLayout from '../../components/TabsLayout/TabsLayout';
+import { FaClipboardCheck, FaFileAlt } from 'react-icons/fa';
+import './DistribuicaoMudasLayout.css'; 
 
 const DistribuicaoMudasLayout = () => {
-    const [activeTab, setActiveTab] = useState('revisao-distribuicao');
+    // 1. Pegamos o estado da navegação
+    const location = useLocation();
+
+    // 2. Verificamos se veio uma ordem para abrir uma aba específica
+    // Se não vier nada, abre 'revisao-distribuicao' por padrão
+    const abaInicial = location.state?.tabDestino || 'revisao-distribuicao';
 
     const distribuicaoMenus = [
-        { id: 'revisao-distribuicao', label: 'Revisão de Distribuição' },
-       
-        // { id: 'historico-distribuicao', label: 'Histórico de Distribuição' },
+        { 
+            id: 'revisao-distribuicao',
+            label: "Revisão de Distribuição",
+            icon: <FaClipboardCheck />,
+            page: <RevisaoDistribuicao />,
+        },
+        { 
+            id: 'relatorio-distribuicao',
+            label: "Relatório de Distribuição",
+            icon: <FaFileAlt />,
+            page: <RelatorioDistribuicao />,
+        }
     ];
 
     return (
         <div className="distribuicaomudas-container">
-            <div className="distribuicaomudas-nav">
-                <BotaoSubmenus
-                    menus={distribuicaoMenus}
-                    activeMenuId={activeTab}
-                    onMenuClick={setActiveTab}
-                />
-            </div>
-
-            <div className="distribuicaomudas-content">
-                {activeTab === 'revisao-distribuicao' && <RevisaoDistribuicao />}
-            </div>
-            
-
-
+            {/* 3. Passamos o defaultTabId dinâmico */}
+            <TabsLayout 
+                tabs={distribuicaoMenus} 
+                defaultTabId={abaInicial} 
+            />
         </div>
     );
 };

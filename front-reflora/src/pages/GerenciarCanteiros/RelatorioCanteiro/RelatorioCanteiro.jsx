@@ -1,147 +1,228 @@
-import React, { useState, useEffect } from "react";
-import TabelaComBuscaPaginacao from "../../../components/TabelaComBuscaPaginacao/TabelaComBuscaPaginacao";
+import React, { useState, useEffect, useCallback } from "react";
+import TabelaResponsiva from "../../../components/TabelaResponsiva/TabelaResponsiva";
 import PainelCard from "../../../components/PainelCard/PainelCard";
 import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio";
-import './RelatorioCanteiro.css';
+import Paginacao from "../../../components/Paginacao/Paginacao";
+import ExportButton from "../../../components/ExportButton/ExportButton";
+
+// Services e Utils
+import { registroCanteiroService } from "../../../services/registroCanteiroService";
+import { getBackendErrorMessage } from "../../../utils/errorHandler";
+
+import "./RelatorioCanteiro.css";
 
 const RelatorioCanteiro = () => {
-  const DADOS_RELATORIO_CANTEIRO_MOCK = [
-    { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '01/01/2025', QuantidadeEntrada: 350, DataSaida: '20/01/2025', QuantidadeSaida: 100, TempoNoCanteiro: '20 dias' },
-    { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '01/01/2025', QuantidadeEntrada: 100, DataSaida: '05/01/2025', QuantidadeSaida: 50, TempoNoCanteiro: '5 dias' },
-    { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '05/01/2025', QuantidadeEntrada: 200, DataSaida: '10/01/2025', QuantidadeSaida: 100, TempoNoCanteiro: '10 dias' },
-    { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '01/01/2025', QuantidadeEntrada: 50, DataSaida: '01/02/2025', QuantidadeSaida: 50, TempoNoCanteiro: '31 dias' },
-    { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '05/01/2025', QuantidadeEntrada: 900, DataSaida: '15/01/2025', QuantidadeSaida: 400, TempoNoCanteiro: '15 dias' },
-    { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '05/01/2025', QuantidadeEntrada: 400, DataSaida: '25/01/2025', QuantidadeSaida: 200, TempoNoCanteiro: '25 dias' },
-    { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '01/01/2025', QuantidadeEntrada: 100, DataSaida: '01/02/2025', QuantidadeSaida: 100, TempoNoCanteiro: '31 dias' },
-    { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '01/01/2025', QuantidadeEntrada: 100, DataSaida: '01/02/2025', QuantidadeSaida: 100, TempoNoCanteiro: '31 dias' },
-    { Lote: 'A001', NomePopular: 'Ipê-amarelo', DataEntrada: '01/01/2025', QuantidadeEntrada: 100, DataSaida: '01/02/2025', QuantidadeSaida: 100, TempoNoCanteiro: '31 dias' },
-  ];
+  // --- ESTADOS ---
+  const [loading, setLoading] = useState(false);
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
+  const [ordem, setOrdem] = useState("data");
+  const [direcao, setDirecao] = useState("desc");
 
-  const [relatorios, setRelatorios] = useState([]);
   const [filtros, setFiltros] = useState({
-    nomePopular: '',
-    dataInicio: '',
-    dataFim: ''
+    nomePopular: "",
+    dataInicio: "",
+    dataFim: "",
   });
 
-  // Dados para os cards de resumo (conforme imagem)
-  const painelItems = [
-    { 
-      id: 1, 
-      titulo: 'Total Entrada (und)', 
-      valor: '100.000',
-      className: 'card-entrada'
-    },
-    { 
-      id: 2, 
-      titulo: 'Total Saída (und)', 
-      valor: '5.000',
-      className: 'card-saida'
-    },
-    { 
-      id: 3, 
-      titulo: 'Total Atual (und)', 
-      valor: '10.000',
-      className: 'card-atual'
-    },
-  ];
+  const [dadosPainel, setDadosPainel] = useState({
+    totalEntrada: 0,
+    totalSaida: 0,
+    totalAtual: 0,
+    tabela: { content: [] },
+  });
 
+  const ITENS_POR_PAGINA = 9;
+
+  // --- CARREGAMENTO DE DADOS ---
+  const fetchDados = useCallback(
+    async (pagina = 1) => {
+      setLoading(true);
+      try {
+        // O Spring espera a página começando em 0, por isso (pagina - 1)
+        const data = await registroCanteiroService.getPainel(
+          filtros,
+          pagina - 1,
+          ITENS_POR_PAGINA,
+          ordem,
+          direcao
+        );
+
+        setDadosPainel(data);
+        // Sincroniza a paginação vinda do objeto Page do Spring
+        setTotalPaginas(data.tabela?.page?.totalPages || 1);
+        setPaginaAtual(pagina);
+      } catch (error) {
+        console.error(error);
+        alert(getBackendErrorMessage(error));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [filtros, ordem, direcao]
+  );
+
+  // Carrega ao montar ou quando ordem/direção mudar
   useEffect(() => {
-    setRelatorios(DADOS_RELATORIO_CANTEIRO_MOCK);
-  }, []);
+    fetchDados(1);
+  }, [fetchDados]);
 
+  // --- HANDLERS ---
   const handleFiltroChange = (name, value) => {
-    setFiltros(prev => ({ ...prev, [name]: value }));
+    setFiltros((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleGerarRelatorio = () => {
-    const { nomePopular, dataInicio, dataFim } = filtros;
-
-    const dadosFiltrados = DADOS_RELATORIO_CANTEIRO_MOCK.filter(item => {
-      // ✅ Filtro por nome popular
-      const matchesNome = !nomePopular || 
-        (item.NomePopular && item.NomePopular.toLowerCase().includes(nomePopular.toLowerCase()));
-
-      // ✅ Filtro por data (considerando DataEntrada)
-      let matchesData = true;
-      if ((dataInicio || dataFim) && item.DataEntrada) {
-        const parts = item.DataEntrada.split('/');
-        if (parts.length === 3) {
-          const [day, month, year] = parts;
-          const itemDate = new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
-          
-          if (isNaN(itemDate.getTime())) return false;
-
-          const startDate = dataInicio ? new Date(dataInicio) : null;
-          const endDate = dataFim ? new Date(dataFim) : null;
-
-          if (startDate && itemDate < startDate) matchesData = false;
-          if (endDate && itemDate > endDate) matchesData = false;
-        }
-      }
-
-      return matchesNome && matchesData;
-    });
-
-    setRelatorios(dadosFiltrados);
+    fetchDados(1); // Sempre volta para a página 1 ao filtrar
   };
 
-  // Colunas conforme a imagem (Movimentações dos Canteiros)
+  const handleOrdenar = (campo) => {
+    const novaDirecao = campo === ordem && direcao === "asc" ? "desc" : "asc";
+    setOrdem(campo);
+    setDirecao(novaDirecao);
+  };
+
+  // Helper para processar downloads de arquivos (Blob)
+  const realizarDownload = (response, defaultName) => {
+    const disposition = response.headers["content-disposition"];
+    let fileName = defaultName;
+
+    if (disposition) {
+      const filenameRegex =
+        /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
+      const matches = filenameRegex.exec(disposition);
+      if (matches && matches[1]) {
+        fileName = decodeURIComponent(matches[1].replace(/['"]/g, ""));
+      }
+    }
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleExportarPDF = async () => {
+    try {
+      const res = await registroCanteiroService.exportarPdf(filtros);
+      realizarDownload(res, "relatorio_canteiro.pdf");
+    } catch (e) {
+      alert("Erro ao baixar PDF");
+    }
+  };
+
+  const handleExportarCSV = async () => {
+    try {
+      const res = await registroCanteiroService.exportarCsv(filtros);
+      realizarDownload(res, "relatorio_canteiro.csv");
+    } catch (e) {
+      alert("Erro ao baixar CSV");
+    }
+  };
+
+  // --- CONFIGURAÇÃO DE UI ---
+  const painelItems = [
+    {
+      id: 1,
+      titulo: "Total Entrada",
+      valor: dadosPainel.totalEntrada.toLocaleString(),
+      className: "card-entrada",
+    },
+    {
+      id: 2,
+      titulo: "Total Saída",
+      valor: dadosPainel.totalSaida.toLocaleString(),
+      className: "card-saida",
+    },
+    {
+      id: 3,
+      titulo: "Saldo Atual",
+      valor: dadosPainel.totalAtual.toLocaleString(),
+      className: "card-atual",
+    },
+  ];
+
   const colunas = [
-    { key: "Lote", label: "Lote" },
-    { key: "NomePopular", label: "Nome Popular" },
-    { key: "DataEntrada", label: "Data Entrada" },
-    { key: "QuantidadeEntrada", label: "Qtd Entrada" },
-    { key: "DataSaida", label: "Data Saída" },
-    { key: "QuantidadeSaida", label: "Qtd Saída" },
-    { key: "TempoNoCanteiro", label: "Tempo no Canteiro" },
+    { key: "nomeCanteiro", label: "Canteiro", sortable: true },
+    { key: "lote", label: "Lote Origem", sortable: true },
+    { key: "nomePopular", label: "Espécie", sortable: true },
+    {
+      key: "data",
+      label: "Data",
+      sortable: true,
+      render: (item) => {
+        if (!item.data) return "-";
+        // Formata data ISO (yyyy-mm-dd) para PT-BR
+        if (typeof item.data === "string" && item.data.includes("-")) {
+          const [ano, mes, dia] = item.data.split("-");
+          return `${dia}/${mes}/${ano}`;
+        }
+        return item.data;
+      },
+    },
+    { key: "tipoMovimento", label: "Movimento", sortable: true },
+    { key: "quantidade", label: "Qtd (und)", sortable: true },
   ];
 
   return (
-    <div className="relatorio-canteiro-container">
+    <div className="relatorio-canteiro-container auth-scroll-fix">
       <div className="relatorio-canteiro-content">
-        
-        {/* Seção de Filtros */}
         <section className="filtros-section">
           <h1>Gerar Relatório</h1>
           <FiltrosRelatorio
             filtros={filtros}
             onFiltroChange={handleFiltroChange}
             onPesquisar={handleGerarRelatorio}
+            campoTexto={{
+              label: "Nome da Espécie",
+              name: "nomePopular",
+              placeholder: "Digite o nome da espécie",
+            }}
           />
         </section>
 
-        {/* Seção de Cards de Resumo */}
         <section className="cards-section">
           <div className="cards-container">
-            {painelItems.map(item => (
-              <PainelCard 
-                key={item.id}
-                titulo={item.titulo} 
-                valor={item.valor}
-                className={item.className}
-              />
+            {painelItems.map((item) => (
+              <PainelCard key={item.id} {...item} />
             ))}
           </div>
         </section>
 
-        {/* Seção da Tabela */}
         <section className="tabela-section">
-          <TabelaComBuscaPaginacao
+          <TabelaResponsiva
             titulo="Movimentações dos Canteiros"
-            dados={relatorios}
+            dados={dadosPainel.tabela.content}
             colunas={colunas}
-            chaveBusca="NomePopular"
-            habilitarBusca={false}
-            mostrarAcoes={false}
+            loading={loading}
+            onOrdenar={handleOrdenar}
+            ordemAtual={ordem}
+            direcaoAtual={direcao}
             footerContent={
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
-                <button 
-                  className="btn-exportar"
-                  onClick={() => alert('Relatório exportado com sucesso!')}
-                >
-                  Exportar ↑
-                </button>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "100%",
+                  flexWrap: "wrap",
+                  gap: "15px",
+                }}
+              >
+                <Paginacao
+                  paginaAtual={paginaAtual}
+                  totalPaginas={totalPaginas}
+                  onPaginaChange={fetchDados}
+                />
+                <ExportButton
+                  onExportPDF={handleExportarPDF}
+                  onExportCSV={handleExportarCSV}
+                  fileName="relatorio_canteiro"
+                />
               </div>
             }
           />

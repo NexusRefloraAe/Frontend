@@ -1,0 +1,247 @@
+/* BotaoSubmenus.css - VERSÃO FINAL: MOBILE VERDE SÓLIDO */
+
+/* Container principal */
+.configuracoes-wrapper {
+  width: 100%;
+  margin-bottom: 0 !important;
+  padding-bottom: 5px !important;
+  position: relative;
+  z-index: 10;
+}
+
+/* ==========================================================
+   ESTILO BASE (Tablet e Laptop - 577px até 1280px)
+   ========================================================== */
+
+.configuracoes-tabs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap !important; 
+  justify-content: center;
+  align-items: center;
+  gap: 8px !important;
+  padding: 0 !important;
+  width: 100%;
+}
+
+.configuracoes-tabs .button {
+  flex: 0 1 auto !important;
+  width: auto !important;
+  padding: 6px 12px !important;
+  font-size: 0.8rem !important;
+  min-height: 32px !important;
+  border-radius: var(--raio-borda-sm) !important;
+  line-height: 1.2;
+  margin: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px !important;
+  white-space: nowrap !important;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.configuracoes-tabs .button svg {
+  margin-right: 0 !important;
+  width: 14px !important;
+  height: 14px !important;
+  flex-shrink: 0;
+}
+
+/* Cores Desktop */
+.button--tab-inactive {
+  background-color: var(--cor-fundo-branco) !important;
+  color: var(--cor-texto-secundario) !important;
+  border: 1px solid var(--cor-borda-cinza) !important;
+  font-weight: 500;
+}
+
+.button--tab-inactive:hover {
+  background-color: var(--cor-fundo-cinza) !important;
+  color: var(--cor-texto-primario) !important;
+  border-color: var(--cor-texto-claro) !important;
+  transform: translateY(-1px);
+}
+
+.button--tab-active {
+  background-color: var(--cor-verde-primario) !important;
+  color: var(--cor-texto-branco) !important;
+  border: 1px solid var(--cor-verde-primario) !important;
+  box-shadow: 0 2px 5px var(--cor-sombra-verde) !important;
+  font-weight: 600;
+}
+
+.button--tab-active:hover {
+  background-color: var(--cor-verde-escuro) !important;
+  border-color: var(--cor-verde-escuro) !important;
+}
+
+/* Desktop Grande (> 1281px) */
+@media (min-width: 1281px) {
+  .configuracoes-tabs {
+    flex-wrap: nowrap !important;
+    justify-content: center !important; 
+    gap: 12px !important; 
+  }
+  .configuracoes-tabs .button {
+    padding: 8px 20px !important;
+    font-size: 0.9rem !important;
+    min-height: 36px !important;
+    flex-shrink: 0 !important; 
+  }
+}
+
+/* ==========================================================
+   VERSÃO MOBILE - CORREÇÃO: BOX SEMPRE VERDE
+   ========================================================== */
+
+@media (max-width: 576px) {
+  .configuracoes-wrapper {
+    margin-bottom: 8px !important;
+    padding-bottom: 0 !important;
+    z-index: 50;
+  }
+
+  .mobile-dropdown-trigger {
+    width: 100%;
+    position: relative;
+    cursor: pointer;
+  }
+
+  /* O SEGREDO ESTÁ AQUI:
+     A classe .dropdown-selected agora tem fundo VERDE e texto BRANCO por padrão.
+     Isso simula o botão "Ativo" do desktop.
+  */
+  .dropdown-selected {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    
+    /* CORES FORÇADAS PARA VERDE (Estado Selecionado) */
+    background-color: var(--cor-verde-primario) !important;
+    border: 1px solid var(--cor-verde-primario) !important;
+    color: #ffffff !important; 
+    
+    border-radius: var(--raio-borda-md);
+    font-weight: 600; /* Negrito para destacar */
+    transition: all 0.3s ease;
+    min-height: 44px;
+    box-shadow: 0 2px 5px var(--cor-sombra-verde);
+  }
+
+  /* Quando clica para abrir, mantém o estilo ou escurece um pouco */
+  .mobile-dropdown-trigger.active .dropdown-selected {
+    background-color: var(--cor-verde-escuro) !important;
+    border-color: var(--cor-verde-escuro) !important;
+  }
+
+  /* Ícone sempre branco (pois o fundo é verde) */
+  .dropdown-icon {
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    color: #ffffff !important; 
+  }
+
+  .dropdown-label {
+    flex-grow: 1;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Seta sempre branca (pois o fundo é verde) */
+  .dropdown-arrow {
+    margin-left: 8px;
+    font-size: 0.7rem;
+    transition: transform 0.3s ease;
+    color: #ffffff !important;
+  }
+
+  .mobile-dropdown-trigger.active .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+
+  /* ======================================================
+     A LISTA SUSPENSA (DROPDOWN MENU)
+     Esta parte deve continuar BRANCA para dar leitura nos itens
+     ====================================================== */
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    
+    /* Fundo Branco para a lista */
+    background-color: var(--cor-fundo-branco) !important;
+    border: 1px solid var(--cor-borda-cinza) !important;
+    
+    border-radius: var(--raio-borda-md);
+    box-shadow: 0 6px 12px var(--cor-sombra-forte);
+    z-index: 100;
+    margin-top: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Itens da lista (Opções) */
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    border-bottom: 1px solid var(--cor-fundo-cinza);
+    
+    /* Texto cinza para opções NÃO selecionadas */
+    font-size: 0.9rem;
+    color: var(--cor-texto-secundario) !important;
+    font-weight: 500;
+  }
+
+  .dropdown-item:last-child {
+    border-bottom: none;
+  }
+
+  .dropdown-item:hover {
+    background-color: var(--cor-fundo-cinza);
+  }
+
+  /* Item da lista que está selecionado (Highlight na lista) */
+  .dropdown-item-active {
+    background-color: var(--cor-verde-background) !important;
+    color: var(--cor-verde-primario) !important;
+    font-weight: 700;
+  }
+
+  /* Ícones dentro da lista (Cinza se normal, Verde se ativo) */
+  .dropdown-item-icon {
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    width: 20px;
+    color: var(--cor-texto-claro);
+  }
+
+  .dropdown-item-active .dropdown-item-icon {
+    color: var(--cor-verde-primario);
+  }
+}
+
+/* ==========================================================
+   ESTADOS GERAIS
+   ========================================================== */
+.button:focus,
+.dropdown-selected:focus {
+  outline: 2px solid var(--cor-verde-overlay);
+  outline-offset: 1px;
+}

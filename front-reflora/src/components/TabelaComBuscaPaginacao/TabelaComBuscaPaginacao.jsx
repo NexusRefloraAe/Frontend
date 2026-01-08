@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import LinhaTabelaAcoes from "./LinhaTabelaAcoes";
 import Paginacao from "../Paginacao/Paginacao";
 import { FaArrowsAltV } from "react-icons/fa";
@@ -12,118 +12,199 @@ function TabelaComBuscaPaginacao({
   colunas,
   chaveBusca,
   onEditar,
-  onConfirmar,
+  onVisualizar,
   onExcluir,
-  itensPorPagina = 7,
+  itensPorPagina = 5,
   habilitarBusca = true,
-  modoBusca = "auto", 
+  modoBusca = "auto",
+  onExportPDF,
+  onExportCSV,
+  onPesquisar, // Função do Back-end
+  footerContent,
+  placeholderBusca,
+  isLoading: isLoadingProp = false,
+  onOrdenar,
+  ordemAtual,
+  direcaoAtual,
+  // Props de Paginação Externa (Importantes para o modo Servidor)
+  paginaAtual: paginaExterna,
+  totalPaginas: totalPaginasExterno,
+  onPaginaChange: onPaginaChangeExterno,
 }) {
   const [termoBusca, setTermoBusca] = useState("");
-  const [paginaAtual, setPaginaAtual] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [paginaAtualLocal, setPaginaAtualLocal] = useState(1);
+  const [localLoading, setLocalLoading] = useState(false);
 
-  // 🔹 Controla o tempo de busca (simulando atraso real)
-  useEffect(() => {
-    if (modoBusca === "auto") {
-      setIsLoading(true);
-      const timeout = setTimeout(() => setIsLoading(false), 400);
-      return () => clearTimeout(timeout);
+  const isLoading = isLoadingProp || localLoading;
+  const isServerSide = !!onPesquisar;
+  const isFirstRender = useRef(true);
+
+  // --- LÓGICA DE DEFINIÇÃO DE ESTADO (HÍBRIDA) ---
+  // Se for Servidor, usamos o que vem do Pai. Se for Local, usamos o estado interno.
+  const pagAtualExibicao = isServerSide ? paginaExterna : paginaAtualLocal;
+
+  const totalPaginasExibicao = isServerSide
+    ? totalPaginasExterno
+    : Math.ceil(dados.length / itensPorPagina);
+
+  // Função para gerenciar a troca de página corretamente
+  const handleTrocaPagina = (novaPagina) => {
+    if (isServerSide && onPaginaChangeExterno) {
+      // Avisa o componente pai (ex: GerarRelatorio) para buscar no banco
+      onPaginaChangeExterno(novaPagina);
+    } else {
+      // Muda localmente para tabelas simples
+      setPaginaAtualLocal(novaPagina);
     }
+  };
+
+  // --- EFEITO DE BUSCA (Debounce) ---
+  useEffect(() => {
+    if (!isServerSide || !habilitarBusca) return;
+
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    setLocalLoading(true);
+    const timeoutId = setTimeout(() => {
+      onPesquisar(termoBusca);
+      // Ao pesquisar, resetamos para a primeira página no pai ou localmente
+      if (onPaginaChangeExterno) onPaginaChangeExterno(1);
+      setPaginaAtualLocal(1);
+      setLocalLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
   }, [termoBusca]);
 
-  // 🔹 Filtragem de dados
-  const dadosFiltrados = habilitarBusca
-    ? dados.filter((item) =>
-        item[chaveBusca]?.toLowerCase().includes(termoBusca.toLowerCase())
+  // --- LÓGICA DE EXIBIÇÃO ---
+  let dadosParaExibir = [];
+
+  if (isServerSide) {
+    // No modo servidor, 'dados' já contém apenas a fatia da página atual vinda da API
+    dadosParaExibir = dados;
+  } else {
+    // No modo local, filtramos e fatiamos o array completo aqui no front
+    const dadosFiltrados = habilitarBusca && chaveBusca
+      ? dados.filter((item) =>
+        item[chaveBusca]?.toString().toLowerCase().includes(termoBusca.toLowerCase())
       )
-    : dados;
+      : dados;
 
-  const indiceUltimo = paginaAtual * itensPorPagina;
-  const indicePrimeiro = indiceUltimo - itensPorPagina;
-  const dadosPagina = dadosFiltrados.slice(indicePrimeiro, indiceUltimo);
-  const totalPaginas = Math.ceil(dadosFiltrados.length / itensPorPagina);
-  const temAcoes = onEditar || onConfirmar || onExcluir;
+    const indiceUltimo = pagAtualExibicao * itensPorPagina;
+    const indicePrimeiro = indiceUltimo - itensPorPagina;
+    dadosParaExibir = dadosFiltrados.slice(indicePrimeiro, indiceUltimo);
+  }
 
-  const handleSearchManual = (valor) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setTermoBusca(valor);
-      setPaginaAtual(1);
-      setIsLoading(false);
-    }, 500);
-  };
+  const temAcoes = !!(onEditar || onVisualizar || onExcluir);
 
   return (
     <section className="historico-container-banco">
       <div className="historico-header-content-semente">
         <h1>{titulo}</h1>
-
         {habilitarBusca && (
           <SearchBar
             value={termoBusca}
-            onChange={setTermoBusca}
-            onSearch={handleSearchManual}
-            placeholder={`Pesquisar por ${colunas[1]?.label ?? "termo"}...`}
+            onChange={(v) => setTermoBusca(v)}
+            onSearch={(v) => setTermoBusca(v)}
+            placeholder={placeholderBusca || `Pesquisar por ${colunas[1]?.label ?? "termo"}...`}
             modo={modoBusca}
             isLoading={isLoading}
+            showButton={true}
           />
         )}
       </div>
-
-      <div className="historico-infos-sementes-card">
-        <table>
-          <thead>
-            <tr>
-              {colunas.map((coluna) => (
-                <th key={coluna.key}>
-                  {coluna.label} <FaArrowsAltV className="icone-ordenar" />
-                </th>
-              ))}
-              {temAcoes && <th>Ações</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
+      <div className="tabela-scroll-area-historico">
+        <div className="historico-infos-sementes-card">
+          <table>
+            <thead>
               <tr>
-                <td colSpan={colunas.length + (temAcoes ? 1 : 0)}>
-                  <div className="loading-text">Carregando...</div>
-                </td>
+                {colunas.map((coluna) => (
+                  <th
+                    key={coluna.key}
+                    onClick={() => {
+                      if (coluna.sortable && onOrdenar) {
+                        onOrdenar(coluna.sortKey || coluna.key);
+                      }
+                    }}
+                    style={{
+                      cursor: coluna.sortable ? "pointer" : "default",
+                      userSelect: "none",
+                      textAlign: "center",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "5px" }}>
+                      {coluna.label}
+                      {coluna.sortable && (
+                        <FaArrowsAltV
+                          className="icone-ordenar"
+                          style={{
+                            opacity: ordemAtual === (coluna.sortKey || coluna.key) ? 1 : 0.3,
+                            transform:
+                              ordemAtual === (coluna.sortKey || coluna.key) && direcaoAtual === "asc"
+                                ? "rotate(180deg)"
+                                : "rotate(0deg)",
+                            transition: "transform 0.2s",
+                          }}
+                        />
+                      )}
+                    </div>
+                  </th>
+                ))}
+                {temAcoes && <th>Ações</th>}
               </tr>
-            ) : dadosPagina.length > 0 ? (
-              dadosPagina.map((item, index) => (
-                <LinhaTabelaAcoes
-                  key={index}
-                  item={item}
-                  colunas={colunas}
-                  onEditar={onEditar}
-                  onConfirmar={onConfirmar}
-                  onExcluir={onExcluir}
-                />
-              ))
-            ) : (
-              <tr>
-                <td colSpan={colunas.length + (temAcoes ? 1 : 0)}>
-                  <div className="no-results">
-                    Nenhum resultado encontrado 😕
-                  </div>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={colunas.length + (temAcoes ? 1 : 0)}>
+                    <div className="loading-text">Buscando...</div>
+                  </td>
+                </tr>
+              ) : dadosParaExibir && dadosParaExibir.length > 0 ? (
+                dadosParaExibir.map((item, index) => (
+                  <LinhaTabelaAcoes
+                    key={item.id || index}
+                    item={item}
+                    colunas={colunas}
+                    onEditar={onEditar}
+                    onVisualizar={onVisualizar}
+                    onExcluir={onExcluir}
+                  />
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={colunas.length + (temAcoes ? 1 : 0)}>
+                    <div className="no-results">Nenhum resultado encontrado 😕</div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className="historico-footer-content">
-        <Paginacao
-          paginaAtual={paginaAtual}
-          totalPaginas={totalPaginas}
-          onPaginaChange={setPaginaAtual}
-        />
-        <ExportButton
-          data={dadosFiltrados}
-          columns={colunas}
-          fileName={titulo || "relatorio"}
-        />
+        {footerContent ? (
+          footerContent
+        ) : (
+          <>
+            <Paginacao
+              paginaAtual={pagAtualExibicao}
+              totalPaginas={totalPaginasExibicao}
+              onPaginaChange={handleTrocaPagina}
+            />
+            <ExportButton
+              data={dados}
+              columns={colunas}
+              fileName={titulo || "relatorio"}
+              onExportPDF={onExportPDF}
+              onExportCSV={onExportCSV}
+            />
+          </>
+        )}
       </div>
     </section>
   );

@@ -1,61 +1,32 @@
 /* Historico.css */
 
+/* Removemos o fundo cinza e o preenchimento do container pai para 
+   eliminar qualquer borda externa visível */
 .historico-container {
   width: 100%;
-  padding: 1rem;
-  background-color: #f8fafc;
-  min-height: 100vh;
+  padding: 0; 
+  background-color: transparent; 
 }
 
-/* Cabeçalho com título e filtros */
-.header-filtros {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  margin-bottom: 1.5rem;
-}
-
-.header-filtros h1 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 1rem;
-}
-
-/* Estilo do FiltrosRelatorio — garantir que os inputs fiquem lado a lado */
-.filtros-relatorio {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto;
-  gap: 1rem;
-  align-items: end;
-}
-
-@media (max-width: 1024px) {
-  .filtros-relatorio {
-    grid-template-columns: 1fr 1fr;
-  }
-  .botoes-container {
-    grid-column: 1 / -1;
-    justify-content: flex-end;
-  }
-}
-
-@media (max-width: 768px) {
-  .filtros-relatorio {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Tabela wrapper — com borda verde */
+/* ESTA É A CORREÇÃO PRINCIPAL:
+   Escondemos as propriedades visuais da wrapper para que ela pare de 
+   criar uma "moldura" branca em volta da tabela interna.
+*/
 .tabela-wrapper {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  border: none !important;
 }
 
-/* Título da tabela — negrito e sublinhado */
+/* Esconde o cabeçalho de filtros se ele não tiver conteúdo (comentado no JS) */
+.header-filtros:empty {
+  display: none;
+}
+
+/* Mantém o estilo do título conforme as imagens 8 e 9 */
 .tabela-com-busca .tabela-header h2 {
   font-size: 1.5rem;
   font-weight: 600;
@@ -66,25 +37,17 @@
   text-decoration-thickness: 2px;
 }
 
-/* Botão Exportar — alinhado à direita */
+/* Alinhamento do botão Exportar visto na imagem 8 */
 .exportar-container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   margin-top: 1rem;
 }
 
-/* Responsividade */
+/* Responsividade Mobile para eliminar sombras sobrando no celular */
 @media (max-width: 768px) {
-  .historico-container {
-    padding: 0.5rem;
-  }
-
-  .header-filtros,
+  .historico-container,
   .tabela-wrapper {
-    padding: 1rem;
-  }
-
-  .exportar-container {
-    margin-top: 0.5rem;
+    padding: 0 !important;
   }
 }

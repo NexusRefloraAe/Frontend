@@ -3,26 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import FormGeral from '../../../components/FormGeral/FormGeral';
 import Input from '../../../components/Input/Input';
 import ResumoMudas from '../../../components/ResumoMudas/ResumoMudas';
-
-const optionsResponsaveis = [
-    { value: 'MARCELO', label: 'Marcelo' },
-    { value: 'THAIGO FARIAS', label: 'Thaigo Farias' },
-];
-const optionsInstituicoes = [
-    { value: 'SEMAS', label: 'SEMAS' },
-    { value: 'OUTRA', label: 'Outra' },
-];
-
+import './RevisaoDistribuicao.css'; 
 
 const RevisaoDistribuicao = () => {
     const navigate = useNavigate();
 
     const getInitialState = () => ({
-        responsavelDistribuicao: 'MARCELO',
+        responsavelDistribuicao: '', 
         dataEntrega: '',
-        responsavelRecebimento: 'THAIGO FARIAS',
-        instituicao: 'SEMAS',
-        estadoSede: 'PB',          
+        responsavelRecebimento: '',  
+        instituicao: '',             
+        estadoSede: 'PB',           
         cidadeSede: '',           
         estadoDistribuicao: 'PB',  
         cidadeDistribuicao: '',   
@@ -30,83 +21,44 @@ const RevisaoDistribuicao = () => {
 
     const [formData, setFormData] = useState(getInitialState());
 
-    // States da API
+    // States da API IBGE
     const [estados, setEstados] = useState([]);
     const [cidadesSede, setCidadesSede] = useState([]);
     const [cidadesDistribuicao, setCidadesDistribuicao] = useState([]);
-
-    // States de Loading
     const [loadingEstados, setLoadingEstados] = useState(true);
     const [loadingCidadesSede, setLoadingCidadesSede] = useState(false);
     const [loadingCidadesDistribuicao, setLoadingCidadesDistribuicao] = useState(false);
 
-    // Buscar Estados (UFs)
+    // --- Buscas na API do IBGE ---
     useEffect(() => {
         setLoadingEstados(true);
         fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome')
             .then(res => res.json())
-            .then(data => {
-                const estadosFormatados = data.map(estado => ({
-                    value: estado.sigla,
-                    label: estado.nome
-                }));
-                setEstados(estadosFormatados);
-            })
-            .catch(error => {
-                console.error("FALHA AO BUSCAR ESTADOS (API IBGE):", error);
-            })
+            .then(data => setEstados(data.map(e => ({ value: e.sigla, label: e.nome }))))
+            .catch(e => console.error(e))
             .finally(() => setLoadingEstados(false));
     }, []);
 
-    // Buscar Cidades da Sede
     useEffect(() => {
-        if (!formData.estadoSede) {
-            setCidadesSede([]);
-            return;
-        }
-        
+        if (!formData.estadoSede) { setCidadesSede([]); return; }
         setLoadingCidadesSede(true);
         fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${formData.estadoSede}/municipios?orderBy=nome`)
             .then(res => res.json())
-            .then(data => {
-                const cidadesFormatadas = data.map(cidade => ({
-                    value: cidade.nome,
-                    label: cidade.nome
-                }));
-                setCidadesSede(cidadesFormatadas);
-            })
-            .catch(error => {
-                console.error("FALHA AO BUSCAR CIDADES DA SEDE:", error);
-            })
+            .then(data => setCidadesSede(data.map(c => ({ value: c.nome, label: c.nome }))))
+            .catch(e => console.error(e))
             .finally(() => setLoadingCidadesSede(false));
-
     }, [formData.estadoSede]);
 
-    // Buscar Cidades de Distribuição
     useEffect(() => {
-        if (!formData.estadoDistribuicao) {
-            setCidadesDistribuicao([]);
-            return;
-        }
-
+        if (!formData.estadoDistribuicao) { setCidadesDistribuicao([]); return; }
         setLoadingCidadesDistribuicao(true);
         fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${formData.estadoDistribuicao}/municipios?orderBy=nome`)
             .then(res => res.json())
-            .then(data => {
-                const cidadesFormatadas = data.map(cidade => ({
-                    value: cidade.nome,
-                    label: cidade.nome
-                }));
-                setCidadesDistribuicao(cidadesFormatadas);
-            })
-            .catch(error => {
-                console.error("FALHA AO BUSCAR CIDADES DE DISTRIBUIÇÃO:", error);
-            })
+            .then(data => setCidadesDistribuicao(data.map(c => ({ value: c.nome, label: c.nome }))))
+            .catch(e => console.error(e))
             .finally(() => setLoadingCidadesDistribuicao(false));
-
     }, [formData.estadoDistribuicao]);
 
-    // Dados das mudas (exemplo)
     const mudasDoPedido = [
         { nome: 'Ipê-branco', quantidade: 4000 },
         { nome: 'Ipê-Amarelo', quantidade: 3000 },
@@ -114,148 +66,143 @@ const RevisaoDistribuicao = () => {
     ];
     const totalMudas = mudasDoPedido.reduce((acc, muda) => acc + muda.quantidade, 0);
 
-    // Handlers
     const handleChange = (field) => (e) => {
         setFormData(prev => ({ ...prev, [field]: e.target.value }));
     };
 
     const handleEstadoChange = (estadoField, cidadeField) => (e) => {
-        const novoEstado = e.target.value;
         setFormData(prev => ({
             ...prev,
-            [estadoField]: novoEstado,
+            [estadoField]: e.target.value,
             [cidadeField]: ''
         }));
     };
 
-    const handleCancel = (confirmar = true) => {
-        if (confirmar) {
-            if (window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
-                 navigate(-1);
-            }
+    const handleCancel = () => {
+        if (window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
+             navigate(-1);
         }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Botão "Gerar Termo" clicado. Navegando para /termo-compromisso');
-        
         navigate('/termo-compromisso', {
-            state: {
-                dadosRevisao: formData,
-                mudas: mudasDoPedido,
-                totalMudas: totalMudas
-            }
+            state: { dadosRevisao: formData, mudas: mudasDoPedido, totalMudas }
         });
     };
 
-    const actions = [
-        { type: 'button', variant: 'action-secondary', children: 'Cancelar', onClick: () => handleCancel(true) },
-        { type: 'submit', variant: 'primary', children: 'Gerar Termo' },
-    ];
+    // Botões manuais para ter controle total do layout
+    const actions = [];
 
     return (
         <div className="revisao-distribuicao-pagina">
-            <FormGeral
-                title="Revisao da Distribuição de Mudas"
-                actions={actions}
-                onSubmit={handleSubmit} // Chama a função handleSubmit acima
-                useGrid={true}
-            >
-                
-                <p className="form-geral__campo--span-2 revisao-distribuicao__description">
-                    Confira as mudas do pedido e preencha as informações da distribuição.
-                </p>
-                <div className="form-geral__campo--span-2">
-                    <ResumoMudas mudas={mudasDoPedido} total={totalMudas} />
-                </div>
+            
+            <div className="content-revisao">
+                <FormGeral
+                    title="Revisão da Distribuição de Mudas"
+                    actions={actions}
+                    onSubmit={handleSubmit}
+                    useGrid={true}
+                >
+                    <p className="form-geral__campo--span-2 revisao-distribuicao__description">
+                        Confira as mudas do pedido e preencha as informações da distribuição.
+                    </p>
+                    
+                    {/* Resumo ocupa largura total */}
+                    <div className="form-geral__campo--span-2">
+                        <ResumoMudas mudas={mudasDoPedido} total={totalMudas} />
+                    </div>
 
-                <Input
-                    label="Responsável pela Distribuição"
-                    name="responsavelDistribuicao"
-                    type="select"
-                    value={formData.responsavelDistribuicao}
-                    onChange={handleChange('responsavelDistribuicao')}
-                    options={optionsResponsaveis}
-                />
+                    {/* --- PAR 1: Responsável e Data --- */}
+                    <Input
+                        label="Responsável pela Distribuição"
+                        name="responsavelDistribuicao"
+                        type="text" 
+                        value={formData.responsavelDistribuicao}
+                        onChange={handleChange('responsavelDistribuicao')}
+                        placeholder="Digite o nome do responsável"
+                    />
 
-                <Input
-                    label="Data de Entrega"
-                    name="dataEntrega"
-                    type="date"
-                    value={formData.dataEntrega}
-                    onChange={handleChange('dataEntrega')}
-                />
+                    <Input
+                        label="Data de Entrega"
+                        name="dataEntrega"
+                        type="date"
+                        value={formData.dataEntrega}
+                        onChange={handleChange('dataEntrega')}
+                    />
 
-                <Input
-                    label="Responsável pelo recebimento"
-                    name="responsavelRecebimento"
-                    type="select"
-                    value={formData.responsavelRecebimento}
-                    onChange={handleChange('responsavelRecebimento')}
-                    options={optionsResponsaveis}
-                    placeholder="Selecione o responsável"
-                />
+                    {/* --- PAR 2: Recebimento e Instituição --- */}
+                    <Input
+                        label="Responsável pelo recebimento"
+                        name="responsavelRecebimento"
+                        type="text"
+                        value={formData.responsavelRecebimento}
+                        onChange={handleChange('responsavelRecebimento')}
+                        placeholder="Digite quem irá receber"
+                    />
 
-                <Input
-                    label="Instituição"
-                    name="instituicao"
-                    type="select"
-                    value={formData.instituicao}
-                    onChange={handleChange('instituicao')}
-                    options={optionsInstituicoes}
-                    placeholder="Selecione a instituição"
-                />
+                    <Input
+                        label="Instituição"
+                        name="instituicao"
+                        type="text"
+                        value={formData.instituicao}
+                        onChange={handleChange('instituicao')}
+                        placeholder="Nome da instituição"
+                    />
 
-                {/* --- Localização da Sede (API IBGE) --- */}
-                <Input
-                    label="Estado da Sede"
-                    name="estadoSede"
-                    type="select"
-                    value={formData.estadoSede}
-                    onChange={handleEstadoChange('estadoSede', 'cidadeSede')}
-                    options={estados}
-                    loading={loadingEstados}
-                    placeholder="Selecione o estado..."
-                />
+                    {/* --- LOCALIZAÇÃO (Ocupa largura total, dividido internamente) --- */}
+                    <div className="grupo-selects-grid-2">
+                        <Input
+                            label="Estado da Sede"
+                            name="estadoSede"
+                            type="select"
+                            value={formData.estadoSede}
+                            onChange={handleEstadoChange('estadoSede', 'cidadeSede')}
+                            options={estados}
+                            loading={loadingEstados}
+                        />
 
-                <Input
-                    label="Município da Sede"
-                    name="cidadeSede"
-                    type="select"
-                    value={formData.cidadeSede}
-                    onChange={handleChange('cidadeSede')}
-                    options={cidadesSede}
-                    loading={loadingCidadesSede}
-                    disabled={!formData.estadoSede}
-                    placeholder="Selecione a cidade..."
-                />
+                        <Input
+                            label="Município da Sede"
+                            name="cidadeSede"
+                            type="select"
+                            value={formData.cidadeSede}
+                            onChange={handleChange('cidadeSede')}
+                            options={cidadesSede}
+                            loading={loadingCidadesSede}
+                            disabled={!formData.estadoSede}
+                        />
 
-                {/* --- Localização da Distribuição (API IBGE) --- */}
-                <Input
-                    label="Estado de Distribuição"
-                    name="estadoDistribuicao"
-                    type="select"
-                    value={formData.estadoDistribuicao}
-                    onChange={handleEstadoChange('estadoDistribuicao', 'cidadeDistribuicao')}
-                    options={estados}
-                    loading={loadingEstados}
-                    placeholder="Selecione o estado..."
-                />
+                        <Input
+                            label="Estado de Distribuição"
+                            name="estadoDistribuicao"
+                            type="select"
+                            value={formData.estadoDistribuicao}
+                            onChange={handleEstadoChange('estadoDistribuicao', 'cidadeDistribuicao')}
+                            options={estados}
+                            loading={loadingEstados}
+                        />
 
-                <Input
-                    label="Município de Distribuição"
-                    name="cidadeDistribuicao"
-                    type="select"
-                    value={formData.cidadeDistribuicao}
-                    onChange={handleChange('cidadeDistribuicao')}
-                    options={cidadesDistribuicao}
-                    loading={loadingCidadesDistribuicao}
-                    disabled={!formData.estadoDistribuicao}
-                    placeholder="Selecione a cidade..."
-                />
-                
-            </FormGeral>
+                        <Input
+                            label="Município de Distribuição"
+                            name="cidadeDistribuicao"
+                            type="select"
+                            value={formData.cidadeDistribuicao}
+                            onChange={handleChange('cidadeDistribuicao')}
+                            options={cidadesDistribuicao}
+                            loading={loadingCidadesDistribuicao}
+                            disabled={!formData.estadoDistribuicao}
+                        />
+                    </div>
+
+                    {/* Botões manuais para garantir alinhamento */}
+                    <div className="form-geral__campo--span-2 revisao-actions-container">
+                        <button type="button" onClick={handleCancel}>Cancelar</button>
+                        <button type="submit">Gerar Termo</button>
+                    </div>
+
+                </FormGeral>
+            </div>
         </div>
     );
 };

@@ -1,0 +1,95 @@
+/* src/pages/GerenciarCanteiros/Historico/Historico.css */
+
+/* 1. Container da Página - Removido fundo para evitar moldura dupla */
+.historico-page-container {
+    width: 100%;
+    padding: 0; /* Remove padding para a tabela encostar nas bordas se necessário */
+    box-sizing: border-box;
+    background-color: transparent; 
+    min-height: auto; 
+}
+
+/* 2. Cartão que envolvia a Tabela - AGORA INVISÍVEL */
+.historico-content-wrapper {
+    background-color: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+}
+
+/* 3. Estilos de Elementos Internos (Preservados) */
+.checkbox-selecao {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #2e7d32;
+    vertical-align: middle;
+}
+
+.link-detalhes {
+    color: #2e7d32;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    display: inline-block;
+}
+.link-detalhes:hover {
+    color: #1b5e20;
+    text-decoration: underline;
+}
+
+.input-qtd-saida {
+    width: 100%;
+    max-width: 100px;
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.input-qtd-saida:not(:disabled) {
+    background-color: #fff;
+    border-color: #2e7d32;
+}
+
+/* 4. Rodapé da Tabela */
+.table-footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px 0;
+}
+
+.btn-adicionar {
+    background-color: #2e7d32;
+    color: white;
+    padding: 10px 30px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-adicionar:hover {
+    background-color: #1b5e20;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 768px) {
+    .table-footer-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .btn-adicionar {
+        width: 100%;
+    }
+}

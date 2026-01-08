@@ -1,11 +1,18 @@
 import React from "react";
-import { FaPlusCircle, FaHistory, FaChartBar } from "react-icons/fa"; 
+import { FaPlusCircle, FaHistory, FaChartBar, FaThList, FaExchangeAlt } from "react-icons/fa"; // Adicionei FaExchangeAlt para movimentação
 import TabsLayout from "../../components/TabsLayout/TabsLayout";
+
+// Imports existentes
 import Cadastrar from "./Cadastrar/Cadastrar";
-import CadastrarEmprestimo from "./CadastrarEmprestimo/CadastrarEmprestimo";
 import HistoricoMaterial from "./HistoricoMaterial/HistoricoMaterial";
 import HistoricoFerramenta from "./HistoricoFerramenta/HistoricoFerramenta";
 import GerarRelatorioInsumo from "./GerarRelatorioInsumo/GerarRelatorioInsumo";
+import GerenciarInsumos from "./GerenciarInsumos/GerenciarInsumos";
+
+// --- CORREÇÃO AQUI ---
+// Se você renomeou o arquivo, mude o import abaixo. 
+// Certifique-se que o arquivo 'RegistrarSaidaEmprestimo.jsx' existe na pasta 'CadastrarEmprestimo'
+import RegistrarSaidaEmprestimo from "./CadastrarEmprestimo/RegistrarSaidaEmprestimo"; 
 
 const InsumoLayout = () => {
   const tabs = [
@@ -13,31 +20,37 @@ const InsumoLayout = () => {
       id: "cadastrar",
       label: "Cadastrar Insumo",
       icon: <FaPlusCircle />,
-      page: <Cadastrar />, // ✅ CORRIGIDO: elemento JSX
+      page: <Cadastrar />,
     },
     {
-      id: "cadastrar-emprestimo",
-      label: "Cadastrar Emprestimo",
-      icon: <FaPlusCircle />,
-      page: <CadastrarEmprestimo />, // ✅ CORRIGIDO: elemento JSX
+      id: "registrar-saida", // Mudei o ID para ficar coerente
+      label: "Registrar Movimentação", // Label atualizado
+      icon: <FaExchangeAlt />, // Ícone de troca/movimentação
+      page: <RegistrarSaidaEmprestimo />, // Componente novo
+    },
+    {
+      id: "gerenciar-estoque",
+      label: "Gerenciar Estoque",
+      icon: <FaThList />,
+      page: <GerenciarInsumos />,
     },
     {
       id: "historico-material", 
       label: "Histórico Material",
       icon: <FaHistory />,
-      page: <HistoricoMaterial />, // ✅ CORRIGIDO: elemento JSX
+      page: <HistoricoMaterial />,
     },
     {
       id: "historico-ferramenta", 
       label: "Histórico Ferramenta",
       icon: <FaHistory />,
-      page: <HistoricoFerramenta />, // ✅ CORRIGIDO: elemento JSX
+      page: <HistoricoFerramenta />,
     },
     {
       id: "gerar-relatorio-insumo",
       label: "Relatório",
       icon: <FaChartBar />,
-      page: <GerarRelatorioInsumo />, // ✅ CORRIGIDO: elemento JSX
+      page: <GerarRelatorioInsumo />,
     },
   ];
 

@@ -6,13 +6,15 @@ import { CSVLink } from "react-csv";
 import "./ExportButton.css";
 
 const ExportButton = ({ 
-  tipo = "exportar", // "exportar" ou "selecionar"
+  tipo = "exportar", 
   data = [], 
   columns = [], 
   fileName = "relatorio",
   onClick,
   disabled = false,
-  selecionadosCount = 0
+  selecionadosCount = 0,
+  onExportPDF, // <--- NOVA PROP (Função opcional)
+  onExportCSV
 }) => {
     const [menuAberto, setMenuAberto] = useState(false);
     const menuRef = useRef(null);
@@ -22,7 +24,22 @@ const ExportButton = ({
         key: col.key,
     }));
 
-    const exportarPDF = () => {
+    const handleExportarCSV = () => {
+        if (onExportCSV) {
+            onExportCSV();
+            setMenuAberto(false);
+        }
+    };
+
+    const handleExportarPDF = () => {
+        // 1. Se foi passada uma função para baixar do servidor, usa ela
+        if (onExportPDF) {
+            onExportPDF();
+            setMenuAberto(false); // Fecha o menu
+            return;
+        }
+
+        // 2. Caso contrário, usa a lógica antiga (Client-side jsPDF)
         if (!data.length) {
             alert("Não há dados para exportar!");
             return;
@@ -38,8 +55,10 @@ const ExportButton = ({
         });
 
         doc.save(`${fileName}.pdf`);
+        setMenuAberto(false);
     };
 
+    // ... (useEffect e lógica do tipo 'selecionar' mantêm iguais) ...
     // Fecha o menu se clicar fora
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -63,28 +82,37 @@ const ExportButton = ({
         );
     }
 
-    // Tipo exportar (padrão)
     return (
         <div className="export-dropdown" ref={menuRef}>
             <button
                 className="btn-exportar"
                 onClick={() => setMenuAberto(!menuAberto)}
             >
-                Exportar <FaShareAlt />
+                Exportar ↑
             </button>
 
             {menuAberto && (
                 <div className="export-menu">
-                    <button onClick={exportarPDF}>Exportar PDF</button>
+                    {/* Alterado para chamar o handleExportarPDF */}
+                    <button onClick={handleExportarPDF}>Exportar PDF</button>
 
-                    <CSVLink
-                        data={data}
-                        headers={headers}
-                        filename={`${fileName}.csv`}
-                        className="csv-link"
-                    >
-                        Exportar CSV
-                    </CSVLink>
+                    {/* LÓGICA CONDICIONAL PARA O CSV */}
+                    {onExportCSV ? (
+                        // Opção 1: CSV via Backend (Botão comum)
+                        <button onClick={handleExportarCSV}>
+                            Exportar CSV
+                        </button>
+                    ) : (
+                        // Opção 2: CSV via React (Client-side) - Mantém compatibilidade
+                        <CSVLink
+                            data={data}
+                            headers={headers}
+                            filename={`${fileName}.csv`}
+                            className="csv-link"
+                        >
+                            Exportar CSV
+                        </CSVLink>
+                    )}
                 </div>
             )}
         </div>

@@ -7,227 +7,115 @@
 }
 
 .gerar-relatorio-insumo-content {
-  max-width: 1000px;
+  max-width: 1400px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 /* ===== SEÇÃO DE FILTROS ===== */
 .filtros-section {
   background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.25rem;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
 }
 
 .filtros-section h1 {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.25rem;
+  font-weight: 700;
   color: #1f2937;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
-/* Seletor de Tipo de Insumo */
+/* Seletor de Tipo de Insumo (O seletor acima do filtro principal) */
 .tipo-insumo-selector {
-  margin-bottom: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.tipo-insumo-selector label {
-  font-weight: 500;
-  color: #374151;
-  font-size: 0.875rem;
-}
-
-.tipo-insumo-buttons {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.tipo-insumo-buttons button {
-  padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background: white;
-  color: #374151;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.tipo-insumo-buttons button.active {
-  background: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
-}
-
-.tipo-insumo-buttons button:hover:not(.active) {
-  background: #f3f4f6;
-  border-color: #9ca3af;
-}
-
-/* Filtros Comuns */
-.filtros-comuns {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-end;
-  flex-wrap: wrap;
-}
-
-.filtro-item {
+  margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.tipo-insumo-selector label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Botões de Seleção (Estilo Toggle Compacto) */
+.tipo-insumo-buttons {
+  display: flex;
+  background: #f3f4f6;
+  padding: 3px;
+  border-radius: 8px;
+  width: fit-content;
+  min-width: 280px;
+  border: 1px solid #e5e7eb;
+  height: 38px;
+}
+
+.tipo-insumo-buttons button {
   flex: 1;
-  min-width: 150px;
-}
-
-.filtro-item label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-}
-
-.filtro-item input {
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  transition: border-color 0.2s ease;
-}
-
-.filtro-item input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.btn-pesquisar {
-  padding: 0.5rem 1.5rem;
-  background: #10b981;
-  color: white;
+  padding: 0 1rem;
   border: none;
   border-radius: 6px;
+  background: transparent;
+  color: #6b7280;
   cursor: pointer;
-  font-weight: 500;
-  font-size: 0.875rem;
-  transition: background 0.2s ease;
-  height: fit-content;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
-.btn-pesquisar:hover {
-  background: #059669;
+/* ESTADO SELECIONADO - VERDE */
+.tipo-insumo-buttons button.active {
+  background-color: #127de0 !important; /* Seu verde original */
+  color: white !important;
+  box-shadow: 0 2px 4px rgba(46, 125, 50, 0.2);
+}
+
+.tipo-insumo-buttons button:hover:not(.active) {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* ===== SEÇÃO DA TABELA ===== */
 .tabela-section {
   background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
 }
 
 /* ===== RESPONSIVIDADE ===== */
-@media (max-width: 1024px) {
-  .gerar-relatorio-insumo-content {
-    max-width: 900px;
-  }
-}
 
 @media (max-width: 768px) {
   .gerar-relatorio-insumo-container {
     padding: 0.5rem;
   }
-  
-  .gerar-relatorio-insumo-content {
-    gap: 1rem;
+
+  .filtros-section {
+    padding: 1rem;
   }
-  
-  .filtros-section,
-  .tabela-section {
-    padding: 1.25rem;
-  }
-  
-  .filtros-comuns {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
-  }
-  
-  .filtro-item {
-    min-width: auto;
-  }
-  
-  .tipo-insumo-selector {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-  
+
   .tipo-insumo-buttons {
-    width: 100%;
+    width: 100%; /* Ocupa tudo no mobile */
+    min-width: unset;
   }
-  
+
   .tipo-insumo-buttons button {
-    flex: 1;
-    text-align: center;
-  }
-  
-  .btn-pesquisar {
-    width: 100%;
-    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    height: 34px;
   }
 }
 
 @media (max-width: 480px) {
-  .gerar-relatorio-insumo-container {
-    padding: 0.25rem;
-  }
-  
-  .filtros-section,
-  .tabela-section {
-    padding: 1rem;
-    border-radius: 8px;
-  }
-  
   .filtros-section h1 {
-    font-size: 1.25rem;
-    margin-bottom: 1.25rem;
+    font-size: 1.1rem;
+    text-align: center;
   }
-  
-  .tipo-insumo-buttons {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .tipo-insumo-buttons button {
-    padding: 0.75rem;
-  }
-}
-
-/* ===== ESTILOS PARA ESTADOS DE CARREGAMENTO ===== */
-.loading {
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-/* ===== ESTILOS PARA MENSAGENS DE ERRO/VAZIO ===== */
-.empty-state {
-  text-align: center;
-  padding: 2rem;
-  color: #6b7280;
-}
-
-.empty-state h3 {
-  font-size: 1.125rem;
-  margin-bottom: 0.5rem;
-}
-
-.empty-state p {
-  font-size: 0.875rem;
 }

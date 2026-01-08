@@ -1,0 +1,215 @@
+/* --- ESTILOS GERAIS (TELA) --- */
+.termo-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background-color: #f3f4f6;
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.termo-container {
+  background-color: #fff;
+  padding: 2rem;
+  max-width: 750px;
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.termo-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #2e7d32;
+  padding-bottom: 0.5rem;
+}
+
+.termo-header h1 {
+  color: #2e7d32;
+  text-transform: uppercase;
+  font-size: 1.6rem;
+  margin: 0;
+  font-weight: 800;
+}
+
+.termo-section {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 6px;
+  border-left: 4px solid #2e7d32;
+}
+
+.termo-dados-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.declaracao {
+  background-color: #f0fdf4;
+  border-left-color: #16a34a;
+}
+
+.declaracao ul {
+  padding-left: 1.5rem;
+  list-style-type: disc;
+}
+
+/* Contêiner pai das assinaturas */
+.signature-container {
+  display: flex;
+  justify-content: space-between; /* Espalha as assinaturas para as extremidades */
+  align-items: flex-end;
+  margin-top: 4rem; /* Espaço para o texto não encostar nas assinaturas */
+  padding: 0 2rem;  /* Margem interna nas laterais */
+  gap: 2rem;       /* Espaço entre os dois blocos */
+}
+
+/* Bloco individual de cada assinatura */
+.signature-block {
+  flex: 1;         /* Faz ambos ocuparem o mesmo espaço */
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Linha de assinatura */
+.signature-line {
+  border-top: 1px solid #000;
+  width: 80%;      /* Ajuste o tamanho da linha aqui */
+  margin-bottom: 8px;
+}
+
+.signer-name {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.signer-role {
+  font-size: 0.75rem;
+  color: #666;
+  margin: 0;
+}
+
+/* Ajuste específico para Impressão */
+@media print {
+  .signature-container {
+    margin-top: 5rem; /* Mais espaço no papel */
+    display: flex !important;
+    flex-direction: row !important; /* Garante que fiquem lado a lado no PDF */
+  }
+}
+/* --- BOTÕES (VISÍVEIS NA TELA) --- */
+.termo-actions {
+  display: flex !important;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  justify-content: center;
+  border-top: 1px solid #e5e7eb;
+  background-color: white;
+}
+
+.termo-actions button {
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  transition: all 0.2s;
+  min-width: 180px;
+}
+
+.btn-voltar { background-color: #374151; color: white; }
+.btn-voltar:hover { background-color: #1f2937; }
+
+.btn-export { background-color: #2e7d32; color: white; }
+.btn-export:hover { background-color: #1b5e20; }
+
+/* --- RESPONSIVIDADE (MOBILE) --- */
+@media (max-width: 768px) {
+  .termo-wrapper { 
+    display: block; 
+    padding: 0.5rem; 
+    height: auto;
+    overflow-y: auto;
+  }
+  
+  .termo-container { 
+    padding: 1rem; 
+    margin-bottom: 2rem; /* Espaço simples no final */
+  }
+  
+  .termo-dados-grid { grid-template-columns: 1fr; }
+  
+  /* Mantém as assinaturas profissionais no mobile */
+  .signature-container { 
+    flex-direction: column; 
+    align-items: center;
+    gap: 3rem; 
+    padding: 0;
+  }
+
+  .signature-block {
+    width: 100%;
+  }
+
+  /* BOTÕES SEGUINDO O FLUXO (SEM POSIÇÃO FIXA) */
+  .termo-actions { 
+    flex-direction: column-reverse; 
+    position: static; /* Remove o 'fixed' */
+    padding: 1.5rem 0 0 0;
+    margin-top: 2rem;
+    box-shadow: none; /* Remove a sombra do modo fixo */
+    z-index: auto;
+  }
+  
+  .termo-actions button { 
+    width: 100%; 
+    min-width: unset; /* Permite que o botão se ajuste à largura da tela */
+  }
+}
+/* --- REGRAS DE IMPRESSÃO (PDF) --- */
+@media print {
+  @page { margin: 1.5cm; size: A4; }
+  
+  body * { visibility: hidden; }
+  .termo-wrapper, .termo-container, .termo-container * { visibility: visible !important; }
+  
+  .termo-wrapper { 
+    position: absolute; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    padding: 0; 
+    margin: 0;
+    background: white;
+  }
+  
+  .termo-container {
+    border: none !important;
+    box-shadow: none !important;
+    max-width: none !important;
+    width: 100% !important;
+  }
+
+  .signature-line {
+    border-top: 1pt solid black !important;
+  }
+
+  .termo-actions { display: none !important; }
+}

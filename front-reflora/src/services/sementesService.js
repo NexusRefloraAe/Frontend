@@ -6,15 +6,13 @@ export const sementesService = {
     const params = {
       page: pagina,
       size: itensPorPagina,
-      sort: `${campoOrdenacao},${direcao}`, // Monta a string ex: "lote,asc"
+      sort: `${campoOrdenacao},${direcao}`,
       searchTerm: termoBusca 
     };
     
     const response = await api.get('/bancoSementes', { params });
-    
     const data = response.data;
     
-    // Normalização (mantive sua lógica anterior)
     if (data.page && data.page.totalPages) {
         return {
             content: data.content,
@@ -23,7 +21,6 @@ export const sementesService = {
             number: data.page.number
         };
     }
-    
     return data; 
   },
 
@@ -32,34 +29,31 @@ export const sementesService = {
     return response.data;
   },
 
-  // --- AQUI ESTÁ A MÁGICA DA CORREÇÃO ---
+  // --- CORREÇÃO AQUI (Adicionados latitude e longitude) ---
   create: async (formData, fotoFile) => {
     const dataToSend = new FormData();
 
-    // 1. Tratamento de Data
     let dataFormatada = formData.dataCadastro;
     if (formData.dataCadastro && formData.dataCadastro.includes('-')) {
         const parts = formData.dataCadastro.split('-');
         dataFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
     }
 
-    // 2. MAPEAMENTO (DE: React, PARA: Java DTO)
     const sementeDTO = {
-        // Front (formData) -> Back (DTO)
         nomePopular: formData.nomePopular,
         nomeCientifico: formData.nomeCientifico,
         familia: formData.familia,
         origem: formData.origem,
         dataDeCadastro: dataFormatada,
         quantidade: formData.quantidade,
-        
-        // Garante que a unidade vá em Maiúsculo para bater com o Enum (KG, UNIDADE, G)
         unidadeDeMedida: formData.unidadeMedida ? formData.unidadeMedida.toUpperCase() : null,
         
-        // CORREÇÃO: Mapeia 'localizacao' para 'localizacaoDaColeta'
-        localizacaoDaColeta: formData.localizacao, 
+        // CAMPOS GEOGRÁFICOS ADICIONADOS
+        estado: formData.estado,
+        cidade: formData.cidade, 
+        latitude: formData.latitude ? Number(formData.latitude) : null,
+        longitude: formData.longitude ? Number(formData.longitude) : null,
         
-        // CORREÇÃO: Converte 'sim'/'nao' para true/false
         estahNaCamaraFria: formData.camaraFria === 'sim' 
     };
 
@@ -85,7 +79,6 @@ export const sementesService = {
         dataFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
     }
 
-    // MESMO MAPEAMENTO DO CREATE
     const sementeDTO = {
         nomePopular: formData.nomePopular,
         nomeCientifico: formData.nomeCientifico,
@@ -94,8 +87,14 @@ export const sementesService = {
         dataDeCadastro: dataFormatada,
         quantidade: formData.quantidade,
         unidadeDeMedida: formData.unidadeMedida ? formData.unidadeMedida.toUpperCase() : null,
-        localizacaoDaColeta: formData.localizacao,   // <-- Importante
-        estahNaCamaraFria: formData.camaraFria === 'sim' // <-- Importante
+        
+        // CAMPOS GEOGRÁFICOS ADICIONADOS
+        estado: formData.estado,
+        cidade: formData.cidade,
+        latitude: formData.latitude ? Number(formData.latitude) : null,
+        longitude: formData.longitude ? Number(formData.longitude) : null,
+
+        estahNaCamaraFria: formData.camaraFria === 'sim'
     };
 
     const jsonBlob = new Blob([JSON.stringify(sementeDTO)], { type: 'application/json' });
@@ -111,6 +110,7 @@ export const sementesService = {
     return response.data;
   },
 
+  // ... (Resto do código: delete, getHistorico, exportar... mantém igual)
   delete: async (id) => {
     await api.delete(`/bancoSementes/${id}`);
   },
@@ -118,6 +118,38 @@ export const sementesService = {
   getHistorico: async (id, pagina = 0, itensPorPagina = 2) => {
     const params = { page: pagina, size: itensPorPagina, sort: 'data,desc' };
     const response = await api.get(`/sementes/${id}/historico-detalhado`, { params });
-    return response.data; // Retorna { entradas: Page, saidas: Page }
-  }
+    return response.data;
+  },
+
+  exportarRelatorioPdf: async (termoBusca) => {
+        const url = `/bancoSementes/export/pdf${termoBusca ? `?searchTerm=${termoBusca}` : ''}`;
+        return api.get(url, { responseType: 'blob' });
+    },
+
+    exportarRelatorioCsv: async (termoBusca) => {
+        const url = `/bancoSementes/export/csv${termoBusca ? `?searchTerm=${termoBusca}` : ''}`;
+        return api.get(url, { responseType: 'blob' });
+    },
+
+    exportarHistoricoPdf: (id) => {
+        return api.get(`/bancoSementes/${id}/historico/export/pdf`, {
+            responseType: 'blob'
+        });
+    },
+
+    exportarHistoricoCsv: (id) => {
+        return api.get(`/bancoSementes/${id}/historico/export/csv`, {
+            responseType: 'blob'
+        });
+    },
+
+    listarNomesPopulares: async () => {
+        try {
+            const response = await api.get('/sementes/select');
+            return response.data; 
+        } catch (error) {
+            console.error("Erro no service de sementes:", error);
+            throw error;
+        }
+    }
 };

@@ -1,0 +1,19 @@
+/* GerenciarSementesLayout.css */
+
+.gerenciar-sementes-container {
+  padding: var(--espacamento-md, 20px);
+  width: 100%;
+  max-width: 1200px; /* Limita a largura em telas muito grandes */
+  margin: 0 auto; /* Centraliza na tela */
+}
+
+/* Se quiser dar um espaçamento extra entre o menu e o conteúdo da página */
+.tabs-content-area {
+  margin-top: var(--espacamento-md, 20px);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,77 @@
+/* Container Principal */
+.cadastrar-emprestimo {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Grid de Inputs (Compacto igual ao cadastro) */
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+  margin-bottom: 12px;
+}
+
+.input-row > *:only-child {
+  grid-column: 1 / -1;
+}
+
+/* Alinhamento dos botões (IGUAL À IMAGEM) */
+.cadastrar-emprestimo form > div:last-child {
+  display: flex !important;
+  justify-content: flex-end !important; /* Alinha à direita */
+  gap: 12px !important;
+  margin-top: 24px !important;
+  padding-top: 16px !important;
+  border-top: 1px solid #f3f4f6 !important;
+  width: 100% !important;
+}
+
+/* Botões Menores (IGUAL AO CADASTRO) */
+.cadastrar-emprestimo form > div:last-child > button {
+  width: auto !important; /* Remove o 100% anterior */
+  min-width: 130px !important; /* Tamanho controlado */
+  height: 38px !important;
+  padding: 0 20px !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  border: none !important;
+  color: white !important;
+}
+
+/* Cores Escuras dos Botões */
+.cadastrar-emprestimo form > div:last-child > button:first-of-type {
+  background-color: #2e2e2e !important; /* Cinza Escuro */
+}
+
+.cadastrar-emprestimo form > div:last-child > button:last-of-type {
+  background-color: #15803d !important; /* Verde Escuro */
+}
+
+/* Estado Loading */
+.cadastrar-emprestimo button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsividade Mobile */
+@media (max-width: 768px) {
+  .input-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .cadastrar-emprestimo form > div:last-child {
+    flex-direction: column-reverse !important;
+    align-items: stretch !important;
+  }
+
+  .cadastrar-emprestimo form > div:last-child > button {
+    width: 100% !important;
+    height: 44px !important;
+  }
+}

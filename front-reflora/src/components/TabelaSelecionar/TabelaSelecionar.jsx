@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Paginacao from "../Paginacao/Paginacao";
 import Button from "../Button/Button";
 import { FaArrowsAltV } from "react-icons/fa";
@@ -12,27 +12,49 @@ function TabelaSelecionar({
   chaveBusca,
   onSelecionar,
   onQuantidadeChange,
-  onDetalheCanteiro, // Nova prop para abrir detalhes do canteiro
+  onDetalheCanteiro,
   itensPorPagina = 7,
   habilitarBusca = true,
   modoBusca = "auto",
   chaveQuantidade = "quantidade",
-  textoBotaoConfirmar = "Confirmar Saída"
+  textoBotaoConfirmar = "Confirmar Saída",
+  paginaAtual: paginaPai, // Propriedade do pai (servidor)
+  totalPaginas: totalPaginasPai, // Propriedade do pai (servidor)
+  onPageChange, // Função do pai (servidor)
+
+  onOrdenar,
+  ordemAtual,
+  direcaoAtual
 }) {
   const [termoBusca, setTermoBusca] = useState("");
-  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [paginaInterna, setPaginaInterna] = useState(1); // Estado para modo local
   const [isLoading, setIsLoading] = useState(false);
   const [linhasSelecionadas, setLinhasSelecionadas] = useState({});
   const [quantidades, setQuantidades] = useState({});
 
-  // 🔹 Controla o tempo de busca
+  // 🔹 Define se a lógica segue o Servidor ou Interno
+  const ehServidor = modoBusca === "server";
+  
+  // Define qual valor de página e total usar
+  const paginaAtualEfetiva = ehServidor ? paginaPai : paginaInterna;
+  const totalPaginasEfetivo = ehServidor ? totalPaginasPai : Math.ceil((habilitarBusca ? dados.filter(i => i[chaveBusca]?.toLowerCase().includes(termoBusca.toLowerCase())).length : dados.length) / itensPorPagina);
+
+  const handleMudarPagina = (novaPagina) => {
+    if (ehServidor) {
+      onPageChange(novaPagina);
+    } else {
+      setPaginaInterna(novaPagina);
+    }
+  };
+
+  // 🔹 Controla o tempo de busca (Apenas modo Auto)
   useEffect(() => {
     if (modoBusca === "auto") {
       setIsLoading(true);
       const timeout = setTimeout(() => setIsLoading(false), 400);
       return () => clearTimeout(timeout);
     }
-  }, [termoBusca]);
+  }, [termoBusca, modoBusca]);
 
   // 🔹 Inicializar quantidades quando dados mudam
   useEffect(() => {
@@ -44,25 +66,38 @@ function TabelaSelecionar({
       };
     });
     setQuantidades(novasQuantidades);
+    // Resetar seleções ao mudar de página/dados para evitar bugs visuais
+    setLinhasSelecionadas({});
   }, [dados, chaveQuantidade]);
 
-  // 🔹 Filtragem de dados
-  const dadosFiltrados = habilitarBusca
-    ? dados.filter((item) =>
-        item[chaveBusca]?.toLowerCase().includes(termoBusca.toLowerCase())
-      )
-    : dados;
+  // 🔹 Lógica de Exibição dos Dados
+  let dadosExibidos = [];
 
-  const indiceUltimo = paginaAtual * itensPorPagina;
-  const indicePrimeiro = indiceUltimo - itensPorPagina;
-  const dadosPagina = dadosFiltrados.slice(indicePrimeiro, indiceUltimo);
-  const totalPaginas = Math.ceil(dadosFiltrados.length / itensPorPagina);
+  if (ehServidor) {
+    // No modo servidor, os dados recebidos já são a página correta. NÃO fatiar.
+    dadosExibidos = dados;
+  } else {
+    // No modo auto, filtramos e fatiamos localmente
+    const filtrados = habilitarBusca
+      ? dados.filter((item) =>
+          item[chaveBusca]?.toLowerCase().includes(termoBusca.toLowerCase())
+        )
+      : dados;
+    
+    const indiceUltimo = paginaInterna * itensPorPagina;
+    const indicePrimeiro = indiceUltimo - itensPorPagina;
+    dadosExibidos = filtrados.slice(indicePrimeiro, indiceUltimo);
+  }
 
   const handleSearchManual = (valor) => {
     setIsLoading(true);
+    // Se for servidor, o pai deve lidar com a busca, aqui apenas resetamos a página visual
+    if (ehServidor) {
+        // Se houver uma prop onSearchChange do pai, chame-a aqui
+    }
     setTimeout(() => {
       setTermoBusca(valor);
-      setPaginaAtual(1);
+      ehServidor ? onPageChange(1) : setPaginaInterna(1);
       setIsLoading(false);
     }, 500);
   };
@@ -74,56 +109,46 @@ function TabelaSelecionar({
     }));
   };
 
-  const handleQuantidadeChange = (index, valor) => {
+  const handleLocalQuantidadeChange = (index, valor) => {
     const valorNumerico = Math.max(0, parseInt(valor) || 0);
     const disponivel = quantidades[index]?.disponivel || 0;
-    
-    // Não permite quantidade maior que o disponível
     const quantidadeFinal = Math.min(valorNumerico, disponivel);
     
     setQuantidades(prev => ({
       ...prev,
-      [index]: {
-        ...prev[index],
-        saida: quantidadeFinal
-      }
+      [index]: { ...prev[index], saida: quantidadeFinal }
     }));
 
     if (onQuantidadeChange) {
-      onQuantidadeChange(dadosPagina[index], quantidadeFinal);
+      onQuantidadeChange(dadosExibidos[index], quantidadeFinal);
     }
   };
 
   const handleConfirmarSelecao = () => {
     const selecionados = [];
     Object.keys(linhasSelecionadas).forEach(index => {
-      if (linhasSelecionadas[index] && quantidades[index]?.saida > 0) {
+      const idx = parseInt(index);
+      if (linhasSelecionadas[idx] && quantidades[idx]?.saida > 0) {
         selecionados.push({
-          item: dadosPagina[parseInt(index)],
-          quantidade: quantidades[index].saida
+          item: dadosExibidos[idx],
+          quantidade: quantidades[idx].saida
         });
       }
     });
 
-    if (onSelecionar) {
-      onSelecionar(selecionados);
-    }
+    if (onSelecionar) onSelecionar(selecionados);
   };
 
-  // 🔹 Nova função para abrir detalhes do canteiro
   const handleAbrirDetalheCanteiro = (canteiro) => {
-    if (onDetalheCanteiro) {
-      onDetalheCanteiro(canteiro);
-    }
+    if (onDetalheCanteiro) onDetalheCanteiro(canteiro);
   };
 
-  const temSelecionados = Object.values(linhasSelecionadas).some(selecionado => selecionado);
+  const temSelecionados = Object.values(linhasSelecionadas).some(sel => sel);
 
   return (
     <div className="tabela-selecionar-wrapper">
       <div className="tabela-selecionar-header">
         <h1>{titulo}</h1>
-
         {habilitarBusca && (
           <SearchBar
             value={termoBusca}
@@ -142,8 +167,13 @@ function TabelaSelecionar({
             <tr>
               <th>Selecionar</th>
               {colunas.map((coluna) => (
-                <th key={coluna.key}>
-                  {coluna.label} <FaArrowsAltV className="icone-ordenar" />
+                <th key={coluna.key} onClick={() => onOrdenar && onOrdenar(coluna.key)}>
+                  {coluna.label}
+                  {ordemAtual === coluna.key || (ordemAtual === 'quantidadePlantada' && coluna.key === 'Quantidade') || (ordemAtual === 'nomePopularSemente' && coluna.key === 'NomePopular') ? (
+                        direcaoAtual === 'asc' ? <FaArrowsAltV className="icone-ordenar"/> : <FaArrowsAltV className="icone-ordenar"/>
+                    ) : (
+                        <FaArrowsAltV className="icone-ordenar" />
+                    )}
                 </th>
               ))}
               <th>Quantidade Saída</th>
@@ -156,8 +186,8 @@ function TabelaSelecionar({
                   <div className="loading-text">Carregando...</div>
                 </td>
               </tr>
-            ) : dadosPagina.length > 0 ? (
-              dadosPagina.map((item, index) => {
+            ) : dadosExibidos.length > 0 ? (
+              dadosExibidos.map((item, index) => {
                 const quantidadeInfo = quantidades[index] || { saida: 0, disponivel: 0 };
                 const isSelecionado = linhasSelecionadas[index];
 
@@ -166,7 +196,7 @@ function TabelaSelecionar({
                     <td>
                       <input
                         type="checkbox"
-                        checked={isSelecionado}
+                        checked={!!isSelecionado}
                         onChange={() => handleSelecionarLinha(index)}
                         className="checkbox-selecao"
                       />
@@ -177,7 +207,6 @@ function TabelaSelecionar({
                           <button
                             className="nome-canteiro-clicavel"
                             onClick={() => handleAbrirDetalheCanteiro(item)}
-                            title="Clique para ver detalhes do canteiro"
                           >
                             <strong>{item[coluna.key]}</strong>
                           </button>
@@ -192,10 +221,9 @@ function TabelaSelecionar({
                         min="0"
                         max={quantidadeInfo.disponivel}
                         value={quantidadeInfo.saida}
-                        onChange={(e) => handleQuantidadeChange(index, e.target.value)}
+                        onChange={(e) => handleLocalQuantidadeChange(index, e.target.value)}
                         disabled={!isSelecionado}
                         className="input-quantidade"
-                        placeholder="0"
                       />
                     </td>
                   </tr>
@@ -204,9 +232,7 @@ function TabelaSelecionar({
             ) : (
               <tr>
                 <td colSpan={colunas.length + 2}>
-                  <div className="no-results">
-                    Nenhum resultado encontrado 😕
-                  </div>
+                  <div className="no-results">Nenhum resultado encontrado 😕</div>
                 </td>
               </tr>
             )}
@@ -216,11 +242,10 @@ function TabelaSelecionar({
 
       <div className="tabela-selecionar-footer">
         <Paginacao
-          paginaAtual={paginaAtual}
-          totalPaginas={totalPaginas}
-          onPaginaChange={setPaginaAtual}
+          paginaAtual={paginaAtualEfetiva}
+          totalPaginas={totalPaginasEfetivo}
+          onPaginaChange={handleMudarPagina}
         />
-        
         <Button 
           variant={temSelecionados ? "primary" : "secondary"}
           onClick={handleConfirmarSelecao}

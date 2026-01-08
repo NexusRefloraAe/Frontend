@@ -3,31 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import { usuarioService } from '../../services/usuarioService';
 import FormGeral from '../FormGeral/FormGeral';
-import Button from '../Button/Button';
-import Input from '../Input/Input'; 
+import Input from '../Input/Input';
 import perfilusuarioIcon from '../../assets/perfilusuario.svg';
 import { FaEdit, FaSave } from 'react-icons/fa';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import './PerfilUsuario.css';
-import importarfotoIcon from '../../assets/importarfoto.svg';
 import { getBackendErrorMessage } from '../../utils/errorHandler';
 
 const PerfilUsuario = () => {
   const navigate = useNavigate();
-
   const [currentUser, setCurrentUser] = useState(null);
   const [fotoFile, setFotoFile] = useState(null);
-  const [fotoPreview, setFotoPreview] = useState(null); 
+  const [fotoPreview, setFotoPreview] = useState(null);
 
   const [userData, setUserData] = useState({
-    nomeCompleto: '',
-    email: '',
-    telefone: '',
-    dataNascimento: '',
-    genero: '',
-    empresa: '',
-    endereco: '',
-    fotoUrl: null
+    nomeCompleto: '', email: '', telefone: '',
+    dataNascimento: '', genero: '', empresa: '',
+    endereco: '', fotoUrl: null
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -37,59 +29,37 @@ const PerfilUsuario = () => {
     const fetchUserData = async () => {
       try {
         const user = authService.getCurrentUser();
-        
-        if (!user || !user.id) {
-            navigate('/login');
-            return;
-        }
+        if (!user || !user.id) { navigate('/login'); return; }
         setCurrentUser(user);
-
         const data = await usuarioService.getUsuario(user.id);
-        console.log("Dados do usuário:", data);
 
-        // --- Tratamento de Data ---
         let dataNascFormatada = '';
         if (data.dataNascimento) {
-            if(data.dataNascimento.includes('T') || data.dataNascimento.includes(' ')) {
-                dataNascFormatada = data.dataNascimento.substring(0, 10);
-            } else if (data.dataNascimento.includes('/')) {
-                const parts = data.dataNascimento.split('/'); 
-                if(parts.length === 3) {
-                    dataNascFormatada = `${parts[2]}-${parts[1]}-${parts[0]}`;
-                }
-            } else {
-                dataNascFormatada = data.dataNascimento;
-            }
+          if (data.dataNascimento.includes('T') || data.dataNascimento.includes(' ')) {
+            dataNascFormatada = data.dataNascimento.substring(0, 10);
+          } else if (data.dataNascimento.includes('/')) {
+            const parts = data.dataNascimento.split('/');
+            if (parts.length === 3) dataNascFormatada = `${parts[2]}-${parts[1]}-${parts[0]}`;
+          } else { dataNascFormatada = data.dataNascimento; }
         }
 
-        // --- CORREÇÃO DA URL DA FOTO ---
         let rawUrl = data.fotoUsuario?.url || data.fotoUsuarioResponseDTO?.url || data.fotoUrl || null;
-
-        if (rawUrl) {
-            if (rawUrl.includes("reflora-minio")) {
-                rawUrl = rawUrl.replace("reflora-minio", "localhost");
-            } else if (rawUrl.includes("minio")) { 
-                 rawUrl = rawUrl.replace("minio", "localhost");
-            }
-        }
+        if (rawUrl) { rawUrl = rawUrl.replace(/reflora-minio|minio/g, "localhost"); }
 
         setUserData({
-            nomeCompleto: data.nomeCompleto || '',
-            email: data.email || '',
-            telefone: data.numeroCelular || '', 
-            dataNascimento: dataNascFormatada,
-            genero: data.genero || '', 
-            empresa: data.empresa || '',
-            endereco: data.endereco || '',
-            fotoUrl: rawUrl 
+          nomeCompleto: data.nomeCompleto || '',
+          email: data.email || '',
+          telefone: data.numeroCelular || '',
+          dataNascimento: dataNascFormatada,
+          genero: data.genero || '',
+          empresa: data.empresa || '',
+          endereco: data.endereco || '',
+          fotoUrl: rawUrl
         });
-
       } catch (error) {
-        const mensagem = getBackendErrorMessage(error);
-        console.error("Erro ao carregar perfil", mensagem);
+        console.error("Erro ao carregar perfil", getBackendErrorMessage(error));
       }
     };
-
     fetchUserData();
   }, [navigate]);
 
@@ -99,46 +69,30 @@ const PerfilUsuario = () => {
 
   const handleSave = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
-
     setIsLoading(true);
     try {
       await usuarioService.updateUsuario(currentUser.id, userData, fotoFile);
-      
       alert('Dados salvos com sucesso!');
       setIsEditing(false);
-      setFotoFile(null); 
-      window.location.reload(); 
-
+      setFotoFile(null);
+      window.location.reload();
     } catch (error) {
-      const mensagem = getBackendErrorMessage(error);
-      console.error('Erro ao salvar:', mensagem);
       alert('Ocorreu um erro ao salvar as alterações.');
-    } finally {
-      setIsLoading(false);
-    }
+    } finally { setIsLoading(false); }
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    setFotoFile(null);
-    setFotoPreview(null);
     window.location.reload();
   };
 
   const handleDeleteAccount = async () => {
-    if (window.confirm('Tem certeza que deseja excluir sua conta? Esta ação é irreversível.')) {
+    if (window.confirm('Tem certeza que deseja excluir sua conta?')) {
       try {
         await usuarioService.deleteUsuario(currentUser.id);
-        
-        alert('Conta excluída.');
-        authService.logout(); 
-        window.location.href = '/login'; 
-
-      } catch (error) {
-        const mensagem = getBackendErrorMessage(error);
-        console.error('Erro ao excluir:', mensagem);
-        alert('Erro ao excluir conta.');
-      }
+        authService.logout();
+        window.location.href = '/login';
+      } catch (error) { alert('Erro ao excluir conta.'); }
     }
   };
 
@@ -149,8 +103,8 @@ const PerfilUsuario = () => {
     input.onchange = (e) => {
       const file = e.target.files[0];
       if (file) {
-        setFotoFile(file); 
-        setFotoPreview(URL.createObjectURL(file)); 
+        setFotoFile(file);
+        setFotoPreview(URL.createObjectURL(file));
       }
     };
     input.click();
@@ -158,174 +112,94 @@ const PerfilUsuario = () => {
 
   const actionsConfig = isEditing
     ? [
-        {
-          type: 'button',
-          variant: 'secondary',
-          children: 'Cancelar',
-          onClick: handleCancel,
-          disabled: isLoading,
-        },
-        {
-          type: 'submit',
-          variant: 'primary',
-          children: isLoading ? 'Salvando...' : 'Salvar Edições',
-          icon: isLoading ? null : <FaSave />,
-          disabled: isLoading,
-        },
-      ]
+      {
+        type: 'button',
+        variant: 'secondary', // Certifique-se de que este nome é idêntico ao do CSS
+        children: 'Cancelar',
+        onClick: handleCancel,
+        disabled: isLoading,
+      },
+      {
+        type: 'submit',
+        variant: 'primary',
+        children: isLoading ? 'Salvando...' : 'Salvar Cadastro',
+        icon: isLoading ? null : <FaSave />,
+        disabled: isLoading,
+      },
+    ]
     : [
-        {
-          type: 'button',
-          variant: 'primary',
-          children: 'Editar Perfil',
-          onClick: () => setIsEditing(true),
-          icon: <FaEdit />,
-        },
-        {
-          type: 'button',
-          variant: 'danger',
-          children: 'Excluir Conta',
-          onClick: handleDeleteAccount,
-          icon: <RiDeleteBin6Line />,
-        },
-      ];
-      
-  const imagemExibida = fotoPreview || userData.fotoUrl || perfilusuarioIcon;
+      {
+        type: 'button',
+        variant: 'primary',
+        children: 'Editar Perfil',
+        onClick: () => setIsEditing(true),
+        icon: <FaEdit />,
+      },
+      {
+        type: 'button',
+        variant: 'danger',
+        children: 'Excluir Conta',
+        onClick: handleDeleteAccount,
+        icon: <RiDeleteBin6Line />,
+      },
+    ];
 
   return (
-    <div className="perfil-usuario">
-      
-      {/* --- SEÇÃO DO AVATAR CORRIGIDA --- */}
-      {/* Usamos flex-column para colocar o botão embaixo da imagem */}
-      <div className="perfil-usuario__avatar-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
-        
-        {/* Container da imagem (Circular) */}
-        <div className="perfil-usuario__avatar" 
-          style={{ 
-                width: '150px', 
-                height: '150px', 
-                overflow: 'hidden', 
-                borderRadius: '50%', 
-                border: '2px solid #ccc',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: '#f0f0f0'
-            }}>
-          <img 
-            src={imagemExibida} 
-            alt="Avatar do Usuário" 
-            style={{ objectFit: 'cover', width: '100%', height: '100%' }} 
-            onError={(e) => {
-                e.target.onerror = null; 
-                e.target.src = perfilusuarioIcon;
-            }}
-          />
-        </div>
-
-        {/* Botão movido para FORA do círculo da imagem */}
-        {isEditing && (
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <Button
-                variant="outline"
-                icon={<img src={importarfotoIcon} alt="Ícone de Câmera" style={{ width: '20px', height: '20px' }} />}
-                onClick={handleTrocarFoto}
-                size="small"
-              >
-                Trocar Foto
-              </Button>
-            </div>
-        )}
-      </div>
-
+    <div className="perfil-compact-container">
       <FormGeral
         title={isEditing ? 'Editar Perfil' : 'Gerencie suas informações pessoais'}
         actions={actionsConfig}
         onSubmit={handleSave}
-        useGrid={true}
+        useGrid={false}
         loading={isLoading}
         layout="wide"
       >
-        <div className="form-geral__campo--span-2">
-          <Input
-            label="Nome Completo"
-            name="nomeCompleto"
-            type="text"
-            value={userData.nomeCompleto}
-            onChange={handleChange('nomeCompleto')}
-            required={true}
-            readOnly={!isEditing || isLoading}
-          />
+        <div className="perfil-form-wrapper">
+          <div className="perfil-side-photo">
+            <div
+              className={`avatar-mini-wrapper ${isEditing ? 'editable' : ''}`}
+              onClick={isEditing ? handleTrocarFoto : null}
+              title={isEditing ? "Clique para trocar a foto" : ""}
+            >
+              <img
+                src={fotoPreview || userData.fotoUrl || perfilusuarioIcon}
+                alt="Avatar"
+                onError={(e) => { e.target.src = perfilusuarioIcon; }}
+              />
+              {isEditing && (
+                <div className="photo-edit-label">Trocar Foto</div>
+              )}
+            </div>
+          </div>
+
+          <div className="perfil-fields-grid">
+            <div className="field-full-row">
+              <Input label="Nome Completo" value={userData.nomeCompleto} onChange={handleChange('nomeCompleto')} readOnly={!isEditing || isLoading} />
+            </div>
+            <Input label="E-mail" value={userData.email} onChange={handleChange('email')} readOnly={!isEditing || isLoading} />
+            <Input label="Telefone" value={userData.telefone} onChange={handleChange('telefone')} readOnly={!isEditing || isLoading} />
+            <Input label="Data de Nascimento" type="date" value={userData.dataNascimento} onChange={handleChange('dataNascimento')} readOnly={!isEditing || isLoading} />
+            <Input
+              label="Gênero"
+              type="select"
+              value={userData.genero}
+              onChange={handleChange('genero')}
+              readOnly={!isEditing || isLoading}
+              options={[
+                { value: 'FEMININO', label: 'Feminino' },
+                { value: 'MASCULINO', label: 'Masculino' },
+                { value: 'OUTRO', label: 'Outro' },
+                { value: 'NAO_INFORMAR', label: 'Prefiro não informar' },
+              ]}
+            />
+            <div className="field-full-row">
+              <Input label="Empresa" value={userData.empresa} onChange={handleChange('empresa')} readOnly={!isEditing || isLoading} />
+            </div>
+            <div className="field-full-row">
+              <Input label="Endereço" value={userData.endereco} onChange={handleChange('endereco')} readOnly={!isEditing || isLoading} />
+            </div>
+          </div>
         </div>
-
-        <Input
-          label="E-mail"
-          name="email"
-          type="email"
-          value={userData.email}
-          onChange={handleChange('email')}
-          required={true}
-          readOnly={!isEditing || isLoading}
-        />
-
-        <Input
-          label="Telefone"
-          name="telefone"
-          type="tel"
-          placeholder="XX9XXXXXXXX"
-          value={userData.telefone}
-          onChange={handleChange('telefone')}
-          readOnly={!isEditing || isLoading}
-        />
-
-        <Input
-          label="Data de Nascimento"
-          name="dataNascimento"
-          type="date"
-          value={userData.dataNascimento}
-          onChange={handleChange('dataNascimento')}
-          required={true}
-          readOnly={!isEditing || isLoading}
-        />
-
-        <Input
-          label="Gênero"
-          name="genero"
-          type="select"
-          value={userData.genero} 
-          onChange={handleChange('genero')}
-          readOnly={!isEditing || isLoading}
-          options={[
-            { value: 'FEMININO', label: 'Feminino' },
-            { value: 'MASCULINO', label: 'Masculino' },
-            { value: 'OUTRO', label: 'Outro' },
-            { value: 'NAO_INFORMAR', label: 'Prefiro não informar' },
-          ]}
-        />
-
-        <div className="form-geral__campo--span-2">
-          <Input
-            label="Empresa"
-            name="empresa"
-            type="text"
-            value={userData.empresa}
-            onChange={handleChange('empresa')}
-            readOnly={!isEditing || isLoading}
-          />
-        </div>
-
-        <div className="form-geral__campo--span-2">
-          <Input
-            label="Endereço"
-            name="endereco"
-            type="text"
-            value={userData.endereco}
-            onChange={handleChange('endereco')}
-            required={true}
-            readOnly={!isEditing || isLoading}
-          />
-        </div>
-        
       </FormGeral>
     </div>
   );

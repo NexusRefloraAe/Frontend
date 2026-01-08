@@ -13,14 +13,19 @@ const formatarDataParaJava = (dataStr) => {
 
 export const plantioService = {
   // GET: Listar Plantios com paginação e busca
-  getAll: async (termoBusca = '', pagina = 0, itensPorPagina = 5) => {
+  getAll: async (termoBusca = '', pagina = 0, itensPorPagina = 5, ordem = 'dataPlantio', direcao = 'desc') => {
     const params = {
       searchTerm: termoBusca,
       page: pagina,
       size: itensPorPagina,
-      sort: 'dataPlantio,desc'
+      sort: `${ordem},${direcao}` // <--- AGORA ESTÁ DINÂMICO
     };
     const response = await api.get('/movimentacoes/plantioMuda', { params });
+    return response.data;
+  },
+  
+  getById: async (id) => {
+    const response = await api.get(`/movimentacoes/${id}`);
     return response.data;
   },
 
@@ -47,6 +52,26 @@ export const plantioService = {
     }
 
     return sementesUnicas;
+  },
+
+  // GET: Listar todos os plantios de mudas disponíveis (com saldo) para mover para canteiro
+  // Usado para preencher o Select de "Lote de Origem"
+  getMudasDisponiveis: async () => {
+      const response = await api.get('/movimentacoes/plantioMuda/disponiveis');
+      return response.data;
+  },
+
+  // GET: Listar apenas lotes que já viraram mudas (ehMuda = true e quantidade > 0)
+  // Retorna uma lista de LoteMudaDTO (loteMuda, nomePopular)
+  getLotesConfirmados: async () => {
+    try {
+      // Ajuste a URL conforme o seu @RequestMapping no Controller
+      const response = await api.get('/movimentacoes/plantioMuda/mudasProntas');
+      return response.data; // Retorna List<LoteMudaDTO>
+    } catch (error) {
+      console.error("Erro ao buscar lotes confirmados:", error);
+      return [];
+    }
   },
 
   // GET: Buscar detalhes exatos de uma semente pelo Lote
@@ -83,7 +108,7 @@ export const plantioService = {
       dataPlantio: formatarDataParaJava(formData.dataPlantio),
       
       // Garante Uppercase para o Enum (SEMENTEIRA, SAQUINHO, CHAO)
-      tipoPlantio: formData.tipoPlantio ? formData.tipoPlantio.toUpperCase() : null,
+      tipoPlantio: formData.tipoPlantio,
       
       // ✅ CORREÇÃO DE NOMES (Fallback para garantir compatibilidade)
       // Tenta ler o nome novo (padronizado) OU o nome antigo do estado
@@ -103,7 +128,7 @@ export const plantioService = {
       
       loteSemente: formData.lote,
       dataPlantio: formatarDataParaJava(formData.dataPlantio),
-      tipoPlantio: formData.tipoPlantio ? formData.tipoPlantio.toUpperCase() : null,
+      tipoPlantio: formData.tipoPlantio,
       
       // ✅ CORREÇÃO DE NOMES
       quantidadePlantada: Number(formData.quantidadePlantada || formData.qntdPlantada),
@@ -117,5 +142,16 @@ export const plantioService = {
   // DELETE: Excluir Plantio
   delete: async (id) => {
     await api.delete(`/movimentacoes/${id}`);
+  },
+
+  exportarPdf: (termoBusca) => {
+    // URL baseada no seu controller: /movimentacoes/plantioMuda/export/pdf
+    const url = `/movimentacoes/plantioMuda/export/pdf${termoBusca ? `?searchTerm=${termoBusca}` : ''}`;
+    return api.get(url, { responseType: 'blob' });
+  },
+
+  exportarCsv: (termoBusca) => {
+    const url = `/movimentacoes/plantioMuda/export/csv${termoBusca ? `?searchTerm=${termoBusca}` : ''}`;
+    return api.get(url, { responseType: 'blob' });
   }
 };

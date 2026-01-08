@@ -1,4 +1,3 @@
-// FiltrosRelatorio.js (versão genérica)
 import React from 'react';
 import Input from '../Input/Input';
 import Button from '../Button/Button';
@@ -10,10 +9,13 @@ const FiltrosRelatorio = ({
   onPesquisar,
   isLoading = false,
   buttonText = 'Pesquisar',
-  // Novas props opcionais para relatório de insumos
+
+  // 🔹 continua existindo (insumos)
   mostrarTipoInsumo = false,
   tipoInsumo = 'Material',
-  mostrarNomeInsumo = false
+
+  // 🔹 NOVO: configuração do campo de texto
+  campoTexto = null,
 }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,20 +32,25 @@ const FiltrosRelatorio = ({
   };
 
   return (
-    <form className={`filtros-relatorio ${mostrarTipoInsumo ? 'com-tipo-insumo' : ''}`} onSubmit={handleSubmit}>
-      {/* Seletor de Tipo de Insumo - apenas se mostrarTipoInsumo for true */}
+    <form
+      className={`filtros-relatorio ${
+        mostrarTipoInsumo ? 'com-tipo-insumo' : ''
+      }`}
+      onSubmit={handleSubmit}
+    >
+      {/* 🔹 Tipo de insumo */}
       {mostrarTipoInsumo && (
         <div className="filtro-group">
           <label className="filtro-label">Tipo de Insumo</label>
           <div className="tipo-insumo-buttons">
-            <button 
+            <button
               type="button"
               className={tipoInsumo === 'Material' ? 'active' : ''}
               onClick={() => handleTipoInsumoChange('Material')}
             >
               Material
             </button>
-            <button 
+            <button
               type="button"
               className={tipoInsumo === 'Ferramenta' ? 'active' : ''}
               onClick={() => handleTipoInsumoChange('Ferramenta')}
@@ -54,34 +61,22 @@ const FiltrosRelatorio = ({
         </div>
       )}
 
-      {/* Campo Nome do Insumo - apenas se mostrarNomeInsumo for true */}
-      {mostrarNomeInsumo ? (
+      {/* 🔹 Campo de texto genérico */}
+      {campoTexto && (
         <div className="filtro-group">
-          <label className="filtro-label">Nome do Insumo</label>
+          <label className="filtro-label">{campoTexto.label}</label>
           <Input
-            name="nomeInsumo"
+            name={campoTexto.name}
             type="text"
-            value={filtros.nomeInsumo || ''}
+            value={filtros[campoTexto.name] || ''}
             onChange={handleChange}
-            placeholder="Digite o nome do insumo"
-            className="filtro-input"
-          />
-        </div>
-      ) : (
-        /* Campo Nome Popular padrão - mantém compatibilidade */
-        <div className="filtro-group">
-          <label className="filtro-label">Nome Popular</label>
-          <Input
-            name="nomePopular"
-            type="text"
-            value={filtros.nomePopular || ''}
-            onChange={handleChange}
-            placeholder="Ipê-amarelo"
+            placeholder={campoTexto.placeholder || ''}
             className="filtro-input"
           />
         </div>
       )}
 
+      {/* 🔹 Data início */}
       <div className="filtro-group">
         <label className="filtro-label">Data início</label>
         <Input
@@ -93,6 +88,7 @@ const FiltrosRelatorio = ({
         />
       </div>
 
+      {/* 🔹 Data fim */}
       <div className="filtro-group">
         <label className="filtro-label">Data fim</label>
         <Input

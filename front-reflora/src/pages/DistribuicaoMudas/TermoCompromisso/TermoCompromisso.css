@@ -1,195 +1,263 @@
+/* src/pages/TermoCompromisso/TermoCompromisso.css */
+
+/* =========================================================
+   CONTAINER PRINCIPAL
+   ========================================================= */
 .termo-compromisso {
-    width: 100%;
-    padding: var(--espacamento-lg);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px 10px; /* Padding reduzido */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f3f4f6; /* Fundo levemente cinza para destacar o papel */
+  overflow-x: hidden;
 }
 
+/* =========================================================
+   O "PAPEL" (DOCUMENTO) - VERSÃO COMPACTA
+   ========================================================= */
 .termo-compromisso__documento {
-    width: 100%;
-    max-width: 800px; /* Largura boa para um documento */
-    background-color: var(--cor-fundo-branco);
-    padding: var(--espacamento-xl);
-    border-radius: var(--raio-borda-md);
-    box-shadow: 0 4px 12px var(--cor-sombra);
-    /* margin-bottom foi REMOVIDO daqui */
+  width: 100%;
+  max-width: 800px; /* Largura levemente reduzida para leitura melhor */
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  /* Padding reduzido de 60px para 40px */
+  padding: 40px; 
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
 }
 
+/* Título */
 .termo-compromisso__documento h2 {
-    text-align: center;
-    margin-bottom: var(--espacamento-lg);
-    font-size: var(--tamanho-fonte-lg);
-    font-weight: 700;
-    color: var(--cor-texto-primario);
+  text-align: center;
+  margin-bottom: 24px; /* Margem reduzida */
+  font-size: 20px; /* Fonte ajustada */
+  font-weight: 700;
+  color: #111827;
+  text-decoration: underline;
+  text-transform: uppercase;
 }
 
+/* Texto */
 .termo-compromisso__texto {
-    margin-bottom: var(--espacamento-lg);
-    font-size: var(--tamanho-fonte-sm);
-    line-height: 1.7;
-    color: var(--cor-texto-primario);
+  margin-bottom: 20px; /* Menos espaço abaixo */
+  font-size: 15px; /* Fonte levemente menor (padrão compacto) */
+  line-height: 1.5; /* Altura de linha mais compacta (era 1.8) */
+  color: #1f2937;
+  text-align: justify;
 }
 
-.termo-compromisso__texto strong {
-    font-weight: 700;
-}
+.termo-compromisso__texto strong { font-weight: 700; color: #000; }
 
+/* =========================================================
+   TABELA DE MUDAS (COMPACTA)
+   ========================================================= */
 .termo-compromisso__tabela {
-    width: 70%; 
-    margin-left: auto;  
-    margin-right: auto;
-    border-collapse: collapse;
-    margin-bottom: var(--espacamento-lg);
-    border-radius: var(--raio-borda-xs);
-    overflow: hidden; 
+  width: 100%;
+  border-collapse: collapse; /* Remove espaços extras entre bordas */
+  margin-bottom: 24px;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .termo-compromisso__tabela th,
 .termo-compromisso__tabela td {
-    padding: var(--espacamento-md);
-    text-align: left;
-    border-bottom: 1px solid var(--cor-borda-cinza);
+  padding: 8px 12px; /* Padding Células reduzido */
+  text-align: center;
+  border-bottom: 1px solid #374151;
+  font-size: 14px; /* Fonte da tabela menor */
+  color: #1f2937;
 }
 
 .termo-compromisso__tabela th {
-    background-color: var(--cor-verde-primario);
-    color: var(--cor-texto-branco);
-    font-weight: 600;
-    font-size: var(--tamanho-fonte-sm);
+  background-color: #2e7d32;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 13px;
 }
 
-.termo-compromisso__tabela tbody tr:nth-child(even) {
-    background-color: var(--cor-fundo-cinza);
+.termo-compromisso__tabela tbody tr:last-child td { border-bottom: none; }
+
+/* =========================================================
+   ASSINATURAS (COMPACTO)
+   ========================================================= */
+.assinaturas-container {
+  margin-top: auto;
+  padding-top: 30px; /* Espaço antes das assinaturas reduzido */
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  page-break-inside: avoid;
 }
 
-.termo-compromisso__tabela tbody tr:last-child td {
-    border-bottom: none;
+.assinatura-box {
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
 }
 
-.termo-compromisso__paginacao {
-    display: flex;
-    justify-content: center;
-    margin-top: var(--espacamento-lg);
+/* Linha da Assinatura */
+.assinatura-linha {
+  border-top: 1px solid #000 !important;
+  margin: 0 auto 6px auto;
+  width: 100%;    
+  max-width: 180px; /* Linha mais curta no PC */
+  height: 0px !important;
 }
 
+.assinatura-box p {
+    margin: 2px 0; /* Texto das assinaturas mais grudado */
+    font-size: 14px;
+}
+.assinatura-box strong { font-weight: 600; }
+
+/* =========================================================
+   BOTÕES DE AÇÃO (COMPACTO)
+   ========================================================= */
 .termo-compromisso__actions {
-    display: flex;
-    justify-content: center;
-    gap: var(--espacamento-md);
-    width: 100%;
-    flex-wrap: wrap; 
-    margin-top: var(--espacamento-xl); 
-
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  width: 100%;
+  margin-top: 24px; /* Menos margem */
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
 }
 
 .termo-compromisso__button {
-    padding: var(--espacamento-md) var(--espacamento-lg);
-    font-size: var(--tamanho-fonte-sm);
-    font-weight: 600;
-    text-transform: uppercase;
-    color: var(--cor-texto-branco);
-    border: none;
-    border-radius: var(--raio-borda-sm);
-    cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 1px 3px var(--cor-sombra);
-    flex-grow: 1; 
-    max-width: 250px; 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 20px;
+  height: 40px; /* Botão mais baixo (40px) */
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  font-family: inherit;
 }
 
 .termo-compromisso__button:hover {
-    box-shadow: 0 2px 5px var(--cor-sombra-forte);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+  opacity: 0.95;
 }
 
-.termo-compromisso__button--primary {
-    background-color: var(--cor-verde-primario);
+/* Cores */
+.termo-compromisso__button--secondary { background-color: #212529; }
+.termo-compromisso__button--primary { background-color: #15803d; }
+
+/* =========================================================
+   RESPONSIVIDADE (MOBILE SUPER COMPACTO)
+   ========================================================= */
+@media (max-width: 768px) {
+  .termo-compromisso { padding: 10px; }
+  
+  .termo-compromisso__documento { 
+      padding: 20px 15px; /* Papel com borda fina */
+      border-radius: 6px;
+  }
+  
+  .termo-compromisso__documento h2 { 
+      font-size: 16px; 
+      margin-bottom: 15px; 
+  }
+  
+  .termo-compromisso__texto { 
+      font-size: 13px; 
+      line-height: 1.4; 
+      text-align: left; 
+      margin-bottom: 15px;
+  }
+  
+  .termo-compromisso__tabela th, 
+  .termo-compromisso__tabela td { 
+      padding: 5px 2px; 
+      font-size: 11px; 
+  }
+
+  /* --- ASSINATURAS LADO A LADO --- */
+  .assinaturas-container {
+      flex-direction: row !important;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 20px;
+      align-items: flex-end;
+  }
+  
+  .assinatura-box {
+      width: 48%; /* Divide a tela */
+  }
+
+  .assinatura-linha {
+      max-width: 100%;
+      margin-bottom: 4px;
+  }
+  
+  .assinatura-box p { font-size: 11px; }
+  .assinatura-box strong { font-size: 11px; }
+  .assinatura-box small { font-size: 10px; display: block; line-height: 1.1; }
+
+  /* Botões Mobile */
+  .termo-compromisso__actions {
+      flex-direction: column-reverse; /* Cancelar embaixo */
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 15px;
+  }
+  .termo-compromisso__button {
+      width: 100%;
+      height: 44px; /* Altura boa para toque */
+  }
 }
 
-.termo-compromisso__button--primary:hover {
-    background-color: var(--cor-verde-escuro);
-}
-
-.termo-compromisso__button--secondary {
-    background-color: var(--cor-primaria);
-}
-
-.termo-compromisso__button--secondary:hover {
-    background-color: var(--cor-primaria-escura);
-}
-
-/* ESTILOS DE IMPRESSÃO (ESSENCIAL PARA "EXPORTAR") */
+/* =========================================================
+   IMPRESSÃO (Mantida para sair correta no papel A4)
+   ========================================================= */
 @media print {
-
-    /* Remove TODOS os elementos externos da aplicação */
-    body * {
-        visibility: hidden !important;
-    }
-
-    /* Exibe SOMENTE o termo */
-    .termo-compromisso,
-    .termo-compromisso * {
-        visibility: visible !important;
-    }
-
-    /* Remove botões e paginação */
-    .termo-compromisso__actions,
-    .termo-compromisso__paginacao {
-        display: none !important;
-        visibility: hidden !important;
-    }
-
-    /* Prepara o layout do termo para impressão */
-    .termo-compromisso {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        background: #fff !important;
-    }
-
-    .termo-compromisso__documento {
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
-        max-width: none !important;
-        margin: 0 !important;
-        background: #fff !important;
-    }
-
-    /* Tabela centralizada */
-    .termo-compromisso__tabela {
-        width: 80% !important;
-        margin: 20px auto !important;
-        border-collapse: collapse !important;
-    }
-
-    /* Texto sempre preto */
-    .termo-compromisso__documento * {
-        color: #000 !important;
-    }
-
-    /* Cabeçalho da tabela */
-    .termo-compromisso__tabela th {
-        background-color: #e5e5e5 !important;
-        color: #000 !important;
-        border: 1px solid #333 !important;
-    }
-
-    /* Bordas em tudo */
-    .termo-compromisso__tabela td,
-    .termo-compromisso__tabela th {
-        border: 1px solid #333 !important;
-        padding: 6px !important;
-    }
-
-    /* Remove zebra */
-    .termo-compromisso__tabela tbody tr:nth-child(even),
-    .termo-compromisso__tabela tbody tr:nth-child(odd) {
-        background: #fff !important;
-    }
+  body * { visibility: hidden !important; }
+  .termo-compromisso, .termo-compromisso__documento, .termo-compromisso__documento * {
+      visibility: visible !important;
+  }
+  .termo-compromisso__actions, .termo-compromisso__paginacao { display: none !important; }
+  
+  .termo-compromisso {
+      position: absolute !important; top: 0 !important; left: 0 !important;
+      width: 100% !important; margin: 0 !important; padding: 0 !important; background: white !important;
+  }
+  
+  .termo-compromisso__documento {
+      box-shadow: none !important; border: none !important; margin: 0 !important;
+      padding: 1.5cm !important; /* Margem de impressão segura */
+      max-width: 100% !important;
+  }
+  
+  .termo-compromisso__tabela th {
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      background-color: #2e7d32 !important; color: white !important;
+  }
+  
+  .termo-compromisso__texto { font-size: 11pt; line-height: 1.5; }
+  
+  .assinaturas-container { 
+      flex-direction: row !important; 
+      gap: 40px !important; 
+      margin-top: 2cm !important;
+  }
+  .assinatura-linha { max-width: 200px !important; }
 }
