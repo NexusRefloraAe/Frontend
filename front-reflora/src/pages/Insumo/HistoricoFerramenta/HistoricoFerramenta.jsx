@@ -228,6 +228,12 @@ const HistoricoFerramenta = () => {
           buttonText="Pesquisar"
           buttonVariant="success"
           mostrarNomeInsumo={true}
+          campoTexto={{
+              label: "Nome do Insumo",
+              name: "nomeInsumo",
+              placeholder: "Digite o nome do insumo",
+
+            }}
           camposFiltro={[
             { name: "nomeInsumo", label: "Nome da Ferramenta", type: "text" },
             { name: "dataInicio", label: "Data Início", type: "date" },

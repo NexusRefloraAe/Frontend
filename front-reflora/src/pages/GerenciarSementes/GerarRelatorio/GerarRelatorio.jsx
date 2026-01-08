@@ -224,6 +224,11 @@ const GerarRelatorio = () => {
             filtros={filtros}
             onFiltroChange={handleFiltroChange}
             onPesquisar={handleGerarRelatorio}
+            campoTexto={{
+              label: "Nome Popular",
+              name: "nomePopular",
+              placeholder: "Digite o nome popular",
+            }}
           />
         </section>
 

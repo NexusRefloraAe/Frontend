@@ -138,6 +138,12 @@ const RelatorioVistoria = () => {
             onPesquisar={handleGerarRelatorio}
             buttonText="Pesquisar"
             buttonVariant="success" 
+            campoTexto={{
+              label: "Local / Canteiro",
+              name: "local",
+              placeholder: "Digite o local ou canteiro",
+
+            }}
           />
         </section>
 

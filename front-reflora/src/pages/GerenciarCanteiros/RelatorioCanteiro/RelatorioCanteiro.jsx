@@ -177,6 +177,11 @@ const RelatorioCanteiro = () => {
             filtros={filtros}
             onFiltroChange={handleFiltroChange}
             onPesquisar={handleGerarRelatorio}
+            campoTexto={{
+              label: "Nome da Espécie",
+              name: "nomePopular",
+              placeholder: "Digite o nome da espécie",
+            }}
           />
         </section>
 

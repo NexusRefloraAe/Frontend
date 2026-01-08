@@ -172,6 +172,12 @@ const GerarRelatorioInsumo = () => {
             onFiltroChange={handleFiltroChange}
             onPesquisar={handleFiltrarLocalmente}
             mostrarNomeInsumo={true}
+            campoTexto={{
+              label: "Nome do Insumo",
+              name: "nomeInsumo",
+              placeholder: "Digite o nome do insumo",
+
+            }}
             camposFiltro={[
               // Adicione os campos que faltam
               { name: "nomeInsumo", label: "Nome", type: "text" },
