@@ -1,38 +1,57 @@
-/* SISTEMA DE FONTES */
+/*  SISTEMA DE FONTES  */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* TEMA CLARO (Padrão) */
+  /* ======================================
+    TEMA CLARO (Padrão)
+    ======================================
+  */
+
+  /* PALETA DE CORES PRINCIPAIS */
   --cor-primaria: #1976d2;
   --cor-primaria-escura: #2a12cc;
   --cor-primaria-clara: #42a5f5;
-  --cor-verde-primario: #2e7d32;
-  --cor-verde-escuro: #1c5a1a;
-  --cor-verde-medio: #4caf50;
-  --cor-verde-claro: #81c784;
-  --cor-verde-muito-claro: #c8e6c9;
-  --cor-verde-background: #f1f8e9;
-  --cor-verde-medio-escuro: #257024;
-  --cor-verde-overlay: rgba(35, 208, 43, 0.3);
+
+  /* PALETA DE VERDES (Baseada na tela Reflora) */
+  --cor-verde-primario: #2e7d32;      /* Verde principal */
+  --cor-verde-escuro: #1c5a1a;        /* Verde escuro */
+  --cor-verde-medio: #4caf50;        /* Verde médio */
+  --cor-verde-claro: #81c784;        /* Verde claro */
+  --cor-verde-muito-claro: #c8e6c9;   /* Verde muito claro */
+  --cor-verde-background: #f1f8e9;   /* Verde de fundo suave */
+  --cor-verde-medio-escuro: #257024;     /* Verde medio escuro */
+  --cor-verde-overlay: rgba(35, 208, 43, 0.3); /* Overlay verde suave */
+
+  /* CORES DE TEXTO */
   --cor-texto-primario: #0e0d0d;
   --cor-texto-secundario: #666666;
   --cor-texto-claro: #999999;
   --cor-texto-branco: #ffffff;
   --cor-texto-verde: #2e7d32;
-  --cor-fundo-branco: #ffffff;
+
+  /* CORES DE FUNDO */
+  --cor-fundo-branco: #ffffff;       /* Usado para Cards */
   --cor-fundo-cinza: #f8f9fa;
   --cor-fundo-overlay: #f5f5f5;
-  --cor-fundo-verde-suave: #f8fbf8;
-  --cor-borda-cinza: #e0e0e0;
+  --cor-fundo-verde-suave: #f8fbf8;  /* Fundo principal do Body */
+
+  /* CORES DE BORDA E LINHA */
+  --cor-borda-cinza: #e0e0e0;       /* Borda principal */
   --cor-borda-foco: #1976d2;
   --cor-borda-verde: #4caf50;
   --cor-borda-google: #dadce0;
+
+  /* CORES DE ESTADO */
   --cor-erro: #d32f2f;
   --cor-sucesso: #388e3c;
   --cor-aviso: #f57c00;
+
+  /* CORES DE SOMBRA */
   --cor-sombra: rgba(0, 0, 0, 0.1);
   --cor-sombra-forte: rgba(0, 0, 0, 0.15);
   --cor-sombra-verde: rgba(46, 125, 50, 0.1);
+
+  /* ESPAÇAMENTO EM REM (1rem = 16px base) */
   --espacamento-xxs: 0.1rem;
   --espacamento-xs: 0.5rem;
   --espacamento-sm: 0.75rem;
@@ -40,6 +59,8 @@
   --espacamento-lg: 1.5rem;
   --espacamento-xl: 2rem;
   --espacamento-xxl: 3rem;
+
+  /* TIPOGRAFIA EM REM */
   --tamanho-fonte-xxs: 0.75rem;
   --tamanho-fonte-xs: 0.875rem;
   --tamanho-fonte-sm: 1rem;
@@ -48,63 +69,99 @@
   --tamanho-fonte-xl: 1.5rem;
   --tamanho-fonte-xxl: 1.75rem;
   --tamanho-fonte-xxxl: 2rem;
+
+  /* BORDER RADIUS EM REM */
   --raio-borda-xs: 0.25rem;
   --raio-borda-sm: 0.5rem;
   --raio-borda-md: 0.75rem;
   --raio-borda-lg: 1rem;
   --raio-borda-xl: 1.5rem;
+
+  /* ALTURAS E LARGURAS EM VH/VW/REM */
   --altura-botao-mobile: 2rem;
   --altura-botao-desktop: 3rem;
   --largura-maxima-conteudo: 100vw;
   --altura-minima-tela: 100vh;
 }
 
+/* ======================================
+  TEMA ESCURO (Quando [data-theme="dark"] é aplicado no <html>)
+  ======================================
+*/
 [data-theme="dark"] {
+  /* Os verdes precisam ser mais brilhantes para se destacar no escuro */
   --cor-verde-primario: #4ade80;
   --cor-verde-escuro: #369b5f;
   --cor-verde-medio: #5fcf64;
-  --cor-verde-claro: #81c784;
-  --cor-verde-muito-claro: #374151;
-  --cor-verde-background: #111c11;
+  --cor-verde-claro: #81c784; /* Pode manter ou ajustar */
+  --cor-verde-muito-claro: #374151; /* Usar para fundos sutis */
+  --cor-verde-background: #111c11; /* Fundo de tela bem escuro com tom verde */
   --cor-verde-medio-escuro: #369b5f;
   --cor-verde-overlay: rgba(74, 222, 128, 0.1);
-  --cor-texto-primario: #f9fafb;
-  --cor-texto-secundario: #d1d5db;
-  --cor-texto-claro: #9ca3af;
+
+  /* Cores de Texto Invertidas */
+  --cor-texto-primario: #f9fafb;     /* Quase branco */
+  --cor-texto-secundario: #d1d5db;  /* Cinza claro */
+  --cor-texto-claro: #9ca3af;       /* Cinza mais escuro */
   --cor-texto-branco: #ffffff;
   --cor-texto-verde: #4ade80;
-  --cor-fundo-branco: #1f2937;
-  --cor-fundo-cinza: #111827;
+
+  /* Fundos Invertidos */
+  --cor-fundo-branco: #1f2937;       /* Fundo do Card (cinza-azulado escuro) */
+  --cor-fundo-cinza: #111827;        /* Fundo secundário */
   --cor-fundo-overlay: #374151;
-  --cor-fundo-verde-suave: #111827;
-  --cor-borda-cinza: #374151;
+  --cor-fundo-verde-suave: #111827;  /* Fundo principal do Body (cinza-azulado bem escuro) */
+
+  /* Bordas Invertidas */
+  --cor-borda-cinza: #374151;       /* Borda principal */
   --cor-borda-foco: #42a5f5;
   --cor-borda-verde: #4ade80;
   --cor-borda-google: #5f6368;
+
+  /* Cores de Estado (podem precisar de mais brilho) */
   --cor-erro: #f87171;
   --cor-sucesso: #4ade80;
   --cor-aviso: #fbbf24;
+
+  /* Sombras (quase imperceptíveis no escuro, pode usar bordas) */
   --cor-sombra: rgba(0, 0, 0, 0.1);
   --cor-sombra-forte: rgba(0, 0, 0, 0.15);
   --cor-sombra-verde: rgba(74, 222, 128, 0.05);
 }
 
-html, body, #root {
-    height: 100% !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    /* Trava a janela principal para focar o scroll no conteúdo interno */
-    overflow: hidden !important; 
+/* ======================================
+  ESTILOS BASE (Globais)
+  ======================================
+*/
+html {
+  font-size: 16px;
 }
 
+/* MOBILE - Telas menores que 768px */
 body {
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  
+  /* IMPORTANTE: Agora usamos as variáveis que são trocadas pelo tema.
+    O 'body' usa o fundo principal e a cor de texto principal. 
+  */
   background-color: var(--cor-fundo-verde-suave);
   color: var(--cor-texto-primario);
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.3s, color 0.3s; /* Transição suave */
+  
   line-height: 1.6;
   font-size: var(--tamanho-fonte-sm);
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+  
+}
+
+/* FALLBACK SYSTEM FONT STACK */
+@supports not (font-family: 'Segoe UI') {
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
 }
 
 * {
@@ -113,66 +170,215 @@ body {
   box-sizing: border-box;
 }
 
-/* SIDEBAR - CORES FIXAS */
-.sidebar-container, [data-theme="dark"] .sidebar-container {
+/* Classes de utilidade (Exemplo: Cards)
+  Garante que seus cards também troquem de cor
+*/
+.auth-form,
+.configuracoes-card,
+.tabela-wrapper,
+.header-filtros {
+  background-color: var(--cor-fundo-branco); /* Usa o fundo do card */
+  border: 1px solid var(--cor-borda-cinza);
+  color: var(--cor-texto-secundario);
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* Atualiza o avatar também */
+.image-upload-container {
+  background-color: var(--cor-fundo-cinza); /* Fundo do avatar */
+  border: 2px solid var(--cor-verde-primario);
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* ======================================
+  CORREÇÕES PARA SIDEBAR - NÃO AFETA OUTROS COMPONENTES
+  ======================================
+*/
+
+/* 1. RESET PARA SIDEBAR - Força cores específicas */
+.sidebar-container {
+  /* Cores fixas - não usa variáveis do tema */
   background-color: #2e7d32 !important;
   color: #ffffff !important;
 }
 
-/* =================================================================
-   CORREÇÃO DE RESPONSIVIDADE E SCROLL
-   ================================================================= */
-
-/* 1. Estrutura de Layout */
-.main-container, .Container, .content-wrapper {
-    display: flex !important;
-    height: 100vh !important;
-    height: 100dvh !important; /* Altura para navegadores mobile */
-    width: 100vw !important;
-    overflow: hidden !important; 
+/* 2. Logo/título da sidebar - sempre branco */
+.sidebar-container .menu-toggle,
+.sidebar-container .menu-toggle span {
+  color: #ffffff !important;
 }
 
-/* 2. ÁREA DE CONTEÚDO (Onde o Scroll funciona) */
+/* 3. Itens do menu - estado normal */
+/* ATENÇÃO: Use a classe correta baseado no seu componente */
+.sidebar-container .ContainerItem, /* Se usar ContainerItem */
+.sidebar-container .ContainerItem .icon,
+.sidebar-container .ContainerItem .text,
+.sidebar-container .sidebar-item, /* Se usar sidebar-item */
+.sidebar-container .sidebar-item .sidebar-icon,
+.sidebar-container .sidebar-item .sidebar-text {
+  color: #ffffff !important;
+  background-color: transparent !important;
+}
+
+/* 4. Itens do menu - estado selecionado */
+.sidebar-container .ContainerItem.selected,
+.sidebar-container .sidebar-item.selected {
+  background-color: #ffffff !important;
+  color: #2e7d32 !important;
+}
+
+.sidebar-container .ContainerItem.selected .icon,
+.sidebar-container .ContainerItem.selected .text,
+.sidebar-container .sidebar-item.selected .sidebar-icon,
+.sidebar-container .sidebar-item.selected .sidebar-text {
+  color: #2e7d32 !important;
+}
+
+/* 5. Hover dos itens */
+.sidebar-container .ContainerItem:hover:not(.selected),
+.sidebar-container .sidebar-item:hover:not(.selected) {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* 6. Sobrescreve tema escuro apenas para sidebar */
+[data-theme="dark"] .sidebar-container,
+[data-theme="dark"] .sidebar-container .menu-toggle,
+[data-theme="dark"] .sidebar-container .menu-toggle span,
+[data-theme="dark"] .sidebar-container .ContainerItem,
+[data-theme="dark"] .sidebar-container .ContainerItem .icon,
+[data-theme="dark"] .sidebar-container .ContainerItem .text,
+[data-theme="dark"] .sidebar-container .sidebar-item,
+[data-theme="dark"] .sidebar-container .sidebar-item .sidebar-icon,
+[data-theme="dark"] .sidebar-container .sidebar-item .sidebar-text {
+  background-color: #2e7d32 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .sidebar-container .ContainerItem.selected,
+[data-theme="dark"] .sidebar-container .sidebar-item.selected {
+  background-color: #ffffff !important;
+  color: #2e7d32 !important;
+}
+
+[data-theme="dark"] .sidebar-container .ContainerItem.selected .icon,
+[data-theme="dark"] .sidebar-container .ContainerItem.selected .text,
+[data-theme="dark"] .sidebar-container .sidebar-item.selected .sidebar-icon,
+[data-theme="dark"] .sidebar-container .sidebar-item.selected .sidebar-text {
+  color: #2e7d32 !important;
+}
+
+/* 7. Mobile - mantém cores fixas */
+@media (max-width: 1024px) {
+  .sidebar-container,
+  .sidebar-container.mobile-active,
+  .sidebar-container:not(.fixed) {
+    background-color: #2e7d32 !important;
+    color: #ffffff !important;
+  }
+  
+  .sidebar-container .ContainerItem.selected,
+  .sidebar-container .sidebar-item.selected {
+    background-color: #ffffff !important;
+    color: #2e7d32 !important;
+  }
+}
+
+/* 8. Remove transições de tema da sidebar */
+.sidebar-container,
+.sidebar-container *,
+.sidebar-container:hover,
+.sidebar-container *:hover {
+  transition: background-color 0s, color 0s !important;
+}
+
+/* CORREÇÃO ESPECÍFICA PARA O TÍTULO DA SIDEBAR */
+.sidebar-container .menu-toggle span {
+  color: #ffffff !important;
+}
+
+/* Sobrescreve tema escuro */
+[data-theme="dark"] .sidebar-container .menu-toggle span {
+  color: #ffffff !important;
+}
+
+/* Mobile */
+@media (max-width: 1024px) {
+  .sidebar-container .menu-toggle span {
+    color: #ffffff !important;
+  }
+}
+/* Adicione no FINAL do seu index.css */
+
+/* SOLUÇÃO NUCLEAR - Força cores para sidebar */
+.sidebar-container .menu-toggle,
+.sidebar-container .menu-toggle span,
+.sidebar-container .menu-toggle:hover,
+.sidebar-container .menu-toggle:focus,
+.sidebar-container .menu-toggle:active,
+.sidebar-container .menu-toggle span:hover,
+.sidebar-container .menu-toggle span:focus,
+.sidebar-container .menu-toggle span:active {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+  stroke: #ffffff !important;
+  background-color: transparent !important;
+  text-decoration: none !important;
+  outline: none !important;
+  border: none !important;
+}
+
+/* Remove todas as transições */
+.sidebar-container .menu-toggle,
+.sidebar-container .menu-toggle span {
+  transition: none !important;
+}
+
+/* Remove qualquer herança */
+.sidebar-container .menu-toggle * {
+  color: inherit !important;
+}
+
+/* Tema escuro */
+[data-theme="dark"] .sidebar-container .menu-toggle,
+[data-theme="dark"] .sidebar-container .menu-toggle span {
+  color: #ffffff !important;
+}
+
+/* Mobile */
+@media (max-width: 1024px) {
+  .sidebar-container .menu-toggle span {
+    color: #ffffff !important;
+  }
+}
+
+/* =================================================================
+   CORREÇÃO NUCLEAR DE LAYOUT (ADICIONE NO FINAL DO ARQUIVO)
+   Isso corrige o problema do scroll infinito e dos botões sumindo
+================================================================= */
+
+/* 1. Trava a janela principal (Navegador) */
+html, body, #root {
+    height: 100vh !important;       /* Altura exata da tela, nem mais nem menos */
+    width: 100vw !important;
+    overflow: hidden !important;    /* PROIBIDO scroll na janela principal */
+    position: fixed !important;     /* Evita o "bounce" no iOS */
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 2. Cria a cadeia de altura fixa para todos os containers pais */
+/* Isso obriga o React a preencher a tela e não esticar além dela */
+.main-container, 
+.Container, 
+.content-wrapper, 
 .page-content,
 .distribuicaomudas-container,
 .tabs-layout-container,
 .tabs-layout-content {
-    flex: 1 !important;
     display: flex !important;
     flex-direction: column !important;
-    height: 100% !important;
-    width: 100% !important;
-    
-    /* LIBERA O SCROLL APENAS AQUI */
-    overflow-y: auto !important; 
-    overflow-x: hidden !important;
-    
-    /* Suaviza rolagem no celular */
-    -webkit-overflow-scrolling: touch; 
-    padding-bottom: 2rem !important; 
-}
-
-/* 3. Ajuste para Telas Curtas ou Mobile */
-@media (max-width: 768px) {
-    .main-container {
-        flex-direction: column;
-    }
-}
-
-/* Força scroll se a tela for muito baixa (notebook pequeno ou celular deitado) */
-@media (max-height: 600px) {
-    .page-content, .tabs-layout-content {
-        overflow-y: auto !important;
-        height: auto !important;
-        min-height: 100% !important;
-    }
-}
-
-/* 4. Scroll de Tabelas */
-.tabela-wrapper {
-    width: 100%;
-    overflow-x: auto !important;
-    display: block;
-    -webkit-overflow-scrolling: touch;
-    background-color: var(--cor-fundo-branco);
+    height: 100% !important;        /* Ocupa 100% do pai travado */
+    max-height: 100vh !important;
+    overflow: hidden !important;    /* Ninguém rola, só o filho final */
+    flex: 1 !important;             /* Garante expansão correta */
 }

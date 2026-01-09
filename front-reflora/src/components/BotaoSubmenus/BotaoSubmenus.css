@@ -16,30 +16,31 @@
 .configuracoes-tabs {
   display: flex;
   flex-direction: row;
+  /* Permite que os botões se organizem em várias linhas se a tela encolher */
   flex-wrap: wrap !important; 
   justify-content: center;
-  align-items: center;
-  gap: 8px !important;
-  padding: 0 !important;
+  align-items: stretch; /* Garante que todos os botões na mesma linha tenham a mesma altura */
+  gap: 10px !important;
+  padding: 10px 0 !important;
   width: 100%;
 }
 
 .configuracoes-tabs .button {
-  flex: 0 1 auto !important;
-  width: auto !important;
-  padding: 6px 12px !important;
-  font-size: 0.8rem !important;
-  min-height: 32px !important;
+  /* O SEGREDO: flex-grow: 1 (ocupa espaço), flex-shrink: 1 (encolhe), flex-basis: 180px (ponto de quebra) */
+  flex: 1 1 180px !important; 
+  min-width: 140px !important; /* Tamanho mínimo para não esmagar o texto */
+  max-width: 300px !important; /* Impede que o botão fique largo demais em telas grandes */
+  
+  padding: 8px 16px !important;
+  font-size: 0.85rem !important;
+  min-height: 40px !important;
   border-radius: var(--raio-borda-sm) !important;
-  line-height: 1.2;
-  margin: 0 !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px !important;
-  white-space: nowrap !important;
+  gap: 8px !important;
+  white-space: nowrap !important; /* Impede que o texto do botão quebre em duas linhas */
   transition: all 0.2s ease-in-out;
-  cursor: pointer;
 }
 
 .configuracoes-tabs .button svg {
@@ -77,18 +78,26 @@
   border-color: var(--cor-verde-escuro) !important;
 }
 
+/* Ajuste específico para telas horizontais mas curtas (Laptops) */
+@media (max-width: 1280px) and (min-width: 577px) {
+  .configuracoes-tabs .button {
+    font-size: 0.8rem !important;
+    padding: 6px 12px !important;
+    flex: 1 1 150px !important; /* Diminui um pouco o ponto de quebra para laptops */
+  }
+}
+
 /* Desktop Grande (> 1281px) */
 @media (min-width: 1281px) {
   .configuracoes-tabs {
-    flex-wrap: nowrap !important;
+    flex-wrap: nowrap !important; /* Em telas gigantes, mantém tudo em uma linha só */
     justify-content: center !important; 
     gap: 12px !important; 
   }
   .configuracoes-tabs .button {
-    padding: 8px 20px !important;
+    flex: 0 1 auto !important; /* Volta ao tamanho natural do conteúdo */
+    padding: 10px 24px !important;
     font-size: 0.9rem !important;
-    min-height: 36px !important;
-    flex-shrink: 0 !important; 
   }
 }
 
