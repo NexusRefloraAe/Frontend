@@ -128,6 +128,22 @@ const RevisaoDistribuicao = () => {
     e.preventDefault();
     if (mudasDoPedido.length === 0) return alert("Nenhuma muda selecionada.");
 
+    // 2. Validação do Município da Sede
+    if (!formData.cidadeSede || formData.cidadeSede.trim() === "") {
+      alert("Por favor, selecione o Município da Sede.");
+      // Opcional: focar no campo ou destacar erro
+      return;
+    }
+
+    // 3. Validação do Município de Distribuição
+    if (
+      !formData.cidadeDistribuicao ||
+      formData.cidadeDistribuicao.trim() === ""
+    ) {
+      alert("Por favor, selecione o Município de Distribuição.");
+      return;
+    }
+
     // Avança para o Termo levando os dados do formulário e a lista real de mudas
     navigate("/termo-compromisso", {
       state: {
@@ -168,6 +184,7 @@ const RevisaoDistribuicao = () => {
             value={formData.responsavelDistribuicao}
             onChange={handleChange("responsavelDistribuicao")}
             placeholder="Digite o nome do responsável"
+            required={true}
           />
 
           <Input
@@ -176,6 +193,7 @@ const RevisaoDistribuicao = () => {
             type="date"
             value={formData.dataEntrega}
             onChange={handleChange("dataEntrega")}
+            required={true}
           />
 
           {/* --- PAR 2: Recebimento e Instituição --- */}
@@ -186,6 +204,7 @@ const RevisaoDistribuicao = () => {
             value={formData.responsavelRecebimento}
             onChange={handleChange("responsavelRecebimento")}
             placeholder="Digite quem irá receber"
+            required={true}
           />
 
           <Input
@@ -195,6 +214,7 @@ const RevisaoDistribuicao = () => {
             value={formData.instituicao}
             onChange={handleChange("instituicao")}
             placeholder="Nome da instituição"
+            required={true}
           />
 
           {/* --- LOCALIZAÇÃO (Ocupa largura total, dividido internamente) --- */}
@@ -218,6 +238,7 @@ const RevisaoDistribuicao = () => {
               options={cidadesSede}
               loading={loadingCidadesSede}
               disabled={!formData.estadoSede}
+              required={true}
             />
 
             <Input
@@ -242,6 +263,7 @@ const RevisaoDistribuicao = () => {
               options={cidadesDistribuicao}
               loading={loadingCidadesDistribuicao}
               disabled={!formData.estadoDistribuicao}
+              required={true}
             />
           </div>
 
