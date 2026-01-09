@@ -1,136 +1,176 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import TabelaResponsiva from "../../../components/TabelaResponsiva/TabelaResponsiva";
 import PainelCard from "../../../components/PainelCard/PainelCard";
 import FiltrosRelatorio from "../../../components/FiltrosRelatorio/FiltrosRelatorio";
 import ExportButton from "../../../components/ExportButton/ExportButton";
+import Paginacao from "../../../components/Paginacao/Paginacao";
+import { distribuicaoService } from "../../../services/distribuicaoService";
+import { getBackendErrorMessage } from "../../../utils/errorHandler";
 import "./RelatorioDistribuicao.css";
-
-/* ================= MOCK SERVICE ================= */
-const distribuicaoService = {
-  getRelatorio: async () => {
-    return {
-      tabela: {
-        content: [
-          {
-            id: 1,
-            instituicao: "Prefeitura de João Pessoa",
-            cidade: "João Pessoa",
-            estado: "PB",
-            dataEntrega: "2025-12-28",
-            quantidade: 5000,
-          },
-          {
-            id: 2,
-            instituicao: "ONG Reflorar",
-            cidade: "Campina Grande",
-            estado: "PB",
-            dataEntrega: "2025-12-29",
-            quantidade: 6000,
-          },
-        ],
-      },
-    };
-  },
-};
-/* ================================================= */
 
 const RelatorioDistribuicao = () => {
   const [loading, setLoading] = useState(false);
-
-  // 🔹 dados
   const [distribuicoes, setDistribuicoes] = useState([]);
-  const [dadosOriginais, setDadosOriginais] = useState([]);
+  const [totalGeralMudas, setTotalGeralMudas] = useState(0);
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
 
-  // 🔹 filtros
+  // 1. 🔹 Estados de Ordenação
+  const [ordem, setOrdem] = useState("dataEntrega"); // Campo padrão
+  const [direcao, setDirecao] = useState("desc"); // Direção padrão
+
   const [filtros, setFiltros] = useState({
-    localizacao: "",
+    instituicao: "",
     dataInicio: "",
     dataFim: "",
   });
 
-  /* ============ CARREGAR DADOS ============ */
-  const carregarDados = async () => {
+  const [filtrosAplicados, setFiltrosAplicados] = useState({
+    instituicao: "",
+    dataInicio: "",
+    dataFim: "",
+  });
+
+  /* ============ CARREGAR DADOS DO BACK-END ============ */
+  const carregarDados = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await distribuicaoService.getRelatorio();
-      setDistribuicoes(res.tabela.content);
-      setDadosOriginais(res.tabela.content);
+      const res = await distribuicaoService.obterDadosRelatorio({
+        instituicao: filtrosAplicados.instituicao,
+        inicio: filtrosAplicados.dataInicio || null,
+        fim: filtrosAplicados.dataFim || null,
+        page: paginaAtual - 1,
+        size: 9,
+        // 💡 2. Ordenação dinâmica enviada para o Spring
+        sort: `${ordem},${direcao}`,
+      });
+
+      setDistribuicoes(res.dados.content);
+      setTotalGeralMudas(res.totalGeralMudas);
+      setTotalPaginas(res.dados.totalPages);
     } catch (e) {
-      alert("Erro ao carregar dados");
+      alert("Erro ao carregar dados: " + getBackendErrorMessage(e));
     } finally {
       setLoading(false);
     }
-  };
+    // 💡 3. Adicione ordem e direcao às dependências para recarregar ao mudar
+  }, [paginaAtual, filtrosAplicados, ordem, direcao]);
 
   useEffect(() => {
     carregarDados();
-  }, []);
+  }, [carregarDados]);
 
-  /* ============ FILTRO REAL ============ */
-  const handlePesquisar = () => {
-    const { localizacao, dataInicio, dataFim } = filtros;
-
-    const dadosFiltrados = dadosOriginais.filter((item) => {
-      // 🔹 filtro destino
-      const destino = `${item.cidade} ${item.estado}`.toLowerCase();
-      const matchesDestino =
-        !localizacao || destino.includes(localizacao.toLowerCase());
-
-      // 🔹 filtro data
-      let matchesData = true;
-      if (dataInicio || dataFim) {
-        const itemDate = new Date(item.dataEntrega);
-        const startDate = dataInicio ? new Date(dataInicio) : null;
-        const endDate = dataFim ? new Date(dataFim) : null;
-
-        if (startDate && itemDate < startDate) matchesData = false;
-        if (endDate && itemDate > endDate) matchesData = false;
-      }
-
-      return matchesDestino && matchesData;
-    });
-
-    setDistribuicoes(dadosFiltrados);
-  };
+  /* ============ CONTROLES DE FILTRO E ORDEM ============ */
 
   const handleFiltroChange = (name, value) => {
     setFiltros((prev) => ({ ...prev, [name]: value }));
   };
 
-  /* ============ TOTAL DINÂMICO ============ */
-  const totalDistribuido = distribuicoes.reduce(
-    (soma, item) => soma + item.quantidade,
-    0
-  );
+  const handlePesquisar = () => {
+    setPaginaAtual(1);
+    setFiltrosAplicados({ ...filtros });
+  };
 
-  /* ============ COLUNAS ============ */
+  // 💡 4. Função para alternar a ordenação
+  const handleOrdenar = (campo) => {
+    const novaDirecao = ordem === campo && direcao === "asc" ? "desc" : "asc";
+    setOrdem(campo);
+    setDirecao(novaDirecao);
+    setPaginaAtual(1); // Opcional: volta para a página 1 ao reordenar
+  };
+
+  const realizarDownload = (response, defaultName) => {
+    const disposition = response.headers["content-disposition"];
+    let fileName = defaultName;
+
+    if (disposition) {
+      // Regex para capturar o valor após "filename="
+      const filenameRegex = /filename\*?=['"]?(?:UTF-8'')?([^;\r\n"']*)['"]?;?/i;
+      const matches = filenameRegex.exec(disposition);
+      if (matches && matches[1]) {
+        fileName = decodeURIComponent(matches[1].replace(/['"]/g, ""));
+      }
+    }
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleExportarPdf = async () => {
+    setLoading(true);
+    try {
+      // 💡 O 'res' agora contém o objeto completo (data e headers)
+      const res = await distribuicaoService.exportarPdf({
+        instituicao: filtrosAplicados.instituicao,
+        inicio: filtrosAplicados.dataInicio,
+        fim: filtrosAplicados.dataFim
+      });
+      realizarDownload(res, 'Relatorio_Distribuicao.pdf');
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao gerar PDF.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExportarCsv = async () => {
+    setLoading(true);
+    try {
+      const res = await distribuicaoService.exportarCsv({
+        instituicao: filtrosAplicados.instituicao,
+        inicio: filtrosAplicados.dataInicio,
+        fim: filtrosAplicados.dataFim
+      });
+      realizarDownload(res, 'Relatorio_Distribuicao.csv');
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao gerar CSV.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ============ DEFINIÇÃO DAS COLUNAS ============ */
   const colunas = [
-    { key: "instituicao", label: "Instituição" },
+    {
+      key: "instituicao",
+      label: "Instituição",
+      sortable: true,
+      sortKey: "instituicao",
+    },
     {
       key: "destino",
       label: "Destino",
-      render: (item) => `${item.cidade} - ${item.estado}`,
+      sortable: true,
+      sortKey: "municipioDistribuicao",
     },
     {
       key: "dataEntrega",
       label: "Data",
-      render: (item) => {
-        const [ano, mes, dia] = item.dataEntrega.split("-");
-        return `${dia}/${mes}/${ano}`;
-      },
+      align: "center",
+      sortable: true,
+      sortKey: "dataEntrega",
     },
     {
       key: "quantidade",
       label: "Quantidade",
+      align: "right",
       render: (item) => item.quantidade.toLocaleString(),
+      sortable: true,
+      sortKey: "quantidade",
     },
   ];
 
   return (
     <div className="relatorio-distribuicao-container auth-scroll-fix">
       <div className="relatorio-distribuicao-content">
-
-        {/* 🔹 FILTROS */}
         <section className="filtros-section">
           <h1>Relatório de Distribuição de Mudas</h1>
           <FiltrosRelatorio
@@ -138,34 +178,55 @@ const RelatorioDistribuicao = () => {
             onFiltroChange={handleFiltroChange}
             onPesquisar={handlePesquisar}
             campoTexto={{
-              label: "Destino",
-              name: "localizacao",
-              placeholder: "Digite o destino"
+              label: "Instituição",
+              name: "instituicao",
+              placeholder: "Pesquisar por instituição...",
             }}
           />
-
         </section>
 
-        {/* 🔹 CARD */}
         <section className="cards-section">
           <div className="cards-container-single">
             <PainelCard
               titulo="Total Distribuído"
-              valor={totalDistribuido.toLocaleString()}
+              valor={totalGeralMudas.toLocaleString()}
               className="card-total-distribuido"
             />
           </div>
         </section>
 
-        {/* 🔹 TABELA */}
         <section className="tabela-section">
           <TabelaResponsiva
             dados={distribuicoes}
             colunas={colunas}
             loading={loading}
+            // 💡 5. Conecte a lógica de ordenação à tabela
+            onOrdenar={handleOrdenar}
+            ordemAtual={ordem}
+            direcaoAtual={direcao}
             footerContent={
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <ExportButton fileName="relatorio_distribuicao" />
+              <div
+                className="footer-relatorio-acoes"
+                style={{
+                  display: "flex",
+                  justifyContent:
+                    totalPaginas > 1 ? "space-between" : "flex-end",
+                  alignItems: "center",
+                  width: "100%",
+                }}
+              >
+                {totalPaginas > 1 && (
+                  <Paginacao
+                    paginaAtual={paginaAtual}
+                    totalPaginas={totalPaginas}
+                    onPaginaChange={setPaginaAtual}
+                  />
+                )}
+                <ExportButton 
+                  fileName="relatorio_distribuicao" 
+                  onExportPDF={handleExportarPdf}
+                  onExportCSV={handleExportarCsv}
+                />
               </div>
             }
           />

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 // Components
 import TabelaResponsiva from "../../../components/TabelaResponsiva/TabelaResponsiva";
 import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico";
@@ -38,6 +39,7 @@ const Historico = () => {
   const [canteiros, setCanteiros] = useState([]);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
+  const navigate = useNavigate();
 
   const [selecionados, setSelecionados] = useState([]);
   const [valoresSaida, setValoresSaida] = useState({});
@@ -99,19 +101,33 @@ const Historico = () => {
     setValoresSaida((prev) => ({ ...prev, [id]: valor }));
   };
 
+  // Localize e substitua esta função no seu Historico.jsx
   const handleAdicionarDistribuicao = () => {
     if (selecionados.length === 0)
       return alert("Selecione ao menos um canteiro.");
-    const itens = selecionados.map((id) => ({
-      id,
-      nome: canteiros.find((c) => c.id === id)?.NomeCanteiro,
-      quantidadeSaida: valoresSaida[id] || 0,
-    }));
-    if (itens.some((i) => i.quantidadeSaida <= 0))
-      return alert("Informe a quantidade para os itens selecionados.");
-    alert(`Distribuindo ${itens.length} itens!`);
-    setSelecionados([]);
-    setValoresSaida({});
+
+    // Mapeia os canteiros marcados com suas respectivas quantidades de saída
+    const mudasParaDistribuir = selecionados.map((id) => {
+      const canteiro = canteiros.find((c) => c.id === id);
+      return {
+        canteiroId: canteiro.id, // UUID do Canteiro para o Back-end
+        nome: canteiro.NomePopular, // Nome da espécie para exibir na lista
+        quantidade: Number(valoresSaida[id] || 0),
+      };
+    });
+
+    // Validação: impede avançar se algum campo estiver zerado
+    if (mudasParaDistribuir.some((m) => m.quantidade <= 0)) {
+      return alert("Informe uma quantidade válida para os itens selecionados.");
+    }
+
+    // ✅ NAVEGAÇÃO CORRETA: Aponta para a rota existente no AppRoutes.js
+    navigate("/distribuicao-mudas", {
+      state: {
+        mudasSelecionadas: mudasParaDistribuir,
+        tabDestino: "revisao-distribuicao", // Informa ao Layout qual aba ativar
+      },
+    });
   };
 
   // --- MODAL DETALHES ---
@@ -284,6 +300,9 @@ const Historico = () => {
           value={valoresSaida[item.id] || ""}
           onChange={(e) => handleChangeQuantidade(item.id, e.target.value)}
           disabled={!selecionados.includes(item.id)}
+          onKeyDown={(e) => {
+            if (["e", "E", ",", "."].includes(e.key)) e.preventDefault();
+          }}
         />
       ),
     },
