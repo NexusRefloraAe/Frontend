@@ -1,16 +1,19 @@
 /* FiltrosRelatorio.css */
 .filtros-relatorio {
   display: grid;
-  /* No web, vamos deixar os campos com tamanhos mais equilibrados */
-  grid-template-columns: 1.5fr 1fr 1fr auto; 
+  /* O segredo da responsividade: auto-fit com minmax */
+  /* Isso faz com que os campos tenham no mínimo 200px e ocupem o espaço disponível */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.25rem;
   align-items: flex-end;
   background-color: #ffffff;
   padding: 1rem 0;
+  width: 100%;
 }
 
+/* Quando houver o seletor de insumo, garantimos que ele mantenha o padrão fluido */
 .filtros-relatorio.com-tipo-insumo {
-  grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
 .filtro-group {
@@ -23,16 +26,18 @@
 .filtro-label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #4b5563; /* Cinza médio profissional */
+  color: #4b5563;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  white-space: nowrap; /* Impede que o label quebre linha */
 }
 
-/* INPUTS: Equilíbrio entre compacto e usável */
+/* INPUTS: Responsivos */
 .filtro-input input,
 .filtros-relatorio input[type="text"],
 .filtros-relatorio input[type="date"] {
-  height: 40px !important; /* Altura padrão de mercado para inputs "clean" */
+  width: 100%; /* Garante que o input ocupe todo o grupo */
+  height: 40px !important;
   padding: 0 0.8rem !important;
   font-size: 0.9rem !important;
   border: 1px solid #d1d5db !important;
@@ -49,7 +54,7 @@
   box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1) !important;
 }
 
-/* SELETOR TIPO DE INSUMO (Estilo moderno) */
+/* SELETOR TIPO DE INSUMO */
 .tipo-insumo-buttons {
   display: flex;
   background: #f3f4f6;
@@ -57,6 +62,7 @@
   border-radius: 8px;
   height: 40px;
   border: 1px solid #e5e7eb;
+  width: 100%;
 }
 
 .tipo-insumo-buttons button {
@@ -69,6 +75,7 @@
   font-weight: 600;
   font-size: 0.8rem;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .tipo-insumo-buttons button.active {
@@ -77,9 +84,10 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* BOTÃO PESQUISAR */
+/* BOTÃO PESQUISAR: Ajustado para não "sumir" */
 .btn-pesquisar {
-  min-width: 130px;
+  width: 100%; /* No grid responsivo, ele ocupa o espaço da célula */
+  max-width: 200px; /* Limita o tamanho no desktop */
   height: 40px !important;
   padding: 0 1.5rem !important;
   font-size: 0.875rem !important;
@@ -95,48 +103,32 @@
   transition: filter 0.2s !important;
 }
 
-.btn-pesquisar:hover {
-  filter: brightness(1.1);
+/* --- RESPONSIVIDADE --- */
+
+/* Telas de Desktop (Garantir que o botão não fique gigante) */
+@media (min-width: 1025px) {
+    .btn-pesquisar {
+        width: auto;
+        min-width: 150px;
+    }
 }
 
-/* --- RESPONSIVIDADE CORRIGIDA --- */
-
-/* Tablets e Telas Médias */
-@media (max-width: 1024px) {
-  .filtros-relatorio,
-  .filtros-relatorio.com-tipo-insumo {
-    grid-template-columns: 1fr 1fr; /* Quebra em 2 colunas para não espremer */
-    gap: 1rem;
-  }
-
-  .botoes-container {
-    grid-column: 1 / -1; /* Botão ocupa a largura total ou alinha à direita */
-    display: flex;
-    justify-content: flex-end;
-  }
-}
-
-/* Mobile (Ajuste fino para não bugar) */
+/* Mobile e Telas Pequenas */
 @media (max-width: 640px) {
-  .filtros-relatorio,
-  .filtros-relatorio.com-tipo-insumo {
-    grid-template-columns: 1fr; /* Uma única coluna no mobile */
-    gap: 1rem;
+  .filtros-relatorio {
+    grid-template-columns: 1fr; /* Força uma coluna única */
     padding: 1rem;
-    border: 1px solid #eee; /* Leve borda para separar o formulário do resto */
+    border: 1px solid #f3f4f6;
     border-radius: 8px;
   }
 
-  .filtro-group {
-    gap: 0.4rem;
-  }
-
   .btn-pesquisar {
-    width: 100%; /* Botão largo no mobile é melhor para o polegar */
-    height: 44px !important; /* Um pouco maior no mobile para facilitar o clique */
+    max-width: 100%; /* Botão ocupa a largura total no mobile */
+    height: 48px !important; /* Maior para toque */
+    margin-top: 0.5rem;
   }
 
   .tipo-insumo-buttons {
-    height: 44px;
+    height: 48px;
   }
 }
