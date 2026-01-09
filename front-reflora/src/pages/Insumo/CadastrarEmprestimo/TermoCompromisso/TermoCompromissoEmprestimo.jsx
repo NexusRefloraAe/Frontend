@@ -96,9 +96,7 @@ const TermoCompromissoEmprestimo = () => {
             <p className="signer-role">Responsável pela Entrega</p>
           </div>
         </div>
-        <div className="system-footer">
-          <p>Documento gerado pelo Sistema Reflora_aê | ID: {new Date().getTime()}</p>
-        </div>
+        
 
         <div className="termo-actions">
           <button className="btn-voltar" onClick={handleBack}>

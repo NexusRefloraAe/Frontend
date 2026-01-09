@@ -61,9 +61,6 @@ function Relatorios() {
 
   return (
     <div className="relatorios-container">
-      <div className="relatorios-header">
-         <h2 className="relatorios-titulo">Relatórios</h2>
-      </div>
 
       <div className="relatorios-grid">
         {relatorios.map((relatorio, index) => (
