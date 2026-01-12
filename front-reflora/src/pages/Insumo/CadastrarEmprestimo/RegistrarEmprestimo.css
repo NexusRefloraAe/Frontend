@@ -75,3 +75,81 @@
     height: 44px !important;
   }
 }
+
+/* Container da lista (a <ul>) */
+.autocomplete-list {
+  position: absolute; /* Faz a lista flutuar sobre o conteúdo */
+  top: 100%; /* Posiciona logo abaixo do input */
+  left: 0;
+  right: 0;
+  z-index: 1000; /* Garante que fique acima de outros elementos */
+  
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 0 0 8px 8px; /* Arredonda apenas as bordas de baixo */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Sombra suave para dar profundidade */
+  
+  max-height: 220px; /* Altura máxima antes de criar barra de rolagem */
+  overflow-y: auto; /* Cria barra de rolagem se a lista for longa */
+  
+  list-style: none; /* Remove as bolinhas da lista */
+  padding: 0;
+  margin: 4px 0 0 0; /* Um pequeno espaço entre o input e a lista */
+}
+
+/* Itens da lista (as <li>) */
+.autocomplete-list li {
+  display: flex;
+  justify-content: space-between; /* Separa Nome e Quantidade nas pontas */
+  align-items: center;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+
+/* Remove a linha do último item */
+.autocomplete-list li:last-child {
+  border-bottom: none;
+}
+
+/* Efeito ao passar o mouse */
+.autocomplete-list li:hover {
+  background-color: #f5f9ff; /* Azul bem clarinho */
+}
+
+/* Estilo do Nome do item (<strong>) */
+.autocomplete-list li strong {
+  font-size: 0.95rem;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Estilo da Quantidade/Badge (<span>) */
+.autocomplete-list li span {
+  font-size: 0.8rem;
+  color: #2e7d32; /* Verde escuro */
+  background-color: #e8f5e9; /* Fundo verde claro */
+  padding: 4px 8px;
+  border-radius: 12px; /* Formato de pílula */
+  font-weight: 500;
+  white-space: nowrap; /* Impede que o texto quebre */
+}
+
+/* --- Personalização da Barra de Rolagem (Opcional - Webkit) --- */
+.autocomplete-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.autocomplete-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.autocomplete-list::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.autocomplete-list::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
