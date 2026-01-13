@@ -15,6 +15,8 @@ const EditarTeste = ({ isOpen, onSalvar, onCancelar, teste }) => {
     taxaGerminou: "",
   });
 
+  const [unidadeMedida, setUnidadeMedida] = useState("");
+
   // 1. CÁLCULO AUTOMÁTICO DA TAXA
   // Observa mudanças na quantidade ou no que germinou
   useEffect(() => {
@@ -38,6 +40,19 @@ const EditarTeste = ({ isOpen, onSalvar, onCancelar, teste }) => {
         const [dia, mes, ano] = dataStr.split("/");
         return `${ano}-${mes}-${dia}`;
       };
+
+      let unidadeEncontrada = "";
+
+      const stringFormatada =
+        teste.quantidadeSaidaFormatada || teste.quantidadeAtualFormatada;
+      if (stringFormatada) {
+        // Remove números, pontos e espaços, sobrando só as letras
+        unidadeEncontrada = stringFormatada.replace(/[0-9.,\s]/g, "");
+      } else if (teste.unidadeDeMedida) {
+        unidadeEncontrada = teste.unidadeDeMedida;
+      }
+
+      setUnidadeMedida(unidadeEncontrada);
 
       setFormData({
         lote: teste.lote || "",
@@ -162,15 +177,33 @@ const EditarTeste = ({ isOpen, onSalvar, onCancelar, teste }) => {
             onChange={handleChange("dataTeste")}
             required={true}
           />
-          <Input
-            label="Quantidade"
-            type="number"
-            value={formData.quantidade}
-            onChange={handleChange("quantidade")}
-            onIncrement={handleIncrement("quantidade")}
-            onDecrement={handleDecrement("quantidade")}
-            required={true}
-          />
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{ flex: 1 }}>
+              <Input
+                label="Quantidade"
+                type="number"
+                value={formData.quantidade}
+                onChange={handleChange("quantidade")}
+                onIncrement={handleIncrement("quantidade")}
+                onDecrement={handleDecrement("quantidade")}
+                required={true}
+              />
+            </div>
+            {unidadeMedida && (
+              <span
+                style={{
+                  marginTop: "15px", // Ajuste para alinhar com o input (que tem label acima)
+                  fontWeight: "bold",
+                  color: "#555",
+                  fontSize: "13px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Unid: {unidadeMedida}
+              </span>
+            )}
+          </div>
+
           <Input
             label="Câmara Fria"
             type="select"
