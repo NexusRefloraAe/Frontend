@@ -1,55 +1,98 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authService } from '../../services/authService';
+import { usuarioService } from '../../services/usuarioService';
 import FormGeral from '../FormGeral/FormGeral';
-import Button from '../Button/Button';
-import Input from '../Input/Input'; // <-- 1. Importamos o Input
+import Input from '../Input/Input';
 import perfilusuarioIcon from '../../assets/perfilusuario.svg';
-import botaoEditarIcon from '../../assets/botaoeditar.svg';
-import botaoSalvarIcon from '../../assets/botaosalvar.svg';
-import botaoExcluirIcon from '../../assets/botaoexcluir.svg';
-import importarfotoIcon from '../../assets/importarfoto.svg';
+import { FaEdit, FaSave } from 'react-icons/fa';
+import { RiDeleteBin6Line } from 'react-icons/ri';
 import './PerfilUsuario.css';
+import { getBackendErrorMessage } from '../../utils/errorHandler';
 
 const PerfilUsuario = () => {
+  const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState(null);
+  const [fotoFile, setFotoFile] = useState(null);
+  const [fotoPreview, setFotoPreview] = useState(null);
+
   const [userData, setUserData] = useState({
-    nomeCompleto: 'Maria Silva',
-    email: 'maria.silva@exemplo.com',
-    telefone: '(00) 9 0000-0000',
-    dataNascimento: '1990-01-01',
-    genero: 'Feminino',
-    empresa: 'XXXXX',
-    endereco: 'Rua X, Nº 00, Bairro, Cidade/Estado',
+    nomeCompleto: '', email: '', telefone: '',
+    dataNascimento: '', genero: '', empresa: '',
+    endereco: '', fotoUrl: null
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = authService.getCurrentUser();
+        if (!user || !user.id) { navigate('/login'); return; }
+        setCurrentUser(user);
+        const data = await usuarioService.getUsuario(user.id);
+
+        let dataNascFormatada = '';
+        if (data.dataNascimento) {
+          if (data.dataNascimento.includes('T') || data.dataNascimento.includes(' ')) {
+            dataNascFormatada = data.dataNascimento.substring(0, 10);
+          } else if (data.dataNascimento.includes('/')) {
+            const parts = data.dataNascimento.split('/');
+            if (parts.length === 3) dataNascFormatada = `${parts[2]}-${parts[1]}-${parts[0]}`;
+          } else { dataNascFormatada = data.dataNascimento; }
+        }
+
+        let rawUrl = data.fotoUsuario?.url || data.fotoUsuarioResponseDTO?.url || data.fotoUrl || null;
+        if (rawUrl) { rawUrl = rawUrl.replace(/reflora-minio|minio/g, "localhost"); }
+
+        setUserData({
+          nomeCompleto: data.nomeCompleto || '',
+          email: data.email || '',
+          telefone: data.numeroCelular || '',
+          dataNascimento: dataNascFormatada,
+          genero: data.genero || '',
+          empresa: data.empresa || '',
+          endereco: data.endereco || '',
+          fotoUrl: rawUrl
+        });
+      } catch (error) {
+        console.error("Erro ao carregar perfil", getBackendErrorMessage(error));
+      }
+    };
+    fetchUserData();
+  }, [navigate]);
 
   const handleChange = (field) => (e) => {
     setUserData(prev => ({ ...prev, [field]: e.target.value }));
   };
 
   const handleSave = async (e) => {
-    // e.preventDefault() já é tratado pelo FormGeral
+    if (e && e.preventDefault) e.preventDefault();
     setIsLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Dados salvos:', userData);
+      await usuarioService.updateUsuario(currentUser.id, userData, fotoFile);
+      alert('Dados salvos com sucesso!');
       setIsEditing(false);
+      setFotoFile(null);
+      window.location.reload();
     } catch (error) {
-      console.error('Erro ao salvar:', error);
-    } finally {
-      setIsLoading(false);
-    }
+      alert('Ocorreu um erro ao salvar as alterações.');
+    } finally { setIsLoading(false); }
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    // TODO: Resetar os dados para o estado original (antes da edição)
-    // Por enquanto, apenas sai do modo de edição.
+    window.location.reload();
   };
 
-  const handleDeleteAccount = () => {
-    if (window.confirm('Tem certeza que deseja excluir sua conta? Esta ação é irreversível.')) {
-      console.log('Conta excluída:', userData.email);
+  const handleDeleteAccount = async () => {
+    if (window.confirm('Tem certeza que deseja excluir sua conta?')) {
+      try {
+        await usuarioService.deleteUsuario(currentUser.id);
+        authService.logout();
+        window.location.href = '/login';
+      } catch (error) { alert('Erro ao excluir conta.'); }
     }
   };
 
@@ -60,171 +103,103 @@ const PerfilUsuario = () => {
     input.onchange = (e) => {
       const file = e.target.files[0];
       if (file) {
-        console.log('Foto selecionada:', file.name);
+        setFotoFile(file);
+        setFotoPreview(URL.createObjectURL(file));
       }
     };
     input.click();
   };
 
-  // 2. O 'fieldsConfig' foi REMOVIDO daqui.
-
-  // A lógica de 'actions' está correta e permanece.
   const actionsConfig = isEditing
     ? [
-        {
-          type: 'button',
-          variant: 'secondary',
-          children: 'Cancelar',
-          onClick: handleCancel,
-          disabled: isLoading,
-        },
-        {
-          type: 'submit',
-          variant: 'primary',
-          children: isLoading ? 'Salvando...' : 'Salvar Alterações',
-          icon: isLoading ? null : botaoSalvarIcon,
-          disabled: isLoading,
-        },
-      ]
+      {
+        type: 'button',
+        variant: 'secondary', // Certifique-se de que este nome é idêntico ao do CSS
+        children: 'Cancelar',
+        onClick: handleCancel,
+        disabled: isLoading,
+      },
+      {
+        type: 'submit',
+        variant: 'primary',
+        children: isLoading ? 'Salvando...' : 'Salvar Cadastro',
+        icon: isLoading ? null : <FaSave />,
+        disabled: isLoading,
+      },
+    ]
     : [
-        {
-          type: 'button',
-          variant: 'primary',
-          children: 'Editar Perfil',
-          onClick: () => setIsEditing(true),
-          icon: botaoEditarIcon,
-        },
-        {
-          type: 'button',
-          variant: 'danger',
-          children: 'Excluir Conta',
-          onClick: handleDeleteAccount,
-          icon: botaoExcluirIcon,
-        },
-      ];
+      {
+        type: 'button',
+        variant: 'primary',
+        children: 'Editar Perfil',
+        onClick: () => setIsEditing(true),
+        icon: <FaEdit />,
+      },
+      {
+        type: 'button',
+        variant: 'danger',
+        children: 'Excluir Conta',
+        onClick: handleDeleteAccount,
+        icon: <RiDeleteBin6Line />,
+      },
+    ];
 
   return (
-    <div className="perfil-usuario">
-      <div className="perfil-usuario__avatar-section">
-        <div className="perfil-usuario__avatar">
-          <img src={perfilusuarioIcon} alt="Avatar do Usuário" />
-          {isEditing && (
-            <div className="perfil-usuario__avatar-overlay">
-              <Button
-                variant="outline"
-                icon={importarfotoIcon}
-                onClick={handleTrocarFoto}
-                size="small"
-              >
-                Trocar Foto
-              </Button>
-            </div>
-          )}
-        </div>
-      </div>
-
+    <div className="perfil-compact-container">
       <FormGeral
         title={isEditing ? 'Editar Perfil' : 'Gerencie suas informações pessoais'}
-        // 3. A prop 'fields' foi removida
         actions={actionsConfig}
         onSubmit={handleSave}
-        useGrid={true}
-        loading={isLoading} // O FormGeral usa 'loading' para desabilitar as 'actions'
+        useGrid={false}
+        loading={isLoading}
         layout="wide"
       >
-        {/* 4. Inputs renderizados como 'children' */}
-        
-        {/* Nome Completo (span: 2) */}
-        <div className="form-geral__campo--span-2">
-          <Input
-            label="Nome Completo"
-            name="nomeCompleto"
-            type="text"
-            value={userData.nomeCompleto}
-            onChange={handleChange('nomeCompleto')}
-            required={true}
-            readOnly={!isEditing || isLoading} // 5. Lógica de ReadOnly atualizada
-          />
+        <div className="perfil-form-wrapper">
+          <div className="perfil-side-photo">
+            <div
+              className={`avatar-mini-wrapper ${isEditing ? 'editable' : ''}`}
+              onClick={isEditing ? handleTrocarFoto : null}
+              title={isEditing ? "Clique para trocar a foto" : ""}
+            >
+              <img
+                src={fotoPreview || userData.fotoUrl || perfilusuarioIcon}
+                alt="Avatar"
+                onError={(e) => { e.target.src = perfilusuarioIcon; }}
+              />
+              {isEditing && (
+                <div className="photo-edit-label">Trocar Foto</div>
+              )}
+            </div>
+          </div>
+
+          <div className="perfil-fields-grid">
+            <div className="field-full-row">
+              <Input label="Nome Completo" value={userData.nomeCompleto} onChange={handleChange('nomeCompleto')} readOnly={!isEditing || isLoading} />
+            </div>
+            <Input label="E-mail" value={userData.email} onChange={handleChange('email')} readOnly={!isEditing || isLoading} />
+            <Input label="Telefone" value={userData.telefone} onChange={handleChange('telefone')} readOnly={!isEditing || isLoading} />
+            <Input label="Data de Nascimento" type="date" value={userData.dataNascimento} onChange={handleChange('dataNascimento')} readOnly={!isEditing || isLoading} />
+            <Input
+              label="Gênero"
+              type="select"
+              value={userData.genero}
+              onChange={handleChange('genero')}
+              readOnly={!isEditing || isLoading}
+              options={[
+                { value: 'FEMININO', label: 'Feminino' },
+                { value: 'MASCULINO', label: 'Masculino' },
+                { value: 'OUTRO', label: 'Outro' },
+                { value: 'NAO_INFORMAR', label: 'Prefiro não informar' },
+              ]}
+            />
+            <div className="field-full-row">
+              <Input label="Empresa" value={userData.empresa} onChange={handleChange('empresa')} readOnly={!isEditing || isLoading} />
+            </div>
+            <div className="field-full-row">
+              <Input label="Endereço" value={userData.endereco} onChange={handleChange('endereco')} readOnly={!isEditing || isLoading} />
+            </div>
+          </div>
         </div>
-
-        {/* E-mail */}
-        <Input
-          label="E-mail"
-          name="email"
-          type="email"
-          value={userData.email}
-          onChange={handleChange('email')}
-          required={true}
-          readOnly={!isEditing || isLoading}
-        />
-
-        {/* Telefone */}
-        <Input
-          label="Telefone"
-          name="telefone"
-          type="tel"
-          placeholder="(XX) 9 XXXX-XXXX"
-          value={userData.telefone}
-          onChange={handleChange('telefone')}
-          readOnly={!isEditing || isLoading}
-        />
-
-        {/* Data de Nascimento */}
-        <Input
-          label="Data de Nascimento"
-          name="dataNascimento"
-          type="date"
-          value={userData.dataNascimento}
-          onChange={handleChange('dataNascimento')}
-          required={true}
-          readOnly={!isEditing || isLoading}
-        />
-
-        {/* Gênero */}
-        <Input
-          label="Gênero"
-          name="genero"
-          type="select"
-          value={userData.genero}
-          onChange={handleChange('genero')}
-          readOnly={!isEditing || isLoading}
-          // O seu Input.jsx (do prompt anterior) usa 'readOnly'
-          // Idealmente, ele deveria usar 'disabled' para <select>
-          // Mas estamos usando 'readOnly' para manter consistência
-          // com o seu código anterior.
-          options={[
-            { value: 'Feminino', label: 'Feminino' },
-            { value: 'Masculino', label: 'Masculino' },
-            { value: 'Outro', label: 'Outro' },
-            { value: 'Prefiro não informar', label: 'Prefiro não informar' },
-          ]}
-        />
-
-        {/* Empresa (span: 2) */}
-        <div className="form-geral__campo--span-2">
-          <Input
-            label="Empresa"
-            name="empresa"
-            type="text"
-            value={userData.empresa}
-            onChange={handleChange('empresa')}
-            readOnly={!isEditing || isLoading}
-          />
-        </div>
-
-        {/* Endereço (span: 2) */}
-        <div className="form-geral__campo--span-2">
-          <Input
-            label="Endereço"
-            name="endereco"
-            type="text"
-            value={userData.endereco}
-            onChange={handleChange('endereco')}
-            required={true}
-            readOnly={!isEditing || isLoading}
-          />
-        </div>
-        
       </FormGeral>
     </div>
   );

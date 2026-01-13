@@ -1,0 +1,86 @@
+/* src/components/PainelCard/PainelCard.css */
+
+.card {
+  /* Layout Flexível */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centraliza verticalmente */
+  align-items: center;     /* Centraliza horizontalmente */
+  
+  /* Tamanho */
+  min-height: 160px; /* Altura mínima para ficar bonito, mas pode crescer */
+  height: 100%;      /* Ocupa a altura total da grade */
+  padding: 1.5rem;
+  
+  /* Visual */
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  
+  /* Comportamento */
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  text-align: center; /* Garante que textos quebrem linha centralizados */
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Título do Card */
+.card-titulo {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #4b5563; /* Cinza médio */
+  margin: 0 0 1rem 0; /* Espaço entre título e valor */
+  width: 100%;
+}
+
+/* Valor (Número) */
+.card-valor {
+  font-size: 2.2rem; /* Bem grande para destaque */
+  font-weight: 800;
+  color: #1f2937;    /* Quase preto */
+  margin: 0;
+  line-height: 1.1;
+}
+
+/* Ícone */
+.card-icone {
+  margin-top: 1rem; /* Empurra o ícone para baixo do número */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-icone img {
+  width: 40px;  /* Um pouco maior que antes */
+  height: 40px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.card-icone span {
+  font-size: 2rem;
+}
+
+/* --- RESPONSIVIDADE DO CARD --- */
+@media (max-width: 480px) {
+  /* Ajustes para telas MUITO pequenas (celulares antigos) */
+  .card {
+    min-height: 140px;
+    padding: 1rem;
+  }
+
+  .card-valor {
+    font-size: 1.8rem;
+  }
+
+  .card-titulo {
+    font-size: 0.75rem;
+  }
+}

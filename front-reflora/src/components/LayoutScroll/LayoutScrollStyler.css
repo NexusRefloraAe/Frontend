@@ -1,0 +1,8 @@
+.layout-scroll {
+  width: 100%;
+  height: calc(85vh - 80px); /* ajuste se tiver header fixo */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 8px; /* opcional */
+  margin: 0 auto;
+}

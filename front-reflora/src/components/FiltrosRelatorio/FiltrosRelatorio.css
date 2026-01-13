@@ -1,0 +1,134 @@
+/* FiltrosRelatorio.css */
+.filtros-relatorio {
+  display: grid;
+  /* O segredo da responsividade: auto-fit com minmax */
+  /* Isso faz com que os campos tenham no mínimo 200px e ocupem o espaço disponível */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+  align-items: flex-end;
+  background-color: #ffffff;
+  padding: 1rem 0;
+  width: 100%;
+}
+
+/* Quando houver o seletor de insumo, garantimos que ele mantenha o padrão fluido */
+.filtros-relatorio.com-tipo-insumo {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.filtro-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.filtro-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4b5563;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap; /* Impede que o label quebre linha */
+}
+
+/* INPUTS: Responsivos */
+.filtro-input input,
+.filtros-relatorio input[type="text"],
+.filtros-relatorio input[type="date"] {
+  width: 100%; /* Garante que o input ocupe todo o grupo */
+  height: 40px !important;
+  padding: 0 0.8rem !important;
+  font-size: 0.9rem !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  background-color: #fff !important;
+  color: #1f2937 !important;
+  box-sizing: border-box !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+
+.filtro-input input:focus {
+  outline: none !important;
+  border-color: #2e7d32 !important;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1) !important;
+}
+
+/* SELETOR TIPO DE INSUMO */
+.tipo-insumo-buttons {
+  display: flex;
+  background: #f3f4f6;
+  padding: 4px;
+  border-radius: 8px;
+  height: 40px;
+  border: 1px solid #e5e7eb;
+  width: 100%;
+}
+
+.tipo-insumo-buttons button {
+  flex: 1;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tipo-insumo-buttons button.active {
+  background: #ffffff;
+  color: #2e7d32;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* BOTÃO PESQUISAR: Ajustado para não "sumir" */
+.btn-pesquisar {
+  width: 100%; /* No grid responsivo, ele ocupa o espaço da célula */
+  max-width: 200px; /* Limita o tamanho no desktop */
+  height: 40px !important;
+  padding: 0 1.5rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  background-color: #2e7d32 !important;
+  color: white !important;
+  border: none !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: filter 0.2s !important;
+}
+
+/* --- RESPONSIVIDADE --- */
+
+/* Telas de Desktop (Garantir que o botão não fique gigante) */
+@media (min-width: 1025px) {
+    .btn-pesquisar {
+        width: auto;
+        min-width: 150px;
+    }
+}
+
+/* Mobile e Telas Pequenas */
+@media (max-width: 640px) {
+  .filtros-relatorio {
+    grid-template-columns: 1fr; /* Força uma coluna única */
+    padding: 1rem;
+    border: 1px solid #f3f4f6;
+    border-radius: 8px;
+  }
+
+  .btn-pesquisar {
+    max-width: 100%; /* Botão ocupa a largura total no mobile */
+    height: 48px !important; /* Maior para toque */
+    margin-top: 0.5rem;
+  }
+
+  .tipo-insumo-buttons {
+    height: 48px;
+  }
+}

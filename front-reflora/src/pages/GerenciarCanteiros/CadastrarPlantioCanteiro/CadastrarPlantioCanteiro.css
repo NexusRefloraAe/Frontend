@@ -1,0 +1,121 @@
+/* src/pages/Plantio/CadastrarPlantioCanteiro/CadastrarPlantioCanteiro.css */
+
+/* =========================================================
+   CONTAINER GERAL
+   ========================================================= */
+.cadastro-plantio-canteiro-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding-bottom: 20px;
+  font-family: inherit;
+}
+
+/* =========================================================
+   GRID CUSTOMIZADO
+   ========================================================= */
+.plantio-canteiro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.span-full {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+/* =========================================================
+   INPUTS E SELECTS
+   ========================================================= */
+.cadastro-plantio-canteiro-container label {
+  display: block;
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.9rem; /* Tamanho ajustado para o padrão */
+  margin-bottom: 4px;
+  /* text-transform: uppercase;  <-- REMOVIDO PARA FICAR NORMAL */
+  font-family: inherit;
+}
+
+.cadastro-plantio-canteiro-container input,
+.cadastro-plantio-canteiro-container select {
+  height: 38px !important; /* Altura padrão */
+  padding: 0 10px !important;
+  font-size: 0.95rem !important; /* Fonte interna legível */
+  border-radius: 4px !important;
+  border: 1px solid #d1d5db !important;
+  color: #1f2937;
+  transition: all 0.2s;
+  box-sizing: border-box !important;
+  width: 100%;
+  font-family: inherit !important;
+}
+
+.cadastro-plantio-canteiro-container input:focus,
+.cadastro-plantio-canteiro-container select:focus {
+  border-color: #15803d !important;
+  box-shadow: 0 0 0 2px rgba(21, 128, 61, 0.1) !important;
+  outline: none !important;
+}
+
+/* =========================================================
+   BOTÕES DE AÇÃO
+   ========================================================= */
+.plantio-canteiro-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+  width: 100%;
+}
+
+.plantio-canteiro-btn {
+  height: 38px;
+  padding: 0 20px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: white;
+  border: none;
+  transition: opacity 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit !important;
+}
+
+.plantio-canteiro-btn:hover {
+  opacity: 0.9;
+}
+
+.btn-cancelar { background-color: #2e2e2e !important; }
+.btn-salvar { background-color: #15803d !important; }
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+@media (max-width: 768px) {
+  .cadastro-plantio-canteiro-container {
+    padding: 10px;
+  }
+
+  .plantio-canteiro-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .plantio-canteiro-actions {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .plantio-canteiro-btn {
+    width: 100%;
+    height: 44px;
+  }
+}

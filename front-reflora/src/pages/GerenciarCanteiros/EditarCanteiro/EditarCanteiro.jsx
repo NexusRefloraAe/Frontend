@@ -1,137 +1,113 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import FormGeral from '../../../components/FormGeral/FormGeral';
-// 1. Importar o Input
 import Input from '../../../components/Input/Input'; 
-import './EditarCanteiro.css';
+import { plantioCanteiroService } from '../../../services/plantioCanteiroService';
 
-const EditarCanteiro = () => {
+const EditarCanteiro = ({ itemParaEditar, aoSalvarSucesso, aoCancelar }) => {
   const [formData, setFormData] = useState({
-    nome: '',
-    data: '',
-    quantidade: 1200, // <-- 2. Mudei para 'number'
+    id: '',
+    nomeCanteiro: '',
     especie: '',
+    data: '',
+    quantidade: 0,
   });
 
-  const handleCancel = (confirmar = true) => {
-    const resetForm = () => {
-      setFormData({
-        nome: '',
-        data: '',
-        quantidade: 1200, // <-- 2. Mudei para 'number'
-        especie: '',
-      });
-    };
+  const [loading, setLoading] = useState(false);
 
-    if (confirmar) {
-      if (window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
-        resetForm();
-      }
-    } else {
-      resetForm();
+  useEffect(() => {
+    if (itemParaEditar) {
+      // Mapeia os dados do PlantioCanteiroListagemDTO para o estado do formulário
+      setFormData({
+        id: itemParaEditar.id,
+        nomeCanteiro: itemParaEditar.nomeCanteiro || 'Não informado', // Exibição
+        especie: itemParaEditar.nomeEspecie || '', // Exibição
+        // Se a data vier do Java como dd/MM/yyyy, o input type="date" precisa de yyyy-MM-dd
+        data: formatarParaInputDate(itemParaEditar.dataPlantio), 
+        quantidade: itemParaEditar.quantidade || 0,
+      });
     }
+  }, [itemParaEditar]);
+
+  // Função auxiliar para converter "25/12/2025" -> "2025-12-25"
+  const formatarParaInputDate = (dataBR) => {
+    if (!dataBR) return '';
+    const [dia, mes, ano] = dataBR.split('/');
+    return `${ano}-${mes}-${dia}`;
   };
 
-  // 3. Ajuste no handleChange para tratar números
   const handleChange = (field) => (e) => {
     const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // 4. Handlers para o stepper de Quantidade
-  const handleQuantidadeInc = () => {
-    setFormData(prev => ({ ...prev, quantidade: prev.quantidade + 1 }));
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await plantioCanteiroService.update(formData.id, formData);
+      alert('Lote editado com sucesso!');
+      if (aoSalvarSucesso) aoSalvarSucesso(); // Função para fechar modal ou recarregar lista
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || 'Erro ao salvar alteração.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleQuantidadeDec = () => {
-    setFormData(prev => ({ ...prev, quantidade: prev.quantidade > 0 ? prev.quantidade - 1 : 0 }));
-  };
-
-  const handleSubmit = (e) => {
-    // e.preventDefault() já é tratado pelo FormGeral
-    console.log('Dados do Canteiro:', formData);
-    alert('Edição salva com sucesso!');
-    handleCancel(false);
-  };
-
-  // 5. O array 'fields' foi REMOVIDO.
-
-  // O array 'actions' está correto.
   const actions = [
     {
       type: 'button',
       variant: 'action-secondary',
       children: 'Cancelar',
-      onClick: () => handleCancel(true),
+      onClick: aoCancelar,
     },
     {
       type: 'submit',
       variant: 'primary',
-      children: 'Salvar Edição',
+      children: loading ? 'Salvando...' : 'Salvar Edição',
+      disabled: loading
     },
   ];
 
   return (
     <div className="pagina-canteiro">
       <FormGeral
-        title="Editar Canteiro"
-        // 6. A prop 'fields' foi removida
+        title="Editar Lote no Canteiro"
         actions={actions}
         onSubmit={handleSubmit}
         useGrid={false}
       >
-        {/* 7. Inputs renderizados como 'children' */}
+        {/* EXIBIÇÃO APENAS: Nome do Canteiro e Espécie */}
+        <div style={{ marginBottom: '20px', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
+          <p><strong>Canteiro:</strong> {formData.nomeCanteiro}</p>
+          <p><strong>Espécie:</strong> {formData.especie}</p>
+        </div>
 
         <Input
-          label="Nome"
-          name="nome"
-          type="select"
-          value={formData.nome}
-          onChange={handleChange('nome')}
-          required={true}
-          placeholder="Selecione o canteiro"
-          options={[
-            { value: 'canteiro_1', label: 'Canteiro 1' },
-            { value: 'canteiro_2', label: 'Canteiro 2' },
-            { value: 'canteiro_3', label: 'Canteiro 3' },
-          ]}
-        />
-        
-        <Input
-          label="Data"
+          label="Nova Data de Plantio"
           name="data"
           type="date"
           value={formData.data}
           onChange={handleChange('data')}
           required={true}
-          placeholder="xx/xx/xxxx"
         />
         
         <Input
-          label="Quantidade"
+          label="Nova Quantidade"
           name="quantidade"
           type="number"
           value={formData.quantidade}
-          onChange={handleChange('quantidade')} // Para digitação
-          onIncrement={handleQuantidadeInc}   // Para botão +
-          onDecrement={handleQuantidadeDec}   // Para botão -
+          onChange={handleChange('quantidade')}
+          onIncrement={() => setFormData(p => ({...p, quantidade: p.quantidade + 1}))}
+          onDecrement={() => setFormData(p => ({...p, quantidade: p.quantidade > 0 ? p.quantidade - 1 : 0}))}
+          onKeyDown={(e) => {
+            if (["e", "E", ",", "."].includes(e.key)) {
+              e.preventDefault();
+            }
+          }}
           required={true}
         />
-        
-        <Input
-          label="Espécie"
-          name="especie"
-          type="select"
-          value={formData.especie}
-          onChange={handleChange('especie')}
-          required={true}
-          placeholder="Selecione a espécie"
-          options={[
-            { value: 'eucalyptus_globulus', label: 'Eucalyptus globulus' },
-            { value: 'ipe_amarelo', label: 'Ipê Amarelo' },
-            { value: 'pau_brasil', label: 'Pau-Brasil' },
-          ]}
-        />
-
       </FormGeral>
     </div>
   );

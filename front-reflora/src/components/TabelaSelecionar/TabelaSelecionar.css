@@ -1,0 +1,242 @@
+.tabela-selecionar-wrapper {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--cor-fundo-branco);
+    border-radius: var(--raio-borda-lg);
+    box-shadow: 0 2px 8px var(--cor-sombra-forte);
+    border: 1px solid var(--cor-borda-verde);
+    height: 100%;
+}
+
+.tabela-selecionar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--espacamento-xl);
+    border-bottom: 1px solid var(--cor-borda-cinza);
+}
+
+.tabela-selecionar-header h1 {
+    text-decoration: underline;
+    font-size: 25px;
+    color: var(--cor-texto-primario);
+    margin: 0;
+}
+
+.tabela-selecionar-content {
+    flex: 1;
+    padding: var(--espacamento-lg);
+    overflow-x: auto;
+}
+
+.tabela-selecionar-content table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+.tabela-selecionar-content table tr th {
+    background-color: var(--cor-verde-primario);
+    padding: 12px 8px;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    border: 1px solid var(--cor-verde-escuro);
+}
+
+.tabela-selecionar-content table tr td {
+    text-align: center;
+    padding: 12px 8px;
+    background-color: var(--cor-fundo-cinza);
+    color: var(--cor-texto-primario);
+    border: 1px solid var(--cor-borda-cinza);
+}
+
+.tabela-selecionar-content .linha-selecionada td {
+    background-color: var(--cor-verde-background);
+    border-color: var(--cor-verde-claro);
+}
+
+.checkbox-selecao {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.input-quantidade {
+    width: 120px;
+    padding: 8px;
+    border: 1px solid var(--cor-borda-cinza);
+    border-radius: var(--raio-borda-sm);
+    text-align: center;
+    font-size: var(--tamanho-fonte-sm);
+    font-weight: 500;
+}
+
+.input-quantidade:disabled {
+    background-color: var(--cor-fundo-overlay);
+    color: var(--cor-texto-claro);
+    cursor: not-allowed;
+}
+
+.input-quantidade:focus {
+    outline: none;
+    border-color: var(--cor-verde-primario);
+    box-shadow: 0 0 0 2px var(--cor-verde-overlay);
+}
+
+/* 🔹 ESTILOS CORRIGIDOS PARA NOME DO CANTEIRO CLICÁVEL - APENAS TEXTO AZUL */
+.nome-canteiro-clicavel {
+    background: none;
+    border: none;
+    color: var(--cor-primaria-escura) !important; /* Azul */
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    font-size: inherit;
+    transition: color 0.2s ease;
+}
+
+.nome-canteiro-clicavel:hover {
+    color: var(--cor-primaria-escura) !important;
+    text-decoration: underline;
+}
+
+.nome-canteiro-clicavel strong {
+    color: inherit !important;
+}
+
+.tabela-selecionar-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--espacamento-lg);
+    border-top: 1px solid var(--cor-borda-cinza);
+    gap: var(--espacamento-md);
+}
+
+/* CORREÇÃO DO BOTÃO - ESTILO DIRETO NO BUTTON */
+.tabela-selecionar-footer .button {
+    width: auto !important;
+    min-width: 160px;
+    max-width: 200px;
+    padding: 10px 24px !important;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Se preferir usar uma classe específica */
+.botao-confirmar-saida {
+    width: auto !important;
+    min-width: 160px;
+    max-width: 200px;
+    padding: 10px 24px !important;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Ajustes para a paginação */
+.tabela-selecionar-footer nav {
+    display: flex;
+    align-items: center;
+}
+
+.tabela-selecionar-footer nav ul {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+.tabela-selecionar-footer nav ul li a {
+    text-decoration: none;
+    color: var(--cor-texto-secundario);
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: var(--raio-borda-sm);
+    display: block;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.tabela-selecionar-footer nav ul li a:hover:not(.disabled) {
+    background-color: var(--cor-fundo-overlay);
+    border-color: var(--cor-borda-cinza);
+}
+
+.tabela-selecionar-footer nav ul li a.active {
+    background-color: var(--cor-verde-primario);
+    color: white;
+    border-color: var(--cor-verde-primario);
+}
+
+.tabela-selecionar-footer nav ul li a.disabled {
+    color: var(--cor-texto-claro);
+    pointer-events: none;
+    cursor: default;
+}
+
+.tabela-selecionar-footer nav ul li span {
+    padding: 8px 6px;
+    color: var(--cor-texto-secundario);
+    font-weight: bold;
+}
+
+.icone-ordenar {
+    margin-left: var(--espacamento-xs);
+    opacity: 0.6;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.icone-ordenar:hover {
+    opacity: 1;
+}
+
+.loading-text,
+.no-results {
+    text-align: center;
+    padding: 40px;
+    color: var(--cor-texto-secundario);
+    font-style: italic;
+}
+
+.no-results {
+    color: var(--cor-erro);
+    font-weight: 500;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .tabela-selecionar-header {
+        flex-direction: column;
+        gap: var(--espacamento-md);
+        align-items: stretch;
+    }
+
+    .tabela-selecionar-footer {
+        flex-direction: column;
+        gap: var(--espacamento-md);
+    }
+
+    .tabela-selecionar-footer nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .input-quantidade {
+        width: 100px;
+    }
+
+    /* Botão em mobile ocupa toda a largura */
+    .tabela-selecionar-footer .button,
+    .botao-confirmar-saida {
+        width: 100% !important;
+        min-width: auto;
+        max-width: none;
+    }
+}

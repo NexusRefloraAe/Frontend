@@ -1,15 +1,17 @@
-import React from 'react'
-import "./SidebarItemStyler.css";
+import React from 'react';
+import './SidebarItemStyler.css'; // Verifique se existe este arquivo
 
-const SidebarItem = ({ Icon, Text, isLogout, onClick }) => {
+const SidebarItem = ({ Icon, Text, onClick, active, isLogout = false }) => {
   return (
-    <button
-      className={`sidebar-item ${isLogout ? "logout" : ""}`}
+    <div 
+      className={`sidebar-item ${active ? 'selected' : ''} ${isLogout ? 'logout' : ''}`} // Aqui usa "sidebar-item"
       onClick={onClick}
+      role="button"
+      tabIndex={0}
     >
-      <Icon aria-hidden="true" />
-      <span>{Text}</span>
-    </button>
+      <Icon className="sidebar-icon" />
+      <span className="sidebar-text">{Text}</span>
+    </div>
   );
 };
 

@@ -1,0 +1,116 @@
+/* src/pages/Canteiros/CadastrarCanteiro/CadastrarCanteiro.css */
+
+/* =========================================================
+   CONTAINER GERAL
+   ========================================================= */
+.cadastro-canteiro-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding-bottom: 20px;
+  font-family: inherit;
+}
+
+/* =========================================================
+   GRID DO CONTEÚDO
+   ========================================================= */
+.canteiro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* =========================================================
+   INPUTS E SELECTS
+   ========================================================= */
+.cadastro-canteiro-container label {
+  display: block;
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.9rem; /* Tamanho ajustado */
+  margin-bottom: 4px;
+  /* text-transform: uppercase; <-- REMOVIDO */
+  font-family: inherit;
+}
+
+.cadastro-canteiro-container input,
+.cadastro-canteiro-container select {
+  width: 100%;
+  height: 38px !important;
+  padding: 0 10px !important;
+  font-size: 0.95rem !important; /* Fonte interna legível */
+  border-radius: 4px !important;
+  border: 1px solid #d1d5db !important;
+  color: #1f2937;
+  transition: border-color 0.2s;
+  box-sizing: border-box !important;
+  font-family: inherit !important;
+}
+
+.cadastro-canteiro-container input:focus,
+.cadastro-canteiro-container select:focus {
+  border-color: #15803d !important;
+  box-shadow: 0 0 0 2px rgba(21, 128, 61, 0.1) !important;
+  outline: none !important;
+}
+
+/* =========================================================
+   BOTÕES DE AÇÃO
+   ========================================================= */
+.canteiro-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+  width: 100%;
+}
+
+.canteiro-btn {
+  height: 38px;
+  padding: 0 24px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: white;
+  border: none;
+  transition: opacity 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit !important;
+}
+
+.canteiro-btn:hover {
+  opacity: 0.9;
+}
+
+.btn-cancelar { background-color: #2e2e2e !important; }
+.btn-salvar { background-color: #15803d !important; }
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+@media (max-width: 768px) {
+  .cadastro-canteiro-container {
+    padding: 10px;
+  }
+
+  .canteiro-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .canteiro-actions {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .canteiro-btn {
+    width: 100%;
+    height: 44px;
+  }
+}

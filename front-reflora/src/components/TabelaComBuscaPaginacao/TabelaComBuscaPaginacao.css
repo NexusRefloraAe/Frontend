@@ -1,0 +1,372 @@
+/* ==========================================================
+   AÇÕES (BOTÕES DE ÍCONE)
+   ========================================================== */
+
+.acoes {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+}
+
+.btn-icone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.btn-icone .icone {
+    font-size: 1rem;
+}
+
+/* Tooltip simples */
+.btn-icone:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+/* Botão Editar */
+.btn-editar {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.btn-editar:hover {
+    background-color: #f59e0b;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+}
+
+/* Botão Confirmar / Visualizar */
+.btn-confirmar {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+}
+
+.btn-confirmar:hover {
+    background-color: #3b82f6;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+/* Botão Excluir */
+.btn-excluir {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.btn-excluir:hover {
+    background-color: #ef4444;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+.btn-icone:active {
+    transform: translateY(0);
+}
+
+/* Responsividade ações */
+
+
+/* ==========================================================
+   CONTAINER HISTÓRICO
+   ========================================================== */
+
+.historico-container-banco {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--cor-fundo-branco);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    overflow-y: auto;
+
+}
+
+/* Header */
+.historico-title-content-banco {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+.historico-title-content-banco img {
+    width: 40px;
+    cursor: pointer;
+}
+
+/* Botões topo */
+.historico-bottons-banco ul {
+    display: flex;
+    gap: 10px;
+    padding: 20px 10px;
+    justify-content: center;
+    list-style: none;
+}
+
+.historico-bottons-banco button {
+    background-color: #25702475;
+    border: none;
+    padding: 6px 20px;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    gap: 6px;
+}
+
+.historico-bottons-banco button:hover,
+.historico-bottons-banco ul li.historico-botton-active {
+    background-color: #257024;
+}
+
+/* Conteúdo */
+.historico-content-semente {
+    background-color: white;
+    padding: 24px;
+    margin: 0 20px 20px;
+    border-radius: 16px;
+}
+
+/* Header interno */
+.historico-header-content-semente {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 20px
+}
+
+.historico-header-content-semente h1 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2e7d32;
+    align-self: center;
+    margin: 0;
+    flex: 1;
+    /* Ocupa espaço disponível */
+    min-width: 200px;
+    padding-left: 15px;
+    /* Mais espaçamento lateral */
+
+}
+
+/* --- ÁREA DE SCROLL --- */
+.tabela-scroll-area-historico {
+    width: 100%;
+    overflow-x: auto;
+    /* Rolagem horizontal se necessário */
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Busca */
+.historico-input-search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #000;
+    border-radius: 10px;
+
+}
+
+.historico-input-search input {
+    border: none;
+    outline: none;
+    font-size: 16px;
+
+}
+
+/* ==========================================================
+   TABELA (DESKTOP)
+   ========================================================== */
+
+.historico-infos-sementes-card table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.historico-infos-sementes-card th {
+    background-color: #8FBC8F;
+    color: #ffffff;
+    text-align: left;
+    padding: 14px 16px;
+    /* Mais espaçamento interno (padding) */
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    font-weight: 700;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.historico-infos-sementes-card td {
+    padding: 14px 16px;
+    /* Mais espaçamento para parecer mais largo */
+    color: #333;
+    vertical-align: middle;
+    border-right: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 0.9rem;
+}
+
+.historico-infos-sementes-card tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+.historico-infos-sementes-card tr:hover {
+    background-color: #f0f7f0;
+}
+
+
+.historico-infos-sementes-card td input,
+.historico-infos-sementes-card td select {
+    width: 100%;
+    padding: 4px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+
+/* ==========================================================
+   FOOTER / PAGINAÇÃO
+   ========================================================== */
+
+.historico-footer-content {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+    align-items: center;
+}
+
+.historico-footer-content button {
+    background-color: #257024;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.historico-footer-content nav ul {
+    display: flex;
+    gap: 10px;
+    list-style: none;
+}
+
+.historico-footer-content nav ul li a {
+    padding: 8px 12px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 6px;
+    color: #66605F;
+}
+
+.historico-footer-content nav ul li a.active {
+    background-color: #257024;
+    color: white;
+}
+
+.historico-footer-content nav ul li a.disabled {
+    color: #ccc;
+    pointer-events: none;
+}
+
+/* ==========================================================
+   TABELA RESPONSIVA – MOBILE (CARDS)
+   ========================================================== */
+
+@media (max-width: 768px) {
+    .historico-header-content-semente {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 15px 20px !important;
+        border-bottom: 1px solid #e0e0e0 !important;
+        display: flex !important;
+        gap: 15px !important;
+
+    }
+
+    .historico-header-content-semente h1 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #2e7d32;
+        margin: 0;
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .historico-footer-content {
+        display: flex;
+        flex-direction: column;
+        /* Empilha elementos */
+        justify-content: center;
+        align-items: stretch;
+        /* Elementos ocupam toda largura disponível */
+        gap: 12px;
+        /* Espaço entre botão e paginação */
+        padding: 12px;
+    }
+
+    .historico-footer-content button {
+        width: 100%;
+        /* Botão ocupa toda a largura */
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 8px;
+    }
+
+    .historico-footer-content nav ul {
+        display: flex;
+        justify-content: center;
+        /* Centraliza paginação */
+        flex-wrap: wrap;
+        /* Quebra linhas se necessário */
+        gap: 8px;
+        padding: 0;
+    }
+
+    .historico-footer-content nav ul li a {
+        padding: 6px 10px;
+        font-size: 14px;
+        border-radius: 6px;
+    }
+
+    .historico-footer-content nav ul li a.active {
+        background-color: #257024;
+        color: white;
+    }
+
+    .historico-footer-content nav ul li a.disabled {
+        color: #ccc;
+        pointer-events: none;
+    }
+
+}

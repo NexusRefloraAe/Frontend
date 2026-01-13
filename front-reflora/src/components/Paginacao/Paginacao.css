@@ -1,0 +1,53 @@
+/* Paginacao.css */
+.paginacao-container {
+    display: flex;
+    justify-content: center;
+}
+
+.paginacao-list {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 5px;
+    align-items: center;
+}
+
+.paginacao-item a, 
+.paginacao-item span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: #2e7d32; /* Verde do seu projeto */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background-color: white;
+}
+
+.paginacao-item a:hover:not(.disabled) {
+    background-color: #f1f8e9;
+    border-color: #2e7d32;
+}
+
+.paginacao-item .active {
+    background-color: #2e7d32 !important;
+    color: white !important;
+    border-color: #2e7d32;
+    font-weight: bold;
+}
+
+.paginacao-item .disabled {
+    color: #ccc;
+    cursor: not-allowed;
+    pointer-events: none;
+    background-color: #fafafa;
+}
+
+.paginacao-ellipsis {
+    padding: 8px;
+    color: #666;
+}

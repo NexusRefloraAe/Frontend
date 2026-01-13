@@ -1,29 +1,52 @@
-import React, { useState } from 'react';
-import FormGeral from '../../../components/FormGeral/FormGeral';
-// 1. Importamos o Input, pois agora a página é responsável por ele
-import Input from '../../../components/Input/Input'; 
-import './CadastrarCanteiro.css';
+import React, { useState, useEffect } from "react";
+import FormGeral from "../../../components/FormGeral/FormGeral";
+import Input from "../../../components/Input/Input";
+import { sementesService } from "../../../services/sementesService";
+import { canteiroService } from "../../../services/canteiroService";
+import { getBackendErrorMessage } from "../../../utils/errorHandler";
+
+// Importando o CSS
+import "./CadastrarCanteiro.css";
 
 const CadastrarCanteiro = () => {
+  const [opcoesEspecies, setOpcoesEspecies] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
-    nome: '',
-    data: '',
-    quantidade: 1200, // <-- Mudei para number para o stepper funcionar
-    especie: '',
+    nome: "",
+    data: "",
+    quantidade: 0,
+    especie: "",
   });
+
+  useEffect(() => {
+    const fetchEspecies = async () => {
+      try {
+        const listaNomes = await sementesService.listarNomesPopulares();
+        const options = listaNomes.map((nome) => ({
+          value: nome,
+          label: nome,
+        }));
+        setOpcoesEspecies(options);
+      } catch (error) {
+        console.error("Erro ao carregar espécies:", error);
+        alert("Não foi possível carregar a lista de espécies.");
+      }
+    };
+    fetchEspecies();
+  }, []);
 
   const handleCancel = (confirmar = true) => {
     const resetForm = () => {
-      setFormData({
-        nome: '',
-        data: '',
-        quantidade: 1200, // <-- Também mudei aqui para number
-        especie: '',
-      });
+      setFormData({ nome: "", data: "", quantidade: 0, especie: "" });
     };
 
     if (confirmar) {
-      if (window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
+      if (
+        window.confirm(
+          "Deseja cancelar? As alterações não salvas serão perdidas."
+        )
+      ) {
         resetForm();
       }
     } else {
@@ -31,111 +54,129 @@ const CadastrarCanteiro = () => {
     }
   };
 
-  // 2. Ajustamos o handleChange para converter 'number' corretamente
   const handleChange = (field) => (e) => {
-    // Se o tipo for 'number', garante que o valor seja salvo como número
-    const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
+    const value =
+      e.target.type === "number" ? Number(e.target.value) : e.target.value;
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // 3. Criamos handlers específicos para o stepper de Quantidade
   const handleQuantidadeInc = () => {
-    setFormData(prev => ({ ...prev, quantidade: prev.quantidade + 1 }));
+    setFormData((prev) => ({ ...prev, quantidade: prev.quantidade + 1 }));
   };
 
   const handleQuantidadeDec = () => {
-    // Evita números negativos
-    setFormData(prev => ({ ...prev, quantidade: prev.quantidade > 0 ? prev.quantidade - 1 : 0 }));
+    setFormData((prev) => ({
+      ...prev,
+      quantidade: prev.quantidade > 0 ? prev.quantidade - 1 : 0,
+    }));
   };
 
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
 
-  const handleSubmit = (e) => {
-    // e.preventDefault() já é chamado dentro do FormGeral
-    console.log('Dados do Canteiro:', formData);
-    alert('Cadastro salvo com sucesso!');
-    handleCancel(false); // Reseta o form sem perguntar
+    if (!formData.nome || !formData.data || !formData.especie) {
+      alert("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const payload = {
+        nome: formData.nome,
+        data: formData.data,
+        quantidade: formData.quantidade,
+        especie: formData.especie,
+      };
+
+      await canteiroService.create(payload);
+
+      alert("Canteiro cadastrado com sucesso!");
+      handleCancel(false);
+    } catch (error) {
+      console.error("Erro ao salvar:", error);
+      const mensagemErro = getBackendErrorMessage(error);
+      alert(`Erro: ${mensagemErro}`);
+    } finally {
+      setLoading(false);
+    }
   };
-
-  // 4. O array 'fields' foi REMOVIDO.
-
-  // O array 'actions' permanece o mesmo, pois o FormGeral ainda o aceita.
-  const actions = [
-    {
-      type: 'button',
-      variant: 'action-secondary',
-      children: 'Cancelar',
-      onClick: () => handleCancel(true),
-    },
-    {
-      type: 'submit',
-      variant: 'primary',
-      children: 'Salvar Cadastro',
-    },
-  ];
 
   return (
-    <div className="pagina-canteiro">
+    <div className="cadastro-canteiro-container">
       <FormGeral
         title="Cadastrar Canteiro"
-        // 5. A prop 'fields' foi removida
-        actions={actions}
         onSubmit={handleSubmit}
-        useGrid={false} // Mantém os campos em coluna única
+        useGrid={false} // Desligamos o grid do FormGeral para usar o nosso
       >
-        {/* 6. Os Inputs agora são passados como 'children' */}
-        
-        <Input
-          label="Nome"
-          name="nome"
-          type="select"
-          value={formData.nome}
-          onChange={handleChange('nome')}
-          required={true}
-          placeholder="Selecione o canteiro" // Placeholder é usado pelo Input
-          options={[
-            // Removemos a opção "Selecione..." daqui, pois o placeholder já faz isso
-            { value: 'canteiro_1', label: 'Canteiro 1' },
-            { value: 'canteiro_2', label: 'Canteiro 2' },
-            { value: 'canteiro_3', label: 'Canteiro 3' },
-          ]}
-        />
-        
-        <Input
-          label="Data"
-          name="data"
-          type="date"
-          value={formData.data}
-          onChange={handleChange('data')}
-          required={true}
-          placeholder="xx/xx/xxxx"
-        />
-        
-        <Input
-          label="Quantidade"
-          name="quantidade"
-          type="number"
-          value={formData.quantidade}
-          onChange={handleChange('quantidade')} // Para digitação manual
-          onIncrement={handleQuantidadeInc}   // Para o botão '+'
-          onDecrement={handleQuantidadeDec}   // Para o botão '-'
-          required={true}
-        />
-        
-        <Input
-          label="Espécie"
-          name="especie"
-          type="select"
-          value={formData.especie}
-          onChange={handleChange('especie')}
-          required={true}
-          placeholder="Selecione a espécie"
-          options={[
-            { value: 'eucalyptus_globulus', label: 'Eucalyptus globulus' },
-            { value: 'ipe_amarelo', label: 'Ipê Amarelo' },
-            { value: 'pau_brasil', label: 'Pau-Brasil' },
-          ]}
-        />
+        {/* GRID CUSTOMIZADO PARA COLUNAS */}
+        <div className="canteiro-grid">
+          <Input
+            label="Nome do Canteiro"
+            name="nome"
+            type="text"
+            value={formData.nome}
+            onChange={handleChange("nome")}
+            required={true}
+            placeholder="Ex: Canteiro 1"
+          />
 
+          <Input
+            label="Data de Criação"
+            name="data"
+            type="date"
+            value={formData.data}
+            onChange={handleChange("data")}
+            required={true}
+            placeholder="xx/xx/xxxx"
+          />
+
+          <Input
+            label="Qtd Máxima (unid)"
+            name="quantidade"
+            type="number"
+            value={formData.quantidade}
+            onChange={handleChange("quantidade")}
+            onIncrement={handleQuantidadeInc}
+            onDecrement={handleQuantidadeDec}
+            onKeyDown={(e) => {
+              if (["e", "E", ",", "."].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
+            required={true}
+          />
+
+          <Input
+            label="Espécie"
+            name="especie"
+            type="select"
+            value={formData.especie}
+            onChange={handleChange("especie")}
+            required={true}
+            placeholder="Selecione a espécie"
+            options={opcoesEspecies}
+          />
+        </div>
+
+        {/* BOTÕES */}
+        <div className="canteiro-actions">
+          <button
+            type="button"
+            className="canteiro-btn btn-cancelar"
+            onClick={() => handleCancel(true)}
+            disabled={loading}
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            className="canteiro-btn btn-salvar"
+            disabled={loading}
+          >
+            {loading ? "Salvando..." : "Salvar Cadastro"}
+          </button>
+        </div>
       </FormGeral>
     </div>
   );

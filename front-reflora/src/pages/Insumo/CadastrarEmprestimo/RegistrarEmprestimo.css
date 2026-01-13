@@ -1,0 +1,155 @@
+/* Container Principal */
+.cadastrar-emprestimo {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Grid de Inputs (Compacto igual ao cadastro) */
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+  margin-bottom: 12px;
+}
+
+.input-row > *:only-child {
+  grid-column: 1 / -1;
+}
+
+/* Alinhamento dos botões (IGUAL À IMAGEM) */
+.cadastrar-emprestimo form > div:last-child {
+  display: flex !important;
+  justify-content: flex-end !important; /* Alinha à direita */
+  gap: 12px !important;
+  margin-top: 24px !important;
+  padding-top: 16px !important;
+  border-top: 1px solid #f3f4f6 !important;
+  width: 100% !important;
+}
+
+/* Botões Menores (IGUAL AO CADASTRO) */
+.cadastrar-emprestimo form > div:last-child > button {
+  width: auto !important; /* Remove o 100% anterior */
+  min-width: 130px !important; /* Tamanho controlado */
+  height: 38px !important;
+  padding: 0 20px !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  border: none !important;
+  color: white !important;
+}
+
+/* Cores Escuras dos Botões */
+.cadastrar-emprestimo form > div:last-child > button:first-of-type {
+  background-color: #2e2e2e !important; /* Cinza Escuro */
+}
+
+.cadastrar-emprestimo form > div:last-child > button:last-of-type {
+  background-color: #15803d !important; /* Verde Escuro */
+}
+
+/* Estado Loading */
+.cadastrar-emprestimo button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsividade Mobile */
+@media (max-width: 768px) {
+  .input-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .cadastrar-emprestimo form > div:last-child {
+    flex-direction: column-reverse !important;
+    align-items: stretch !important;
+  }
+
+  .cadastrar-emprestimo form > div:last-child > button {
+    width: 100% !important;
+    height: 44px !important;
+  }
+}
+
+/* Container da lista (a <ul>) */
+.autocomplete-list {
+  position: absolute; /* Faz a lista flutuar sobre o conteúdo */
+  top: 100%; /* Posiciona logo abaixo do input */
+  left: 0;
+  right: 0;
+  z-index: 1000; /* Garante que fique acima de outros elementos */
+  
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 0 0 8px 8px; /* Arredonda apenas as bordas de baixo */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Sombra suave para dar profundidade */
+  
+  max-height: 220px; /* Altura máxima antes de criar barra de rolagem */
+  overflow-y: auto; /* Cria barra de rolagem se a lista for longa */
+  
+  list-style: none; /* Remove as bolinhas da lista */
+  padding: 0;
+  margin: 4px 0 0 0; /* Um pequeno espaço entre o input e a lista */
+}
+
+/* Itens da lista (as <li>) */
+.autocomplete-list li {
+  display: flex;
+  justify-content: space-between; /* Separa Nome e Quantidade nas pontas */
+  align-items: center;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+
+/* Remove a linha do último item */
+.autocomplete-list li:last-child {
+  border-bottom: none;
+}
+
+/* Efeito ao passar o mouse */
+.autocomplete-list li:hover {
+  background-color: #f5f9ff; /* Azul bem clarinho */
+}
+
+/* Estilo do Nome do item (<strong>) */
+.autocomplete-list li strong {
+  font-size: 0.95rem;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Estilo da Quantidade/Badge (<span>) */
+.autocomplete-list li span {
+  font-size: 0.8rem;
+  color: #2e7d32; /* Verde escuro */
+  background-color: #e8f5e9; /* Fundo verde claro */
+  padding: 4px 8px;
+  border-radius: 12px; /* Formato de pílula */
+  font-weight: 500;
+  white-space: nowrap; /* Impede que o texto quebre */
+}
+
+/* --- Personalização da Barra de Rolagem (Opcional - Webkit) --- */
+.autocomplete-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.autocomplete-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.autocomplete-list::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.autocomplete-list::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}

@@ -1,0 +1,53 @@
+/* Historico.css */
+
+/* Removemos o fundo cinza e o preenchimento do container pai para 
+   eliminar qualquer borda externa visível */
+.historico-container {
+  width: 100%;
+  padding: 0; 
+  background-color: transparent; 
+}
+
+/* ESTA É A CORREÇÃO PRINCIPAL:
+   Escondemos as propriedades visuais da wrapper para que ela pare de 
+   criar uma "moldura" branca em volta da tabela interna.
+*/
+.tabela-wrapper {
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+/* Esconde o cabeçalho de filtros se ele não tiver conteúdo (comentado no JS) */
+.header-filtros:empty {
+  display: none;
+}
+
+/* Mantém o estilo do título conforme as imagens 8 e 9 */
+.tabela-com-busca .tabela-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+  text-decoration: underline;
+  text-decoration-color: #4ade80;
+  text-decoration-thickness: 2px;
+}
+
+/* Alinhamento do botão Exportar visto na imagem 8 */
+.exportar-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+
+/* Responsividade Mobile para eliminar sombras sobrando no celular */
+@media (max-width: 768px) {
+  .historico-container,
+  .tabela-wrapper {
+    padding: 0 !important;
+  }
+}

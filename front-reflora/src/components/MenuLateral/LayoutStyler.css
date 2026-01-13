@@ -1,16 +1,123 @@
+/* LayoutStyler.css - LAYOUT FIXO E RESPONSIVO */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* ============ LAYOUT PRINCIPAL ============ */
 .main-container {
-  display: flex;     
-       /* menu e conteúdo lado a lado */
-}
-
-.content-wrapper {
   display: flex;
-  flex-direction: column; /* cabeçalho em cima, conteúdo embaixo */
-  flex-grow: 1;           /* ocupa o espaço restante da tela */
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  
 }
 
+/* ============ SIDEBAR FIXA ============ */
+/* Container da sidebar sempre fixa */
+.main-container > div:first-child {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+/* ============ CONTEÚDO PRINCIPAL ============ */
+/* Espaço para a sidebar no desktop */
+.content-wrapper {
+  flex: 1;
+  min-height: 100vh;
+  margin-left: 17vw; /* Largura da sidebar no desktop */
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.3s ease;
+  width: calc(100vw - 17vw);
+}
+
+/* Header fixo no topo */
+.header-fixed {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Conteúdo da página com scroll */
 .page-content {
-  flex-grow: 1;
-  overflow-y: auto;       /* adiciona rolagem se o conteúdo for grande */
-  padding: 20px;          /* espaçamento interno */
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: #f8f9fa;
+  min-height: calc(100vh - 7vh); /* Altura total menos header */
+}
+
+/* ============ RESPONSIVIDADE ============ */
+
+/* Tablets e Laptops menores (1025px - 1366px) */
+@media (max-width: 1366px) {
+  .content-wrapper {
+    margin-left: 22vw;
+    width: calc(100vw - 22vw);
+  }
+  
+  .page-content {
+    padding: 15px;
+  }
+}
+
+/* Tablets (769px - 1024px) */
+@media (max-width: 1024px) {
+  .content-wrapper {
+    margin-left: 0;
+    width: 100%;
+  }
+  
+  /* Header se ajusta para mobile */
+  .header-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+  }
+  
+  /* Espaço extra para o header fixo no mobile */
+  .page-content {
+    padding-top: 70px; /* Espaço para o header fixo */
+    min-height: calc(100vh - 70px);
+  }
+  
+  /* Sidebar fica como overlay no mobile */
+  .sidebar-container.fixed {
+    position: fixed;
+    left: -280px;
+    width: 280px !important;
+    z-index: 1000;
+    transition: left 0.3s ease-in-out;
+  }
+  
+  .sidebar-container.fixed.active {
+    left: 0;
+  }
+}
+
+/* Mobile (até 768px) */
+@media (max-width: 768px) {
+  .page-content {
+    padding: 10px;
+    padding-top: 60px;
+    min-height: calc(100vh - 60px);
+  }
+  
+  .sidebar-container.fixed {
+    width: 85vw !important;
+  }
 }

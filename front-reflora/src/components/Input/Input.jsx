@@ -1,37 +1,65 @@
-import React from 'react';
-import './Input.css';
+import React from "react";
+import DatePicker, { registerLocale } from "react-datepicker";
+import ptBR from "date-fns/locale/pt-BR";
+import "react-datepicker/dist/react-datepicker.css";
+import "./Input.css";
+import CustomSelect from "../CustomSelect/CustomSelect";
 
-const Input = ({ 
-  label, 
-  type = 'text', 
-  name, 
-  placeholder, 
-  value, 
-  onChange, 
-  required, 
-  icon, 
+registerLocale("pt-BR", ptBR);
+
+const Input = ({
+  label,
+  type = "text",
+  name,
+  placeholder,
+  value,
+  onChange,
+  required,
+  icon,
   onIconClick,
-  options, 
+  options,
   readOnly = false,
-  onIncrement, // <-- Prop nova
-  onDecrement, // <-- Prop nova
+  onIncrement,
+  onDecrement,
+  ...rest
 }) => {
-  
-  const isSelect = type === 'select';
-  // Verifica se deve renderizar o campo de quantidade (stepper)
-  const isStepper = type === 'number' && onIncrement && onDecrement;
+  const isSelect = type === "select";
+  const isStepper = type === "number" && onIncrement && onDecrement;
+  const isDate = type === "date";
+
+  const handleDateChange = (date) => {
+    if (onChange) {
+      let formattedValue = "";
+      if (date instanceof Date && !isNaN(date)) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        formattedValue = `${year}-${month}-${day}`;
+      }
+      onChange({
+        target: {
+          name: name,
+          value: formattedValue,
+        },
+      });
+    }
+  };
+
+  const getValidDate = (val) => {
+    if (!val) return null;
+    if (typeof val === "string" && val.includes("-")) {
+      const [year, month, day] = val.split("-");
+      return new Date(year, month - 1, day);
+    }
+    const date = new Date(val);
+    return isNaN(date.getTime()) ? null : date;
+  };
 
   return (
     <div className="input-component-wrapper">
       {label && <label htmlFor={name}>{label}</label>}
-      
-      {/* Aqui está a principal mudança:
-        Movemos o .input-field-container para dentro da lógica condicional,
-        pois o "stepper" precisa de um layout HTML totalmente diferente.
-      */}
 
       {isStepper ? (
-        // --- CASO 1: É UM STEPPER (Ex: Quantidade) ---
         <div className="input-stepper-layout">
           <input
             type="number"
@@ -41,43 +69,56 @@ const Input = ({
             onChange={onChange}
             required={required}
             readOnly={readOnly}
+            disabled={rest.disabled} // Garante que o input respeite o estado desabilitado
             className="input-field"
-            // Removemos as setas padrão do navegador (ver CSS)
+            {...rest}
           />
           <div className="stepper-controls">
-            {/* O type="button" é importante para não submeter o form */}
-            <button type="button" onClick={onDecrement}>-</button>
-            <button type="button" onClick={onIncrement}>+</button>
+            {/* Botões agora respeitam o estado desabilitado ou somente leitura */}
+            <button 
+              type="button" 
+              onClick={onDecrement}
+              disabled={rest.disabled || readOnly} 
+            >
+              -
+            </button>
+            <button 
+              type="button" 
+              onClick={onIncrement}
+              disabled={rest.disabled || readOnly}
+            >
+              +
+            </button>
           </div>
         </div>
-
       ) : isSelect ? (
-        // --- CASO 2: É UM SELECT (Dropdown) ---
-        <div className="input-field-container">
-          <select
+        <CustomSelect
+          name={name}
+          value={value}
+          onChange={onChange}
+          options={options}
+          placeholder={placeholder}
+          disabled={readOnly || rest.disabled}
+        />
+      ) : isDate ? (
+        <div className="input-field-container date-picker-container">
+          <DatePicker
+            selected={getValidDate(value)}
+            onChange={handleDateChange}
+            dateFormat="dd/MM/yyyy"
+            locale="pt-BR"
+            placeholderText={placeholder || "dd/mm/aaaa"}
+            className="input-field"
             id={name}
             name={name}
-            value={value}
-            onChange={onChange}
+            disabled={readOnly || rest.disabled}
+            autoComplete="off"
             required={required}
-            readOnly={readOnly}
-            className="input-field"
-          >
-            {placeholder && (
-              <option value="" disabled>
-                {placeholder}
-              </option>
-            )}
-            {options?.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+            showPopperArrow={false}
+            {...rest}
+          />
         </div>
-
       ) : (
-        // --- CASO 3: É UM INPUT NORMAL (Texto, Data, etc.) ---
         <div className="input-field-container">
           <input
             type={type}
@@ -88,14 +129,14 @@ const Input = ({
             onChange={onChange}
             required={required}
             readOnly={readOnly}
+            disabled={rest.disabled}
             className="input-field"
-            style={{ paddingRight: icon ? '2.5rem' : 'var(--espacamento-sm)' }}
+            {...rest}
           />
-          {/* O ícone só aparece se for um input normal (não-select e não-stepper) */}
           {icon && (
             <img
               src={icon}
-              alt="Ícone do Input"
+              alt="Ícone"
               className="input-icon"
               onClick={onIconClick}
             />

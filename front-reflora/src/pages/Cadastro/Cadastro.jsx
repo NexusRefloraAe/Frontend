@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AuthLayout from '../../components/Layout/AuthLayout';
 import AuthForm from '../../components/AuthForm/AuthForm';
 import olhoaberto from '../../assets/olhoaberto.svg';
 import olhofechado from '../../assets/olhofechado.svg';
+import { authService } from '../../services/authService';
+import { getBackendErrorMessage } from '../../utils/errorHandler';
 
 const Cadastro = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     nomeCompleto: '', email: '', celular: '', dataNascimento: '',
     genero: '', empresa: '', senha: '', confirmarSenha: ''
@@ -12,18 +17,44 @@ const Cadastro = () => {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
   const [error, setError] = useState('');
+  
+  // NOVO: Estado para controlar o carregamento
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (field) => (e) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setError(''); // Limpa erros antigos
+
+    // 1. Validação Visual (Frontend)
     if (formData.senha !== formData.confirmarSenha) {
       setError("As senhas não coincidem!");
       return;
     }
-    setError('');
-    console.log("Dados do cadastro:", formData);
+
+    // NOVO: Ativa o carregamento
+    setIsLoading(true);
+
+    try {
+      
+      // 2. Chama o Serviço (Conecta com o Java)
+      await authService.register(formData); 
+      
+      // 3. Sucesso: Feedback e Redirecionamento
+      alert("Cadastro realizado com sucesso!");
+      navigate('/login'); // Redireciona para o login
+
+    } catch (err) {
+      console.error(err);
+      const mensagem = getBackendErrorMessage(err);
+      // 4. Erro: Mostra a mensagem que veio do Backend
+      setError(mensagem); 
+    } finally {
+      // NOVO: Desativa o carregamento (independente de sucesso ou erro)
+      setIsLoading(false);
+    }
   };
 
   const cadastroConfig = {
@@ -50,7 +81,7 @@ const Cadastro = () => {
       {
         label: "Número de celular",
         name: "celular",
-        placeholder: "(xx) 9 xxxx-xxxx",
+        placeholder: "xx9xxxxxxxx",
         value: formData.celular,
         onChange: handleChange('celular'),
         required: true
@@ -72,14 +103,14 @@ const Cadastro = () => {
         onChange: handleChange('genero'),
         required: true,
         options: [
-          { value: "masculino", label: "Masculino" },
-          { value: "feminino", label: "Feminino" },
-          { value: "outro", label: "Outro" },
-          { value: "nao-informar", label: "Prefiro não informar" }
+          { value: "MASCULINO", label: "Masculino" },
+          { value: "FEMININO", label: "Feminino" },
+          { value: "OUTRO", label: "Outro" },
+          { value: "NAO_INFORMAR", label: "Prefiro não informar" }
         ]
       },
       {
-        label: "Empresa (Opcional)",
+        label: "Empresa",
         name: "empresa",
         placeholder: "Digite o nome da empresa",
         value: formData.empresa,
@@ -105,7 +136,7 @@ const Cadastro = () => {
         value: formData.confirmarSenha,
         onChange: handleChange('confirmarSenha'),
         required: true,
-        icon: mostrarConfirmarSenha ? olhofechado : olhoaberto,
+        icon: mostrarConfirmarSenha ? olhoaberto : olhofechado,
         onIconClick: () => setMostrarConfirmarSenha(!mostrarConfirmarSenha)
       }
     ],
@@ -113,7 +144,9 @@ const Cadastro = () => {
       {
         type: "submit",
         variant: "primary",
-        children: "Cadastrar"
+        // NOVO: Muda o texto e desabilita o botão enquanto carrega
+        children: isLoading ? "Cadastrando..." : "Cadastrar",
+        disabled: isLoading 
       }
     ],
     footer: {

@@ -1,13 +1,24 @@
+/* SidebarStyler.css - VERSÃO ATUALIZADA COM RESPONSIVIDADE VERTICAL */
+
 .sidebar-container {
-  background-color: var(--cor-verde-primario);
+  background-color: #2e7d32; /* COR FIXA */
   position: fixed;
   height: 100vh;
   top: 0;
   left: -100%;
   width: 17vw;
+  min-width: 250px;
   transition: left 0.3s ease-in-out;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  display: flex; /* Garante que flex-direction funcione */
+  flex-direction: column;
+  color: #ffffff; /* COR FIXA */
+  overflow-y: auto; /* Scroll apenas se realmente necessário */
 }
+
+/* Estilo da barra de rolagem fina e elegante */
+.sidebar-container::-webkit-scrollbar { width: 6px; }
+.sidebar-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 6px; }
 
 .sidebar-container.active {
   left: 0;
@@ -18,57 +29,161 @@
   transition: none;
 }
 
-@media (max-width: 1024px) {
-  .sidebar-container {
-    width: 22vw;
-  }
-}
-
-@media (max-width: 480px) {
-  .sidebar-container {
-    width: 50vw;
-  }
-}
-
 .close-icon {
-  color: white;
+  color: #ffffff !important;
   width: 30px;
   height: 30px;
   margin: 20px;
   cursor: pointer;
+  align-self: flex-end;
 }
 
 .menu-toggle {
   display: flex;
   align-items: center;
+  padding: 0 25px;
   cursor: pointer;
-  color: white;
-  margin: 25px;
+  color: #ffffff !important;
+  text-decoration: none;
+  margin-bottom: 20px;
+  margin-top: 20px; /* Adicionado margem superior para equilíbrio */
 }
 
 .menu-toggle span {
   font-weight: bold;
   font-size: 28px;
-}
-
-@media (max-width: 1024px) {
-  .menu-toggle span {
-    font-size: 18px;
-  }
-}
-
-.sidebar-container {
-  display: flex;
-  flex-direction: column;
+  color: #ffffff !important;
 }
 
 .sidebar-content {
-  margin-top: 25px;
-  padding: 12px;
-  overflow-y: auto;
-  flex: 1 1 auto;
+  flex: 1;
+  padding: 0 12px;
+  margin-top: 10px;
+  /* Isso ajuda a centralizar itens se sobrar espaço, ou alinhar ao topo se faltar */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; 
 }
 
-/* Scrollbar WebKit */
-.sidebar-content::-webkit-scrollbar { width: 8px; }
-.sidebar-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 6px; }
+/* ITENS DO MENU */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, padding 0.3s ease; /* Animação suave na mudança de tamanho */
+  background-color: transparent;
+  color: #ffffff !important;
+  width: 100%;
+  border: none;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.sidebar-item .sidebar-icon {
+  font-size: 22px;
+  margin-right: 15px;
+  color: #ffffff !important;
+  transition: font-size 0.3s ease;
+}
+
+.sidebar-item .sidebar-text {
+  font-size: 18px;
+  font-weight: 500;
+  color: #ffffff !important;
+  transition: font-size 0.3s ease;
+}
+
+/* SELECIONADO */
+.sidebar-item.selected {
+  background-color: #ffffff !important;
+  color: #2e7d32 !important;
+}
+
+.sidebar-item.selected .sidebar-icon {
+  color: #2e7d32 !important;
+}
+
+.sidebar-item.selected .sidebar-text {
+  color: #2e7d32 !important;
+  font-weight: 600;
+}
+
+/* HOVER */
+.sidebar-item:hover:not(.selected) {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* LOGOUT HOVER */
+.sidebar-item.logout:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+
+/* ============================================================ */
+/* ONDE A ATUALIZAÇÃO ACONTECE (MEDIA QUERIES)       */
+/* ============================================================ */
+
+/* 1. Responsividade de LARGURA (Tablets/Mobile) */
+@media (max-width: 1366px) {
+  .sidebar-container { width: 22vw; }
+}
+
+@media (max-width: 1024px) {
+  .sidebar-container:not(.fixed) { width: 85vw; max-width: 320px; }
+}
+
+@media (max-width: 768px) {
+  .sidebar-container:not(.fixed) { width: 90vw; max-width: 300px; }
+  .sidebar-item { padding: 12px 15px; }
+  .sidebar-item .sidebar-text { font-size: 16px; }
+  .sidebar-item .sidebar-icon { font-size: 20px; }
+  .menu-toggle span { font-size: 20px; }
+}
+
+/* 2. Responsividade de ALTURA (CRÍTICO PARA LAPTOPS) */
+/* Aqui é onde arrumamos o problema do scroll vertical */
+
+@media (max-height: 850px) {
+  /* Diminui o logo */
+  .menu-toggle {
+    margin-bottom: 10px;
+    margin-top: 15px;
+    padding: 0 15px;
+  }
+  .menu-toggle span {
+    font-size: 22px;
+  }
+
+  /* Compacta os itens do menu */
+  .sidebar-item {
+    padding: 8px 15px; /* Menos "gordura" no botão */
+    margin: 4px 0;     /* Menos espaço entre os botões */
+  }
+  
+  .sidebar-item .sidebar-text {
+    font-size: 16px;
+  }
+  
+  .sidebar-item .sidebar-icon {
+    font-size: 19px;
+  }
+}
+
+/* Para telas MUITO baixas (ex: se o inspetor do navegador estiver aberto) */
+@media (max-height: 650px) {
+  .sidebar-item {
+    padding: 6px 12px;
+    margin: 2px 0;
+  }
+  .menu-toggle {
+    margin-bottom: 5px;
+    margin-top: 10px;
+  }
+  .sidebar-item .sidebar-text {
+    font-size: 14px;
+  }
+}
