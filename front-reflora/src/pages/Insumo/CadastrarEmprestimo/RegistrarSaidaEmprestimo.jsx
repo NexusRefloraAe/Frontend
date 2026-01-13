@@ -4,7 +4,7 @@ import FormGeral from '../../../components/FormGeral/FormGeral';
 import Input from '../../../components/Input/Input';
 import insumoService from '../../../services/insumoService';
 import { FaTools, FaBoxOpen, FaArrowLeft } from 'react-icons/fa';
-import './RegistrarEmprestimo.css'; // Certifique-se que o CSS existe
+import './RegistrarEmprestimo.css'; 
 
 const RegistrarSaidaEmprestimo = ({
   onSalvar,
@@ -145,7 +145,7 @@ const RegistrarSaidaEmprestimo = ({
         return alert('Informe uma quantidade válida maior que zero.');
     }
     
-    // Validação de Estoque (Não valida se for Devolução, pois estoque vai aumentar)
+    // Validação de Estoque (Apenas para saída)
     const itemSelecionado = listaInsumos.find(i => i.id === formData.insumoId);
     if (itemSelecionado && formData.status !== 'DEVOLVIDO') { 
         if (qtdNumerica > itemSelecionado.quantidadeAtual) {
@@ -180,7 +180,12 @@ const RegistrarSaidaEmprestimo = ({
 
     } catch (error) {
       console.error(error);
-      alert("Erro ao registrar movimentação.");
+      // Exibe mensagem de erro vinda do backend (ex: trava de devolução)
+      if (error.response && error.response.data) {
+          alert(`Erro: ${error.response.data.message || 'Erro ao registrar.'}`);
+      } else {
+          alert("Erro ao registrar movimentação.");
+      }
     } finally {
       setLoading(false);
     }
@@ -233,8 +238,7 @@ const RegistrarSaidaEmprestimo = ({
       variant: 'action-secondary',
       children: 'Cancelar', 
       onClick: () => setTipoSelecionado(null),
-      disabled: loading,
-      icon: <FaArrowLeft />
+      disabled: loading
     },
     
     // REGRA: Botão "Gerar Termo" APENAS se for Ferramenta + Empréstimo
@@ -271,12 +275,43 @@ const RegistrarSaidaEmprestimo = ({
                     placeholder="Digite para buscar..."
                     autoComplete="off"
                 />
+                
+                {/* AUTOCOMPLETE COM INFORMAÇÕES VISUAIS (ESTOQUE E NA RUA) */}
                 {sugestoes.length > 0 && (
                     <ul className="autocomplete-list">
                         {sugestoes.map((f) => (
                             <li key={f.id} onClick={() => selecionarItem(f)}>
-                                <strong>{f.nome}</strong>
-                                <span>Disp: {f.quantidadeAtual} {f.unidadeMedida}</span>
+                                
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <strong>{f.nome}</strong>
+                                    <small style={{ color: '#888', fontSize: '0.75rem' }}>{f.unidadeMedida}</small>
+                                </div>
+
+                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                    {/* Badge Estoque Físico */}
+                                    <span title="Disponível no Almoxarifado" style={{ 
+                                        fontSize: '0.75rem', 
+                                        color: f.quantidadeAtual > 0 ? '#155724' : '#721c24',
+                                        backgroundColor: f.quantidadeAtual > 0 ? '#d4edda' : '#f8d7da',
+                                        padding: '4px 8px', borderRadius: '12px', border: '1px solid',
+                                        borderColor: f.quantidadeAtual > 0 ? '#c3e6cb' : '#f5c6cb'
+                                    }}>
+                                        Estoque: {f.quantidadeAtual}
+                                    </span>
+
+                                    {/* Badge "Na Rua" (Apenas para ferramentas) */}
+                                    {tipoSelecionado === 'FERRAMENTA' && (
+                                        <span title="Quantidade pendente de devolução" style={{ 
+                                            fontSize: '0.75rem', 
+                                            color: '#856404', 
+                                            backgroundColor: '#fff3cd', 
+                                            padding: '4px 8px', borderRadius: '12px',
+                                            border: '1px solid #ffeeba', fontWeight: 'bold'
+                                        }}>
+                                            Emprestado : {f.quantidadeEmprestada || 0}
+                                        </span>
+                                    )}
+                                </div>
                             </li>
                         ))}
                     </ul>
@@ -304,7 +339,6 @@ const RegistrarSaidaEmprestimo = ({
                     type="text"
                     value="SAÍDA (Consumo)"
                     readOnly
-                    className="input-readonly"
                 />
             )}
         </div>
