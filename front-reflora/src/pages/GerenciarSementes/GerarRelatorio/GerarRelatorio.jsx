@@ -233,7 +233,7 @@ const GerarRelatorio = () => {
         </section>
 
         <section className="cards-section">
-          <div className="cards-container">
+          <div className="cards-container-sementes">
             {painelItems.map(item => (
               <PainelCard 
                 key={item.id}

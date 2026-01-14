@@ -53,7 +53,7 @@ const GerenciarCanteirosLayout = () => {
     <div className="gerenciar-canteiros-container">
       <TabsLayout 
         tabs={tabs} 
-        defaultTabId="cadastrar-canteiro" 
+        defaultTabId="historico" 
         containerClassName="tabs-container"
         contentClassName="tab-content-container"
       />

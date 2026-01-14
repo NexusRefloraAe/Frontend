@@ -37,14 +37,16 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.cards-container {
+.cards-container-sementes {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, auto);
+  grid-auto-flow: column;
   gap: 1.5rem;
 }
 
 /* CARDS COM BORDA COMPLETA */
-.cards-container .card {
+.cards-container-sementes .card {
   height: 140px;
   border-radius: 12px;
   padding: 1.5rem;
@@ -58,7 +60,7 @@
   position: relative;
 }
 
-.cards-container .card .card-titulo {
+.cards-container-sementes .card .card-titulo {
   font-size: 1rem;
   font-weight: 500;
   margin: 0 0 0.5rem 0;
@@ -66,7 +68,7 @@
   line-height: 1.4;
 }
 
-.cards-container .card .card-valor {
+.cards-container-sementes .card .card-valor {
   font-size: 2.5rem;
   font-weight: 700;
   margin: 0;
@@ -74,15 +76,15 @@
   line-height: 1;
 }
 
-.cards-container .card.card-entrada {
+.cards-container-sementes .card.card-entrada {
   border: 3px solid #10B981;
 }
 
-.cards-container .card.card-saida {
+.cards-container-sementes .card.card-saida {
   border: 3px solid #EF4444;
 }
 
-.cards-container .card.card-atual {
+.cards-container-sementes .card.card-atual {
   border: 3px solid #3B82F6;
 }
 
