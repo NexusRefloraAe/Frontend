@@ -3,15 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import FormGeral from '../../../components/FormGeral/FormGeral';
 import Input from '../../../components/Input/Input';
 import insumoService from '../../../services/insumoService';
-import { FaTools, FaBoxOpen, FaArrowLeft } from 'react-icons/fa';
-import './RegistrarEmprestimo.css'; // Certifique-se que o CSS existe
+import { FaTools, FaBoxOpen } from 'react-icons/fa';
+import './RegistrarEmprestimo.css'; 
 
-const RegistrarSaidaEmprestimo = ({
-  onSalvar,
-  onCancelar
-}) => {
+const RegistrarSaidaEmprestimo = ({ onSalvar, onCancelar }) => {
   const hoje = new Date().toISOString().split('T')[0];
   const navigate = useNavigate();
+
+  // Define uma data padrão de devolução (Hoje + 7 dias)
+  const dataPadrao = new Date();
+  dataPadrao.setDate(dataPadrao.getDate() + 7);
+  const dataDevolucaoPadrao = dataPadrao.toISOString().split('T')[0];
 
   // --- ESTADOS ---
   const [tipoSelecionado, setTipoSelecionado] = useState(null); 
@@ -26,6 +28,7 @@ const RegistrarSaidaEmprestimo = ({
     quantidade: '', 
     unidadeMedida: '',
     dataRegistro: hoje,
+    dataDevolucao: dataDevolucaoPadrao, // Novo campo para o calendário
     responsavelEntrega: '',
     responsavelReceber: '',
     finalidade: ''
@@ -60,6 +63,16 @@ const RegistrarSaidaEmprestimo = ({
       carregarDados();
     }
   }, [tipoSelecionado]);
+
+  // --- LÓGICA AUXILIAR ---
+  const calcularDiasPrazo = (inicio, fim) => {
+      const d1 = new Date(inicio);
+      const d2 = new Date(fim);
+      // Diferença em milissegundos
+      const diffTime = d2 - d1;
+      // Converte para dias (arredondando para cima)
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  };
 
   // --- HANDLERS DE FORMULÁRIO ---
   const handleNomeChange = (e) => {
@@ -107,7 +120,7 @@ const RegistrarSaidaEmprestimo = ({
     });
   };
 
-  // --- AÇÃO 1: GERAR TERMO (Apenas Navegação) ---
+  // --- AÇÃO 1: GERAR TERMO (Navegação) ---
   const gerarTermo = () => {
     if (!formData.insumoId) return alert('Selecione um item da lista.');
     
@@ -118,14 +131,20 @@ const RegistrarSaidaEmprestimo = ({
     if (!formData.responsavelEntrega) return alert('Por favor, preencha o Responsável pela Entrega.');
     if (!formData.responsavelReceber) return alert('Por favor, preencha o Responsável por Receber.');
 
+    // Validação da Data
+    if (new Date(formData.dataDevolucao) < new Date(formData.dataRegistro)) {
+        return alert('A data de devolução não pode ser anterior à data do empréstimo.');
+    }
+
     const dadosTermo = {
-      insumoId: formData.insumoId, // ID é crucial para salvar na próxima tela
+      insumoId: formData.insumoId, 
       nomeResponsavel: formData.responsavelReceber,
       cargoResponsavel: formData.responsavelEntrega,
       nomeMaterial: formData.nomeInsumo,
       quantidade: qtdNumerica,
       unidade: formData.unidadeMedida,
       dataRegistro: formData.dataRegistro,
+      dataDevolucao: formData.dataDevolucao, // Passa a DATA STRING para o termo exibir
       responsavelEntrega: formData.responsavelEntrega,
       responsavelReceber: formData.responsavelReceber
     };
@@ -145,12 +164,22 @@ const RegistrarSaidaEmprestimo = ({
         return alert('Informe uma quantidade válida maior que zero.');
     }
     
-    // Validação de Estoque (Não valida se for Devolução, pois estoque vai aumentar)
+    // Validação de Estoque
     const itemSelecionado = listaInsumos.find(i => i.id === formData.insumoId);
     if (itemSelecionado && formData.status !== 'DEVOLVIDO') { 
         if (qtdNumerica > itemSelecionado.quantidadeAtual) {
             return alert(`Estoque insuficiente! Disponível: ${itemSelecionado.quantidadeAtual} ${itemSelecionado.unidadeMedida}`);
         }
+    }
+
+    // Validação de Data (se for empréstimo)
+    let prazoDias = 0;
+    if (formData.status === 'EMPRESTADO') {
+        if (new Date(formData.dataDevolucao) < new Date(formData.dataRegistro)) {
+            return alert('A data de devolução inválida.');
+        }
+        // Converte as datas em INT (dias) para o Java
+        prazoDias = calcularDiasPrazo(formData.dataRegistro, formData.dataDevolucao);
     }
 
     try {
@@ -161,6 +190,7 @@ const RegistrarSaidaEmprestimo = ({
         status: formData.status, 
         quantidade: qtdNumerica, 
         dataRegistro: formData.dataRegistro,
+        dataDevolucao: prazoDias, // Envia o inteiro calculado
         responsavelEntrega: formData.responsavelEntrega,
         responsavelReceber: formData.responsavelReceber,
         observacao: formData.finalidade 
@@ -172,7 +202,7 @@ const RegistrarSaidaEmprestimo = ({
       
       if (onSalvar) onSalvar();
       
-      // Limpa o formulário
+      // Limpa o formulário mantendo o tipo
       setFormData(prev => ({ 
           ...prev, 
           insumoId: '', nomeInsumo: '', quantidade: '', finalidade: '' 
@@ -180,13 +210,17 @@ const RegistrarSaidaEmprestimo = ({
 
     } catch (error) {
       console.error(error);
-      alert("Erro ao registrar movimentação.");
+      if (error.response && error.response.data) {
+          alert(`Erro: ${error.response.data.message || 'Erro ao registrar.'}`);
+      } else {
+          alert("Erro ao registrar movimentação.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  // --- RENDERIZAÇÃO DA TELA DE SELEÇÃO ---
+  // --- RENDERIZAÇÃO DA TELA DE ESCOLHA (MATERIAL vs FERRAMENTA) ---
   if (!tipoSelecionado) {
       return (
           <div className="selecao-tipo-container" style={{ padding: '20px', textAlign: 'center' }}>
@@ -222,22 +256,20 @@ const RegistrarSaidaEmprestimo = ({
       );
   }
 
-  // --- VARIÁVEIS DO FORMULÁRIO ---
+  // --- RENDERIZAÇÃO DO FORMULÁRIO ---
   const tituloForm = tipoSelecionado === 'MATERIAL' ? "Registrar Saída de Material" : "Movimentação de Ferramenta";
   const labelQuantidade = tipoSelecionado === 'MATERIAL' ? "Quantidade Utilizada" : (formData.status === 'EMPRESTADO' ? "Qtd a Retirar" : "Qtd a Devolver");
 
-  // --- CONFIGURAÇÃO DOS BOTÕES (ACTIONS) ---
   const actions = [
     { 
       type: 'button', 
       variant: 'action-secondary',
       children: 'Cancelar', 
       onClick: () => setTipoSelecionado(null),
-      disabled: loading,
-      icon: <FaArrowLeft />
+      disabled: loading
     },
     
-    // REGRA: Botão "Gerar Termo" APENAS se for Ferramenta + Empréstimo
+    // Botão "Gerar Termo" (Só para Empréstimo de Ferramenta)
     ...(tipoSelecionado === 'FERRAMENTA' && formData.status === 'EMPRESTADO' ? [{ 
       type: 'button', 
       variant: 'primary', 
@@ -246,7 +278,7 @@ const RegistrarSaidaEmprestimo = ({
       disabled: loading 
     }] : []),
 
-    // REGRA: Botão "Confirmar" se for Material OU Ferramenta + Devolução
+    // Botão "Confirmar" (Para Material ou Devolução)
     ...((tipoSelecionado === 'MATERIAL' || (tipoSelecionado === 'FERRAMENTA' && formData.status === 'DEVOLVIDO')) ? [{ 
       type: 'submit', 
       variant: 'primary', 
@@ -271,19 +303,43 @@ const RegistrarSaidaEmprestimo = ({
                     placeholder="Digite para buscar..."
                     autoComplete="off"
                 />
+                
                 {sugestoes.length > 0 && (
                     <ul className="autocomplete-list">
                         {sugestoes.map((f) => (
                             <li key={f.id} onClick={() => selecionarItem(f)}>
-                                <strong>{f.nome}</strong>
-                                <span>Disp: {f.quantidadeAtual} {f.unidadeMedida}</span>
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <strong>{f.nome}</strong>
+                                    <small style={{ color: '#888', fontSize: '0.75rem' }}>{f.unidadeMedida}</small>
+                                </div>
+                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                    <span style={{ 
+                                        fontSize: '0.75rem', 
+                                        color: f.quantidadeAtual > 0 ? '#155724' : '#721c24',
+                                        backgroundColor: f.quantidadeAtual > 0 ? '#d4edda' : '#f8d7da',
+                                        padding: '4px 8px', borderRadius: '12px', border: '1px solid',
+                                        borderColor: f.quantidadeAtual > 0 ? '#c3e6cb' : '#f5c6cb'
+                                    }}>
+                                        Estoque: {f.quantidadeAtual}
+                                    </span>
+                                    {tipoSelecionado === 'FERRAMENTA' && (
+                                        <span style={{ 
+                                            fontSize: '0.75rem', 
+                                            color: '#856404', 
+                                            backgroundColor: '#fff3cd', 
+                                            padding: '4px 8px', borderRadius: '12px',
+                                            border: '1px solid #ffeeba', fontWeight: 'bold'
+                                        }}>
+                                            Emprestado : {f.quantidadeEmprestada || 0}
+                                        </span>
+                                    )}
+                                </div>
                             </li>
                         ))}
                     </ul>
                 )}
             </div>
 
-            {/* SELETOR DE STATUS PARA FERRAMENTA */}
             {tipoSelecionado === 'FERRAMENTA' ? (
                  <Input
                     label="Tipo de Ação"
@@ -304,7 +360,6 @@ const RegistrarSaidaEmprestimo = ({
                     type="text"
                     value="SAÍDA (Consumo)"
                     readOnly
-                    className="input-readonly"
                 />
             )}
         </div>
@@ -347,7 +402,27 @@ const RegistrarSaidaEmprestimo = ({
         )}
 
         <div className="input-row">
-            <Input label="Data de Registro" name="dataRegistro" type="date" value={formData.dataRegistro} onChange={handleChange('dataRegistro')} required />
+            <Input 
+                label="Data de Registro" 
+                name="dataRegistro" 
+                type="date" 
+                value={formData.dataRegistro} 
+                onChange={handleChange('dataRegistro')} 
+                required 
+            />
+
+            {/* --- DATA DE DEVOLUÇÃO (SÓ APARECE SE FOR EMPRÉSTIMO) --- */}
+            {tipoSelecionado === 'FERRAMENTA' && formData.status === 'EMPRESTADO' && (
+                <Input
+                    label="Previsão de Devolução"
+                    name="dataDevolucao"
+                    type="date"
+                    value={formData.dataDevolucao}
+                    onChange={handleChange('dataDevolucao')}
+                    required
+                    min={formData.dataRegistro}
+                />
+            )}
         </div>
 
         <div className="input-row">

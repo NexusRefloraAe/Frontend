@@ -13,6 +13,8 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
     quantidadePlantada: 0, // ✅ Corrigido (era qntdPlantada)
   });
 
+  const [unidadeMedida, setUnidadeMedida] = useState("");
+
   // const mapearParaBackend = (valor) => {
   //   const dePara = {
   //     'CHAO': 'Chão',
@@ -36,6 +38,21 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
         }
         return dataStr;
       };
+
+      let unidadeEncontrada = "";
+
+      const stringFormatada =
+        plantio.quantidadeSaidaFormatada || plantio.quantidadeAtualFormatada;
+      if (stringFormatada) {
+        // Remove números, pontos e espaços, sobrando só as letras
+        unidadeEncontrada = stringFormatada.replace(/[0-9.,\s]/g, "");
+      }
+      
+      else if (plantio.unidadeDeMedida) {
+         unidadeEncontrada = plantio.unidadeDeMedida;
+      }
+
+      setUnidadeMedida(unidadeEncontrada);
 
       setFormData({
         lote: plantio.lote || plantio.loteSemente || "",
@@ -167,16 +184,34 @@ const EditarPlantioSementes = ({ isOpen, onSalvar, onCancelar, plantio }) => {
             required={true}
           />
 
-          <Input
-            label="Qtd sementes (kg/g/und)"
-            name="qtdSemente"
-            type="number"
-            value={formData.qtdSemente} // Nome corrigido
-            onChange={handleChange("qtdSemente")}
-            onIncrement={handleIncrement("qtdSemente")}
-            onDecrement={handleDecrement("qtdSemente")}
-            required={true}
-          />
+          {/* --- 3. Layout Flex para exibir a Unidade ao lado --- */}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{ flex: 1 }}>
+              <Input
+                label="Qtd sementes"
+                name="qtdSemente"
+                type="number"
+                value={formData.qtdSemente}
+                onChange={handleChange("qtdSemente")}
+                onIncrement={handleIncrement("qtdSemente")}
+                onDecrement={handleDecrement("qtdSemente")}
+                required={true}
+              />
+            </div>
+            {unidadeMedida && (
+              <span
+                style={{
+                  marginTop: "15px", // Ajuste para alinhar com o input (que tem label acima)
+                  fontWeight: "bold",
+                  color: "#555",
+                  fontSize: "13px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Unid: {unidadeMedida}
+              </span>
+            )}
+          </div>
 
           <Input
             label="Qtd plantada (und)"

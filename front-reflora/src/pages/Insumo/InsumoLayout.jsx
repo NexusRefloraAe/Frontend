@@ -54,7 +54,7 @@ const InsumoLayout = () => {
     },
   ];
 
-  return <TabsLayout tabs={tabs} defaultTabId="cadastrar" />;
+  return <TabsLayout tabs={tabs} defaultTabId="gerenciar-estoque" />;
 };
 
 export default InsumoLayout;

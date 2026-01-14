@@ -1,13 +1,14 @@
 import axios from 'axios';
 
+// 1. Definimos a URL base de forma dinâmica
+// Se existir uma variável de ambiente VITE_API_URL, usa ela.
+// Se não, usa o link do seu back-end Koyeb como fallback (padrão).
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://disciplinary-nanon-123silvio456-81c7b556.koyeb.app/api';
+
 // Cria a instância do Axios
 const api = axios.create({
-  baseURL: 'https://disciplinary-nanon-123silvio456-81c7b556.koyeb.app/api', // Altere para a URL base da sua API
+  baseURL: BASE_URL,
   withCredentials: true, // IMPORTANTE: Permite enviar/receber Cookies (HttpOnly)
-  // CORREÇÃO: Removemos o cabeçalho 'Content-Type': 'application/json' fixo.
-  // O Axios é inteligente o suficiente para:
-  // 1. Usar 'application/json' automaticamente quando enviamos um objeto JS.
-  // 2. Usar 'multipart/form-data' com o boundary correto quando enviamos um FormData (uploads).
 });
 
 // --- INTERCEPTOR DE REQUISIÇÃO ---
@@ -21,7 +22,6 @@ api.interceptors.request.use(
         // Verifica se o accessToken existe
         if (user?.accessToken) {
           config.headers.Authorization = `Bearer ${user.accessToken}`;
-          // console.log("Token anexado:", user.accessToken); // Descomente para debugar
         } else {
             console.warn("Usuário encontrado no storage, mas sem accessToken.");
         }
@@ -42,24 +42,21 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // 1. Se o erro for na rota de LOGIN, não faz nada (deixa o erro subir para exibir na tela)
+    // 1. Se o erro for na rota de LOGIN, não faz nada
     if (originalRequest.url.includes('/auth/login')) {
         return Promise.reject(error);
     }
 
     // 2. Verifica se o erro é 401 (Unauthorized) OU 403 (Forbidden)
-    // O Spring às vezes retorna 403 quando o token expira e o usuário vira "anônimo"
     const status = error.response ? error.response.status : null;
     
     if ((status === 401 || status === 403) && !originalRequest._retry) {
       
-      // Verifica se temos um usuário logado antes de tentar refresh
-      // (Para evitar loops infinitos se o usuário nem estiver logado)
       if (!localStorage.getItem('user')) {
           return Promise.reject(error);
       }
 
-      originalRequest._retry = true; // Marca para não tentar infinitamente
+      originalRequest._retry = true;
 
       try {
         console.log("Token expirado (401/403). Tentando renovar...");
@@ -82,10 +79,9 @@ api.interceptors.response.use(
         return api(originalRequest);
 
       } catch (_error) {
-        // Se a renovação falhar (refresh token expirou ou é inválido)
         console.error("Falha ao renovar token. Realizando logout forçado.");
         localStorage.removeItem('user');
-        window.location.href = '/login'; // Redireciona para login
+        window.location.href = '/login';
         return Promise.reject(_error);
       }
     }

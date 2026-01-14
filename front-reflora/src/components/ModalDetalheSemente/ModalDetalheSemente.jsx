@@ -84,7 +84,8 @@ function ModalDetalheSemente({
     let fileName = defaultName;
 
     if (disposition) {
-      const filenameRegex = /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
+      const filenameRegex =
+        /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
       const matches = filenameRegex.exec(disposition);
       if (matches && matches[1]) {
         fileName = decodeURIComponent(matches[1].replace(/['"]/g, ""));
@@ -159,8 +160,8 @@ function ModalDetalheSemente({
 
         setHistoricoEntrada(hist?.entradas?.content?.map(fmt) || []);
         setHistoricoSaida(hist?.saidas?.content?.map(fmt) || []);
-        const pEnt = hist?.entradas?.totalPages || 0;
-        const pSai = hist?.saidas?.totalPages || 0;
+        const pEnt = hist?.entradas?.page?.totalPages || 0;
+        const pSai = hist?.saidas?.page?.totalPages || 0;
         setTotalPaginas(Math.max(pEnt, pSai, 1));
       } catch (err) {
         console.error(err);
@@ -252,32 +253,35 @@ function ModalDetalheSemente({
 
                   <div className="info-item">
                     <label>Latitude</label>{" "}
-                    <span>
-                      {dados.latitude ? dados.latitude : "-"}
-                    </span>
+                    <span>{dados.latitude ? dados.latitude : "-"}</span>
                   </div>
 
                   <div className="info-item" style={{ borderBottom: "none" }}>
                     <label>Longitude</label>{" "}
-                    <span>
-                      {dados.longitude ? dados.longitude : "-"}
-                    </span>
+                    <span>{dados.longitude ? dados.longitude : "-"}</span>
                   </div>
 
                   {/* Link Opcional para o Google Maps (mantendo o estilo limpo) */}
                   {dados.latitude && dados.longitude && (
-                    <div className="info-item" style={{ borderBottom: "none", paddingTop: "5px" }}>
+                    <div
+                      className="info-item"
+                      style={{ borderBottom: "none", paddingTop: "5px" }}
+                    >
                       <a
                         href={`https://www.google.com/maps/search/?api=1&query=${dados.latitude},${dados.longitude}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ color: '#28a745', textDecoration: 'none', fontWeight: 'bold', fontSize: '0.9em' }}
+                        style={{
+                          color: "#28a745",
+                          textDecoration: "none",
+                          fontWeight: "bold",
+                          fontSize: "0.9em",
+                        }}
                       >
                         📍 Ver no Mapa
                       </a>
                     </div>
                   )}
-
                 </div>
 
                 {/* 3. Botões (Ficam abaixo da imagem no mobile via Grid CSS) */}
