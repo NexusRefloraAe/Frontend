@@ -77,7 +77,7 @@ const PerfilUsuario = () => {
       setFotoFile(null);
       window.location.reload();
     } catch (error) {
-      alert('Ocorreu um erro ao salvar as alterações.');
+      alert('Ocorreu um erro ao salvar as alterações.\nErro: ', getBackendErrorMessage(error));
     } finally { setIsLoading(false); }
   };
 
