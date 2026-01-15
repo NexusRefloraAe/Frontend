@@ -134,6 +134,14 @@ function FormularioSemente({
     const handlePegarLocalizacao = () => {
         if ("geolocation" in navigator) {
             setBuscandoEndereco(true);
+
+            // Opções para forçar o dispositivo a usar o melhor GPS possível
+            const options = {
+                enableHighAccuracy: true, // Tenta usar GPS real em vez de Wi-Fi
+                timeout: 10000,           // Espera até 10s para conseguir precisão
+                maximumAge: 0             // Não usa cache de posição antiga
+            };
+
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const lat = position.coords.latitude;
@@ -152,7 +160,8 @@ function FormularioSemente({
                     console.error("Erro GPS:", error);
                     alert("Ative o GPS para usar esta função.");
                     setBuscandoEndereco(false);
-                }
+                },
+                options
             );
         } else {
             alert("Navegador não suporta geolocalização.");

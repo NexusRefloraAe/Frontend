@@ -21,19 +21,21 @@ const CadastrarPlantioCanteiro = () => {
     nomeCanteiro: "",
   });
 
-  useEffect(() => {
-    const carregarDadosIniciais = async () => {
-      try {
-        const mudas = await plantioService.getMudasDisponiveis();
-        setMudasDisponiveis(mudas);
+  const carregarDadosAtuais = async () => {
+    try {
+      const mudas = await plantioService.getMudasDisponiveis();
+      setMudasDisponiveis(mudas);
 
-        const canteiros = await canteiroService.getNomesCanteiros();
-        setNomesCanteiros(canteiros);
-      } catch (error) {
-        console.error("Erro ao carregar mudas disponíveis:", error);
-      }
-    };
-    carregarDadosIniciais();
+      const canteiros = await canteiroService.getNomesCanteiros();
+      setNomesCanteiros(canteiros);
+    } catch (error) {
+      console.error("Erro ao carregar dados:", error);
+    }
+  };
+
+  // Carregamento inicial ao montar o componente
+  useEffect(() => {
+    carregarDadosAtuais();
   }, []);
 
   const handleCancel = (confirmar = true) => {
@@ -69,6 +71,9 @@ const CadastrarPlantioCanteiro = () => {
     try {
       await plantioCanteiroService.create(formData);
       alert("Movimentação para canteiro salva com sucesso!");
+
+      await carregarDadosAtuais();
+
       handleCancel(false);
     } catch (error) {
       console.error("Erro ao salvar:", error);

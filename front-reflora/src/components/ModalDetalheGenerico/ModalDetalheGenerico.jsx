@@ -28,7 +28,8 @@ function ModalDetalheGenerico({
   textoExclusao = "este item",
   children,
   onExportarPdf,
-  onExportarCsv
+  onExportarCsv,
+  usarConfirmacaoExterna = false,
 }) {
   // 1. Estados de página separados para cada tabela
   const [paginaEntrada, setPaginaEntrada] = useState(1);
@@ -37,6 +38,16 @@ function ModalDetalheGenerico({
   const [historicoEntrada, setHistoricoEntrada] = useState(dadosEntrada);
   const [historicoSaida, setHistoricoSaida] = useState(dadosSaida);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
+
+  const handleClickExcluir = () => {
+    if (usarConfirmacaoExterna) {
+      // Se o pai disse que ELE cuida da confirmação, apenas avisa o pai
+      if (onExcluir) onExcluir(item);
+    } else {
+      // Caso contrário, abre o modal interno deste componente
+      setModalExcluirAberto(true);
+    }
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -147,7 +158,7 @@ function ModalDetalheGenerico({
                     </button>
                     <button
                       className="btn-generico"
-                      onClick={() => setModalExcluirAberto(true)}
+                      onClick={handleClickExcluir}
                       title="Excluir"
                     >
                       <img src={deleteIcon} alt="Excluir" />

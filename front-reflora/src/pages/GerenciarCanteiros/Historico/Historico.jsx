@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import TabelaResponsiva from "../../../components/TabelaResponsiva/TabelaResponsiva";
 import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico";
 import EditarPlantioCanteiro from "../EditarPlantioCanteiro/EditarPlantioCanteiro";
+import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
 import Paginacao from "../../../components/Paginacao/Paginacao";
 
 // Services
@@ -47,6 +48,7 @@ const Historico = () => {
   const [modalDetalheAberto, setModalDetalheAberto] = useState(false);
   const [canteiroSelecionado, setCanteiroSelecionado] = useState(null);
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
+  const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
 
   const [historicoEntradas, setHistoricoEntradas] = useState([]);
   const [historicoSaidas, setHistoricoSaidas] = useState([]);
@@ -180,25 +182,38 @@ const Historico = () => {
     }
   };
 
-  const handleExcluirCanteiro = async () => {
-    if (!canteiroSelecionado || !canteiroSelecionado.id) return;
-    if (
-      !window.confirm(
-        `Deseja realmente excluir o canteiro ${
-          canteiroSelecionado.nomeCanteiro || ""
-        }?`
-      )
-    )
-      return;
+  const abrirModalExclusao = (item) => {
+    // 1. PRIMEIRO: Fecha o modal de detalhes (se ele estiver aberto)
+    setModalDetalheAberto(false);
 
+    // 2. Define qual item será excluído
+    setCanteiroSelecionado(item);
+
+    // 3. SEGUNDO: Abre o modal de exclusão (com um leve delay imperceptível para o React processar o fechamento do anterior)
+    setTimeout(() => {
+      setModalExclusaoAberto(true);
+    }, 50);
+  };
+
+  const handleExcluirCanteiro = async () => {
     try {
+      setLoading(true);
       await canteiroService.delete(canteiroSelecionado.id);
+
       alert("Canteiro excluído com sucesso!");
+
+      // Atualiza a tabela
       fetchCanteiros();
-      setModalDetalheAberto(false);
+
+      // FECHA DEFINITIVAMENTE O MODAL DE EXCLUSÃO
+      setModalExclusaoAberto(false);
+
+      // Limpa a seleção para evitar que modais reabram com dados antigos
       setCanteiroSelecionado(null);
     } catch (error) {
       alert(`Erro ao excluir: ${getBackendErrorMessage(error)}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -393,7 +408,7 @@ const Historico = () => {
             setModalDetalheAberto(false);
             setModalEdicaoAberto(true);
           }}
-          onExcluir={handleExcluirCanteiro}
+          onExcluir={() => abrirModalExclusao(canteiroSelecionado)}
           onExportarPdf={() => handleExportarPdf(canteiroSelecionado)}
           onExportarCsv={() => handleExportarCsv(canteiroSelecionado)}
           textoExclusao="o canteiro"
@@ -401,6 +416,7 @@ const Historico = () => {
           mostrarHistorico={true}
           mostrarExportar={true}
           mostrarImagem={false}
+          usarConfirmacaoExterna={true}
         />
       )}
 
@@ -451,6 +467,15 @@ const Historico = () => {
             />
           </div>
         </div>
+      )}
+
+      {modalExclusaoAberto && canteiroSelecionado && (
+        <ModalExcluir
+          isOpen={modalExclusaoAberto}
+          onClose={() => setModalExclusaoAberto(false)}
+          onConfirm={handleExcluirCanteiro}
+          nomeItem={canteiroSelecionado?.nomeCanteiro}
+        />
       )}
     </div>
   );
