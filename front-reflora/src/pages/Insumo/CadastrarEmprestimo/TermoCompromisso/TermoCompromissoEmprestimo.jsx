@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import insumoService from '../../../../services/insumoService';
+import { getBackendErrorMessage } from '../../../../utils/errorHandler';
 import './TermoCompromissoEmprestimo.css';
 
 const TermoCompromissoEmprestimo = () => {
@@ -11,15 +12,29 @@ const TermoCompromissoEmprestimo = () => {
 
   if (!dadosTermo) return <div>Nenhum termo selecionado.</div>;
 
+  const criarDataLocal = (dataString) => {
+    if (!dataString) return new Date();
+    const [ano, mes, dia] = dataString.split('-');
+    // O construtor (ano, mes, dia) usa o fuso local. Mês começa em 0.
+    return new Date(ano, mes - 1, dia);
+  };
+
+  // --- NOVA FUNÇÃO: Formata para o Back-end (dd/MM/yyyy) ---
+  const formatarParaEnvio = (dataStringISO) => {
+      if (!dataStringISO) return null;
+      const [ano, mes, dia] = dataStringISO.split('-');
+      return `${dia}/${mes}/${ano}`;
+  }
+
   const formatarDataBr = (data) => {
     return data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
   };
 
   // Cálculos de datas e prazos
   const infoCalculada = useMemo(() => {
-    const dataReg = new Date(dadosTermo.dataRegistro);
+    const dataReg = criarDataLocal(dadosTermo.dataRegistro);
     // Usa a data de devolução escolhida no formulário
-    const dataDev = new Date(dadosTermo.dataDevolucao);
+    const dataDev = criarDataLocal(dadosTermo.dataDevolucao);
     
     // Cálculo da diferença em dias (para mostrar no texto)
     const diffTime = Math.abs(dataDev - dataReg);
@@ -43,7 +58,7 @@ const TermoCompromissoEmprestimo = () => {
             nomeInsumo: dadosTermo.nomeMaterial,
             status: 'EMPRESTADO', 
             quantidade: Number(dadosTermo.quantidade),
-            dataRegistro: dadosTermo.dataRegistro,
+            dataRegistro: formatarParaEnvio(dadosTermo.dataRegistro),
             
             // IMPORTANTE: O Model Java pede 'int dataDevolucao', então enviamos os DIAS
             dataDevolucao: infoCalculada.prazoDias, 
@@ -63,8 +78,8 @@ const TermoCompromissoEmprestimo = () => {
         window.print();
 
     } catch (error) {
-        console.error("Erro", error);
-        alert("Erro ao salvar.");
+        const msg = getBackendErrorMessage(error);
+        alert(msg);
     } finally {
         setLoading(false);
     }

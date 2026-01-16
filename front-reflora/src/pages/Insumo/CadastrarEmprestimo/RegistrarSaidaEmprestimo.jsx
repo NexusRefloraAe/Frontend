@@ -5,6 +5,7 @@ import Input from '../../../components/Input/Input';
 import insumoService from '../../../services/insumoService';
 import { FaTools, FaBoxOpen } from 'react-icons/fa';
 import './RegistrarEmprestimo.css'; 
+import { getBackendErrorMessage } from '../../../utils/errorHandler';
 
 const RegistrarSaidaEmprestimo = ({ onSalvar, onCancelar }) => {
   const hoje = new Date().toISOString().split('T')[0];
@@ -33,6 +34,12 @@ const RegistrarSaidaEmprestimo = ({ onSalvar, onCancelar }) => {
     responsavelReceber: '',
     finalidade: ''
   });
+
+  const formatarDataParaBackend = (dataISO) => {
+    if (!dataISO) return null;
+    const [ano, mes, dia] = dataISO.split("-");
+    return `${dia}/${mes}/${ano}`;
+  };
 
   // --- CARREGAMENTO DE DADOS ---
   useEffect(() => {
@@ -189,7 +196,7 @@ const RegistrarSaidaEmprestimo = ({ onSalvar, onCancelar }) => {
         nomeInsumo: formData.nomeInsumo,
         status: formData.status, 
         quantidade: qtdNumerica, 
-        dataRegistro: formData.dataRegistro,
+        dataRegistro: formatarDataParaBackend(formData.dataRegistro),
         dataDevolucao: prazoDias, // Envia o inteiro calculado
         responsavelEntrega: formData.responsavelEntrega,
         responsavelReceber: formData.responsavelReceber,
@@ -209,12 +216,14 @@ const RegistrarSaidaEmprestimo = ({ onSalvar, onCancelar }) => {
       }));
 
     } catch (error) {
-      console.error(error);
-      if (error.response && error.response.data) {
-          alert(`Erro: ${error.response.data.message || 'Erro ao registrar.'}`);
-      } else {
-          alert("Erro ao registrar movimentação.");
-      }
+      const msg = getBackendErrorMessage(error);
+      alert(msg)
+      // console.error(error);
+      // if (error.response && error.response.data) {
+      //     alert(`Erro: ${error.response.data.message || 'Erro ao registrar.'}`);
+      // } else {
+      //     alert("Erro ao registrar movimentação.");
+      // }
     } finally {
       setLoading(false);
     }
