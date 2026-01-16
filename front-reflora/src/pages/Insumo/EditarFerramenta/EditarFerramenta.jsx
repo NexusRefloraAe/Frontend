@@ -3,6 +3,7 @@ import FormGeral from '../../../components/FormGeral/FormGeral';
 import Input from '../../../components/Input/Input';
 import insumoService from '../../../services/insumoService';
 import './EditarFerramenta.css';
+import { getBackendErrorMessage } from '../../../utils/errorHandler';
 
 const EditarFerramenta = ({ isOpen, onClose, itemParaEditar, onSalvar }) => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,12 @@ const EditarFerramenta = ({ isOpen, onClose, itemParaEditar, onSalvar }) => {
     responsavelReceber: '',
     status: ''
   });
+
+  const formatarParaBackend = (dataISO) => {
+    if (!dataISO) return null;
+    const [ano, mes, dia] = dataISO.split("-");
+    return `${dia}/${mes}/${ano}`;
+  };
 
   useEffect(() => {
     if (itemParaEditar) {
@@ -66,7 +73,7 @@ const EditarFerramenta = ({ isOpen, onClose, itemParaEditar, onSalvar }) => {
             nomeInsumo: formData.nomeInsumo,
             status: formData.status.toUpperCase(),
             quantidade: Number(formData.quantidade),
-            dataRegistro: formData.dataRegistro,
+            dataRegistro: formatarParaBackend(formData.dataRegistro),
             responsavelEntrega: formData.responsavelEntrega,
             responsavelReceber: formData.responsavelReceber,
             unidadeMedida: formData.unidadeMedida // Envia a nova unidade selecionada
@@ -91,7 +98,7 @@ const EditarFerramenta = ({ isOpen, onClose, itemParaEditar, onSalvar }) => {
 
     } catch (error) {
         console.error("Erro:", error);
-        if(!sucessoApi) alert("Erro ao atualizar ferramenta.");
+        if(!sucessoApi) alert(getBackendErrorMessage(error));
     }
   };
 
