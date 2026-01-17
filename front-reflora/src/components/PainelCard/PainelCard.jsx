@@ -8,16 +8,29 @@ function PainelCard({ titulo, valor, icone, corFundo, rota, style, className = '
   // Combina a cor de fundo interna com estilos extras (como a borda) vindos do pai
   const computedStyle = {
     backgroundColor: corFundo || '#fff',
-    ...style // <--- IMPORTANTE: Isso permite que o Painel.jsx defina a borda
+    ...style 
   };
 
   const handleClick = () => {
     if (rota) navigate(rota);
   };
 
+  // Função auxiliar para renderizar o ícone de forma segura
+  const renderIcone = () => {
+    if (!icone) return null; // Se não tiver ícone, não renderiza nada
+
+    // Se for string (caminho do import ou Base64), usa tag <img>
+    if (typeof icone === 'string') {
+      return <img src={icone} alt={titulo} className="card-icon-img" />;
+    }
+
+    // Se for um objeto/componente (ex: <FaIcon />), renderiza direto
+    return icone;
+  };
+
   return (
     <div
-      className={`card ${className} card-clickable`}
+      className={`card ${className} ${rota ? 'card-clickable' : ''}`} // Adiciona classe clickable só se tiver rota
       style={computedStyle}
       onClick={handleClick}
     >
@@ -27,11 +40,7 @@ function PainelCard({ titulo, valor, icone, corFundo, rota, style, className = '
         <h1 className="card-valor">{valor}</h1>
         
         <div className="card-icone">
-          {typeof icone === 'string' && icone.includes('.') ? (
-            <img src={icone} alt={titulo} />
-          ) : (
-            <span>{icone}</span>
-          )}
+          {renderIcone()}
         </div>
       </div>
     </div>
