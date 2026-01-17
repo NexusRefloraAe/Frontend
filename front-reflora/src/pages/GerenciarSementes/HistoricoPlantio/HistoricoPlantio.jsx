@@ -5,6 +5,7 @@ import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
 import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico";
 import DetalhesPlantio from "./DetalhesPlantio/DetalhesPlantio";
 import { plantioService } from "../../../services/plantioService";
+import { getBackendErrorMessage } from '../../../../utils/errorHandler';
 
 const HistoricoPlantio = () => {
   const [sementes, setSementes] = useState([]);
@@ -64,7 +65,7 @@ const HistoricoPlantio = () => {
         setPaginaAtual(data.number || 0);
       } catch (error) {
         console.error("Erro ao carregar histórico:", error);
-        alert("Erro ao buscar dados.");
+        alert(getBackendErrorMessage(error));
       } finally {
         setLoading(false);
       }
@@ -105,7 +106,7 @@ const HistoricoPlantio = () => {
       setModalDetalheAberto(true);
     } catch (error) {
       console.error("Erro ao carregar detalhes do plantio:", error);
-      alert("Erro ao buscar detalhes.");
+      alert(getBackendErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -127,7 +128,7 @@ const HistoricoPlantio = () => {
       setModalEdicaoAberto(true);
     } catch (error) {
       console.error("Erro ao carregar para edição:", error);
-      alert("Erro ao buscar dados para edição.");
+      alert(getBackendErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -157,7 +158,7 @@ const HistoricoPlantio = () => {
       carregarDados(paginaAtual, termoBusca); // Recarrega a tabela
     } catch (error) {
       console.error("Erro ao atualizar:", error);
-      alert("Erro ao salvar edição.");
+      alert(getBackendErrorMessage(error));
     }
   };
 
@@ -173,7 +174,7 @@ const HistoricoPlantio = () => {
         carregarDados(paginaAtual, termoBusca); // Recarrega a tabela
       } catch (error) {
         console.error("Erro ao excluir:", error);
-        alert("Erro ao excluir item.");
+        alert(getBackendErrorMessage(error));
       }
     }
   };

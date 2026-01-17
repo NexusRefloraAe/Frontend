@@ -4,6 +4,7 @@ import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/Modal
 import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
 import EditarTeste from "./EditarTeste/EditarTeste";
 import DetalhesTestes from "./DetalhesTestes/DetalhesTestes";
+import { getBackendErrorMessage } from '../../../../utils/errorHandler';
 
 // 1. Importe o serviço correto
 import { testeGerminacaoService } from "../../../services/testeGerminacaoService";
@@ -80,7 +81,7 @@ const HistoricoTestes = () => {
         setPaginaAtual(data.number || 0);
       } catch (error) {
         console.error("Erro ao carregar testes:", error);
-        alert("Erro ao buscar histórico de testes.");
+        alert(getBackendErrorMessage(error));
       } finally {
         setLoading(false);
       }
@@ -126,7 +127,7 @@ const HistoricoTestes = () => {
       setModalDetalheAberto(true);
     } catch (error) {
       console.error("Erro ao carregar detalhes:", error);
-      alert("Erro ao buscar dados.");
+      alert(getBackendErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -179,7 +180,7 @@ const HistoricoTestes = () => {
       carregarDados(paginaAtual, termoBusca);
     } catch (error) {
       console.error("Erro ao atualizar:", error);
-      alert("Erro ao salvar a edição.");
+      alert(getBackendErrorMessage(error));
     }
   };
 
@@ -195,7 +196,7 @@ const HistoricoTestes = () => {
         carregarDados(paginaAtual, termoBusca);
       } catch (error) {
         console.error("Erro ao excluir:", error);
-        alert("Erro ao excluir o teste.");
+        alert(getBackendErrorMessage(error));
       }
     }
   };
