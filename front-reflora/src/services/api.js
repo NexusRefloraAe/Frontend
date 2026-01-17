@@ -5,6 +5,8 @@ import axios from 'axios';
 // Se não, usa o link do seu back-end Koyeb como fallback (padrão).
 const BASE_URL = import.meta.env.VITE_API_URL || 'https://disciplinary-nanon-123silvio456-81c7b556.koyeb.app/api';
 
+// const BASE_URL = `http://localhost:8087/api`; // Para testes
+
 // Cria a instância do Axios
 const api = axios.create({
   baseURL: BASE_URL,
