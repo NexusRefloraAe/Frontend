@@ -1,38 +1,50 @@
-import React, { useState } from 'react';
-import FormGeral from '../../../components/FormGeral/FormGeral';
-import Input from '../../../components/Input/Input';
-import insumoService from '../../../services/insumoService';
-import './Cadastrar.css';
+import React, { useState } from "react";
+import FormGeral from "../../../components/FormGeral/FormGeral";
+import Input from "../../../components/Input/Input";
+import insumoService from "../../../services/insumoService";
+import "./Cadastrar.css";
+import { getBackendErrorMessage } from "../../../utils/errorHandler";
 
 const Cadastrar = () => {
-  const hoje = new Date().toISOString().split('T')[0];
+  const hoje = new Date().toISOString().split("T")[0];
 
-  const [tipoInsumo, setTipoInsumo] = useState('');
+  const [tipoInsumo, setTipoInsumo] = useState("");
   const [loading, setLoading] = useState(false); // <--- NOVO ESTADO PARA O BOTÃO
   const [formData, setFormData] = useState({
-    nomeInsumo: '',
-    quantidade: '',
-    unidadeMedida: '',
-    dataRegistro: '',
-    responsavelEntrega: '',
-    responsavelReceber: '',
-    estoqueMinimo: '',
+    nomeInsumo: "",
+    quantidade: "",
+    unidadeMedida: "",
+    dataRegistro: "",
+    responsavelEntrega: "",
+    responsavelReceber: "",
+    estoqueMinimo: "",
   });
+
+  const formatarDataParaBackend = (dataISO) => {
+    if (!dataISO) return null;
+    const [ano, mes, dia] = dataISO.split("-");
+    return `${dia}/${mes}/${ano}`;
+  };
 
   const handleCancel = (confirmar = true) => {
     const resetForm = () => {
-      setTipoInsumo('');
+      setTipoInsumo("");
       setFormData({
-        nomeInsumo: '',
-        quantidade: '',
-        unidadeMedida: '',
-        dataRegistro: '',
-        responsavelEntrega: '',
-        responsavelReceber: '',
-        estoqueMinimo: '',
+        nomeInsumo: "",
+        quantidade: "",
+        unidadeMedida: "",
+        dataRegistro: "",
+        responsavelEntrega: "",
+        responsavelReceber: "",
+        estoqueMinimo: "",
       });
     };
-    if (confirmar && window.confirm('Deseja cancelar? As alterações não salvas serão perdidas.')) {
+    if (
+      confirmar &&
+      window.confirm(
+        "Deseja cancelar? As alterações não salvas serão perdidas."
+      )
+    ) {
       resetForm();
     } else if (!confirmar) {
       resetForm();
@@ -40,90 +52,91 @@ const Cadastrar = () => {
   };
 
   const handleChange = (field) => (e) => {
-    const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
-    setFormData(prev => ({ ...prev, [field]: value }));
+    const value =
+      e.target.type === "number" ? Number(e.target.value) : e.target.value;
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleTipoInsumoChange = (e) => {
     setTipoInsumo(e.target.value);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      estoqueMinimo: '',
-      unidadeMedida: ''
+      estoqueMinimo: "",
+      unidadeMedida: "",
     }));
   };
 
   const handleQuantidadeInc = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      quantidade: Math.max(0, (prev.quantidade || 0) + 1)
+      quantidade: Math.max(0, (prev.quantidade || 0) + 1),
     }));
   };
 
   const handleQuantidadeDec = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      quantidade: Math.max(0, (prev.quantidade || 0) - 1)
+      quantidade: Math.max(0, (prev.quantidade || 0) - 1),
     }));
   };
 
   const handleEstoqueMinimoInc = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      estoqueMinimo: Math.max(0, (prev.estoqueMinimo || 0) + 1)
+      estoqueMinimo: Math.max(0, (prev.estoqueMinimo || 0) + 1),
     }));
   };
 
   const handleEstoqueMinimoDec = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      estoqueMinimo: Math.max(0, (prev.estoqueMinimo || 0) - 1)
+      estoqueMinimo: Math.max(0, (prev.estoqueMinimo || 0) - 1),
     }));
   };
 
   const getUnidadesMedida = () => {
-    const opcoesComuns = [
-      { value: '', label: 'Selecione a medida...' }
-    ];
+    const opcoesComuns = [{ value: "", label: "Selecione a medida..." }];
 
-    if (tipoInsumo === 'Ferramenta') {
+    if (tipoInsumo === "Ferramenta") {
       return [
         ...opcoesComuns,
-        { value: 'UNIDADE', label: 'Unidade' },
-        { value: 'PECA', label: 'Peça' },
-        { value: 'JOGO', label: 'Jogo' },
-        { value: 'CONJUNTO', label: 'Conjunto' }
+        { value: "UNIDADE", label: "Unidade" },
+        { value: "PECA", label: "Peça" },
+        { value: "JOGO", label: "Jogo" },
+        { value: "CONJUNTO", label: "Conjunto" },
       ];
-    } else if (tipoInsumo === 'Material') {
+    } else if (tipoInsumo === "Material") {
       return [
         ...opcoesComuns,
-        { value: 'KG', label: 'Kg' },
-        { value: 'LITRO', label: 'Litro' },
-        { value: 'METRO', label: 'Metro' },
-        { value: 'UNIDADE', label: 'Unidade' },
-        { value: 'SACO', label: 'Saco' },
-        { value: 'CAIXA', label: 'Caixa' }
+        { value: "KG", label: "Kg" },
+        { value: "LITRO", label: "Litro" },
+        { value: "METRO", label: "Metro" },
+        { value: "UNIDADE", label: "Unidade" },
+        { value: "SACO", label: "Saco" },
+        { value: "CAIXA", label: "Caixa" },
       ];
     }
     return [];
   };
 
   const getTitulo = () => {
-    return tipoInsumo === 'Ferramenta' ? 'Registrar Ferramenta' :
-      tipoInsumo === 'Material' ? 'Registrar Material' :
-        'Cadastrar Insumo';
+    return tipoInsumo === "Ferramenta"
+      ? "Registrar Ferramenta"
+      : tipoInsumo === "Material"
+      ? "Registrar Material"
+      : "Cadastrar Insumo";
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!tipoInsumo) {
-      alert('Por favor, selecione o tipo de insumo.');
+      alert("Por favor, selecione o tipo de insumo.");
       return;
     }
 
     if (!formData.unidadeMedida) {
-      alert('Por favor, selecione a unidade de medida.');
+      alert("Por favor, selecione a unidade de medida.");
       return;
     }
 
@@ -134,21 +147,22 @@ const Cadastrar = () => {
         tipoInsumo: tipoInsumo.toUpperCase(),
         nomeInsumo: formData.nomeInsumo,
         unidadeMedida: formData.unidadeMedida,
-        dataRegistro: formData.dataRegistro,
+        dataRegistro: formatarDataParaBackend(formData.dataRegistro),
         responsavelEntrega: formData.responsavelEntrega,
         responsavelReceber: formData.responsavelReceber,
-        quantidade: formData.quantidade === '' ? 0 : Number(formData.quantidade),
-        estoqueMinimo: formData.estoqueMinimo === '' ? 0 : Number(formData.estoqueMinimo)
+        quantidade:
+          formData.quantidade === "" ? 0 : Number(formData.quantidade),
+        estoqueMinimo:
+          formData.estoqueMinimo === "" ? 0 : Number(formData.estoqueMinimo),
       };
 
       await insumoService.cadastrar(payload);
 
       alert(`${tipoInsumo} cadastrado com sucesso!`);
       handleCancel(false);
-
     } catch (error) {
-      console.error('Erro ao cadastrar insumo:', error);
-      alert('Erro ao cadastrar insumo. Verifique os dados e tente novamente.');
+      const msg = getBackendErrorMessage(error);
+      alert(msg);
     } finally {
       setLoading(false); // <--- DESATIVA O LOADING AO TERMINAR (SUCESSO OU ERRO)
     }
@@ -172,9 +186,9 @@ const Cadastrar = () => {
               onChange={handleTipoInsumoChange}
               required={true}
               options={[
-                { value: '', label: 'Selecione o tipo...' },
-                { value: 'Ferramenta', label: 'Ferramenta' },
-                { value: 'Material', label: 'Material' }
+                { value: "", label: "Selecione o tipo..." },
+                { value: "Ferramenta", label: "Ferramenta" },
+                { value: "Material", label: "Material" },
               ]}
             />
           </div>
@@ -186,8 +200,10 @@ const Cadastrar = () => {
                 name="nomeInsumo"
                 type="text"
                 value={formData.nomeInsumo}
-                onChange={handleChange('nomeInsumo')}
-                placeholder={tipoInsumo === 'Ferramenta' ? 'Ex: Pá Grande' : 'Ex: Adubo'}
+                onChange={handleChange("nomeInsumo")}
+                placeholder={
+                  tipoInsumo === "Ferramenta" ? "Ex: Pá Grande" : "Ex: Adubo"
+                }
                 required={true}
               />
               <Input
@@ -195,7 +211,7 @@ const Cadastrar = () => {
                 name="unidadeMedida"
                 type="select"
                 value={formData.unidadeMedida}
-                onChange={handleChange('unidadeMedida')}
+                onChange={handleChange("unidadeMedida")}
                 required={true}
                 options={getUnidadesMedida()}
               />
@@ -205,7 +221,7 @@ const Cadastrar = () => {
                 name="quantidade"
                 type="number"
                 value={formData.quantidade}
-                onChange={handleChange('quantidade')}
+                onChange={handleChange("quantidade")}
                 onIncrement={handleQuantidadeInc}
                 onDecrement={handleQuantidadeDec}
                 placeholder="Ex: 300"
@@ -213,13 +229,13 @@ const Cadastrar = () => {
                 min="0"
               />
 
-              {tipoInsumo === 'Material' ? (
+              {tipoInsumo === "Material" ? (
                 <Input
                   label="Estoque Mínimo"
                   name="estoqueMinimo"
                   type="number"
                   value={formData.estoqueMinimo}
-                  onChange={handleChange('estoqueMinimo')}
+                  onChange={handleChange("estoqueMinimo")}
                   onIncrement={handleEstoqueMinimoInc}
                   onDecrement={handleEstoqueMinimoDec}
                   placeholder="Ex: 100"
@@ -232,18 +248,18 @@ const Cadastrar = () => {
                   name="dataRegistro"
                   type="date"
                   value={formData.dataRegistro}
-                  onChange={handleChange('dataRegistro')}
+                  onChange={handleChange("dataRegistro")}
                   required={true}
                 />
               )}
 
-              {tipoInsumo === 'Material' && (
+              {tipoInsumo === "Material" && (
                 <Input
                   label="Data de Registro"
                   name="dataRegistro"
                   type="date"
                   value={formData.dataRegistro}
-                  onChange={handleChange('dataRegistro')}
+                  onChange={handleChange("dataRegistro")}
                   required={true}
                 />
               )}
@@ -253,7 +269,7 @@ const Cadastrar = () => {
                 name="responsavelEntrega"
                 type="text"
                 value={formData.responsavelEntrega}
-                onChange={handleChange('responsavelEntrega')}
+                onChange={handleChange("responsavelEntrega")}
                 placeholder="Responsável pela entrega"
                 required={true}
               />
@@ -262,7 +278,7 @@ const Cadastrar = () => {
                 name="responsavelReceber"
                 type="text"
                 value={formData.responsavelReceber}
-                onChange={handleChange('responsavelReceber')}
+                onChange={handleChange("responsavelReceber")}
                 placeholder="Responsável por receber"
                 required={true}
               />
@@ -270,26 +286,27 @@ const Cadastrar = () => {
           )}
 
           <div className="grid-span-2 insumo-actions">
-            <button 
-                type="button" 
-                className="insumo-btn btn-cancelar" 
-                onClick={() => handleCancel(true)}
-                disabled={loading} // <--- DESABILITA SE ESTIVER SALVANDO
+            <button
+              type="button"
+              className="insumo-btn btn-cancelar"
+              onClick={() => handleCancel(true)}
+              disabled={loading} // <--- DESABILITA SE ESTIVER SALVANDO
             >
               Cancelar
             </button>
-            <button 
-                type="submit" 
-                className="insumo-btn btn-salvar"
-                disabled={loading} // <--- DESABILITA SE ESTIVER SALVANDO
+            <button
+              type="submit"
+              className="insumo-btn btn-salvar"
+              disabled={loading} // <--- DESABILITA SE ESTIVER SALVANDO
             >
-              {loading ? 'Salvando...' : 'Salvar Registro'} {/* <--- MENSAGEM DINÂMICA */}
+              {loading ? "Salvando..." : "Salvar Registro"}{" "}
+              {/* <--- MENSAGEM DINÂMICA */}
             </button>
           </div>
         </div>
       </FormGeral>
     </div>
   );
-}
+};
 
 export default Cadastrar;

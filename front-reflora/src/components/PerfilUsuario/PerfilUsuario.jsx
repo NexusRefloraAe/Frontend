@@ -77,7 +77,8 @@ const PerfilUsuario = () => {
           fotoUrl: rawUrl,
         });
       } catch (error) {
-        console.error("Erro ao carregar perfil", getBackendErrorMessage(error));
+        const msg = getBackendErrorMessage(error);
+        alert(msg);
       }
     };
     fetchUserData();
@@ -97,10 +98,8 @@ const PerfilUsuario = () => {
       setFotoFile(null);
       window.location.reload();
     } catch (error) {
-      alert(
-        "Ocorreu um erro ao salvar as alterações.\nErro: ",
-        getBackendErrorMessage(error)
-      );
+      const msg = getBackendErrorMessage(error);
+      alert(msg);
     } finally {
       setIsLoading(false);
     }
@@ -118,7 +117,8 @@ const PerfilUsuario = () => {
         authService.logout();
         window.location.href = "/login";
       } catch (error) {
-        alert("Erro ao excluir conta.\nErro: ", getBackendErrorMessage(error));
+        const msg = getBackendErrorMessage(error);
+        alert(msg);
       }
     }
   };

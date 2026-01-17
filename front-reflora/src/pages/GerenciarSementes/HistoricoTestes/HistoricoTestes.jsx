@@ -264,7 +264,7 @@ const HistoricoTestes = () => {
       key: "nomePopularSemente",
       label: "Nome popular",
       sortable: true,
-      sortKey: "nomePopular",
+      sortKey: "sementes.nomePopular",
     },
     {
       key: "dataPlantio",
@@ -288,7 +288,6 @@ const HistoricoTestes = () => {
       key: "estahNaCamaraFria",
       label: "Câmara Fria",
       sortable: true,
-      sortKey: "camaraFria",
     },
     {
       key: "dataGerminacao",

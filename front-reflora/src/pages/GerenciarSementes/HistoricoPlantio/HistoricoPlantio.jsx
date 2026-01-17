@@ -243,14 +243,13 @@ const HistoricoPlantio = () => {
       key: "nomePopularSemente",
       label: "Nome popular",
       sortable: true,
-      sortKey: "nomePopularSemente",
+      sortKey: "sementes.nomePopular",
     }, // Java: setNomePopularSemente
     { key: "dataPlantio", label: "Data de plantio", sortable: true },
     {
       key: "qtdSemente",
       label: "Qtd. Sementes",
       sortable: true,
-      sortKey: "qtdSemente",
     },
     {
       key: "unidadeDeMedida",
@@ -262,7 +261,6 @@ const HistoricoPlantio = () => {
       key: "quantidadePlantada",
       label: "Qtd. Plantada (und)",
       sortable: true,
-      sortKey: "quantidade",
     },
     {
       key: "tipoPlantioDescricao",
