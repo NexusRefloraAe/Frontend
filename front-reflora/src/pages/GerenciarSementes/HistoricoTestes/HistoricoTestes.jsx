@@ -4,7 +4,7 @@ import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/Modal
 import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
 import EditarTeste from "./EditarTeste/EditarTeste";
 import DetalhesTestes from "./DetalhesTestes/DetalhesTestes";
-import { getBackendErrorMessage } from '../../../../utils/errorHandler';
+import { getBackendErrorMessage } from '../../../utils/errorHandler';
 
 // 1. Importe o serviço correto
 import { testeGerminacaoService } from "../../../services/testeGerminacaoService";

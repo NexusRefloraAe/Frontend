@@ -5,7 +5,7 @@ import ModalExcluir from "../../../components/ModalExcluir/ModalExcluir";
 import ModalDetalheGenerico from "../../../components/ModalDetalheGenerico/ModalDetalheGenerico";
 import DetalhesPlantio from "./DetalhesPlantio/DetalhesPlantio";
 import { plantioService } from "../../../services/plantioService";
-import { getBackendErrorMessage } from '../../../../utils/errorHandler';
+import { getBackendErrorMessage } from "../../../utils/errorHandler";
 
 const HistoricoPlantio = () => {
   const [sementes, setSementes] = useState([]);
@@ -47,7 +47,7 @@ const HistoricoPlantio = () => {
       pagina = 0,
       busca = termoBusca,
       ordemArg = ordem,
-      direcaoArg = direcao
+      direcaoArg = direcao,
     ) => {
       try {
         setLoading(true);
@@ -56,7 +56,7 @@ const HistoricoPlantio = () => {
           pagina,
           5,
           ordemArg,
-          direcaoArg
+          direcaoArg,
         );
 
         // Garante que, se o back-end falhar ou mudar a estrutura, o front não receba 'undefined'
@@ -70,7 +70,7 @@ const HistoricoPlantio = () => {
         setLoading(false);
       }
     },
-    [ordem, direcao]
+    [ordem, direcao],
   ); // Adicione as dependências corretas aqui
 
   // Carrega ao montar
@@ -257,7 +257,7 @@ const HistoricoPlantio = () => {
       label: "Und. de medida",
       sortable: true,
       sortKey: "sementes.unidadeDeMedida",
-    }, 
+    },
     {
       key: "quantidadePlantada",
       label: "Qtd. Plantada (und)",
@@ -268,7 +268,7 @@ const HistoricoPlantio = () => {
       label: "Tipo de Plantio",
       sortable: true,
       sortKey: "tipoPlantio",
-    }, 
+    },
   ];
 
   return (
@@ -287,9 +287,7 @@ const HistoricoPlantio = () => {
           mostrarHistorico={false}
           mostrarExportar={false}
           mostrarAcoes={true}
-
-          mostrarImagem={false}  // <--- ADICIONE ESTA LINHA AQUI
-
+          mostrarImagem={false} // <--- ADICIONE ESTA LINHA AQUI
         >
           <DetalhesPlantio item={itemSelecionado} />
         </ModalDetalheGenerico>
@@ -315,39 +313,29 @@ const HistoricoPlantio = () => {
 
       <div className="historico-content-banco">
         <main>
-
           <TabelaComBuscaPaginacao
             titulo="Histórico de Plantio"
             dados={sementes}
             colunas={colunas}
             chaveBusca="nomePopularSemente" // Campo para o placeholder da busca
-
             // Passando as funções reais
             onPesquisar={handleBusca}
-
             // Passe o loading para a tabela gerenciar o visual
             isLoading={loading}
-
             // Configuração da paginação se o componente suportar props externas
             paginaAtual={paginaAtual + 1} // +1 para visual
             totalPaginas={totalPaginas}
             onPaginaChange={handleMudarPagina}
-
             modoBusca="auto"
-
             onEditar={handleEditar}
             onVisualizar={handleVisualizar}
             onExcluir={handleExcluir}
-
             onExportPDF={handleExportPDF}
             onExportCSV={handleExportCSV}
-
             onOrdenar={handleOrdenar}
             ordemAtual={ordem}
             direcaoAtual={direcao}
-
           />
-
         </main>
       </div>
     </div>
