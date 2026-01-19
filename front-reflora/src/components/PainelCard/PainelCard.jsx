@@ -8,7 +8,7 @@ function PainelCard({ titulo, valor, icone, corFundo, rota, style, className = '
   // Combina a cor de fundo interna com estilos extras (como a borda) vindos do pai
   const computedStyle = {
     backgroundColor: corFundo || '#fff',
-    ...style 
+    ...style
   };
 
   const handleClick = () => {
@@ -16,16 +16,18 @@ function PainelCard({ titulo, valor, icone, corFundo, rota, style, className = '
   };
 
   // Função auxiliar para renderizar o ícone de forma segura
+  // Dentro do seu PainelCard.jsx
   const renderIcone = () => {
-    if (!icone) return null; // Se não tiver ícone, não renderiza nada
+    if (!icone) return null;
 
-    // Se for string (caminho do import ou Base64), usa tag <img>
-    if (typeof icone === 'string') {
-      return <img src={icone} alt={titulo} className="card-icon-img" />;
+    // Se for um emoji (como nos Relatórios), renderiza como texto
+    // Verificamos se NÃO é uma imagem base64 ou caminho de arquivo
+    if (typeof icone === 'string' && !icone.startsWith('data:image') && icone.length < 5) {
+      return <span className="icone-emoji">{icone}</span>;
     }
 
-    // Se for um objeto/componente (ex: <FaIcon />), renderiza direto
-    return icone;
+    // Se for um caminho de imagem ou Base64 (como no Painel), usa <img>
+    return <img src={icone} alt={titulo} className="card-icon-img" />;
   };
 
   return (
@@ -35,10 +37,10 @@ function PainelCard({ titulo, valor, icone, corFundo, rota, style, className = '
       onClick={handleClick}
     >
       <p className="card-titulo">{titulo}</p>
-      
+
       <div className="card-conteudo-central">
         <h1 className="card-valor">{valor}</h1>
-        
+
         <div className="card-icone">
           {renderIcone()}
         </div>
