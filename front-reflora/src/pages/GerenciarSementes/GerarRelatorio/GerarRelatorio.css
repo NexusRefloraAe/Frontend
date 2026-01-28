@@ -111,9 +111,16 @@
 }
 
 /* Responsividade — só do layout geral e cards */
+/* ... (Seu código anterior mantém igual) ... */
+
+/* Responsividade */
+
 @media (max-width: 1024px) {
-  .cards-container {
-    grid-template-columns: repeat(2, 1fr);
+  /* Atualizado para o nome correto da classe */
+  .cards-container-sementes {
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas no tablet */
+    grid-template-rows: auto;
+    grid-auto-flow: row; /* Reseta o fluxo para normal */
   }
 }
 
@@ -122,8 +129,12 @@
     padding: 0.5rem;
   }
   
-  .cards-container {
-    grid-template-columns: 1fr;
+  /* AQUI ESTÁ A CORREÇÃO PRINCIPAL */
+  .cards-container-sementes {
+    display: grid;
+    grid-template-columns: 1fr; /* 1 Coluna (ocupa tudo) */
+    grid-template-rows: auto;
+    grid-auto-flow: row;        /* Um abaixo do outro */
     gap: 1rem;
   }
   
@@ -133,12 +144,14 @@
     padding: 1rem;
   }
   
-  .cards-container .card {
+  /* Atualizado nome da classe aqui também */
+  .cards-container-sementes .card {
     height: 120px;
     padding: 1.25rem;
+    width: 100%; /* Garante largura total */
   }
   
-  .cards-container .card .card-valor {
+  .cards-container-sementes .card .card-valor {
     font-size: 2rem;
   }
 }
@@ -148,16 +161,17 @@
     padding: 0.25rem;
   }
   
-  .cards-container .card {
+  /* Atualizado nome da classe */
+  .cards-container-sementes .card {
     height: 110px;
     padding: 1rem;
   }
   
-  .cards-container .card .card-valor {
+  .cards-container-sementes .card .card-valor {
     font-size: 1.75rem;
   }
   
-  .cards-container .card .card-titulo {
+  .cards-container-sementes .card .card-titulo {
     font-size: 0.9rem;
   }
 }

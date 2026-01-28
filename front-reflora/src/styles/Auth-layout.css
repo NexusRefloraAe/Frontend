@@ -28,6 +28,9 @@
   justify-content: center;
   align-items: center;
   padding: var(--espacamento-xl);
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
 }
 
 .auth-form {
@@ -122,6 +125,15 @@
 /* RESPONSIVIDADE
 
 /* DESKTOP (≥1024px) */
+
+@media (max-height: 800px) {
+  .auth-form-wrapper {
+    align-items: flex-start; /* Alinha no topo para permitir scroll até o fim */
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+}
+
 @media (min-width: 64rem) {
   .auth-banner {
     display: flex;
